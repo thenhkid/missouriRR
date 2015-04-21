@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+<tiles-definitions>
+    
+    <!-- sysAdmin Definitions -->
+    <definition name="base.definition.client-ui" template="/WEB-INF/tiles/layout.jsp">
+        <put-attribute name="title" value="" />
+        <put-attribute name="header" value="" />
+        <put-attribute name="actions" value="" />
+        <put-attribute name="menu" value="" />
+        <put-attribute name="body" value="" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/common/footer.jsp" />
+    </definition>
+    
+    <definition name="/clients" extends="base.definition.client-ui">
+        <put-attribute name="page-id" value="dashboard-details" />
+        <put-attribute name="page-section" value="section-dashboard" />
+        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=clients" />
+        <put-attribute name="actions" value="/WEB-INF/jsp/clients/actionBar.jsp?page=list" />
+        <put-attribute name="body" value="/WEB-INF/jsp/clients/list.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/clients/list.js" />
+    </definition>
+    
+    <definition name="/clientDetails" extends="base.definition.client-ui">
+        <put-attribute name="page-id" value="dashboard-details" />
+        <put-attribute name="page-section" value="section-dashboard" />
+        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=clients" />
+        <put-attribute name="actions" value="/WEB-INF/jsp/clients/actionBar.jsp?page=details" />
+        <put-attribute name="menu" value="/WEB-INF/jsp/clients/menu.jsp?page=details" />
+        <put-attribute name="body" value="/WEB-INF/jsp/clients/clientDetails.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/clients/clientDetails.js" />
+    </definition>
+    
+    <definition name="/engagements" extends="base.definition.client-ui">
+        <put-attribute name="page-id" value="dashboard-details" />
+        <put-attribute name="page-section" value="section-dashboard" />
+        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=clients" />
+        <put-attribute name="actions" value="/WEB-INF/jsp/clients/actionBar.jsp?page=engagement" />
+        <put-attribute name="menu" value="/WEB-INF/jsp/clients/menu.jsp?page=enagement" />
+        <put-attribute name="body" value="/WEB-INF/jsp/clients/engagement/list.jsp" />
+    </definition>
+    
+    <definition name="/engagementDetails" extends="base.definition.client-ui">
+        <put-attribute name="page-id" value="dashboard-details" />
+        <put-attribute name="page-section" value="section-dashboard" />
+        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=clients" />
+        <put-attribute name="actions" value="/WEB-INF/jsp/clients/actionBar.jsp?page=engagementDetails" />
+        <put-attribute name="menu" value="/WEB-INF/jsp/clients/menu.jsp?page=enagement" />
+        <put-attribute name="body" value="/WEB-INF/jsp/clients/engagement/details.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/clients/engagementDetails.js" />
+    </definition>
+    
+    <!-- Survey Pages -->
+    <definition name="/surveys" extends="base.definition.client-ui">
+        <put-attribute name="page-id" value="dashboard-details" />
+        <put-attribute name="page-section" value="section-dashboard" />
+        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=clients" />
+        <put-attribute name="actions" value="/WEB-INF/jsp/clients/actionBar.jsp?page=surveys" />
+        <put-attribute name="menu" value="/WEB-INF/jsp/clients/menu.jsp?page=surveys" />
+        <put-attribute name="body" value="/WEB-INF/jsp/clients/survey/list.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/clients/surveys/list.js" />
+    </definition>
+    
+    <definition name="/takeSurvey" extends="base.definition.client-ui">
+        <put-attribute name="page-id" value="dashboard-details" />
+        <put-attribute name="page-section" value="section-dashboard" />
+        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=clients" />
+        <put-attribute name="actions" value="/WEB-INF/jsp/clients/actionBar.jsp?page=takesurvey" />
+        <!--<put-attribute name="menu" value="/WEB-INF/jsp/clients/survey/menu.jsp" />-->
+        <put-attribute name="menu" value="/WEB-INF/jsp/clients/menu.jsp?page=surveys" />
+        <put-attribute name="body" value="/WEB-INF/jsp/clients/survey/survey.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/clients/surveys/survey.js" />
+    </definition>
+    
+     <definition name="/completedSurvey" extends="base.definition.client-ui">
+        <put-attribute name="page-id" value="dashboard-details" />
+        <put-attribute name="page-section" value="section-dashboard" />
+        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=clients" />
+        <put-attribute name="actions" value="/WEB-INF/jsp/clients/actionBar.jsp?page=takesurvey" />
+        <put-attribute name="menu" value="/WEB-INF/jsp/clients/menu.jsp?page=surveys" />
+        <put-attribute name="body" value="/WEB-INF/jsp/clients/survey/completedSurvey.jsp" />
+    </definition>
+    
+    <definition name="/viewSurvey" extends="base.definition.client-ui">
+        <put-attribute name="page-id" value="dashboard-details" />
+        <put-attribute name="page-section" value="section-dashboard" />
+        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=clients" />
+        <put-attribute name="actions" value="/WEB-INF/jsp/clients/actionBar.jsp?page=viewsurvey" />
+        <put-attribute name="menu" value="/WEB-INF/jsp/clients/menu.jsp?page=surveys" />
+        <put-attribute name="body" value="/WEB-INF/jsp/clients/survey/viewSurvey.jsp" />
+    </definition>
+    
+    <!-- Exception handling -->
+    <definition name="/exception" extends="base.definition.ui">
+        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp" />
+        <put-attribute name="body" value="/WEB-INF/jsp/exception.jsp" />
+    </definition>
+
+</tiles-definitions>

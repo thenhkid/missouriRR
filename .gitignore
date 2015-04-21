@@ -1,0 +1,10 @@
+context.xml
+/bin
+/target/
+.DS_Store
+.classpath
+.project
+webapp/target/*
+registryKit/target/registryKit-1.0.jar
+registryKit/target/maven-archiver/pom.properties
+webapp/target/rapidregistry-missouri-program/WEB-INF/lib/org.rr.missouri-registryKit-1.0.jar
