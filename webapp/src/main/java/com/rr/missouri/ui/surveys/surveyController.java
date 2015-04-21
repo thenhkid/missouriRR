@@ -19,7 +19,6 @@ import com.registryKit.survey.surveyManager;
 import com.registryKit.survey.surveyQuestionAnswers;
 import com.registryKit.survey.surveys;
 import com.registryKit.user.User;
-import com.rr.missouri.ui.clients.clientSummary;
 import com.rr.missouri.ui.security.decryptObject;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  * @author chadmccue
  */
 @Controller
-@RequestMapping("/clients/surveys")
+@RequestMapping("/district/activitylog")
 public class surveyController {
     
    @Autowired
@@ -93,23 +92,9 @@ public class surveyController {
         
         int clientId = Integer.parseInt(result[0].substring(4));
         
-        clientSummary summary = new clientSummary();
-        
         storageClients clientDetails = clientmanager.getClientDetails(clientId);
         storageClientAddressInfo addressInfo = clientmanager.getClientAddressInfo(clientId);
         
-        summary.setName(clientDetails.getFirstName()+" "+clientDetails.getLastName());
-        summary.setSourcePatientId(clientDetails.getSourcePatientId());
-        summary.setDateReferred(clientDetails.getDateCreated());
-        summary.setAddress(addressInfo.getAddress1());
-        summary.setAddress2(addressInfo.getAddress2());
-        summary.setCity(addressInfo.getCity());
-        summary.setState(addressInfo.getState());
-        summary.setZip(addressInfo.getZipCode());
-        summary.setPhoneNumber(addressInfo.getPhone1());
-        summary.setDob(clientDetails.getDob());
-        
-        mav.addObject("summary", summary);
         
         /* Get a list of completed surveys not associated to enagements */
         List<patientCompletedSurveys> completedSurveys = surveyManager.getPatientSurveysNoEngagement(clientId, programId);
@@ -186,24 +171,10 @@ public class surveyController {
         String[] result = obj.toString().split((","));
         
         int clientId = Integer.parseInt(result[0].substring(4));
-    
-        clientSummary summary = new clientSummary();
         
         storageClients clientDetails = clientmanager.getClientDetails(clientId);
         storageClientAddressInfo addressInfo = clientmanager.getClientAddressInfo(clientId);
         
-        summary.setName(clientDetails.getFirstName()+" "+clientDetails.getLastName());
-        summary.setSourcePatientId(clientDetails.getSourcePatientId());
-        summary.setDateReferred(clientDetails.getDateCreated());
-        summary.setAddress(addressInfo.getAddress1());
-        summary.setAddress2(addressInfo.getAddress2());
-        summary.setCity(addressInfo.getCity());
-        summary.setState(addressInfo.getState());
-        summary.setZip(addressInfo.getZipCode());
-        summary.setPhoneNumber(addressInfo.getPhone1());
-        summary.setDob(clientDetails.getDob());
-        
-        mav.addObject("summary", summary);
         
         Integer surveyId = Integer.parseInt(s);
         
@@ -273,21 +244,9 @@ public class surveyController {
 
         int clientId = Integer.parseInt(result[0].substring(4));
 
-        clientSummary summary = new clientSummary();
-
         storageClients clientDetails = clientmanager.getClientDetails(clientId);
         storageClientAddressInfo addressInfo = clientmanager.getClientAddressInfo(clientId);
 
-        summary.setName(clientDetails.getFirstName()+" "+clientDetails.getLastName());
-        summary.setSourcePatientId(clientDetails.getSourcePatientId());
-        summary.setDateReferred(clientDetails.getDateCreated());
-        summary.setAddress(addressInfo.getAddress1());
-        summary.setAddress2(addressInfo.getAddress2());
-        summary.setCity(addressInfo.getCity());
-        summary.setState(addressInfo.getState());
-        summary.setZip(addressInfo.getZipCode());
-        summary.setPhoneNumber(addressInfo.getPhone1());
-        summary.setDob(clientDetails.getDob());
         
         Integer goToQuestion = 0;
         boolean skipToEnd = false;
@@ -499,7 +458,6 @@ public class surveyController {
             NextPage.setTotalPages(surveyPages.size());
             NextPage.setCurrentPage(nextPage);
 
-            mav.addObject("summary", summary);
             mav.addObject("survey", NextPage);
             mav.addObject("surveyPages", surveyPages);
             mav.addObject("qNum", qNum);
@@ -540,23 +498,10 @@ public class surveyController {
         
         int clientId = Integer.parseInt(result[0].substring(4));
         
-        clientSummary summary = new clientSummary();
         
         storageClients clientDetails = clientmanager.getClientDetails(clientId);
         storageClientAddressInfo addressInfo = clientmanager.getClientAddressInfo(clientId);
         
-        summary.setName(clientDetails.getFirstName()+" "+clientDetails.getLastName());
-        summary.setSourcePatientId(clientDetails.getSourcePatientId());
-        summary.setDateReferred(clientDetails.getDateCreated());
-        summary.setAddress(addressInfo.getAddress1());
-        summary.setAddress2(addressInfo.getAddress2());
-        summary.setCity(addressInfo.getCity());
-        summary.setState(addressInfo.getState());
-        summary.setZip(addressInfo.getZipCode());
-        summary.setPhoneNumber(addressInfo.getPhone1());
-        summary.setDob(clientDetails.getDob());
-        
-        mav.addObject("summary", summary);
         
         /* Get the survey details */
         patientCompletedSurveys completedSurveyDetails = surveyManager.getCompletedSurvey(s);

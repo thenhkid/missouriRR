@@ -29,10 +29,7 @@
         <property name="definitions">
             <list>
                 <value>/WEB-INF/tileDefs/ui.xml</value>
-                <value>/WEB-INF/tileDefs/clients.xml</value>
-                <value>/WEB-INF/tileDefs/hierarchy.xml</value>
-                <value>/WEB-INF/tileDefs/mci.xml</value>
-                <value>/WEB-INF/tileDefs/import-export.xml</value>
+                <value>/WEB-INF/tileDefs/district.xml</value>
                 <value>/WEB-INF/tileDefs/reports.xml</value>
             </list>
         </property>

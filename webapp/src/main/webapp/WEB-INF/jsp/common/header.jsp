@@ -16,7 +16,7 @@
 
                             sprite can be used with class="logo":
                     -->
-                    <span alt="Family Planning Registry">Family Planning Registry</span>
+                    <span alt="MO Healthy Schools Healthy Communities Monitoring System">MO Healthy Schools Healthy Communities Monitoring System</span>
                 </a>
                  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
                     <span class="sr-only">Toggle navigation</span>
@@ -26,11 +26,6 @@
                 </button>
             </div>
             <div class="collapse navbar-collapse navbar-ex1-collapse">
-                <ul class="nav navbar-nav" role="menu">
-                    <c:forEach var="module" items="${sessionScope.availModules}">
-                        <li role="menuitem" class="${param['sect'] == module[0] ? 'active' : 'none'}"><a href="<c:url value='/${module[0]}' />" title="${module[1]}">${module[1]}</a><c:if test="${param['sect'] == module[0]}"><span class="indicator-active arrow-up"></span></c:if></li>
-                    </c:forEach>
-                </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="active">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);" style="background-color:rgb(72, 112, 144);">
@@ -55,6 +50,14 @@
                     </li>
                 </ul>
             </div>
+            <div class="collapse navbar-collapse navbar-ex1-collapse" style="background-color:#587e81; border-top: solid 1px #4a7b8b;">
+                <ul class="nav navbar-nav" role="menu">
+                    <li role="menuitem" class="${param['sect'] == 'districts' ? 'active' : 'none'}"><a href="<c:url value='/districts' />" title="Districts">Districts</a><c:if test="${param['sect'] == 'districts'}"><span class="indicator-active arrow-up"></span></c:if></li>
+                    <c:forEach var="module" items="${sessionScope.availModules}">
+                        <li role="menuitem" class="${param['sect'] == module[0] ? 'active' : 'none'}"><a href="<c:url value='/${module[0]}' />" title="${module[1]}">${module[1]}</a><c:if test="${param['sect'] == module[0]}"><span class="indicator-active arrow-up"></span></c:if></li>
+                    </c:forEach>
+                </ul>
+            </div>                
         </div>
     </nav>
     <!-- // End Primary Nav -->
