@@ -10,10 +10,9 @@
 
 <div class="main clearfix" role="main">
     <div class="col-md-12">
-        
         <section class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Districts</h3>
+            <div class="panel-heading" style="background-color:#ffffff;">
+                <h3 class="panel-title"><Strong>Districts</Strong></h3>
             </div>
             <div class="panel-body">
                 <div class="form-container scrollable" id="districtList"></div>

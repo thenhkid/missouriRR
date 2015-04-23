@@ -10,8 +10,7 @@
     <div class="login clearfix">
         <header class="login-header" role="banner">
             <div class="login-header-content">
-                <%--<span class="logo" alt="{Company Name Logo}">Massachusetts Department of Public Health</span>--%>
-                <span class="h2 small">${programName}</span>
+               <span class="h2 small" style="color:#FFFFFF">MO Healthy Schools Monitoring System</span>
             </div>
         </header>
         <c:if test="${not empty error}">
