@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.registryKit.calendar.calendarManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  *
@@ -28,5 +30,13 @@ public class calendarController {
    @Value("${topSecret}")
    private String topSecret;
    
+   @RequestMapping(value = "", method = RequestMethod.GET)
+    public ModelAndView calendarHome() throws Exception {
+        
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/calendar");
+
+        return mav;
+    }
    
 }

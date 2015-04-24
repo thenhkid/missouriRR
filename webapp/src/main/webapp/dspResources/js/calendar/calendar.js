@@ -89,11 +89,11 @@ if(!String.prototype.formatNum) {
 		modal_title:        null,
 		views:              {
 			year:  {
-				slide_events: 1,
+				slide_events: 0,
 				enable:       1
 			},
 			month: {
-				slide_events: 1,
+				slide_events: 0,
 				enable:       1
 			},
 			week:  {

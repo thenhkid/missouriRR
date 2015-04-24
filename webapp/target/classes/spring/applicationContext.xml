@@ -31,6 +31,7 @@
                 <value>/WEB-INF/tileDefs/ui.xml</value>
                 <value>/WEB-INF/tileDefs/district.xml</value>
                 <value>/WEB-INF/tileDefs/reports.xml</value>
+                <value>/WEB-INF/tileDefs/calendar.xml</value>
             </list>
         </property>
     </bean>
