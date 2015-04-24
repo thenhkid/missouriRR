@@ -24,9 +24,6 @@
         <!--[if lt IE 9]>
                 <link rel="stylesheet" href="css/ie.css">
         <![endif]-->
-
-        <script type="text/javascript" src="<%=request.getContextPath()%>/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
-        <script data-main="<%=request.getContextPath()%>/js/ui/main" src="<%=request.getContextPath()%>/js/vendor/require.js"></script>
     </head>
     <body class="theme-default" id="notFound" >
         <!--[if lt IE 7]>
@@ -41,18 +38,9 @@
                     </header>
                     <h1>404 Page Not Found</h1>
                     <p>Sorry, the page you have requested was not found.</p>
-                    <p class="login-note"><a href="" id="back-btn" title="" class="btn btn-primary">Go Back</a></p>
                 </div>
             </div>
         </div>
 
-        <script>
-            var backBtn = document.getElementById('back-btn');
-            backBtn.addEventListener('click', function() {
-                window.history.back();
-            }, true)
-        </script>
-
-        <script data-main="js/main" src="<%=request.getContextPath()%>/js/vendor/require.js"></script>
     </body>
 </html>

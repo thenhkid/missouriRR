@@ -81,12 +81,13 @@ public class CustomAuthenticationHandler extends SimpleUrlAuthenticationSuccessH
                 availModules = usermanager.getUsedModulesByUser(programId, userDetails.getId(), userDetails.getRoleId());
                
                 if(!availModules.isEmpty()) {
-                    programModules = new String[availModules.size()][2];
+                    programModules = new String[availModules.size()][3];
                     int index = 0;
                     for(userProgramModules module : availModules) {
                         modules moduleDetails = programmanager.getProgramModuleById(module.getModuleId());
                         programModules[index][0] = moduleDetails.getModuleName();
                         programModules[index][1] = moduleDetails.getDisplayName();
+                        programModules[index][2] = moduleDetails.getLinkIcon();
                         index++;
                     }
                 }

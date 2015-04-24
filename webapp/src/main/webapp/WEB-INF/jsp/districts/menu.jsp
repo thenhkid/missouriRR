@@ -1,9 +1,12 @@
 
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<aside class="secondary">
-    <nav class="secondary-nav" role="navigation">
-        <ul class="nav nav-pills nav-stacked" role="menu">
+
+
+<aside class="secondary"  style="margin-left:10px;">
+    <div class="panel">
+      <div class="panel-body">
+          <ul class="nav nav-pills nav-stacked" role="menu">
             <c:choose>
                 <c:when test="${param['page'] == 'districtlist'}">
                     <c:forEach var="entity" items="${entities}">
@@ -13,7 +16,7 @@
                     </c:forEach>
                 </c:when>
             </c:choose>
-            
-        </ul>
-    </nav>
+          </ul>
+      </div>
+    </div>
 </aside>
