@@ -18,7 +18,6 @@
         <put-attribute name="page-id" value="calendar-id" />
         <put-attribute name="page-section" value="section-dashboard" />
         <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=calendar" />
-        <put-attribute name="menu" value="/WEB-INF/jsp/districts/menu.jsp?page=calendar" />
         <put-attribute name="actions" value="/WEB-INF/jsp/calendar/actionBar.jsp?page=calendar" />
         <put-attribute name="body" value="/WEB-INF/jsp/calendar/calendar.jsp" />
         <put-attribute name="jscript" value="/dspResources/js/calendar/main.js" />
