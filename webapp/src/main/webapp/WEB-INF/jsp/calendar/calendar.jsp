@@ -8,7 +8,7 @@
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags" %>
 
 
-<div class="main clearfix" role="main">
+<div class="main clearfix full-width" role="main">
     <div class="col-md-12">
         <section class="panel panel-default">
             <div class="panel-heading" style="background-color:#ffffff;">
