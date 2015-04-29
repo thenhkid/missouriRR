@@ -9,16 +9,18 @@ require.config({
         'sprintf': '../vendor/sprintf',
         'moment': '../vendor/moment',
         'calendar': '../calendar/calendar',
-        'underscore': '../calendar/underscore-min'
+        'underscore': '../calendar/underscore-min',
+        'simplecolorpicker': '../calendar/jquery.simplecolorpicker'
     },
     shim: {
         'bootstrap': ['jquery'],
         'responsive-tables': ['jquery'],
-        'calendar': ['jquery', 'underscore']
+        'calendar': ['jquery', 'underscore'],
+        'simplecolorpicker': ['jquery','bootstrap']
     }
 });
 
-define(['jquery', 'moment', 'bootstrap', 'responsive-tables', 'mediaModal', 'overlay', 'calendar'], function($, moment) {
+define(['jquery', 'moment', 'bootstrap', 'responsive-tables', 'mediaModal', 'overlay', 'calendar', 'simplecolorpicker'], function($, moment) {
 
     $.ajaxSetup({
         cache: false
@@ -113,6 +115,18 @@ define(['jquery', 'moment', 'bootstrap', 'responsive-tables', 'mediaModal', 'ove
         $(document).on("click", ".cal-month-day", function() {
             $('.cal-month-day').popover('destroy');
         });
+        
+        $('select[name="colorpicker-picker-longlist"]').simplecolorpicker();
+        
+        $('#eventTypeManagerModel').on('show.bs.modal', function (e) {
+            //alert('load modal table with js now');
+        });
+        
+        $(document).on("click", "#addNewEventTypeButton", function() {
+            $('#newEventTypeForm').show();
+        });
+        
+        //eventTypesTable
         
     });
 

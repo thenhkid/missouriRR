@@ -320,7 +320,7 @@
   margin-bottom: 2px;
   //-webkit-box-shadow: inset 0px 0px 5px 0px rgba(0, 0, 0, 0.4);
   //box-shadow: inset 0px 0px 5px 0px rgba(0, 0, 0, 0.4);
-  border-radius: 8px;
+  border-radius: 2px;
   border: 1px solid #000000;
   clear:both;
   font-size: 12px;
@@ -526,4 +526,12 @@ a.cal-event-week {
 }
 .badge-important {
   background-color: #b94a48;
+}
+
+.colorLegend dt {
+    width:40px;
+}
+
+.colorLegend dd {
+    margin-left:60px;
 }

@@ -48,6 +48,7 @@
 .simplecolorpicker.inline {
   display: inline-block;
   padding: 6px 0;
+  float: right;
 }
 
 .simplecolorpicker span {

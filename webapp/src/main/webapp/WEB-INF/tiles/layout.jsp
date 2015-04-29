@@ -26,6 +26,9 @@
     <!%-- Calendar CSS --%>
     <link rel="stylesheet" href="<%=request.getContextPath()%>/dspResources/css/calendar/calendar.css">
     
+    <!%-- Color picker CSS --%>
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/dspResources/css/calendar/jquery.simplecolorpicker.css">
+    
     <jsp:text><![CDATA[<!--[if lte IE 9]>]]></jsp:text>
             <link rel="stylesheet" href="<%=request.getContextPath()%>/dspResources/css/ui/ie.css">
     <jsp:text><![CDATA[<![endif]-->]]></jsp:text>
