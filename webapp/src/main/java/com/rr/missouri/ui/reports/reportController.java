@@ -53,7 +53,7 @@ public class reportController {
         
         for(programOrgHierarchy hierarchy : orgHierarchyList) {
             if(hierarchy.getDspPos() == 1) {
-                List<programHierarchyDetails> hierarchyItems = hierarchymanager.getProgramHierarchyItems(hierarchy.getId());
+                List<programHierarchyDetails> hierarchyItems = hierarchymanager.getProgramHierarchyItems(hierarchy.getId(), userDetails.getId());
                 hierarchy.setProgramHierarchyDetails(hierarchyItems);
             }
         }

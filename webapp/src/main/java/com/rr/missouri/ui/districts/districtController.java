@@ -65,7 +65,7 @@ public class districtController {
         mav.addObject("topLevelName", topLevel.getName());
         
         /* Get a list of top level entities */
-        List<programHierarchyDetails> entities = hierarchymanager.getProgramHierarchyItems(topLevel.getId());
+        List<programHierarchyDetails> entities = hierarchymanager.getProgramHierarchyItems(topLevel.getId(), userDetails.getId());
         
         mav.addObject("entities", entities);
         mav.addObject("selEntity", entities.get(0).getId());
@@ -92,7 +92,9 @@ public class districtController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/districts/districtList");
         
-        List districts = hierarchymanager.getProgramOrgHierarchyItems(programId, 2, countyId);
+        User userDetails = (User) session.getAttribute("userDetails");
+        
+        List districts = hierarchymanager.getProgramOrgHierarchyItems(programId, 2, countyId, userDetails.getId());
         
         List<district> districtList = new ArrayList<district>();
         

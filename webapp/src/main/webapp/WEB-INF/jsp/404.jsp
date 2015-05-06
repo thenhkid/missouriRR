@@ -10,14 +10,10 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-        <!-- main css compiled from main.less -->
+        <!%-- main css compiled from main.less --%>
         <link rel="stylesheet" href="<%=request.getContextPath()%>/dspResources/css/ui/main.css?v=2">
 
-        <!-- default theme
-        <link rel="stylesheet" href="css/themes/theme-default.css">
-        -->
-
-        <!-- Health-e-link theme -->
+        <!%-- RR theme --%>
         <link rel="stylesheet" href="<%=request.getContextPath()%>/dspResources/css/ui/themes/theme-rr.css">
 
 
@@ -31,10 +27,12 @@
         <![endif]-->
 
         <div class="wrap">
-            <div class="login-container notFound">
-                <div class="login">
-                    <header class="login-header">
-                        <div class="login-header-content"><span class="logo ir" alt="{Company Name Logo}">Comany Name</span></div>
+            <div class="login-container notFound"  style="width:500px; margin-left: -250px;">
+                <div class="login clearfix">
+                    <header class="login-header" role="banner">
+                        <div class="login-header-content">
+                           <span class="h2 small" style="color:#FFFFFF">MO Healthy Schools Monitoring System</span>
+                        </div>
                     </header>
                     <h1>404 Page Not Found</h1>
                     <p>Sorry, the page you have requested was not found.</p>
