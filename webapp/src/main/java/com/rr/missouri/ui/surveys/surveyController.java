@@ -45,6 +45,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/district/activitylog")
 public class surveyController {
     
+   private static Integer moduleId = 11;
+    
    @Autowired
    private clientManager clientmanager;
    

@@ -23,11 +23,13 @@
                     </a>
                 </li>
                 <c:forEach var="module" items="${sessionScope.availModules}">
-                    <li role="menuitem" class="${param['sect'] == module[0] ? 'active' : 'none'}">
-                        <a href="<c:url value='/${module[0]}' />" title="${module[1]}">
-                            <i class="fa fa-2x ${module[2]} fa-fw"></i>${module[1]}
-                        </a>
-                    </li>
+                    <c:if test="${module[3] != 11}"><%-- Don't show the survey module --%>
+                        <li role="menuitem" class="${param['sect'] == module[0] ? 'active' : 'none'}">
+                            <a href="<c:url value='/${module[0]}' />" title="${module[1]}">
+                                <i class="fa fa-2x ${module[2]} fa-fw"></i>${module[1]}
+                            </a>
+                        </li>
+                    </c:if>
                 </c:forEach>
             </ul>
             <ul class="nav navbar-nav navbar-right" id="secondary-nav">
