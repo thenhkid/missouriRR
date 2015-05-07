@@ -8,8 +8,12 @@ package com.rr.missouri.ui.districts;
 import com.registryKit.hierarchy.hierarchyManager;
 import com.registryKit.hierarchy.programHierarchyDetails;
 import com.registryKit.hierarchy.programOrgHierarchy;
+import com.registryKit.survey.surveyManager;
+import com.registryKit.survey.surveys;
 import com.registryKit.user.User;
+import com.rr.missouri.ui.security.decryptObject;
 import com.rr.missouri.ui.security.encryptObject;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,11 +42,18 @@ public class districtController {
     @Autowired
     private hierarchyManager hierarchymanager;
     
+    @Autowired
+    private surveyManager surveymanager;
+    
     @Value("${programId}")
     private Integer programId;
     
     @Value("${topSecret}")
-   private String topSecret;
+    private String topSecret;
+    
+    private String selCountyName;
+    private Integer selCountyId = 0;
+    private String selDistrictName;
     
     /**
      * The '' request will display the list of districts.
@@ -68,7 +79,14 @@ public class districtController {
         List<programHierarchyDetails> entities = hierarchymanager.getProgramHierarchyItems(topLevel.getId(), userDetails.getId());
         
         mav.addObject("entities", entities);
-        mav.addObject("selEntity", entities.get(0).getId());
+        
+        if(selCountyId == 0) {
+            mav.addObject("selEntity", entities.get(0).getId());
+        }
+        else {
+            mav.addObject("selEntity", selCountyId);
+        }
+        
         
         /* Get a list of districts for the first entity */
         mav.addObject("districts", "");
@@ -129,6 +147,79 @@ public class districtController {
         }
        
         mav.addObject("districts", districtList);
+        
+        /* Get the select county name */
+        programHierarchyDetails countyDetails = hierarchymanager.getProgramHierarchyItemDetails(countyId);
+        selCountyId = countyId;
+        selCountyName = countyDetails.getName();
+        
+        return mav;
+    }
+    
+    /**
+     * The 'activityLog' GET request will populate the activity log page for the selected district.
+     * 
+     * @param i The encrypted id of the selected district
+     * @param v
+     * @param session
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "activityLog", method = RequestMethod.GET)
+    public ModelAndView districtActivityLog(@RequestParam String i, @RequestParam String v, HttpSession session) throws Exception {
+        
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/activityLogs");
+        
+        mav.addObject("iparam", URLEncoder.encode(i,"UTF-8"));
+        mav.addObject("vparam", URLEncoder.encode(v,"UTF-8"));
+        
+        /* Decrypt the url */
+        decryptObject decrypt = new decryptObject();
+        
+        Object obj = decrypt.decryptObject(i, v);
+        
+        String[] result = obj.toString().split((","));
+        
+        int districtId = Integer.parseInt(result[0].substring(4));
+        
+        /* Get a list of surveys  */
+        List<surveys> surveys = surveymanager.getProgramSurveys(programId);
+        mav.addObject("surveys", surveys);
+        
+        mav.addObject("selSurvey", surveys.get(0).getId());
+        mav.addObject("selCountyName", selCountyName);
+        
+        programHierarchyDetails districtDetails = hierarchymanager.getProgramHierarchyItemDetails(districtId);
+        selDistrictName = districtDetails.getName();
+        mav.addObject("selDistrictName", selDistrictName);
+        
+        return mav;
+        
+    }
+    
+    
+    /**
+     * The 'getDistrictActivityLog' GET request will return the list of activity logs based on the selected district/survey.
+     * 
+     * @param request
+     * @param response
+     * @param session
+     * @param searchString  The string containing the list of search parameters.
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "getDistrictActivityLog", method = RequestMethod.GET)
+    @ResponseBody public ModelAndView getDistrictActivityLog(HttpServletRequest request, HttpServletResponse response, HttpSession session, @RequestParam(value = "surveyId", required = false) Integer surveyId) throws Exception {
+        
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/districts/activityLogList");
+        
+        User userDetails = (User) session.getAttribute("userDetails");
+        
+        
+       
+        mav.addObject("activityLogs", "");
         
         return mav;
     }

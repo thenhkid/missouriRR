@@ -10,10 +10,11 @@
 
 <div class="main clearfix" role="main">
     <div class="col-md-12">
+        <ul class="breadcrumb" style="background-color: #ffffff;">
+            <li><a href="javascript:void('0');" id="countyName">Districts</a> <span class="divider"></span></li>
+            <li class="active">Districts</li>
+        </ul>
         <section class="panel panel-default">
-            <div class="panel-heading" style="background-color:#ffffff;">
-                <h3 class="panel-title"><Strong>Districts</Strong></h3>
-            </div>
             <div class="panel-body">
                 <div class="form-container scrollable" id="districtList"></div>
             </div>

@@ -9,30 +9,32 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 
-<table class="table table-striped table-hover table-default" <c:if test="${not empty districts}">id="dataTable"</c:if>>
+<table class="table table-striped table-hover table-default" <c:if test="${not empty activityLogs}">id="dataTable"</c:if>>
     <thead>
         <tr>
-            <th scope="col">District Name</th>
-            <th scope="col" class="center-text">Last Survey Taken</th>
-            <th scope="col" class="center-text">Taken On</th>
+            <th scope="col" class="center-text">Date Submitted</th>
+            <th scope="col" class="center-text">Submitted By</th>
+            <th scope="col" class="center-text">Submitted</th>
+            <th scope="col">School(s)</th>
+            <th scope="col">Content Area - Criteria</th>
             <th scope="col" class="center-text"></th>
         </tr>
     </thead>
    <tbody>
     <c:choose>
-        <c:when test="${not empty districts}">
-            <c:forEach var="district" items="${districts}">
+        <c:when test="${not empty activityLogs}">
+            <c:forEach var="activityLog" items="${activityLogs}">
                 <tr>
+                    <td class="center-text"><fmt:formatDate value="${activityLog.dateSubmitted}" type="date" pattern="M/dd/yyyy h:mm a" /></td>
                     <td>
-                        ${district.districtName}
+                        ${activityLog.submittedBy}
                     </td>
-                    <td>
-                        ${district.lastSurveyTaken}
-                    </td>
-                    <td class="center-text"><fmt:formatDate value="${district.lastSurveyTakenOn}" type="date" pattern="M/dd/yyyy h:mm a" /></td>
-                    <td class="actions-col">
-                        <a href="/districts/activityLog?i=${district.encryptedId}&v=${district.encryptedSecret}" class="btn btn-link" title="View this District Activity Log" role="button">
-                            Go to District Activity Log
+                    <td class="center-text"></td>
+                    <td></td>
+                    <td></td>
+                    <td class="actions-col"  class="center-text">
+                        <a href="" class="btn btn-link" title="" role="button">
+                            View Entry
                             <span class="glyphicon glyphicon-play-circle"></span>
                         </a>
                     </td>
@@ -40,7 +42,7 @@
             </c:forEach>
         </c:when>
         <c:otherwise>
-            <tr><td colspan="8" class="center-text">There are currently no districts set up for this county.</td></tr>
+            <tr><td colspan="8" class="center-text">There have been no entries for the selected survey.</td></tr>
         </c:otherwise>
     </c:choose>
     </tbody>
