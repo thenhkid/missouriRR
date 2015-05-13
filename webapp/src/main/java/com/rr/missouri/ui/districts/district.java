@@ -6,6 +6,7 @@
 package com.rr.missouri.ui.districts;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -20,6 +21,8 @@ public class district {
     
     private String encryptedId = null;
     private String encryptedSecret = null;
+    
+    public List<school> schoolList;
 
     public String getDistrictName() {
         return districtName;
@@ -68,6 +71,13 @@ public class district {
     public void setEncryptedSecret(String encryptedSecret) {
         this.encryptedSecret = encryptedSecret;
     }
-    
+
+    public List<school> getSchoolList() {
+        return schoolList;
+    }
+
+    public void setSchoolList(List<school> schoolList) {
+        this.schoolList = schoolList;
+    }
     
 }

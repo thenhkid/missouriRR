@@ -13,18 +13,38 @@ require(['./main'], function () {
             $('.alert').delay(2000).fadeOut(1000);
         }
         
-        //Show the modification field modal
-        $('.newSurvey').click(function() {
+        $(document).on('click', '#createNewEntry', function() {
+            var surveyId = $(this).attr('rel'); 
             
             $.ajax({
-                url: 'surveys/getAvailableSurveys.do',
+                url: '/districts/getDistrictList.do',
+                data: {'surveyId':surveyId},
                 type: "GET",
                 success: function(data) {
-                    $("#surveyModal").html(data);
+                    $('#districtSelectModal').html(data);
                 }
             });
             
-        });
+         });
+         
+         /* Submit the district selection */
+         $(document).on('click', '#submitDistrictSelect', function() {
+            
+             var districts = [];
+            
+            $('.entitySelect').each(function() {
+                if($(this).is(":checked")) {
+                     districts.push($(this).val());
+                }
+            });
+            var s = districts.join(',');
+            
+            $('#selDistricts').val(s);
+            
+            $('#districtSelectForm').submit();
+             
+         });
+        
         
         /* Function to check if engagments are required */
         $(document).on('change', '.startSurvey', function() {

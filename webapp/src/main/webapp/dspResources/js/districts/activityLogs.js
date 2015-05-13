@@ -25,6 +25,34 @@ require(['./main'], function () {
          
          $(document).on('click', '#createNewEntry', function() {
             var surveyId = $('td.active.survey').children('a').attr('rel'); 
+            
+            $.ajax({
+                url: 'getDistrictList.do',
+                data: {'surveyId':surveyId},
+                type: "GET",
+                success: function(data) {
+                    $('#districtSelectModal').html(data);
+                }
+            });
+            
+         });
+         
+         /* Submit the district selection */
+         $(document).on('click', '#submitDistrictSelect', function() {
+            
+             var districts = [];
+            
+            $('.entitySelect').each(function() {
+                if($(this).is(":checked")) {
+                     districts.push($(this).val());
+                }
+            });
+            var s = districts.join(',');
+            
+            $('#selDistricts').val(s);
+            
+            $('#districtSelectForm').submit();
+             
          });
         
     });

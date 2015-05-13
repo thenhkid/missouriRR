@@ -54,6 +54,18 @@ require(['./main'], function () {
         /* Function to process the COMPLETE button */
         $(document).on('click', '.completeSurvey', function() {
             var errorsFound = 0;
+           
+            /* Make sure at lease one school is checked */
+            var schools = [];
+            $('.selectedSchools').each(function() {
+                if($(this).is(":checked")) {
+                     schools.push($(this).val());
+                }
+            });
+            var s = schools.join(',');
+            
+            $('#entityList').val(s);
+            
             errorsFound = checkSurveyFields();
             
             if (errorsFound == 0) {
@@ -61,6 +73,25 @@ require(['./main'], function () {
                 $('#lastQNumAnswered').val(1);
                 $("#survey").submit();
             }
+        });
+        
+        /* Function to process the SAVE button */
+        $(document).on('click', '.saveSurvey', function() {
+            
+            /* Make sure at lease one school is checked */
+            var schools = [];
+            $('.selectedSchools').each(function() {
+                if($(this).is(":checked")) {
+                     schools.push($(this).val());
+                }
+            });
+            var s = schools.join(',');
+            
+            $('#entityList').val(s);
+            
+            $('#action').val("save");
+            $('#lastQNumAnswered').val(1);
+            $("#survey").submit();
         });
         
         
@@ -74,8 +105,12 @@ require(['./main'], function () {
     $('.alert-danger').html("");
     $('.alert-danger').hide();
     
+    //Make sure at least one school is selcted
+    if($('#entityList').val() == "") {
+        $('#errorMsg_schools').html("At least one school must be selected.");
+        $('#errorMsg_schools').show();
+    }
     
-
     //Look at all required fields.
     $('.required').each(function() {
         var qId = $(this).attr('rel');
@@ -84,6 +119,7 @@ require(['./main'], function () {
         
         //Text Box
         if(qType == 3) {
+           
             if ($(this).val() === '') {
                 
                 var requiredMsg = $('#requiredMsg'+qId).val();

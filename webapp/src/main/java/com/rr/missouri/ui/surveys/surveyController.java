@@ -7,23 +7,27 @@ package com.rr.missouri.ui.surveys;
 
 import com.registryKit.client.clientManager;
 import com.registryKit.client.engagementManager;
-import com.registryKit.client.engagements;
-import com.registryKit.client.storageClientAddressInfo;
-import com.registryKit.client.storageClients;
+import com.registryKit.hierarchy.hierarchyManager;
+import com.registryKit.hierarchy.programHierarchyDetails;
 import com.registryKit.survey.SurveyPages;
 import com.registryKit.survey.SurveyQuestionChoices;
 import com.registryKit.survey.SurveyQuestions;
-import com.registryKit.survey.patientCompletedSurveys;
+import com.registryKit.survey.submittedSurveys;
 import com.registryKit.survey.survey;
 import com.registryKit.survey.surveyManager;
 import com.registryKit.survey.surveyQuestionAnswers;
 import com.registryKit.survey.surveys;
 import com.registryKit.user.User;
+import com.rr.missouri.ui.districts.district;
+import com.rr.missouri.ui.districts.school;
 import com.rr.missouri.ui.security.decryptObject;
-import java.net.URLEncoder;
+import com.rr.missouri.ui.security.encryptObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,16 +37,16 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 /**
  *
  * @author chadmccue
  */
 @Controller
-@RequestMapping("/district/activitylog")
+@RequestMapping("/surveys")
 public class surveyController {
     
    private static Integer moduleId = 11;
@@ -55,6 +59,9 @@ public class surveyController {
    
    @Autowired
    private engagementManager engagementmanager;
+   
+   @Autowired
+   private hierarchyManager hierarchymanager;
     
    @Value("${programId}")
    private Integer programId;
@@ -68,6 +75,8 @@ public class surveyController {
    /* Keep track of visited pages */
    private static List<Integer> seenPages;
    
+   private static List<surveys> surveys;
+   
    /**
      * The '' request will display the list of taken surveys.
      *
@@ -77,75 +86,102 @@ public class surveyController {
      * @throws Exception
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ModelAndView listSurveys(@RequestParam String i, @RequestParam String v, HttpSession session) throws Exception {
+    public ModelAndView listSubmittedSurveys(@RequestParam(value = "i", required = false) String i, @RequestParam(value = "v", required = false) String v, HttpSession session) throws Exception {
         
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/surveys");
         
-        mav.addObject("iparam", URLEncoder.encode(i,"UTF-8"));
-        mav.addObject("vparam", URLEncoder.encode(v,"UTF-8"));
+        /* Get a list of surveys  */
+        List<surveys> surveyList = surveyManager.getProgramSurveys(programId);
         
-        /* Decrypt the url */
-        decryptObject decrypt = new decryptObject();
+        encryptObject encrypt = new encryptObject();
+        Map<String,String> map;
         
-        Object obj = decrypt.decryptObject(i, v);
+        for(surveys survey : surveyList) {
+            //Encrypt the use id to pass in the url
+            map = new HashMap<String,String>();
+            map.put("id",Integer.toString(survey.getId()));
+            map.put("topSecret",topSecret);
+
+            String[] encrypted = encrypt.encryptObject(map);
+
+            survey.setEncryptedId(encrypted[0]);
+            survey.setEncryptedSecret(encrypted[1]);
+
+        }
+        surveys = surveyList;
+        mav.addObject("surveys", surveyList);
         
-        String[] result = obj.toString().split((","));
+        Integer surveyId;
         
-        int clientId = Integer.parseInt(result[0].substring(4));
+        /* Get the submitted surveys for the selected survey type */
+        if(!"".equals(i) && i != null && !"".equals(v) && v != null) {
+            /* Decrypt the url */
+            decryptObject decrypt = new decryptObject();
+
+            Object obj = decrypt.decryptObject(i, v);
+
+            String[] result = obj.toString().split((","));
+
+            surveyId = Integer.parseInt(result[0].substring(4));
+
+        }
+        else {
+            surveyId = surveyList.get(0).getId();
+        }
+        mav.addObject("selSurvey", surveyId);
         
-        storageClients clientDetails = clientmanager.getClientDetails(clientId);
-        storageClientAddressInfo addressInfo = clientmanager.getClientAddressInfo(clientId);
+        surveys surveyDetails = surveyManager.getSurveyDetails(surveyId);
+        mav.addObject("surveyName", surveyDetails.getTitle());
         
+        /* Get a list of completed surveys the logged in user has access to */
+        User userDetails = (User) session.getAttribute("userDetails");
         
-        /* Get a list of completed surveys not associated to enagements */
-        List<patientCompletedSurveys> completedSurveys = surveyManager.getPatientSurveysNoEngagement(clientId, programId);
-        mav.addObject("completedSurveys", completedSurveys);
+        List<submittedSurveys> submittedSurveys = surveyManager.getEntitySurveys(userDetails.getId());
         
-        /* Get a list of completed surveys associated to engagements */
-        List<engagements> engagementSurveys = new ArrayList<engagements>();
-        
-        List<engagements> engagements = engagementmanager.getEngagements(clientId, programId);
-        
-        if(engagements != null && engagements.size() > 0) {
-            for(engagements engagement : engagements) {
+        /* Need to get the selected entities */
+        if(submittedSurveys != null && !submittedSurveys.isEmpty()) {
+            
+            for(submittedSurveys survey : submittedSurveys) {
                 
-                List<patientCompletedSurveys> surveys = surveyManager.getPatientEngagementSurveys(clientId, engagement.getId());
+                //Encrypt the use id to pass in the url
+                map = new HashMap<String,String>();
+                map.put("id",Integer.toString(survey.getId()));
+                map.put("topSecret",topSecret);
+
+                String[] encrypted = encrypt.encryptObject(map);
+
+                survey.setEncryptedId(encrypted[0]);
+                survey.setEncryptedSecret(encrypted[1]);
                 
-                if(surveys != null && surveys.size() > 0) {
-                    engagement.setEngagementSurveys(surveys);
-                    engagementSurveys.add(engagement);
+                List<Integer> selectedEntities = surveyManager.getSubmittedSurveyEntities(survey.getId(), userDetails.getId());
+                
+                if(selectedEntities != null && !selectedEntities.isEmpty()) {
+                    
+                    List<String> entityList = new ArrayList<String>();
+                    
+                    for(Integer entityId : selectedEntities) {
+                        programHierarchyDetails entityDetails = hierarchymanager.getProgramHierarchyItemDetails(entityId);
+                        
+                        entityList.add(entityDetails.getName());
+                    }
+                    
+                    survey.setSelectedEntities(entityList);
+                    
                 }
+                
             }
-            mav.addObject("engagementSurveys", engagementSurveys);
+            
         }
         
-        return mav;
-    }
-    
-    /**
-     * The 'getAvailableSurveys.do' GET request will return the list of available surveys for the program.
-     * 
-      * @param session
-     * @return
-     * @throws Exception 
-     */
-    @RequestMapping(value = "getAvailableSurveys.do", method = RequestMethod.GET)
-    public @ResponseBody ModelAndView getAvailableSurveys(HttpSession session) throws Exception {
-        
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("/clients/survey/startASurvey");
-        
-        /* Get a list of available surveys */
-        List<surveys> availableSurveys = surveyManager.getProgramSurveys(programId);
-       
-        mav.addObject("availableSurveys", availableSurveys);
+        mav.addObject("submittedSurveys", submittedSurveys);
         
         return mav;
     }
     
+    
     /**
-     * The '/takeSurvey' GET request will build out the survey and display the first page of the survey.
+     * The '/startSurvey' GET request will build out the survey and display the first page of the survey.
      * 
      * @param i The encrypted client id
      * @param v The encrypted decryption key
@@ -155,28 +191,18 @@ public class surveyController {
      * @return
      * @throws Exception 
      */
-    @RequestMapping(value = "/takeSurvey", method = RequestMethod.GET) 
-    public ModelAndView startSurvey(@RequestParam String i, @RequestParam String v, @RequestParam Integer c, @RequestParam String s, HttpSession session) throws Exception {
+    @RequestMapping(value = "/startSurvey", method = RequestMethod.POST) 
+    public ModelAndView startSurvey(@RequestParam Integer c, @RequestParam String s, @RequestParam(value = "selectedEntities", required = false) List<String> selectedEntities,HttpSession session) throws Exception {
         
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/takeSurvey");
+        mav.addObject("surveys", surveys);
         
         //Set the survey answer array to get ready to hold data
         questionAnswers = new CopyOnWriteArrayList<surveyQuestionAnswers>();
         seenPages = new ArrayList<Integer>();
         
-        /* Decrypt the url */
-        decryptObject decrypt = new decryptObject();
-        
-        Object obj = decrypt.decryptObject(i, v);
-        
-        String[] result = obj.toString().split((","));
-        
-        int clientId = Integer.parseInt(result[0].substring(4));
-        
-        storageClients clientDetails = clientmanager.getClientDetails(clientId);
-        storageClientAddressInfo addressInfo = clientmanager.getClientAddressInfo(clientId);
-        
+        int clientId = 0;
         
         Integer surveyId = Integer.parseInt(s);
         
@@ -199,7 +225,7 @@ public class surveyController {
                 survey.setPrevButton(surveyDetails.getPrevButtonText());
                 survey.setNextButton(surveyDetails.getNextButtonText());
                 survey.setSaveButton(surveyDetails.getDoneButtonText());
-                survey.setCompletedSurveyId(c);
+                survey.setSubmittedSurveyId(c);
                 
                 /* Get the pages */
                 List<SurveyPages> surveyPages = surveyManager.getSurveyPages(surveyId, false, 0, 0, 0);
@@ -217,12 +243,201 @@ public class surveyController {
             
         }
         
-        mav.addObject("iparam", URLEncoder.encode(i,"UTF-8"));
-        mav.addObject("vparam", URLEncoder.encode(v,"UTF-8"));
+        User userDetails = (User) session.getAttribute("userDetails");
+        
+        /* Get a list of available schools for the selected districts */
+        if(selectedEntities != null && !selectedEntities.isEmpty() && !"".equals(selectedEntities)) {
+            
+            encryptObject encrypt = new encryptObject();
+            Map<String,String> map;
+            
+            List<school> schoolList = new ArrayList<school>();
+            List<district> districtList = new ArrayList<district>();
+            
+            for(String entity : selectedEntities) {
+                
+                Integer entityId = Integer.parseInt(entity);
+                
+                district district = new district();
+                district.setDistrictId(entityId);
+                
+                programHierarchyDetails districtDetails = hierarchymanager.getProgramHierarchyItemDetails(entityId);
+                district.setDistrictName(districtDetails.getName());
+                
+                List schools = hierarchymanager.getProgramOrgHierarchyItems(programId, 3, entityId, userDetails.getId());
+        
+                if(!schools.isEmpty() && schools.size() > 0) {
+
+                    for(ListIterator iter = schools.listIterator(); iter.hasNext(); ) {
+
+                        Object[] row = (Object[]) iter.next();
+
+                        school school = new school();
+                        school.setSchoolId(Integer.parseInt(row[0].toString()));
+                        school.setSchoolName(row[1].toString());
+                       
+                        //Encrypt the use id to pass in the url
+                        map = new HashMap<String,String>();
+                        map.put("id",Integer.toString(Integer.parseInt(row[0].toString())));
+                        map.put("topSecret",topSecret);
+
+                        String[] encrypted = encrypt.encryptObject(map);
+
+                        school.setEncryptedId(encrypted[0]);
+                        school.setEncryptedSecret(encrypted[1]);
+
+                        schoolList.add(school);
+
+                     }
+                    
+                    district.setSchoolList(schoolList);
+
+                }
+                
+                districtList.add(district);
+                
+            }
+            
+            mav.addObject("selDistricts", districtList);
+            
+        }
+        
+        mav.addObject("selSurvey", surveyId);
+        mav.addObject("selectedEntities", selectedEntities.toString().replace("[", "").replace("]", ""));
+        
         mav.addObject("qNum", 0);
         
         return mav;
     }
+    
+    
+    /**
+     * The '/editSurvey' GET request will build out the survey and display the first page of the survey.
+     * 
+     * @param i The encrypted survey id
+     * @param v The encrypted decryption key
+     * 
+     * @param session
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/editSurvey", method = RequestMethod.GET) 
+    public ModelAndView editSurvey(@RequestParam String i, @RequestParam String v,HttpSession session) throws Exception {
+        
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/takeSurvey");
+        mav.addObject("surveys", surveys);
+        
+        
+        //Set the survey answer array to get ready to hold data
+        questionAnswers = new CopyOnWriteArrayList<surveyQuestionAnswers>();
+        seenPages = new ArrayList<Integer>();
+        
+        int clientId = 0;
+        
+        /* Decrypt the url */
+        decryptObject decrypt = new decryptObject();
+        
+        Object obj = decrypt.decryptObject(i, v);
+        
+        String[] result = obj.toString().split((","));
+        
+        int submittedSurveyId = Integer.parseInt(result[0].substring(4));
+        
+        /* Get the survey details */
+        submittedSurveys submittedSurveyDetails = surveyManager.getSubmittedSurvey(submittedSurveyId);
+        
+            
+        surveys surveyDetails = surveyManager.getSurveyDetails(submittedSurveyDetails.getSurveyId());
+        
+        User userDetails = (User) session.getAttribute("userDetails");
+
+        survey survey = new survey();
+        survey.setClientId(clientId);
+        survey.setSurveyId(submittedSurveyDetails.getSurveyId());
+        survey.setSurveyTitle(surveyDetails.getTitle());
+        survey.setPrevButton(surveyDetails.getPrevButtonText());
+        survey.setNextButton(surveyDetails.getNextButtonText());
+        survey.setSaveButton(surveyDetails.getDoneButtonText());
+        survey.setSubmittedSurveyId(submittedSurveyId);
+        survey.setEntityIds(surveyManager.getSubmittedSurveyEntities(submittedSurveyId, userDetails.getId()));
+
+        /* Get the pages */
+        List<SurveyPages> surveyPages = surveyManager.getSurveyPages(submittedSurveyDetails.getSurveyId(), false, 0, 0, 0);
+        SurveyPages currentPage = surveyManager.getSurveyPage(submittedSurveyDetails.getSurveyId(), true, 1, clientId, 0, 0, submittedSurveyId);
+        survey.setPageTitle(currentPage.getPageTitle());
+        survey.setSurveyPageQuestions(currentPage.getSurveyQuestions());
+        survey.setTotalPages(surveyPages.size());
+
+        mav.addObject("survey", survey);
+        mav.addObject("surveyPages", surveyPages);
+       
+        
+        List<Integer> selectedEntities = surveyManager.getSurveyEntities(submittedSurveyId);
+        
+        /* Get a list of available schools for the selected districts */
+        if(selectedEntities != null && !selectedEntities.isEmpty() && !"".equals(selectedEntities)) {
+            
+            encryptObject encrypt = new encryptObject();
+            Map<String,String> map;
+            
+            List<school> schoolList = new ArrayList<school>();
+            List<district> districtList = new ArrayList<district>();
+            
+            for(Integer entityId : selectedEntities) {
+                
+                district district = new district();
+                district.setDistrictId(entityId);
+                
+                programHierarchyDetails districtDetails = hierarchymanager.getProgramHierarchyItemDetails(entityId);
+                district.setDistrictName(districtDetails.getName());
+                
+                List schools = hierarchymanager.getProgramOrgHierarchyItems(programId, 3, entityId, userDetails.getId());
+        
+                if(!schools.isEmpty() && schools.size() > 0) {
+
+                    for(ListIterator iter = schools.listIterator(); iter.hasNext(); ) {
+
+                        Object[] row = (Object[]) iter.next();
+
+                        school school = new school();
+                        school.setSchoolId(Integer.parseInt(row[0].toString()));
+                        school.setSchoolName(row[1].toString());
+                       
+                        //Encrypt the use id to pass in the url
+                        map = new HashMap<String,String>();
+                        map.put("id",Integer.toString(Integer.parseInt(row[0].toString())));
+                        map.put("topSecret",topSecret);
+
+                        String[] encrypted = encrypt.encryptObject(map);
+
+                        school.setEncryptedId(encrypted[0]);
+                        school.setEncryptedSecret(encrypted[1]);
+
+                        schoolList.add(school);
+
+                     }
+                    
+                    district.setSchoolList(schoolList);
+
+                }
+                
+                districtList.add(district);
+                
+            }
+            
+            mav.addObject("selDistricts", districtList);
+            
+        }
+        
+        mav.addObject("selSurvey", submittedSurveyDetails.getSurveyId());
+        mav.addObject("selectedEntities", selectedEntities.toString().replace("[", "").replace("]", ""));
+        
+        mav.addObject("qNum", 0);
+        
+        return mav;
+    }
+    
     
     /**
      * The '/takeSurvey' POST request will submit the survey page.
@@ -233,27 +448,29 @@ public class surveyController {
      * @return
      * @throws Exception 
      */
-    @RequestMapping(value = "/takeSurvey", method = RequestMethod.POST)
+    @RequestMapping(value = "/submitSurvey", method = RequestMethod.POST)
     public ModelAndView saveSurveyPage(@ModelAttribute(value = "survey") survey survey, HttpSession session, 
-            RedirectAttributes redirectAttr, @RequestParam String action, @RequestParam String i, @RequestParam String v, @RequestParam Integer goToPage) throws Exception {
+            RedirectAttributes redirectAttr, @RequestParam String action, @RequestParam Integer goToPage, @RequestParam(value = "entityIds", required = false) List<String> entityIds,
+            @RequestParam(value = "selectedDistricts", required = false) List<String> selectedEntities) throws Exception {
         
-        /* Decrypt the url */
-        decryptObject decrypt = new decryptObject();
-
-        Object obj = decrypt.decryptObject(i, v);
-
-        String[] result = obj.toString().split((","));
-
-        int clientId = Integer.parseInt(result[0].substring(4));
-
-        storageClients clientDetails = clientmanager.getClientDetails(clientId);
-        storageClientAddressInfo addressInfo = clientmanager.getClientAddressInfo(clientId);
-
         
         Integer goToQuestion = 0;
         boolean skipToEnd = false;
+        boolean submitted = false;
         
-        if ("next".equals(action) || "done".equals(action)) {
+        
+        if(!"".equals(entityIds) && !entityIds.isEmpty()) {
+            List<Integer> entityIdList = new ArrayList<Integer>();
+            
+            for(String entityId : entityIds) {
+                Integer entityIdasInt = Integer.parseInt(entityId);
+                
+                entityIdList.add(entityIdasInt);
+            }
+            survey.setEntityIds(entityIdList);
+        }
+        
+        if ("next".equals(action) || "done".equals(action) || "save".equals(action)) {
             goToPage = 0;
             Integer lastQuestionSaved = 0;
             List<SurveyQuestions> questions = survey.getSurveyPageQuestions();
@@ -293,6 +510,8 @@ public class surveyController {
                                 goToQuestion = choiceDetails.getSkipToQuestionId();
                             }
                             
+                            questionAnswer.setAnswerOther(question.getQuestionOtherValue());
+                            
                         }
                         else {
                            questionAnswer.setAnswerText(question.getQuestionValue()); 
@@ -310,7 +529,7 @@ public class surveyController {
                 if(questionFound == false) {
                     surveyQuestionAnswers questionAnswer = new surveyQuestionAnswers();
                     
-                    if(question.getAnswerTypeId() == 1) {
+                    if(question.getAnswerTypeId() == 1 && !"".equals(question.getQuestionValue())) {
                         
                         SurveyQuestionChoices choiceDetails = surveyManager.getSurveyQuestionChoice(Integer.parseInt(question.getQuestionValue()));
 
@@ -332,6 +551,8 @@ public class surveyController {
 
                             goToQuestion = choiceDetails.getSkipToQuestionId();
                         }
+                        
+                        questionAnswer.setAnswerOther(question.getQuestionOtherValue());
                         
                     }
                     else {
@@ -373,7 +594,7 @@ public class surveyController {
         NextPage.setPrevButton(survey.getPrevButton());
         NextPage.setNextButton(survey.getNextButton());
         NextPage.setSaveButton(survey.getSaveButton());
-        NextPage.setCompletedSurveyId(survey.getCompletedSurveyId());
+        NextPage.setSubmittedSurveyId(survey.getSubmittedSurveyId());
         
         
         SurveyPages currentPage = null;
@@ -390,7 +611,7 @@ public class surveyController {
             /* Remove this page from array */
             seenPages.remove(seenPages.size()-1);
                 
-            currentPage = surveyManager.getSurveyPage(survey.getSurveyId(), true, nextPage, survey.getClientId(), 0, goToQuestion, survey.getCompletedSurveyId());
+            currentPage = surveyManager.getSurveyPage(survey.getSurveyId(), true, nextPage, survey.getClientId(), 0, goToQuestion, survey.getSubmittedSurveyId());
             
             Integer totalPageQuestions = 0;
             for(SurveyQuestions question : currentPage.getSurveyQuestions()) {
@@ -413,21 +634,45 @@ public class surveyController {
             
             seenPages.add(survey.getCurrentPage());
             
-            currentPage = surveyManager.getSurveyPage(survey.getSurveyId(), true, nextPage, survey.getClientId(), 0, goToQuestion, survey.getCompletedSurveyId());
+            currentPage = surveyManager.getSurveyPage(survey.getSurveyId(), true, nextPage, survey.getClientId(), 0, goToQuestion, survey.getSubmittedSurveyId());
 
             qNum = survey.getLastQNumAnswered();
             
         } 
+        else if ("save".equals(action)) {
+            submitted = false;
+        }
         else if ("done".equals(action)) {
             skipToEnd = true;
+            submitted = true;
         }
         
-        /** If reached the last page or an option was selected to skip to the end **/
-        if(currentPage == null || skipToEnd == true) {
+        /** If saving the survey, save and redirect to the survey list page **/
+        if("save".equals(action)) {
             User userDetails = (User) session.getAttribute("userDetails");
             
             /** Submit answers to DB **/
-            surveyManager.saveSurvey(userDetails.getId(), programId, survey, questionAnswers);
+            surveyManager.submitSurvey(userDetails.getId(), programId, survey, questionAnswers, submitted, selectedEntities);
+            
+            encryptObject encrypt = new encryptObject();
+            Map<String,String> map;
+
+            //Encrypt the use id to pass in the url
+            map = new HashMap<String,String>();
+            map.put("id",Integer.toString(survey.getSurveyId()));
+            map.put("topSecret",topSecret);
+
+            String[] encrypted = encrypt.encryptObject(map);
+            
+            mav = new ModelAndView(new RedirectView("/surveys?i=" + encrypted[0]+"&v="+encrypted[1]));
+        }
+        
+        /** If reached the last page or an option was selected to skip to the end **/
+        else if(currentPage == null || skipToEnd == true) {
+            User userDetails = (User) session.getAttribute("userDetails");
+            
+            /** Submit answers to DB **/
+            surveyManager.submitSurvey(userDetails.getId(), programId, survey, questionAnswers, submitted, selectedEntities);
             
             mav.setViewName("/completedSurvey");
             surveys surveyDetails = surveyManager.getSurveyDetails(survey.getSurveyId());
@@ -463,10 +708,9 @@ public class surveyController {
             mav.addObject("survey", NextPage);
             mav.addObject("surveyPages", surveyPages);
             mav.addObject("qNum", qNum);
+            mav.addObject("selectedEntities", selectedEntities);
         }
         
-        mav.addObject("iparam", URLEncoder.encode(i,"UTF-8"));
-        mav.addObject("vparam", URLEncoder.encode(v,"UTF-8"));
         return mav;
     }
     
@@ -483,13 +727,11 @@ public class surveyController {
      * @throws Exception 
      */
     @RequestMapping(value = "/viewSurvey", method = RequestMethod.GET)
-    public ModelAndView viewSurvey(@RequestParam String i, @RequestParam String v, @RequestParam Integer s, HttpSession session) throws Exception {
+    public ModelAndView viewSurvey(@RequestParam String i, @RequestParam String v, HttpSession session) throws Exception {
         
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("/viewSurvey");
         
-        mav.addObject("iparam", URLEncoder.encode(i,"UTF-8"));
-        mav.addObject("vparam", URLEncoder.encode(v,"UTF-8"));
+        User userDetails = (User) session.getAttribute("userDetails");
         
         /* Decrypt the url */
         decryptObject decrypt = new decryptObject();
@@ -498,19 +740,80 @@ public class surveyController {
         
         String[] result = obj.toString().split((","));
         
-        int clientId = Integer.parseInt(result[0].substring(4));
-        
-        
-        storageClients clientDetails = clientmanager.getClientDetails(clientId);
-        storageClientAddressInfo addressInfo = clientmanager.getClientAddressInfo(clientId);
-        
+        int surveyId = Integer.parseInt(result[0].substring(4));
         
         /* Get the survey details */
-        patientCompletedSurveys completedSurveyDetails = surveyManager.getCompletedSurvey(s);
+        submittedSurveys submittedSurveyDetails = surveyManager.getSubmittedSurvey(surveyId);
         
         
-        List<SurveyPages> surveyPages = surveyManager.getSurveyPages(completedSurveyDetails.getSurveyId(), true, 0, 0, completedSurveyDetails.getId());
+        List<SurveyPages> surveyPages = surveyManager.getSurveyPages(submittedSurveyDetails.getSurveyId(), true, 0, 0, submittedSurveyDetails.getId());
+        mav.addObject("survey", submittedSurveyDetails);
         mav.addObject("surveyPages", surveyPages);
+        
+        List<Integer> selectedEntities = surveyManager.getSurveyEntities(submittedSurveyDetails.getSurveyId());
+        
+        /* Get a list of available schools for the selected districts */
+        if(selectedEntities != null && !selectedEntities.isEmpty() && !"".equals(selectedEntities)) {
+            
+            encryptObject encrypt = new encryptObject();
+            Map<String,String> map;
+            
+            List<school> schoolList = new ArrayList<school>();
+            List<district> districtList = new ArrayList<district>();
+            
+            for(Integer entityId : selectedEntities) {
+                
+                district district = new district();
+                district.setDistrictId(entityId);
+                
+                programHierarchyDetails districtDetails = hierarchymanager.getProgramHierarchyItemDetails(entityId);
+                district.setDistrictName(districtDetails.getName());
+                
+                List schools = hierarchymanager.getProgramOrgHierarchyItems(programId, 3, entityId, userDetails.getId());
+        
+                if(!schools.isEmpty() && schools.size() > 0) {
+
+                    for(ListIterator iter = schools.listIterator(); iter.hasNext(); ) {
+
+                        Object[] row = (Object[]) iter.next();
+
+                        school school = new school();
+                        school.setSchoolId(Integer.parseInt(row[0].toString()));
+                        school.setSchoolName(row[1].toString());
+                       
+                        //Encrypt the use id to pass in the url
+                        map = new HashMap<String,String>();
+                        map.put("id",Integer.toString(Integer.parseInt(row[0].toString())));
+                        map.put("topSecret",topSecret);
+
+                        String[] encrypted = encrypt.encryptObject(map);
+
+                        school.setEncryptedId(encrypted[0]);
+                        school.setEncryptedSecret(encrypted[1]);
+
+                        schoolList.add(school);
+
+                     }
+                    
+                    district.setSchoolList(schoolList);
+
+                }
+                
+                districtList.add(district);
+                
+            }
+            
+            mav.addObject("selDistricts", districtList);
+            
+        }
+        
+        
+        if(submittedSurveyDetails.isSubmitted() == false) {
+            mav.setViewName("/takeSurvey");
+        }
+        else {
+            mav.setViewName("/viewSurvey");
+        }
         
         return mav;
         

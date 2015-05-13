@@ -17,19 +17,12 @@
         </div>
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav" role="menu" style="padding-left:10px;">
-                <li role="menuitem" class="${param['sect'] == 'districts' ? 'active' : 'none'}">
-                    <a href="<c:url value='/districts' />" title="Districts">
-                        <i class="fa fa-building-o fa-fw"></i> Districts
-                    </a>
-                </li>
                 <c:forEach var="module" items="${sessionScope.availModules}">
-                    <c:if test="${module[3] != 11}"><%-- Don't show the survey module --%>
-                        <li role="menuitem" class="${param['sect'] == module[0] ? 'active' : 'none'}">
-                            <a href="<c:url value='/${module[0]}' />" title="${module[1]}">
-                                <i class="fa fa-2x ${module[2]} fa-fw"></i>${module[1]}
-                            </a>
-                        </li>
-                    </c:if>
+                    <li role="menuitem" class="${param['sect'] == module[0] ? 'active' : 'none'}">
+                        <a href="<c:url value='/${module[0]}' />" title="${module[1]}">
+                            <i class="fa fa-2x ${module[2]} fa-fw"></i>${module[1]}
+                        </a>
+                    </li>
                 </c:forEach>
             </ul>
             <ul class="nav navbar-nav navbar-right" id="secondary-nav">

@@ -8,58 +8,80 @@
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <div class="main clearfix" role="main">
-    <div class="col-md-12">
-        
-        <div class="col-md-12">
-            <c:if test="${not empty savedStatus}" >
-                <div class="alert alert-success" role="alert">
-                    <strong>Success!</strong> 
-                    The client has been successfully updated!
-                </div>
-            </c:if>
-        </div>
-        
-        <c:if test="${not empty summary}">
-           <div class="panel panel-default">
-                <div class="panel-heading">
-                    <div class="pull-right">
-                        <a href="/clients/details?i=${iparam}&v=${vparam}" class="btn btn-primary btn-xs btn-action" title="View Client Details">View Client Details</a>
+    
+    <form:form id="survey" modelAttribute="survey" method="post" action="submitSurvey" role="form">
+       <input type="hidden" name="submittedSurveyId" value="${survey.submittedSurveyId}" />
+       <input type="hidden" name="surveyId" value="${survey.surveyId}" /> 
+       <input type="hidden" name="engagementId" value="${survey.engagementId}" /> 
+       <input type="hidden" name="clientId" value="${survey.clientId}" /> 
+       <input type="hidden" name="currentPage" value="${survey.currentPage}" />
+       <input type="hidden" name="lastQNumAnswered" id="lastQNumAnswered" value="" />
+       <input type="hidden" name="totalPages" value="${survey.totalPages}" />
+       <input type="hidden" name="surveyTitle" value="${survey.surveyTitle}" />
+       <input type="hidden" name="prevButton" value="${survey.prevButton}" />
+       <input type="hidden" name="nextButton" value="${survey.nextButton}" />
+       <input type="hidden" name="saveButton" value="${survey.saveButton}" />
+       <input type="hidden" name="action" value="" id="action" />
+       <input type="hidden" name="goToPage" value="0" id="goToPage" />
+       <input type="hidden" name="entityIds" value="${survey.entityIds}" id="entityList" />
+       <input type="hidden" name="selectedDistricts" value="${selectedEntities}" />
+       
+       <div class="col-md-12 col-md-offset-1">
+          
+           <div class="content">
+               <div class="row">
+                   <div class="col-md-5">
+                        <section class="panel panel-default">
+
+                            <div class="panel-body">
+                                <h4>What school(s) / Districts were involved?</h4>
+                                <div id="errorMsg_schools" style="display:none;" class="alert alert-danger" role="alert"></div>
+                                <div style="height:150px; overflow: auto;">
+                                    <c:forEach items="${selDistricts}" var="district">
+                                        <div class="form-group">
+                                            <div class="row" style="margin-left:20px;"><span class="text-warning">${district.districtName}</span></div>
+                                            
+                                            <c:if test="${not empty district.schoolList}">
+                                                <div class="row">
+                                                    <c:forEach items="${district.schoolList}" var="school">
+                                                        <div class="col-md-4">
+                                                            <label class="radio">
+                                                                <input type="checkbox" class="selectedSchools" value="${school.schoolId}" <c:if test="${fn:contains(survey.entityIds, school.schoolId)}">checked="checked"</c:if> /> ${school.schoolName}
+                                                            </label>
+                                                        </div>
+                                                    </c:forEach>
+                                                </div>
+                                            </c:if>
+                                        </div>
+                                     </c:forEach> 
+                                </div>
+                            </div>
+                        </section>
                     </div>
-                    <h3 class="panel-title">Client Summary</h3>
-                </div>
-                <div class="panel-body">
-                    <div class="row" style="height:25px;">
-                        <div class="col-md-4">
-                            Patient Id: ${summary.sourcePatientId}
-                        </div>
-                    </div>
-                 </div>
-            </div> 
-        </c:if>
-        <form:form id="survey" modelAttribute="survey" method="post" role="form">
-           <input type="hidden" name="completedSurveyId" value="${survey.completedSurveyId}" />
-           <input type="hidden" name="surveyId" value="${survey.surveyId}" /> 
-           <input type="hidden" name="engagementId" value="${survey.engagementId}" /> 
-           <input type="hidden" name="clientId" value="${survey.clientId}" /> 
-           <input type="hidden" name="currentPage" value="${survey.currentPage}" />
-           <input type="hidden" name="lastQNumAnswered" id="lastQNumAnswered" value="" />
-           <input type="hidden" name="totalPages" value="${survey.totalPages}" />
-           <input type="hidden" name="surveyTitle" value="${survey.surveyTitle}" />
-           <input type="hidden" name="prevButton" value="${survey.prevButton}" />
-           <input type="hidden" name="nextButton" value="${survey.nextButton}" />
-           <input type="hidden" name="saveButton" value="${survey.saveButton}" />
-           <input type="hidden" name="action" value="" id="action" />
-           <input type="hidden" name="goToPage" value="0" id="goToPage" />
            
-            <div class="panel panel-default">
+                    <div class="col-md-5">
+                        <section class="panel panel-default">
+
+                            <div class="panel-body">
+                                <h4>Content Area & Criteria</h4>
+                            </div>
+
+                        </section>
+                    </div>
+               </div>
+           </div>
+            
+       </div>
+
+        <div class="col-md-12">
+            <section class="panel panel-default">
                 <div class="panel-heading">
                     <h4>${survey.pageTitle}</h4>
                 </div>
-                 <div class="panel-body pageQuestionsPanel">
-                     <section>
+                <div class="panel-body pageQuestionsPanel">
                     <c:choose>
                         <c:when test="${not empty survey.surveyPageQuestions}">
                             <c:forEach var="question" items="${survey.surveyPageQuestions}" varStatus="q">
@@ -84,7 +106,12 @@
                                             </c:when>
                                             <c:when test="${question.answerTypeId == 3}">
                                                 <div class="form-group" >
-                                                    <input type="text" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="3" name="surveyPageQuestions[${q.index}].questionValue" class="form-control ${question.validation.replace(' ','-')}  <c:if test="${question.required == true}">required</c:if>" type="text" maxLength="255" value="${question.questionValue}" />
+                                                    <input type="text" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="3" name="surveyPageQuestions[${q.index}].questionValue" class="form-control ${question.validation.replace(' ','-')}  ${question.required == true ? ' required' : '' }" type="text" maxLength="255" value="${question.questionValue}" />
+                                                </div>
+                                            </c:when>
+                                            <c:when test="${question.answerTypeId == 5}">
+                                                <div class="form-group">
+                                                    <textarea class="form-control ${question.validation.replace(' ','-')}  ${question.required == true ? ' required' : '' }" name="surveyPageQuestions[${q.index}].questionValue" rows="8" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="5" style="background-color:#ffffff; width: 750px;">${question.questionValue}</textarea>
                                                 </div>
                                             </c:when>
                                             <c:when test="${question.answerTypeId == 1}">
@@ -112,7 +139,7 @@
                                                                 </div>
                                                             </c:when>
                                                             <c:when test="${question.choiceLayout == '3 Columns'}">
-                                                                <div class="row" style="width:650px;">
+                                                                <div class="row" style="width:750px;">
                                                                     <c:forEach items="${question.questionChoices}" var="choiceDetails">
                                                                         <div class="col-md-4">
                                                                             <label class="radio">
@@ -148,45 +175,60 @@
                                                 </c:choose>
                                             </c:when>
                                         </c:choose>
+                                        <c:if test="${question.otherOption == true && question.otherDspChoice == 2}">
+                                            <div class="form-group" ${question.answerTypeId == 1 ? 'style="margin-left:22px; padding-top:10px;"' : ''}>
+                                                <p>${question.otherLabel}</p>
+                                                <input type="text"class="form-control" type="text" name="surveyPageQuestions[${q.index}].questionOtherValue" value="${question.questionOtherValue}" style="background-color:#ffffff; width:500px;" />
+                                            </div>
+                                        </c:if>                 
                                         <div id="errorMsg_${question.id}" style="display:none;" class="alert alert-danger" role="alert"></div> 
                                     </div>
                                 </div> 
                             </c:forEach>
                         </c:when>
                     </c:choose>   
-                     </section>
                 </div>
-            </div>
-             <div style="padding-bottom: 20px; ">
+            </section>
+        </div>
+
+        <div class="col-md-12">
+            <div style="padding-bottom: 20px; ">
                 <div class="well well-sm text-center" style="border-style: dashed">
                     <div class="row center-block" style="width:500px;">
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-primary saveSurvey">
+                                <strong>Save</strong> <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> 
+                            </button>
+                        </div>
                         <c:choose>
                             <c:when test="${survey.currentPage == survey.totalPages}">
-                                <div class="col-md-6">
-                                    <button type="button" class="btn btn-primary prevPage">
-                                        <span class="glyphicon glyphicon-backward" aria-hidden="true"></span> <strong>${survey.prevButton}</strong>
-                                    </button>
-                                </div>
-                                <div class="col-md-6">
+                                <c:if test="${survey.currentPage != 1}">
+                                    <div class="col-md-4">
+                                        <button type="button" class="btn btn-primary prevPage">
+                                            <span class="glyphicon glyphicon-backward" aria-hidden="true"></span> <strong>${survey.prevButton}</strong>
+                                        </button>
+                                    </div>
+                                 </c:if>   
+                                <div class="col-md-4">
                                     <button type="button" class="btn btn-primary completeSurvey">
                                         <strong>${survey.saveButton}</strong> <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
                                     </button>
                                 </div>
                             </c:when>
                             <c:when test="${survey.currentPage > 1}">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <button type="button" class="btn btn-primary prevPage">
                                         <span class="glyphicon glyphicon-backward" aria-hidden="true"></span> <strong>${survey.prevButton}</strong>
                                     </button>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <button type="button" class="btn btn-primary nextPage">
                                         <strong>${survey.nextButton}</strong> <span class="glyphicon glyphicon-forward" aria-hidden="true"></span> 
                                     </button>
                                 </div>    
                             </c:when>
                             <c:otherwise>
-                                <div class="col-md-12">
+                                <div class="col-md-4">
                                     <button type="button" class="btn btn-primary nextPage">
                                         <strong>${survey.nextButton}</strong> <span class="glyphicon glyphicon-forward" aria-hidden="true"></span> 
                                     </button>
@@ -195,7 +237,8 @@
                         </c:choose>
                     </div>
                 </div>
-            </div> 
-        </form:form>     
-    </div>
+             </div>
+        </div>
+
+    </form:form>
 </div>

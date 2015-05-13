@@ -4,49 +4,36 @@
        "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
 <tiles-definitions>
     
-    <!-- sysAdmin Definitions -->
-    <definition name="base.definition.client-ui" template="/WEB-INF/tiles/layout.jsp">
+    <!-- Main Definitions -->
+    <definition name="base.definition.survey-ui" template="/WEB-INF/tiles/layout.jsp">
         <put-attribute name="title" value="" />
         <put-attribute name="header" value="" />
-        <put-attribute name="actions" value="" />
+        <put-attribute name="actions" value="/WEB-INF/jsp/survey/actionBar.jsp" />
         <put-attribute name="menu" value="" />
         <put-attribute name="body" value="" />
         <put-attribute name="footer" value="/WEB-INF/jsp/common/footer.jsp" />
     </definition>
     
-    <definition name="/districlist" extends="base.definition.client-ui">
+    <definition name="/surveys" extends="base.definition.survey-ui">
         <put-attribute name="page-id" value="dashboard-details" />
         <put-attribute name="page-section" value="section-dashboard" />
-        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=districts" />
-        <put-attribute name="menu" value="/WEB-INF/jsp/districts/menu.jsp?page=districtlist" />
-        <put-attribute name="actions" value="/WEB-INF/jsp/districts/actionBar.jsp?page=districtlist" />
-        <put-attribute name="body" value="/WEB-INF/jsp/districts/list.jsp" />
-        <put-attribute name="jscript" value="/dspResources/js/districts/list.js" />
+        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=surveys" />
+        <put-attribute name="menu" value="/WEB-INF/jsp/survey/menu.jsp" />
+        <put-attribute name="body" value="/WEB-INF/jsp/survey/list.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/surveys/list.js" />
     </definition>
     
-    <definition name="/activityLogs" extends="base.definition.client-ui">
+    
+    <definition name="/takeSurvey" extends="base.definition.survey-ui">
         <put-attribute name="page-id" value="dashboard-details" />
         <put-attribute name="page-section" value="section-dashboard" />
-        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=districts" />
-        <put-attribute name="menu" value="/WEB-INF/jsp/districts/menu.jsp?page=activityLogs" />
-        <put-attribute name="actions" value="/WEB-INF/jsp/districts/actionBar.jsp?page=activityLogs" />
-        <put-attribute name="body" value="/WEB-INF/jsp/districts/activityLogs.jsp" />
-        <put-attribute name="jscript" value="/dspResources/js/districts/activityLogs.js" />
+        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=surveys" />
+        <put-attribute name="menu" value="/WEB-INF/jsp/survey/menu.jsp" />
+        <put-attribute name="body" value="/WEB-INF/jsp/survey/survey.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/surveys/survey.js" />
     </definition>
     
-    <!-- Survey Pages -->
-    
-    <definition name="/takeSurvey" extends="base.definition.client-ui">
-        <put-attribute name="page-id" value="dashboard-details" />
-        <put-attribute name="page-section" value="section-dashboard" />
-        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=districts" />
-        <put-attribute name="actions" value="/WEB-INF/jsp/districts/actionBar.jsp?page=takesurvey" />
-        <put-attribute name="menu" value="/WEB-INF/jsp/districts/menu.jsp?page=activityLogs" />
-        <put-attribute name="body" value="/WEB-INF/jsp/districts/survey/survey.jsp" />
-        <put-attribute name="jscript" value="/dspResources/js/districts/surveys/survey.js" />
-    </definition>
-    
-     <definition name="/completedSurvey" extends="base.definition.client-ui">
+     <definition name="/completedSurvey" extends="base.definition.survey-ui">
         <put-attribute name="page-id" value="dashboard-details" />
         <put-attribute name="page-section" value="section-dashboard" />
         <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=districts" />
@@ -55,7 +42,7 @@
         <put-attribute name="body" value="/WEB-INF/jsp/districts/survey/completedSurvey.jsp" />
     </definition>
     
-    <definition name="/viewSurvey" extends="base.definition.client-ui">
+    <definition name="/viewSurvey" extends="base.definition.survey-ui">
         <put-attribute name="page-id" value="dashboard-details" />
         <put-attribute name="page-section" value="section-dashboard" />
         <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=districts" />
