@@ -36,19 +36,17 @@
      <definition name="/completedSurvey" extends="base.definition.survey-ui">
         <put-attribute name="page-id" value="dashboard-details" />
         <put-attribute name="page-section" value="section-dashboard" />
-        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=districts" />
-        <put-attribute name="actions" value="/WEB-INF/jsp/districts/actionBar.jsp?page=takesurvey" />
-        <put-attribute name="menu" value="/WEB-INF/jsp/districts/menu.jsp?page=surveys" />
-        <put-attribute name="body" value="/WEB-INF/jsp/districts/survey/completedSurvey.jsp" />
+        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=surveys" />
+        <put-attribute name="menu" value="/WEB-INF/jsp/survey/menu.jsp" />
+        <put-attribute name="body" value="/WEB-INF/jsp/survey/completedSurvey.jsp" />
     </definition>
     
     <definition name="/viewSurvey" extends="base.definition.survey-ui">
         <put-attribute name="page-id" value="dashboard-details" />
         <put-attribute name="page-section" value="section-dashboard" />
-        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=districts" />
-        <put-attribute name="actions" value="/WEB-INF/jsp/districts/actionBar.jsp?page=viewsurvey" />
-        <put-attribute name="menu" value="/WEB-INF/jsp/districts/menu.jsp?page=surveys" />
-        <put-attribute name="body" value="/WEB-INF/jsp/districts/survey/viewSurvey.jsp" />
+        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=surveys" />
+        <put-attribute name="menu" value="/WEB-INF/jsp/survey/menu.jsp" />
+        <put-attribute name="body" value="/WEB-INF/jsp/survey/viewSurvey.jsp" />
     </definition>
     
     

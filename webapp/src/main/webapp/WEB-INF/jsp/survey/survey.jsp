@@ -143,7 +143,7 @@
                                                                     <c:forEach items="${question.questionChoices}" var="choiceDetails">
                                                                         <div class="col-md-4">
                                                                             <label class="radio">
-                                                                                <input type="radio" value="${choiceDetails.id}" rel="${question.id}" rel2="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
+                                                                                <input type="radio" value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
                                                                             </label>
                                                                         </div>
                                                                      </c:forEach>   
@@ -178,7 +178,7 @@
                                         <c:if test="${question.otherOption == true && question.otherDspChoice == 2}">
                                             <div class="form-group" ${question.answerTypeId == 1 ? 'style="margin-left:22px; padding-top:10px;"' : ''}>
                                                 <p>${question.otherLabel}</p>
-                                                <input type="text"class="form-control" type="text" name="surveyPageQuestions[${q.index}].questionOtherValue" value="${question.questionOtherValue}" style="background-color:#ffffff; width:500px;" />
+                                                <input type="text" class="form-control"  name="surveyPageQuestions[${q.index}].questionOtherValue" value="${question.questionOtherValue}" style="background-color:#ffffff; width:500px;" />
                                             </div>
                                         </c:if>                 
                                         <div id="errorMsg_${question.id}" style="display:none;" class="alert alert-danger" role="alert"></div> 

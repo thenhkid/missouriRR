@@ -18,6 +18,8 @@ import com.registryKit.survey.surveyManager;
 import com.registryKit.survey.surveyQuestionAnswers;
 import com.registryKit.survey.surveys;
 import com.registryKit.user.User;
+import com.registryKit.user.userManager;
+import com.registryKit.user.userProgramModules;
 import com.rr.missouri.ui.districts.district;
 import com.rr.missouri.ui.districts.school;
 import com.rr.missouri.ui.security.decryptObject;
@@ -62,6 +64,9 @@ public class surveyController {
    
    @Autowired
    private hierarchyManager hierarchymanager;
+   
+   @Autowired
+   private userManager usermanager;
     
    @Value("${programId}")
    private Integer programId;
@@ -76,6 +81,9 @@ public class surveyController {
    private static List<Integer> seenPages;
    
    private static List<surveys> surveys;
+   
+   private static boolean allowCreate = false;
+   private static boolean allowEdit = false;
    
    /**
      * The '' request will display the list of taken surveys.
@@ -175,6 +183,14 @@ public class surveyController {
         }
         
         mav.addObject("submittedSurveys", submittedSurveys);
+        
+        /* Get user permissions */
+        userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
+        allowCreate = modulePermissions.isAllowCreate();
+        allowEdit = modulePermissions.isAllowEdit();
+        
+        mav.addObject("allowCreate", allowCreate);
+        mav.addObject("allowEdit", allowEdit);
         
         return mav;
     }
@@ -750,7 +766,8 @@ public class surveyController {
         mav.addObject("survey", submittedSurveyDetails);
         mav.addObject("surveyPages", surveyPages);
         
-        List<Integer> selectedEntities = surveyManager.getSurveyEntities(submittedSurveyDetails.getSurveyId());
+        
+        List<Integer> selectedEntities = surveyManager.getSurveyEntities(surveyId);
         
         /* Get a list of available schools for the selected districts */
         if(selectedEntities != null && !selectedEntities.isEmpty() && !"".equals(selectedEntities)) {
@@ -807,13 +824,13 @@ public class surveyController {
             
         }
         
+        mav.addObject("selSurvey", submittedSurveyDetails.getSurveyId());
+        mav.addObject("selectedEntities", selectedEntities.toString().replace("[", "").replace("]", ""));
         
-        if(submittedSurveyDetails.isSubmitted() == false) {
-            mav.setViewName("/takeSurvey");
-        }
-        else {
-            mav.setViewName("/viewSurvey");
-        }
+        
+        
+       mav.setViewName("/viewSurvey");
+       
         
         return mav;
         
