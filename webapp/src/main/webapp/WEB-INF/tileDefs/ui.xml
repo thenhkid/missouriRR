@@ -5,43 +5,25 @@
 <tiles-definitions>
     
     <!-- sysAdmin Definitions -->
-    <definition name="base.definition.ui" template="/WEB-INF/tiles/layout.jsp">
+    <definition name="base.definition.ui" template="/WEB-INF/tiles/login.jsp">
         <put-attribute name="title" value="" />
-        <put-attribute name="header" value="" />
-        <put-attribute name="actions" value="" />
-        <put-attribute name="menu" value="" />
         <put-attribute name="body" value="" />
-        <put-attribute name="footer" value="/WEB-INF/jsp/common/footer.jsp" />
     </definition>
 
     <!-- Login -->
     <definition name="/login" extends="base.definition.ui">
-        <put-attribute name="page-id" value="login" />
-        <put-attribute name="page-section" value="section-login" />
-        <put-attribute name="title" value="RR Family Planning UI Login" />
+        <put-attribute name="title" value="RLogin" />
         <put-attribute name="body" value="/WEB-INF/jsp/login.jsp" />
         <put-attribute name="jscript" value="/dspResources/js/ui/login.js" />
     </definition>
 
     <definition name="/loginfailed" extends="base.definition.ui">
-        <put-attribute name="page-id" value="login" />
-        <put-attribute name="page-section" value="section-login" />
         <put-attribute name="title" value="RR Family Planning UI Login" />
         <put-attribute name="body" value="/WEB-INF/jsp/login.jsp" />
     </definition>
     
-    <definition name="/forgotPassword" extends="base.definition.ui">
-        <put-attribute name="page-id" value="login" />
-        <put-attribute name="page-section" value="section-login" />
-        <put-attribute name="title" value="RR Family Planning UI Forgot Password" />
-        <put-attribute name="body" value="/WEB-INF/jsp/forgotPassword.jsp" />
-        <put-attribute name="jscript" value="/dspResources/js/ui/forgotPassword.js" />
-    </definition>
-    
     <definition name="/resetPassword" extends="base.definition.ui">
-        <put-attribute name="page-id" value="login" />
-        <put-attribute name="page-section" value="section-login" />
-        <put-attribute name="title" value="RR Family Planning UI Reset Password" />
+        <put-attribute name="title" value="Reset Password" />
         <put-attribute name="body" value="/WEB-INF/jsp/resetPassword.jsp" />
         <put-attribute name="jscript" value="/dspResources/js/ui/resetPassword.js" />
     </definition>
