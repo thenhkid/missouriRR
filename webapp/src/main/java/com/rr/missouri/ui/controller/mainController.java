@@ -126,26 +126,6 @@ public class mainController {
     }
     
     /**
-     * The '/forgotPassword' GET request will be used to display the forget password form (In a modal)
-     *
-     *
-     * @return	The forget password form page
-     *
-     *
-     */
-    @RequestMapping(value = "/forgotPassword", method = RequestMethod.GET)
-    public ModelAndView forgotPassword(HttpSession session) throws Exception {
-        
-        program programDetails = programmanager.getProgramById(programId);
-
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("/forgotPassword");
-        mav.addObject("programName", programDetails.getProgramName());
-        
-        return mav;
-    }
-
-    /**
      * The '/forgotPassword.do' POST request will be used to find the account information for the user and send an email.
      *
      *

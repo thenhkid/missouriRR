@@ -1,32 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE tiles-definitions PUBLIC
        "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
-       "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
 <tiles-definitions>
     
-    <!-- sysAdmin Definitions -->
-    <definition name="base.definition.calendar" template="/WEB-INF/tiles/layout.jsp">
+    <!-- Main Definitions -->
+    <definition name="base.definition.calendar-ui" template="/WEB-INF/tiles/layout.jsp">
         <put-attribute name="title" value="" />
-        <put-attribute name="header" value="" />
-        <put-attribute name="actions" value="" />
-        <put-attribute name="menu" value="" />
+        <put-attribute name="breadcrumbs" value="" />
         <put-attribute name="body" value="" />
-        <put-attribute name="footer" value="/WEB-INF/jsp/common/footer.jsp" />
+        <put-attribute name="submenu" value="" />
     </definition>
     
-    <definition name="/calendar" extends="base.definition.calendar">
-        <put-attribute name="page-id" value="calendar-id" />
-        <put-attribute name="page-section" value="section-dashboard" />
-        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=calendar" />
-        <put-attribute name="actions" value="/WEB-INF/jsp/calendar/actionBar.jsp?page=calendar" />
+    <definition name="/calendar" extends="base.definition.calendar-ui">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/calendar/breadcrumbs.jsp" />
         <put-attribute name="body" value="/WEB-INF/jsp/calendar/calendar.jsp" />
-        <put-attribute name="jscript" value="/dspResources/js/calendar/main.js" />
+        <put-attribute name="jscript" value="/dspResources/js/calendar/calendar.js" />
+        <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/jquery-ui.custom.min.js" />
+            <add-attribute value="/dspResources/js/jquery.ui.touch-punch.min.js" />
+            <add-attribute value="/dspResources/js/date-time/moment.min.js" />
+            <add-attribute value="/dspResources/js/calendar/fullcalendar.min.js" />
+            <add-attribute value="/dspResources/js/bootbox.min.js" />
+            <add-attribute value="/dspResources/js/ace-elements.min.js" />
+        </put-list-attribute>
+        <put-list-attribute name="customCSS">
+            <add-attribute value="/dspResources/css/jquery-ui.custom.min.css" />
+            <add-attribute value="/dspResources/css/fullcalendar.min.css" />
+        </put-list-attribute>
     </definition>
     
-    <!-- Exception handling -->
-    <definition name="/exception" extends="base.definition.calendar">
-        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp" />
-        <put-attribute name="body" value="/WEB-INF/jsp/exception.jsp" />
-    </definition>
 
 </tiles-definitions>

@@ -1,51 +1,44 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE tiles-definitions PUBLIC
        "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
-       "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
 <tiles-definitions>
     
     <!-- Main Definitions -->
     <definition name="base.definition.survey-ui" template="/WEB-INF/tiles/layout.jsp">
         <put-attribute name="title" value="" />
-        <put-attribute name="header" value="" />
-        <put-attribute name="actions" value="/WEB-INF/jsp/survey/actionBar.jsp" />
-        <put-attribute name="menu" value="" />
+        <put-attribute name="breadcrumbs" value="" />
         <put-attribute name="body" value="" />
-        <put-attribute name="footer" value="/WEB-INF/jsp/common/footer.jsp" />
+        <put-attribute name="submenu" value="" />
     </definition>
     
     <definition name="/surveys" extends="base.definition.survey-ui">
-        <put-attribute name="page-id" value="dashboard-details" />
-        <put-attribute name="page-section" value="section-dashboard" />
-        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=surveys" />
-        <put-attribute name="menu" value="/WEB-INF/jsp/survey/menu.jsp" />
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/survey/breadcrumbs.jsp?page=list" />
         <put-attribute name="body" value="/WEB-INF/jsp/survey/list.jsp" />
+        <put-attribute name="submenu" value="/WEB-INF/jsp/survey/submenu.jsp" />
         <put-attribute name="jscript" value="/dspResources/js/surveys/list.js" />
+        <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/dataTables/jquery.dataTables.min.js" />
+            <add-attribute value="/dspResources/js/dataTables/jquery.dataTables.bootstrap.min.js" />
+            <add-attribute value="/dspResources/js/dataTables/extensions/TableTools/js/dataTables.tableTools.min.js" />
+            <add-attribute value="/dspResources/js/dataTables/extensions/ColVis/js/dataTables.colVis.min.js" />
+        </put-list-attribute>
     </definition>
     
-    
     <definition name="/takeSurvey" extends="base.definition.survey-ui">
-        <put-attribute name="page-id" value="dashboard-details" />
-        <put-attribute name="page-section" value="section-dashboard" />
-        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=surveys" />
-        <put-attribute name="menu" value="/WEB-INF/jsp/survey/menu.jsp" />
+        <put-attribute name="title" value="" />
         <put-attribute name="body" value="/WEB-INF/jsp/survey/survey.jsp" />
         <put-attribute name="jscript" value="/dspResources/js/surveys/survey.js" />
     </definition>
     
      <definition name="/completedSurvey" extends="base.definition.survey-ui">
-        <put-attribute name="page-id" value="dashboard-details" />
-        <put-attribute name="page-section" value="section-dashboard" />
-        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=surveys" />
-        <put-attribute name="menu" value="/WEB-INF/jsp/survey/menu.jsp" />
+        <put-attribute name="title" value="" />
         <put-attribute name="body" value="/WEB-INF/jsp/survey/completedSurvey.jsp" />
     </definition>
     
     <definition name="/viewSurvey" extends="base.definition.survey-ui">
-        <put-attribute name="page-id" value="dashboard-details" />
-        <put-attribute name="page-section" value="section-dashboard" />
-        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=surveys" />
-        <put-attribute name="menu" value="/WEB-INF/jsp/survey/menu.jsp" />
+        <put-attribute name="title" value="" />
         <put-attribute name="body" value="/WEB-INF/jsp/survey/viewSurvey.jsp" />
     </definition>
     
