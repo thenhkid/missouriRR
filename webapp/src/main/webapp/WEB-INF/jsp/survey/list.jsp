@@ -16,11 +16,9 @@
 
         <div class="clearfix">
             <div class="pull-right">
-                <a href="#districtSelectModal" id="createNewEntry" role="button" data-toggle="modal">
-                <button class="btn btn-danger btn-xs">
+                <a href="#districtSelectModal" id="createNewEntry" role="button" data-toggle="modal" class="btn btn-danger btn-xs">
                     <i class="ace-icon fa fa-plus-square align-top bigger-150"></i>
                     <strong>New Entry</strong>
-                </button>
                 </a>    
             </div>
             <div class="pull-left tableTools-container"></div>

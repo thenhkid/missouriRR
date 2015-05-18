@@ -17,11 +17,18 @@
         <link href="<%=request.getContextPath()%>/dspResources/css/font-awesome.min.css" rel="stylesheet" /><!-- only if needed -->
 
         <link href="<%=request.getContextPath()%>/dspResources/css/ace-fonts.min.css" rel="stylesheet" /><!-- you can also use google hosted fonts -->
+        
+        <tiles:useAttribute id="cssList" name="customCSS" classname="java.util.List" ignore="true" />
+        <c:forEach var="cssFile" items="${cssList}">
+          <link href="<%=request.getContextPath()%>${cssFile}" rel="stylesheet" />
+        </c:forEach>
+        
 
         <link href="<%=request.getContextPath()%>/dspResources/css/ace.min.css" rel="stylesheet" class="ace-main-stylesheet" />
         <!--[if lte IE 9]>
          <link href="<%=request.getContextPath()%>/dspResources/css/ace-part2.min.css" rel="stylesheet" class="ace-main-stylesheet" />
         <![endif]-->
+        
         <!--[if !IE]> -->
         <script src="<%=request.getContextPath()%>/dspResources/js/jquery.min.js"></script>
         <!-- <![endif]-->
