@@ -139,6 +139,7 @@ public class surveyController {
         }
         mav.addObject("selSurvey", surveyId);
         
+        
         surveys surveyDetails = surveyManager.getSurveyDetails(surveyId);
         mav.addObject("surveyName", surveyDetails.getTitle());
         
@@ -208,7 +209,7 @@ public class surveyController {
      * @throws Exception 
      */
     @RequestMapping(value = "/startSurvey", method = RequestMethod.POST) 
-    public ModelAndView startSurvey(@RequestParam Integer c, @RequestParam String s, @RequestParam(value = "selectedEntities", required = false) List<String> selectedEntities,HttpSession session) throws Exception {
+    public ModelAndView startSurvey(@RequestParam String s, @RequestParam(value = "selectedEntities", required = false) List<Integer> selectedEntities,HttpSession session) throws Exception {
         
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/takeSurvey");
@@ -241,11 +242,23 @@ public class surveyController {
                 survey.setPrevButton(surveyDetails.getPrevButtonText());
                 survey.setNextButton(surveyDetails.getNextButtonText());
                 survey.setSaveButton(surveyDetails.getDoneButtonText());
-                survey.setSubmittedSurveyId(c);
+                survey.setSubmittedSurveyId(0);
+                
+                encryptObject encrypt = new encryptObject();
+                Map<String,String> map;
+                
+                map = new HashMap<String,String>();
+                map.put("id",Integer.toString(surveyId));
+                map.put("topSecret",topSecret);
+                
+                String[] encrypted = encrypt.encryptObject(map);
+
+                survey.setEncryptedId(encrypted[0]);
+                survey.setEncryptedSecret(encrypted[1]);
                 
                 /* Get the pages */
                 List<SurveyPages> surveyPages = surveyManager.getSurveyPages(surveyId, false, 0, 0, 0);
-                SurveyPages currentPage = surveyManager.getSurveyPage(surveyId, true, 1, clientId, 0, 0, c);
+                SurveyPages currentPage = surveyManager.getSurveyPage(surveyId, true, 1, clientId, 0, 0, 0);
                 survey.setPageTitle(currentPage.getPageTitle());
                 survey.setSurveyPageQuestions(currentPage.getSurveyQuestions());
                 survey.setTotalPages(surveyPages.size());
@@ -270,17 +283,15 @@ public class surveyController {
             List<school> schoolList = new ArrayList<school>();
             List<district> districtList = new ArrayList<district>();
             
-            for(String entity : selectedEntities) {
-                
-                Integer entityId = Integer.parseInt(entity);
+            for(Integer entity : selectedEntities) {
                 
                 district district = new district();
-                district.setDistrictId(entityId);
+                district.setDistrictId(entity);
                 
-                programHierarchyDetails districtDetails = hierarchymanager.getProgramHierarchyItemDetails(entityId);
+                programHierarchyDetails districtDetails = hierarchymanager.getProgramHierarchyItemDetails(entity);
                 district.setDistrictName(districtDetails.getName());
                 
-                List schools = hierarchymanager.getProgramOrgHierarchyItems(programId, 3, entityId, userDetails.getId());
+                List schools = hierarchymanager.getProgramOrgHierarchyItems(programId, 3, entity, userDetails.getId());
         
                 if(!schools.isEmpty() && schools.size() > 0) {
 
@@ -319,7 +330,9 @@ public class surveyController {
         }
         
         mav.addObject("selSurvey", surveyId);
+        
         mav.addObject("selectedEntities", selectedEntities.toString().replace("[", "").replace("]", ""));
+        mav.addObject("currentPage",1);
         
         mav.addObject("qNum", 0);
         

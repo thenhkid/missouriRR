@@ -57,7 +57,7 @@
                 <div class="navbar-header pull-left">
                     <a href="#" class="navbar-brand">
                         <small>
-                            <i class="fa fa-leaf"></i>
+                            <i class="fa fa-building"></i>
                             MO Healthy Schools Monitoring System
                         </small>
                     </a>

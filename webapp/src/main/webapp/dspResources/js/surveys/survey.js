@@ -5,8 +5,7 @@
  */
 
 
-require(['./main'], function () {
-    require(['jquery'], function($) {
+jQuery(function ($) {
         
         $("input:text,form").attr("autocomplete", "off");
         
@@ -52,9 +51,9 @@ require(['./main'], function () {
         });
         
         /* Function to process the COMPLETE button */
-        $(document).on('click', '.completeSurvey', function() {
+        $(document).on('click', '.completeSurvey', function(event) {
             var errorsFound = 0;
-           
+            
             /* Make sure at lease one school is checked */
             var schools = [];
             $('.selectedSchools').each(function() {
@@ -73,6 +72,10 @@ require(['./main'], function () {
                 $('#lastQNumAnswered').val(1);
                 $("#survey").submit();
             }
+           
+            event.preventDefault();
+            return false;
+
         });
         
         /* Function to process the SAVE button */
@@ -94,8 +97,6 @@ require(['./main'], function () {
             $("#survey").submit();
         });
         
-        
-    });
  });
  
  function checkSurveyFields() {
