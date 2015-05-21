@@ -17,7 +17,7 @@
 
         <div class="clearfix">
             <div class="pull-right">
-                
+
                 <form:form id="districtSelectForm" method="POST" action="/surveys/startSurvey" role="form">
                     <input type="hidden" name="s" id="surveyId" value="${selSurvey}" />
                     <ul class="list-unstyled spaced2">
@@ -76,13 +76,15 @@
                                     </td>
                                     <td>
                                         <c:if test="${not empty submittedSurvey.selectedEntities}">
-                                            <c:forEach var="entity" items="${submittedSurvey.selectedEntities}">
-                                                <div class="col-md-4">
-                                                    <label>
-                                                        <span class="glyphicon glyphicon-home"></span> ${entity}
-                                                    </label>
-                                                </div>
-                                            </c:forEach>
+                                            <ul class="list-unstyled spaced">
+
+                                                <c:forEach var="entity" items="${submittedSurvey.selectedEntities}">
+                                                    <li>
+                                                        <i class="ace-icon fa fa-building bigger-110 purple"></i>
+                                                        ${entity}
+                                                    </li>
+                                                </c:forEach>
+                                            </ul>
                                         </c:if>
                                     </td>
                                     <td></td>
@@ -90,18 +92,22 @@
                                         <div class="hidden-sm hidden-xs action-buttons">
                                             <c:choose>
                                                 <c:when test="${submittedSurvey.submitted == true}">
-                                                    <c:if test="${allowEdit == true}">
-                                                        <a href="surveys/editSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="" role="button">
-                                                            <button class="btn btn-xs btn-success">
-                                                                <i class="ace-icon fa fa-pencil bigger-120"></i>
+                                                    <c:choose>
+                                                        <c:when test="${allowEdit == false}">
+                                                            <a href="surveys/editSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="" role="button">
+                                                                <button class="btn btn-xs btn-success">
+                                                                    <i class="ace-icon fa fa-pencil bigger-120"></i>
+                                                                </button>
+                                                            </a>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <a href="surveys/viewSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="" role="button">
+                                                            <button class="btn btn-xs btn-info">
+                                                                <i class="ace-icon fa fa-search-plus bigger-120"></i>
                                                             </button>
                                                         </a>
-                                                    </c:if>
-                                                    <a href="surveys/viewSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="" role="button">
-                                                        <button class="btn btn-xs btn-info">
-                                                            <i class="ace-icon fa fa-search-plus bigger-120"></i>
-                                                        </button>
-                                                    </a>
+                                                        </c:otherwise>
+                                                    </c:choose>
                                                 </c:when>
                                                 <c:otherwise>
                                                     <a href="surveys/editSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="" role="button">

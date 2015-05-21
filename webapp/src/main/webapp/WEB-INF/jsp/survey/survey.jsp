@@ -58,7 +58,7 @@
                                                         <c:forEach items="${district.schoolList}" var="school">
                                                             <div class="checkbox">
                                                                 <label>
-                                                                    <input class="selectedSchools" name="form-field-checkbox" type="checkbox" class="ace" value="${school.schoolId}" <c:if test="${fn:contains(survey.entityIds, school.schoolId)}">checked="checked"</c:if> />
+                                                                    <input <c:if test="${readOnly == true}">disabled="disabled"</c:if> class="selectedSchools" name="form-field-checkbox" type="checkbox" class="ace" value="${school.schoolId}" <c:if test="${fn:contains(survey.entityIds, school.schoolId)}">checked="checked"</c:if> />
                                                                     <span class="lbl"> ${school.schoolName}</span>
                                                                 </label>
                                                             </div>
@@ -145,10 +145,10 @@
                                                             ${question.question}
                                                         </c:when>
                                                         <c:when test="${question.answerTypeId == 3}">
-                                                            <input type="text" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="3" name="surveyPageQuestions[${q.index}].questionValue" class="form-control ${question.validation.replace(' ','-')}  ${question.required == true ? ' required' : '' }" type="text" maxLength="255" value="${question.questionValue}" />
+                                                            <input type="text" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="3" name="surveyPageQuestions[${q.index}].questionValue" class="form-control ${question.validation.replace(' ','-')}  ${question.required == true ? ' required' : '' }" type="text" maxLength="255" value="${question.questionValue}" <c:if test="${readOnly == true}">readonly="readonly"</c:if> />
                                                         </c:when>
                                                         <c:when test="${question.answerTypeId == 5}">
-                                                            <textarea class="form-control ${question.validation.replace(' ','-')}  ${question.required == true ? ' required' : '' }" name="surveyPageQuestions[${q.index}].questionValue" rows="8" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="5" style="background-color:#ffffff; width: 750px;">${question.questionValue}</textarea>
+                                                            <textarea <c:if test="${readOnly == true}">readonly="readonly"</c:if> class="form-control ${question.validation.replace(' ','-')}  ${question.required == true ? ' required' : '' }" name="surveyPageQuestions[${q.index}].questionValue" rows="8" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="5" style="background-color:#ffffff; width: 750px;">${question.questionValue}</textarea>
                                                         </c:when> 
                                                         <c:when test="${question.answerTypeId == 1}">
                                                             <c:choose>
@@ -159,9 +159,9 @@
                                                                                 <c:forEach items="${question.questionChoices}" var="choiceDetails">
                                                                                     <div class="col-md-12">
                                                                                         <label>
-                                                                                            <input type="radio" value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
-                                                                                        </label>
-                                                                                    </div>
+                                                                                            <input <c:if test="${readOnly == true}">disabled="disabled"</c:if> type="radio" value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
+                                                                                            </label>
+                                                                                        </div>
                                                                                 </c:forEach> 
                                                                             </div>    
                                                                         </c:when>
@@ -170,108 +170,112 @@
                                                                                 <c:forEach items="${question.questionChoices}" var="choiceDetails">
                                                                                     <div class="col-md-2">
                                                                                         <label>
-                                                                                            <input type="radio" value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
-                                                                                        </label>
-                                                                                    </div>
+                                                                                            <input <c:if test="${readOnly == true}">disabled="disabled"</c:if> type="radio" value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
+                                                                                            </label>
+                                                                                        </div>
                                                                                 </c:forEach>   
                                                                             </div>
                                                                         </c:when>
-                                                                    <c:when test="${question.choiceLayout == '3 Columns'}">
-                                                                        <div class="row">
-                                                                            <c:forEach items="${question.questionChoices}" var="choiceDetails">
-                                                                                <div class="col-md-4">
-                                                                                    <label>
-                                                                                        <input type="radio" value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
-                                                                                    </label>
-                                                                                </div>
-                                                                            </c:forEach>   
-                                                                        </div>
-                                                                    </c:when>
-                                                                    <c:when test="${question.choiceLayout == 'Horiztonal'}">
-                                                                        <div class="form-inline">
-                                                                            <c:forEach items="${question.questionChoices}" var="choiceDetails">
-                                                                                <label style="padding-right:10px;">
-                                                                                   <input type="radio" value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
-                                                                                 </label>
-                                                                            </c:forEach>   
-                                                                        </div>
-                                                                    </c:when>
-                                                                    <c:otherwise>
-                                                                        <div class="row">
-                                                                            <c:forEach items="${question.questionChoices}" var="choiceDetails">
-                                                                                <div class="col-md-12">
-                                                                                    <label>
-                                                                                        <input type="radio" value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
-                                                                                    </label>
-                                                                                </div>
-                                                                            </c:forEach>
-                                                                        </div>
-                                                                    </c:otherwise>
-                                                                </c:choose>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <span>No Question Choices have been set up.</span>
-                                                            </c:otherwise>
-                                                        </c:choose>
-                                                    </c:when>
-                                                </c:choose>
-                                            </div>
-                                            <c:if test="${question.otherOption == true && question.otherDspChoice == 2}">
-                                                <div  ${question.answerTypeId == 1 ? 'style="padding-top:10px;"' : ''}>
-                                                    <p>${question.otherLabel}</p>
-                                                    <input type="text" class="form-control"  name="surveyPageQuestions[${q.index}].questionOtherValue" value="${question.questionOtherValue}" style="background-color:#ffffff; width:500px;" />
+                                                                        <c:when test="${question.choiceLayout == '3 Columns'}">
+                                                                            <div class="row">
+                                                                                <c:forEach items="${question.questionChoices}" var="choiceDetails">
+                                                                                    <div class="col-md-4">
+                                                                                        <label>
+                                                                                            <input <c:if test="${readOnly == true}">disabled="disabled"</c:if> type="radio" value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
+                                                                                            </label>
+                                                                                        </div>
+                                                                                </c:forEach>   
+                                                                            </div>
+                                                                        </c:when>
+                                                                        <c:when test="${question.choiceLayout == 'Horiztonal'}">
+                                                                            <div class="form-inline">
+                                                                                <c:forEach items="${question.questionChoices}" var="choiceDetails">
+                                                                                    <label style="padding-right:10px;">
+                                                                                        <input type="radio" <c:if test="${readOnly == true}">disabled="disabled"</c:if> value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
+                                                                                        </label>
+                                                                                </c:forEach>   
+                                                                            </div>
+                                                                        </c:when>
+                                                                        <c:otherwise>
+                                                                            <div class="row">
+                                                                                <c:forEach items="${question.questionChoices}" var="choiceDetails">
+                                                                                    <div class="col-md-12">
+                                                                                        <label>
+                                                                                            <input <c:if test="${readOnly == true}">disabled="disabled"</c:if> type="radio" value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
+                                                                                            </label>
+                                                                                        </div>
+                                                                                </c:forEach>
+                                                                            </div>
+                                                                        </c:otherwise>
+                                                                    </c:choose>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <span>No Question Choices have been set up.</span>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </c:when>
+                                                    </c:choose>
                                                 </div>
-                                            </c:if>      
-                                            <div id="errorMsg_${question.id}" style="display:none;" class="alert alert-danger" role="alert"></div>   
-                                             <hr />
-                                        </c:forEach>
-                                    </c:when>
-                                </c:choose>
-                                
-                                <div class="wizard-actions">
-                                    <button class="btn btn-prev saveSurvey">
-                                        <i class="ace-icon fa fa-save"></i>
-                                        Save
-                                    </button>
+                                                <c:if test="${question.otherOption == true && question.otherDspChoice == 2}">
+                                                    <div  ${question.answerTypeId == 1 ? 'style="padding-top:10px;"' : ''}>
+                                                        <p>${question.otherLabel}</p>
+                                                        <input type="text" <c:if test="${readOnly == true}">readonly="readonly"</c:if> class="form-control"  name="surveyPageQuestions[${q.index}].questionOtherValue" value="${question.questionOtherValue}" style="background-color:#ffffff; width:500px;" />
+                                                        </div>
+                                                </c:if>      
+                                                <div id="errorMsg_${question.id}" style="display:none;" class="alert alert-danger" role="alert"></div>   
+                                                <hr />
+                                            </c:forEach>
+                                        </c:when>
+                                    </c:choose>
 
-                                    <c:choose>
-                                        <c:when test="${survey.currentPage == survey.totalPages}">
-                                            <c:if test="${survey.currentPage != 1}">
+                                    <div class="wizard-actions">
+                                        <c:if test="${readOnly == false}">
+                                            <button class="btn btn-prev saveSurvey">
+                                                <i class="ace-icon fa fa-save"></i>
+                                                Save
+                                            </button>
+                                        </c:if>
+
+                                        <c:choose>
+                                            <c:when test="${survey.currentPage == survey.totalPages}">
+                                                <c:if test="${survey.currentPage != 1}">
+                                                    <button class="btn btn-prev prevPage">
+                                                        <i class="ace-icon fa fa-arrow-left"></i>
+                                                        ${survey.prevButton}
+                                                    </button>
+                                                </c:if> 
+                                                <c:if test="${readOnly == false}">
+                                                    <button class="btn btn-success completeSurvey" data-last="Finish">
+                                                        ${survey.saveButton}
+                                                        <i class="ace-icon fa fa-check-circle icon-on-right"></i>
+                                                    </button>
+                                                </c:if>
+                                            </c:when>
+                                            <c:when test="${survey.currentPage > 1}">
                                                 <button class="btn btn-prev prevPage">
                                                     <i class="ace-icon fa fa-arrow-left"></i>
                                                     ${survey.prevButton}
                                                 </button>
-                                            </c:if>   
-                                            <button class="btn btn-success completeSurvey" data-last="Finish">
-                                                ${survey.saveButton}
-                                                <i class="ace-icon fa fa-check-circle icon-on-right"></i>
-                                            </button>
-                                        </c:when>
-                                        <c:when test="${survey.currentPage > 1}">
-                                            <button class="btn btn-prev prevPage">
-                                                <i class="ace-icon fa fa-arrow-left"></i>
-                                                ${survey.prevButton}
-                                            </button>
-                                            <button class="btn btn-success btn-next nextPage" data-last="Finish">
-                                                ${survey.nextButton}
-                                                <i class="ace-icon fa fa-arrow-right icon-on-right"></i>
-                                            </button>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <button class="btn btn-success btn-next nextPage" data-last="Finish">
-                                                ${survey.nextButton}
-                                                <i class="ace-icon fa fa-arrow-right icon-on-right"></i>
-                                            </button>
-                                        </c:otherwise>
-                                    </c:choose>
+                                                <button class="btn btn-success btn-next nextPage" data-last="Finish">
+                                                    ${survey.nextButton}
+                                                    <i class="ace-icon fa fa-arrow-right icon-on-right"></i>
+                                                </button>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <button class="btn btn-success btn-next nextPage" data-last="Finish">
+                                                    ${survey.nextButton}
+                                                    <i class="ace-icon fa fa-arrow-right icon-on-right"></i>
+                                                </button>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </form:form>
-</div>
+        </form:form>
+    </div>
 </div>
 
