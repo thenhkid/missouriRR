@@ -60,12 +60,6 @@
         <put-attribute name="body" value="/WEB-INF/jsp/survey/completedSurvey.jsp" />
     </definition>
     
-    <definition name="/viewSurvey" extends="base.definition.survey-ui">
-        <put-attribute name="title" value="" />
-        <put-attribute name="body" value="/WEB-INF/jsp/survey/viewSurvey.jsp" />
-    </definition>
-    
-    
     <!-- Exception handling -->
     <definition name="/exception" extends="base.definition.ui">
         <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp" />

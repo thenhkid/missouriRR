@@ -25,6 +25,17 @@
             <li class="active">
                Start Survey
             </li>
+        </c:when> 
+        <c:when test="${param['page'] == 'view'}">
+            <li>
+                <a href="<c:url value="/surveys" />">Surveys</a>
+            </li>
+            <li>
+                <a href="<c:url value="/surveys?i=${survey.encryptedId}&v=${survey.encryptedSecret}" />"> ${survey.title}</a>
+            </li>
+            <li class="active">
+               View Survey
+            </li>
         </c:when>    
     </c:choose>
 </ul>

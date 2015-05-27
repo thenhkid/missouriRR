@@ -77,7 +77,7 @@ jQuery(function ($) {
 
     //initiate TableTools extension
     var tableTools_obj = new $.fn.dataTable.TableTools(oTable1, {
-        "sSwfPath": "../dspResources/js/dataTables/extensions/TableTools/swf/copy_csv_xls_pdf.swf", //in Ace demo dist will be replaced by correct assets path
+        "sSwfPath": "../dspResources/js/dataTables/extensions/TableTools/swf/copy_csv_xls_pdf.swf", 
 
         "sRowSelector": "td:not(:last-child)",
         "sRowSelect": "multi",

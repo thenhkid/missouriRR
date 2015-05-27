@@ -9,74 +9,99 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<c:set var="qNum" value="0" scope="page" />
-<div class="main clearfix" role="main" >
-    
-    <div class="col-md-12 col-md-offset-1">
-          
-           <div class="content">
-               <div class="row">
-                   <div class="col-md-5">
-                        <section class="panel panel-default">
+<div class="row">
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-sm-5">
+                <div class="widget-box">
+                    <div class="widget-header">
+                        <h4 class="widget-title">What school(s) were involved?</h4>
 
-                            <div class="panel-body">
-                                <h4>What school(s) / Districts were involved?</h4>
-                                <div id="errorMsg_schools" style="display:none;" class="alert alert-danger" role="alert"></div>
-                                <div style="height:150px; overflow: auto;">
+                        <div class="widget-toolbar">
+                            <a href="#" data-action="collapse">
+                                <i class="ace-icon fa fa-chevron-up"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="widget-body">
+                        <div id="errorMsg_schools" style="display:none;" class="alert alert-danger" role="alert"></div>   
+                        <div class="widget-main">
+                            <div>
+                                <div class="row" style="max-height:200px; overflow: auto">
                                     <c:forEach items="${selDistricts}" var="district">
-                                        <div class="form-group">
-                                            <div class="row" style="margin-left:20px;"><span class="text-warning">${district.districtName}</span></div>
-                                            
-                                            <c:if test="${not empty district.schoolList}">
-                                                <div class="row">
+                                        <div class="col-xs-12 col-sm-5">
+                                            <div class="control-group">
+                                                <label class="control-label bolder blue">${district.districtName}</label>
+
+                                                <c:if test="${not empty district.schoolList}">
                                                     <c:forEach items="${district.schoolList}" var="school">
-                                                        <div class="col-md-4">
-                                                            <label class="radio">
-                                                                <input type="checkbox" class="selectedSchools" value="${school.schoolId}" disabled  /> ${school.schoolName}
+                                                        <div class="checkbox">
+                                                            <label>
+                                                                <input class="selectedSchools" name="form-field-checkbox" type="checkbox" class="ace" value="${school.schoolId}" <c:if test="${fn:contains(survey.entityIds, school.schoolId)}">checked="checked"</c:if> />
+                                                                <span class="lbl"> ${school.schoolName}</span>
                                                             </label>
                                                         </div>
                                                     </c:forEach>
-                                                </div>
-                                            </c:if>
+                                                </c:if>
+
+                                            </div>
                                         </div>
-                                     </c:forEach> 
+                                    </c:forEach>  
                                 </div>
                             </div>
-                        </section>
+                        </div>
                     </div>
-           
-                    <div class="col-md-5">
-                        <section class="panel panel-default">
+                </div>
+            </div><!-- /.span -->
 
-                            <div class="panel-body">
-                                <h4>Content Area & Criteria</h4>
+            <div class="col-sm-7">
+                <div class="widget-box">
+                    <div class="widget-header">
+                        <h4 class="widget-title">Content Area & Criteria</h4>
+
+                        <span class="widget-toolbar">
+                            <a href="#" data-action="collapse">
+                                <i class="ace-icon fa fa-chevron-up"></i>
+                            </a>
+                        </span>
+                    </div>
+
+                    <div class="widget-body">
+                        <div class="widget-main">
+                            <div>
+
                             </div>
 
-                        </section>
+                        </div>
                     </div>
-               </div>
-           </div>
-            
-       </div>
-       
-        <div class="col-md-12">
-        
+                </div>
+            </div><!-- /.span -->
+        </div><!-- /.row -->
+    </div>
+</div>
+
+<c:set var="qNum" value="0" scope="page" />
+<div class="main clearfix" role="main" >
+
+    <div class="col-md-12">
+
         <c:forEach var="page" items="${surveyPages}">
             <section class="panel panel-default">
                 <div class="panel-heading">
                     <h4>${page.pageTitle}</h4>
                 </div>
-                 <div class="panel-body pageQuestionsPanel">
+                <div class="panel-body pageQuestionsPanel">
                     <c:choose>
                         <c:when test="${not empty page.surveyQuestions}">
                             <c:forEach var="question" items="${page.surveyQuestions}" >
-                                 <div class="questionDiv row form-group" style="width: 98%; padding: 5px; margin-left: 5px; margin-bottom: 30px;">
+                                <div class="questionDiv row form-group" style="width: 98%; padding: 5px; margin-left: 5px; margin-bottom: 30px;">
                                     <div class="row" style="width: 98%; padding: 5px; margin-left: 5px;">
-                               
+
                                         <div class="pull-left">
                                             <c:if test="${question.answerTypeId != 7}">
                                                 <c:set var="qNum" value="${qNum + 1}" scope="page"/>
-                                                 <h4 class="qNumber control-label" rel="${qNum}"><c:if test="${question.required == true}">*&nbsp;</c:if>${qNum}.&nbsp; ${question.question}</h4>
+                                                <h4 class="qNumber control-label" rel="${qNum}"><c:if test="${question.required == true}">*&nbsp;</c:if>${qNum}.&nbsp; ${question.question}</h4>
                                             </c:if>
                                         </div>
                                     </div>
@@ -106,19 +131,19 @@
                                                                     <div class="form-group">
                                                                         <label class="radio">
                                                                             <input type="radio" disabled="disabled" <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
-                                                                        </label>
-                                                                    </div>
-                                                                 </c:forEach>   
+                                                                                    </label>
+                                                                                </div>
+                                                                </c:forEach>   
                                                             </c:when>
                                                             <c:when test="${question.choiceLayout == '2 Columns'}">
-                                                               <div class="row" style="width:500px;">
+                                                                <div class="row" style="width:500px;">
                                                                     <c:forEach items="${question.questionChoices}" var="choiceDetails">
                                                                         <div class="col-md-4">
                                                                             <label class="radio">
                                                                                 <input type="radio" disabled="disabled" <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
-                                                                            </label>
-                                                                        </div>
-                                                                     </c:forEach>   
+                                                                                        </label>
+                                                                                    </div>
+                                                                    </c:forEach>   
                                                                 </div>
                                                             </c:when>
                                                             <c:when test="${question.choiceLayout == '3 Columns'}">
@@ -127,9 +152,9 @@
                                                                         <div class="col-md-4">
                                                                             <label class="radio">
                                                                                 <input type="radio" disabled="disabled" <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
-                                                                            </label>
-                                                                        </div>
-                                                                     </c:forEach>   
+                                                                                        </label>
+                                                                                    </div>
+                                                                    </c:forEach>   
                                                                 </div>
                                                             </c:when>
                                                             <c:when test="${question.choiceLayout == 'Horizontal'}">
@@ -137,8 +162,8 @@
                                                                     <c:forEach items="${question.questionChoices}" var="choiceDetails">
                                                                         <label class="radio">
                                                                             <input type="radio" disabled="disabled" <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
-                                                                        </label>
-                                                                     </c:forEach>   
+                                                                                    </label>
+                                                                    </c:forEach>   
                                                                 </div>
                                                             </c:when>
                                                             <c:otherwise>
@@ -146,7 +171,7 @@
                                                                     <c:forEach items="${question.questionChoices}" var="choiceDetails">
                                                                         <label class="radio">
                                                                             <input type="radio" disabled="disabled" <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
-                                                                        </label>
+                                                                                    </label>
                                                                     </c:forEach>
                                                                 </div>
                                                             </c:otherwise>
