@@ -8,3 +8,17 @@ webapp/target/*
 registryKit/target/registryKit-1.0.jar
 registryKit/target/maven-archiver/pom.properties
 webapp/target/rapidregistry-missouri-program/WEB-INF/lib/org.rr.missouri-registryKit-1.0.jar
+webapp/target
+pom.properties
+webapp/target/classes/com/rr/missouri/ui/controller/fileDownloadController.class
+webapp/target/classes/com/rr/missouri/ui/reference/fileSystem.class
+webapp/target/classes/com/rr/missouri/ui/reports/reportController.class
+webapp/target/classes/com/rr/missouri/ui/security/ContextProfileInitializer.class
+webapp/target/classes/com/rr/missouri/ui/security/CustomAuthenticationHandler.class
+webapp/target/classes/com/rr/missouri/ui/security/CustomAuthenticationProvider.class
+webapp/target/classes/com/rr/missouri/ui/security/CustomWebAuthenticationDetails.class
+webapp/target/classes/com/rr/missouri/ui/security/CustomWebAuthenticationDetails$MyAuthenticationDetails.class
+webapp/target/classes/com/rr/missouri/ui/security/decryptObject.class
+webapp/target/classes/com/rr/missouri/ui/security/encryptObject.class
+webapp/target/classes/com/rr/missouri/ui/surveys/surveyController.class
+webapp/target/maven-archiver/pom.properties
