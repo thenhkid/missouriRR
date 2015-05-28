@@ -82,6 +82,8 @@ public class surveyController {
     private static List<Integer> seenPages;
 
     private static List<surveys> surveys;
+    
+    private static List<district> districtList;
 
     private static boolean allowCreate = false;
     private static boolean allowEdit = false;
@@ -241,7 +243,7 @@ public class surveyController {
 
                 encryptObject encrypt = new encryptObject();
                 Map<String, String> map;
-
+ 
                 map = new HashMap<String, String>();
                 map.put("id", Integer.toString(surveyId));
                 map.put("topSecret", topSecret);
@@ -257,6 +259,9 @@ public class surveyController {
                 survey.setPageTitle(currentPage.getPageTitle());
                 survey.setSurveyPageQuestions(currentPage.getSurveyQuestions());
                 survey.setTotalPages(surveyPages.size());
+                survey.setPageId(currentPage.getId());
+                survey.setLastPageId(surveyPages.get(surveyPages.size() -1).getId());
+               
 
                 mav.addObject("survey", survey);
                 mav.addObject("surveyPages", surveyPages);
@@ -275,7 +280,7 @@ public class surveyController {
             Map<String, String> map;
 
             List<school> schoolList = new ArrayList<school>();
-            List<district> districtList = new ArrayList<district>();
+            districtList = new ArrayList<district>();
 
             for (Integer entity : selectedEntities) {
 
@@ -329,6 +334,7 @@ public class surveyController {
         mav.addObject("currentPage", 1);
 
         mav.addObject("qNum", 0);
+        mav.addObject("disabled", false);
 
         return mav;
     }
@@ -401,6 +407,7 @@ public class surveyController {
         survey.setPageTitle(currentPage.getPageTitle());
         survey.setSurveyPageQuestions(currentPage.getSurveyQuestions());
         survey.setTotalPages(surveyPages.size());
+        survey.setLastPageId(surveyPages.get(surveyPages.size() -1).getId());
 
         mav.addObject("survey", survey);
         mav.addObject("surveyPages", surveyPages);
@@ -411,7 +418,7 @@ public class surveyController {
         if (selectedEntities != null && !selectedEntities.isEmpty() && !"".equals(selectedEntities)) {
 
             List<school> schoolList = new ArrayList<school>();
-            List<district> districtList = new ArrayList<district>();
+            districtList = new ArrayList<district>();
 
             for (Integer entityId : selectedEntities) {
 
@@ -485,8 +492,8 @@ public class surveyController {
     @RequestMapping(value = "/submitSurvey", method = RequestMethod.POST)
     public ModelAndView saveSurveyPage(@ModelAttribute(value = "survey") survey survey, HttpSession session,
             RedirectAttributes redirectAttr, @RequestParam String action, @RequestParam Integer goToPage, @RequestParam(value = "entityIds", required = false) List<String> entityIds,
-            @RequestParam(value = "selectedDistricts", required = false) List<String> selectedEntities,
-            @RequestParam(value = "disabled", required = true) boolean disabled) throws Exception {
+            @RequestParam(value = "selectedEntities", required = false) List<String> selectedEntities,
+            @RequestParam(value = "disabled", required = true, defaultValue = "false") boolean disabled) throws Exception {
 
         Integer goToQuestion = 0;
         boolean skipToEnd = false;
@@ -521,7 +528,7 @@ public class surveyController {
 
                         questionFound = true;
 
-                        if (question.getAnswerTypeId() == 1) {
+                        if (question.getAnswerTypeId() == 1 || question.getAnswerTypeId() == 2) {
                             SurveyQuestionChoices choiceDetails = surveyManager.getSurveyQuestionChoice(Integer.parseInt(question.getQuestionValue()));
 
                             if (choiceDetails.getChoiceValue() > 0) {
@@ -559,8 +566,8 @@ public class surveyController {
                 if (questionFound == false) {
                     surveyQuestionAnswers questionAnswer = new surveyQuestionAnswers();
 
-                    if (question.getAnswerTypeId() == 1 && !"".equals(question.getQuestionValue())) {
-
+                    if ((question.getAnswerTypeId() == 1 || question.getAnswerTypeId() == 2) && !"".equals(question.getQuestionValue())) {
+                        
                         SurveyQuestionChoices choiceDetails = surveyManager.getSurveyQuestionChoice(Integer.parseInt(question.getQuestionValue()));
 
                         if (choiceDetails.getChoiceValue() > 0) {
@@ -575,6 +582,7 @@ public class surveyController {
                             if (choiceDetails.getSkipToPageId() > 0) {
                                 SurveyPages pageDetails = surveyManager.getSurveyPageDetails(choiceDetails.getSkipToPageId());
                                 goToPage = pageDetails.getPageNum();
+                                System.out.println("gotopage: " + goToPage);
                             }
 
                             goToQuestion = choiceDetails.getSkipToQuestionId();
@@ -622,6 +630,7 @@ public class surveyController {
         NextPage.setNextButton(survey.getNextButton());
         NextPage.setSaveButton(survey.getSaveButton());
         NextPage.setSubmittedSurveyId(survey.getSubmittedSurveyId());
+        NextPage.setEntityIds(survey.getEntityIds());
 
         SurveyPages currentPage = null;
         Integer qNum = 1;
@@ -647,24 +656,39 @@ public class surveyController {
             }
 
             qNum = (survey.getLastQNumAnswered() - totalPageQuestions) - 1;
-        } else if ("next".equals(action)) {
+        } 
+        else if ("next".equals(action)) {
             mav.setViewName("/takeSurvey");
 
             if (goToPage > 0) {
                 nextPage = goToPage;
             } else {
-                nextPage = survey.getCurrentPage() + 1;
+                
+                /* Check to see if page has any skip logic */
+                SurveyPages currentPageDetails = surveyManager.getSurveyPageDetails(survey.getPageId());
+                if(currentPageDetails.getSkipToPage() > 0) {
+                    SurveyPages skiptoPageDetails = surveyManager.getSurveyPageDetails(currentPageDetails.getSkipToPage());
+                    nextPage = skiptoPageDetails.getPageNum();
+                }
+                else if (currentPageDetails.getSkipToPage() == -1) {
+                    skipToEnd = true;
+                }
+                else {
+                   nextPage = survey.getCurrentPage() + 1; 
+                }
             }
-
+            
             seenPages.add(survey.getCurrentPage());
 
             currentPage = surveyManager.getSurveyPage(survey.getSurveyId(), true, nextPage, survey.getClientId(), 0, goToQuestion, survey.getSubmittedSurveyId());
 
             qNum = survey.getLastQNumAnswered();
 
-        } else if ("save".equals(action)) {
+        } 
+        else if ("save".equals(action)) {
             submitted = false;
-        } else if ("done".equals(action)) {
+        } 
+        else if ("done".equals(action)) {
             skipToEnd = true;
             submitted = true;
         }
@@ -707,6 +731,8 @@ public class surveyController {
                 mav.setViewName("/completedSurvey");
                 surveys surveyDetails = surveyManager.getSurveyDetails(survey.getSurveyId());
                 mav.addObject("surveyDetails", surveyDetails);
+                mav.addObject("selDistricts", districtList);
+                mav.addObject("surveys", surveys);
             }
             else {
                 
@@ -715,6 +741,7 @@ public class surveyController {
         } else {
             NextPage.setPageTitle(currentPage.getPageTitle());
             NextPage.setSurveyPageQuestions(currentPage.getSurveyQuestions());
+            NextPage.setPageId(currentPage.getId());
 
             /* Loop through to get actually question answers */
             for (SurveyQuestions question : currentPage.getSurveyQuestions()) {
@@ -737,11 +764,15 @@ public class surveyController {
 
             NextPage.setTotalPages(surveyPages.size());
             NextPage.setCurrentPage(nextPage);
+            NextPage.setLastPageId(surveyPages.get(surveyPages.size() -1).getId());
 
             mav.addObject("survey", NextPage);
             mav.addObject("surveyPages", surveyPages);
             mav.addObject("qNum", qNum);
             mav.addObject("selectedEntities", selectedEntities);
+            mav.addObject("selDistricts", districtList);
+            mav.addObject("surveys", surveys);
+            mav.addObject("disabled", disabled);
         }
 
         return mav;

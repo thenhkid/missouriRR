@@ -40,7 +40,7 @@
         </div>
 
         <div>
-            <table id="dynamic-table" class="table table-striped table-bordered table-hover">
+            <table <c:if test="${not empty submittedSurveys}">id="dynamic-table"</c:if> class="table table-striped table-bordered table-hover">
                 <thead>
                     <tr>
                         <th scope="col" class="center"><i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i> Date Submitted</th>
@@ -93,7 +93,7 @@
                                             <c:choose>
                                                 <c:when test="${submittedSurvey.submitted == true}">
                                                     <c:choose>
-                                                        <c:when test="${allowEdit == false}">
+                                                        <c:when test="${allowEdit == true}">
                                                             <a href="surveys/editSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="" role="button">
                                                                 <button class="btn btn-xs btn-success">
                                                                     <i class="ace-icon fa fa-pencil bigger-120"></i>

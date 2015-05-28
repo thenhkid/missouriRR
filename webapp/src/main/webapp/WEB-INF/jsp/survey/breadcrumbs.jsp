@@ -23,7 +23,7 @@
                 <a href="<c:url value="/surveys?i=${survey.encryptedId}&v=${survey.encryptedSecret}" />"> ${survey.surveyTitle}</a>
             </li>
             <li class="active">
-               Start Survey
+               Survey Details
             </li>
         </c:when> 
         <c:when test="${param['page'] == 'view'}">
@@ -34,8 +34,19 @@
                 <a href="<c:url value="/surveys?i=${survey.encryptedId}&v=${survey.encryptedSecret}" />"> ${survey.title}</a>
             </li>
             <li class="active">
-               View Survey
+              Survey Details
             </li>
-        </c:when>    
+        </c:when>   
+        <c:when test="${param['page'] == 'complete'}">
+            <li>
+                <a href="<c:url value="/surveys" />">Surveys</a>
+            </li>
+            <li>
+                <a href="<c:url value="/surveys?i=${survey.encryptedId}&v=${survey.encryptedSecret}" />"> ${surveyDetails.title}</a>
+            </li>
+            <li class="active">
+              Survey Complete
+            </li>
+        </c:when>        
     </c:choose>
 </ul>

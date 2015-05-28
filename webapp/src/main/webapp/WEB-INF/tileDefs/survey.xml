@@ -57,7 +57,9 @@
     
      <definition name="/completedSurvey" extends="base.definition.survey-ui">
         <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/survey/breadcrumbs.jsp?page=complete" />
         <put-attribute name="body" value="/WEB-INF/jsp/survey/completedSurvey.jsp" />
+        <put-attribute name="submenu" value="/WEB-INF/jsp/survey/submenu.jsp" />
     </definition>
     
     <!-- Exception handling -->
