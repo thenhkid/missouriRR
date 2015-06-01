@@ -408,6 +408,7 @@ public class surveyController {
         survey.setSurveyPageQuestions(currentPage.getSurveyQuestions());
         survey.setTotalPages(surveyPages.size());
         survey.setLastPageId(surveyPages.get(surveyPages.size() -1).getId());
+        survey.setPageId(currentPage.getId());
 
         mav.addObject("survey", survey);
         mav.addObject("surveyPages", surveyPages);

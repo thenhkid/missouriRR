@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    
+    <!-- Main Definitions -->
+    <definition name="base.definition.faq-ui" template="/WEB-INF/tiles/layout.jsp">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="" />
+        <put-attribute name="body" value="" />
+        <put-attribute name="submenu" value="" />
+    </definition>
+    
+    <definition name="/forum" extends="base.definition.calendar-ui">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/forum/breadcrumbs.jsp" />
+        <put-attribute name="body" value="/WEB-INF/jsp/forum/forum.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/forum/forum.js" />
+        <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/bootbox.min.js" />
+            <add-attribute value="/dspResources/js/ace-elements.min.js" />
+        </put-list-attribute>
+    </definition>
+    
+
+</tiles-definitions>

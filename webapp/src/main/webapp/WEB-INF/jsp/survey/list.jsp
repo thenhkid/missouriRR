@@ -36,7 +36,7 @@
             <div class="pull-left tableTools-container"></div>
         </div>                
         <div class="table-header">
-            Results for "Latest ${surveyName} Activity Logs"
+            Submissions for "Latest ${surveyName} Activity Logs"
         </div>
 
         <div>
@@ -94,18 +94,18 @@
                                                 <c:when test="${submittedSurvey.submitted == true}">
                                                     <c:choose>
                                                         <c:when test="${allowEdit == true}">
-                                                            <a href="surveys/editSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="" role="button">
+                                                            <a href="surveys/editSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Survey" role="button">
                                                                 <button class="btn btn-xs btn-success">
                                                                     <i class="ace-icon fa fa-pencil bigger-120"></i>
                                                                 </button>
                                                             </a>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <a href="surveys/viewSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="" role="button">
-                                                            <button class="btn btn-xs btn-info">
-                                                                <i class="ace-icon fa fa-search-plus bigger-120"></i>
-                                                            </button>
-                                                        </a>
+                                                            <a href="surveys/viewSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Survey" role="button">
+                                                                <button class="btn btn-xs btn-info">
+                                                                    <i class="ace-icon fa fa-search-plus bigger-120"></i>
+                                                                </button>
+                                                            </a>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </c:when>

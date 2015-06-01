@@ -142,7 +142,7 @@
                                                         </c:when> 
                                                         <%-- Select Box --%>    
                                                         <c:when test="${question.answerTypeId == 2}">
-                                                            <select rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="2" class="form-control ${question.required == true ? ' required' : '' }" name="surveyPageQuestions[${q.index}].questionValue" style="background-color:#ffffff; width: 750px;">
+                                                            <select <c:if test="${disabled == true}">disabled</c:if> rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="2" class="form-control ${question.required == true ? ' required' : '' }" name="surveyPageQuestions[${q.index}].questionValue" style="background-color:#ffffff; width: 750px;">
                                                                 <option value="">- Select an Answer -</option>
                                                                 <c:forEach items="${question.questionChoices}" var="choiceDetails">
                                                                     <option value="${choiceDetails.id}" <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">selected="selected"</c:if></c:otherwise></c:choose>>${choiceDetails.choiceText}</option>
@@ -157,7 +157,7 @@
                                                                     <div class="row">
                                                                         <div class="col-xs-8 col-sm-11">
                                                                             <div class="input-group">
-                                                                                <input class="form-control date-picker ${question.required == true ? ' required' : '' }" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="6" id="id-date-picker-1" type="text" name="surveyPageQuestions[${q.index}].questionValue" data-date-format="${question.dateFormatType == 2 ? 'dd/mm/yyyy' : 'mm/dd/yyyy' }" value="${question.questionValue}" />
+                                                                                <input <c:if test="${disabled == true}">readonly</c:if> class="form-control ${disabled == false ? ' date-picker' : '' } ${question.required == true ? ' required' : '' }" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="6" id="id-date-picker-1" type="text" name="surveyPageQuestions[${q.index}].questionValue" data-date-format="${question.dateFormatType == 2 ? 'dd/mm/yyyy' : 'mm/dd/yyyy' }" value="${question.questionValue}" />
                                                                                 <span class="input-group-addon">
                                                                                     <i class="fa fa-calendar bigger-110"></i>
                                                                                 </span>
@@ -173,11 +173,11 @@
                                                                     <div class="row">
                                                                         <div class="col-xs-8 col-sm-11">
                                                                             <div class="input-daterange input-group">
-                                                                                <input type="text" class="multiAns input-sm form-control" rel="${question.id}" value="${dateParts[0]}" />
+                                                                                <input type="text" <c:if test="${disabled == true}">readonly</c:if> class="multiAns input-sm form-control" rel="${question.id}" value="${dateParts[0]}" />
                                                                                 <span class="input-group-addon">
                                                                                     <i class="fa fa-arrow-right"></i>
                                                                                 </span>
-                                                                                <input type="text" class="multiAns input-sm form-control" rel="${question.id}" value="${dateParts[1]}" />
+                                                                                <input type="text" <c:if test="${disabled == true}">readonly</c:if> class="multiAns input-sm form-control" rel="${question.id}" value="${dateParts[1]}" />
                                                                             </div>
                                                                         </div>
                                                                     </div>

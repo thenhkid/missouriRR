@@ -92,6 +92,12 @@ jQuery(function ($) {
         if (errorsFound == 0) {
             $('#action').val("next");
             $('#lastQNumAnswered').val($('.qNumber:last').attr('rel'));
+            
+            /* Remove any disabled options */
+            $('input, select').attr('disabled', false);
+            $('input, radio').attr('disabled', false);
+            $('input, checkbox').attr('disabled', false);
+            
             $("#survey").submit();
         }
 
@@ -117,6 +123,12 @@ jQuery(function ($) {
         
         $('#action').val("prev");
         $('#lastQNumAnswered').val($('.qNumber:first').attr('rel'));
+        
+        /* Remove any disabled options */
+        $('input, select').attr('disabled', false);
+        $('input, radio').attr('disabled', false);
+        $('input, checkbox').attr('disabled', false);
+        
         $("#survey").submit();
     });
 
