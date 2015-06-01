@@ -164,10 +164,10 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-
                                                                 </c:when>
                                                                 <%-- Date Range --%>
-                                                                <c:otherwise>
+                                                                <c:when test="${question.dateType == 2}">
+                                                                
                                                                     <input type="hidden" ${question.required == true ? 'class="required"' : '' } rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="6" id="multiAns_${question.id}" name="surveyPageQuestions[${q.index}].questionValue" value="${question.questionValue}" />
                                                                     <c:set var="dateParts" value="${fn:split(question.questionValue,'^^^^^')}" />
                                                                     <div class="row">
@@ -181,6 +181,9 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
+                                                                </c:when>     
+                                                                <%-- Time Only --%>    
+                                                                <c:otherwise>            
                                                                 </c:otherwise>
                                                             </c:choose>
                                                         </c:when> 
