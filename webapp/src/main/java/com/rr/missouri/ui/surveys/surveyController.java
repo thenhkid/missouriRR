@@ -5,6 +5,8 @@
  */
 package com.rr.missouri.ui.surveys;
 
+import com.registryKit.activityCode.activityCodeManager;
+import com.registryKit.activityCode.activityCodes;
 import com.registryKit.client.clientManager;
 import com.registryKit.client.engagementManager;
 import com.registryKit.hierarchy.hierarchyManager;
@@ -13,6 +15,7 @@ import com.registryKit.survey.SurveyPages;
 import com.registryKit.survey.SurveyQuestionChoices;
 import com.registryKit.survey.SurveyQuestions;
 import com.registryKit.survey.submittedSurveys;
+import com.registryKit.survey.submittedsurveycontentcriteria;
 import com.registryKit.survey.survey;
 import com.registryKit.survey.surveyManager;
 import com.registryKit.survey.surveyQuestionAnswers;
@@ -40,6 +43,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
@@ -67,6 +71,9 @@ public class surveyController {
     private hierarchyManager hierarchymanager;
 
     @Autowired
+    private activityCodeManager activitycodemanager;
+
+    @Autowired
     private userManager usermanager;
 
     @Value("${programId}")
@@ -78,11 +85,14 @@ public class surveyController {
     /* Variable to hold answers while taking a survey */
     private static List<surveyQuestionAnswers> questionAnswers = null;
 
+    /* Variable to hold the content criteria while taking the survey */
+    private static List<surveyContentCriteria> surveyContentCriterias = null;
+
     /* Keep track of visited pages */
     private static List<Integer> seenPages;
 
     private static List<surveys> surveys;
-    
+
     private static List<district> districtList;
 
     private static boolean allowCreate = false;
@@ -217,6 +227,7 @@ public class surveyController {
 
         //Set the survey answer array to get ready to hold data
         questionAnswers = new CopyOnWriteArrayList<surveyQuestionAnswers>();
+        surveyContentCriterias = new CopyOnWriteArrayList<surveyContentCriteria>();
         seenPages = new ArrayList<Integer>();
 
         int clientId = 0;
@@ -243,7 +254,7 @@ public class surveyController {
 
                 encryptObject encrypt = new encryptObject();
                 Map<String, String> map;
- 
+
                 map = new HashMap<String, String>();
                 map.put("id", Integer.toString(surveyId));
                 map.put("topSecret", topSecret);
@@ -260,8 +271,7 @@ public class surveyController {
                 survey.setSurveyPageQuestions(currentPage.getSurveyQuestions());
                 survey.setTotalPages(surveyPages.size());
                 survey.setPageId(currentPage.getId());
-                survey.setLastPageId(surveyPages.get(surveyPages.size() -1).getId());
-               
+                survey.setLastPageId(surveyPages.get(surveyPages.size() - 1).getId());
 
                 mav.addObject("survey", survey);
                 mav.addObject("surveyPages", surveyPages);
@@ -349,7 +359,7 @@ public class surveyController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = {"/editSurvey","/viewSurvey"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/editSurvey", "/viewSurvey"}, method = RequestMethod.GET)
     public ModelAndView editSurvey(@RequestParam String i, @RequestParam String v, HttpSession session, HttpServletRequest request) throws Exception {
 
         ModelAndView mav = new ModelAndView();
@@ -358,6 +368,7 @@ public class surveyController {
 
         //Set the survey answer array to get ready to hold data
         questionAnswers = new CopyOnWriteArrayList<surveyQuestionAnswers>();
+        surveyContentCriterias = new CopyOnWriteArrayList<surveyContentCriteria>();
         seenPages = new ArrayList<Integer>();
 
         int clientId = 0;
@@ -407,7 +418,7 @@ public class surveyController {
         survey.setPageTitle(currentPage.getPageTitle());
         survey.setSurveyPageQuestions(currentPage.getSurveyQuestions());
         survey.setTotalPages(surveyPages.size());
-        survey.setLastPageId(surveyPages.get(surveyPages.size() -1).getId());
+        survey.setLastPageId(surveyPages.get(surveyPages.size() - 1).getId());
         survey.setPageId(currentPage.getId());
 
         mav.addObject("survey", survey);
@@ -471,9 +482,9 @@ public class surveyController {
         mav.addObject("selectedEntities", selectedEntities.toString().replace("[", "").replace("]", ""));
 
         mav.addObject("qNum", 0);
-        
+
         boolean disabled = false;
-        if("/surveys/viewSurvey".equals(request.getServletPath())) {
+        if ("/surveys/viewSurvey".equals(request.getServletPath())) {
             disabled = true;
         }
         mav.addObject("disabled", disabled);
@@ -568,7 +579,7 @@ public class surveyController {
                     surveyQuestionAnswers questionAnswer = new surveyQuestionAnswers();
 
                     if ((question.getAnswerTypeId() == 1 || question.getAnswerTypeId() == 2) && !"".equals(question.getQuestionValue())) {
-                        
+
                         SurveyQuestionChoices choiceDetails = surveyManager.getSurveyQuestionChoice(Integer.parseInt(question.getQuestionValue()));
 
                         if (choiceDetails.getChoiceValue() > 0) {
@@ -657,39 +668,34 @@ public class surveyController {
             }
 
             qNum = (survey.getLastQNumAnswered() - totalPageQuestions) - 1;
-        } 
-        else if ("next".equals(action)) {
+        } else if ("next".equals(action)) {
             mav.setViewName("/takeSurvey");
 
             if (goToPage > 0) {
                 nextPage = goToPage;
             } else {
-                
+
                 /* Check to see if page has any skip logic */
                 SurveyPages currentPageDetails = surveyManager.getSurveyPageDetails(survey.getPageId());
-                if(currentPageDetails.getSkipToPage() > 0) {
+                if (currentPageDetails.getSkipToPage() > 0) {
                     SurveyPages skiptoPageDetails = surveyManager.getSurveyPageDetails(currentPageDetails.getSkipToPage());
                     nextPage = skiptoPageDetails.getPageNum();
-                }
-                else if (currentPageDetails.getSkipToPage() == -1) {
+                } else if (currentPageDetails.getSkipToPage() == -1) {
                     skipToEnd = true;
-                }
-                else {
-                   nextPage = survey.getCurrentPage() + 1; 
+                } else {
+                    nextPage = survey.getCurrentPage() + 1;
                 }
             }
-            
+
             seenPages.add(survey.getCurrentPage());
 
             currentPage = surveyManager.getSurveyPage(survey.getSurveyId(), true, nextPage, survey.getClientId(), 0, goToQuestion, survey.getSubmittedSurveyId());
 
             qNum = survey.getLastQNumAnswered();
 
-        } 
-        else if ("save".equals(action)) {
+        } else if ("save".equals(action)) {
             submitted = false;
-        } 
-        else if ("done".equals(action)) {
+        } else if ("done".equals(action)) {
             skipToEnd = true;
             submitted = true;
         }
@@ -720,8 +726,8 @@ public class surveyController {
          * If reached the last page or an option was selected to skip to the end *
          */
         else if (currentPage == null || skipToEnd == true) {
-            
-            if(disabled == false) {
+
+            if (disabled == false) {
                 User userDetails = (User) session.getAttribute("userDetails");
 
                 /**
@@ -734,11 +740,10 @@ public class surveyController {
                 mav.addObject("surveyDetails", surveyDetails);
                 mav.addObject("selDistricts", districtList);
                 mav.addObject("surveys", surveys);
+            } else {
+
             }
-            else {
-                
-            }
-            
+
         } else {
             NextPage.setPageTitle(currentPage.getPageTitle());
             NextPage.setSurveyPageQuestions(currentPage.getSurveyQuestions());
@@ -765,7 +770,7 @@ public class surveyController {
 
             NextPage.setTotalPages(surveyPages.size());
             NextPage.setCurrentPage(nextPage);
-            NextPage.setLastPageId(surveyPages.get(surveyPages.size() -1).getId());
+            NextPage.setLastPageId(surveyPages.get(surveyPages.size() - 1).getId());
 
             mav.addObject("survey", NextPage);
             mav.addObject("surveyPages", surveyPages);
@@ -779,4 +784,133 @@ public class surveyController {
         return mav;
     }
 
+    /**
+     *
+     * @param entityId
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getEntityCodeSets", method = RequestMethod.GET)
+    public @ResponseBody ModelAndView getEntityCodeSets(@RequestParam(value = "entityId", required = true) Integer entityId, @RequestParam(value = "surveyId", required = true) Integer surveyId) throws Exception {
+
+        programHierarchyDetails entityDetails = hierarchymanager.getProgramHierarchyItemDetails(entityId);
+
+        /* Get the associated code sets for the passed in entity */
+        List<Integer> activityCodes = activitycodemanager.getActivityCodesForEntity(entityId);
+
+        if (activityCodes != null && !activityCodes.isEmpty()) {
+
+            for (Integer activityCode : activityCodes) {
+
+                activityCodes codeDetails = activitycodemanager.getActivityCodeById(activityCode);
+
+                surveyContentCriteria newCriteria = new surveyContentCriteria();
+                newCriteria.setCodeId(activityCode);
+                newCriteria.setCodeDesc(codeDetails.getCodeDesc());
+                newCriteria.setCodeValue(codeDetails.getCode());
+                newCriteria.setSchoolId(entityId);
+                newCriteria.setSchoolName(entityDetails.getName());
+                
+                if(surveyId > 0) {
+                    submittedsurveycontentcriteria codesetFound = surveyManager.getSurveyContentCriteria(surveyId, entityId, activityCode);
+                    
+                    if(codesetFound.getId() > 0) {
+                        newCriteria.setChecked(true);
+                    }
+                }
+
+                surveyContentCriterias.add(newCriteria);
+
+            }
+        }
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/survey/contentCriteriaTable");
+        mav.addObject("contentCriteria", surveyContentCriterias);
+
+        return mav;
+
+    }
+
+    /**
+     *
+     * @param entityId
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/removeCodeSets", method = RequestMethod.GET)
+    public @ResponseBody ModelAndView removeCodeSets(@RequestParam(value = "entityId", required = true) Integer entityId) throws Exception {
+
+        Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
+        
+        List<surveyContentCriteria> toRemove = new ArrayList<surveyContentCriteria>();
+
+        while (it.hasNext()) {
+            
+            surveyContentCriteria criteria = it.next();
+            
+            if(criteria.getSchoolId() == entityId) {
+                toRemove.add(criteria);
+            }
+        }
+        
+        if(toRemove != null && !toRemove.isEmpty()) {
+            surveyContentCriterias.removeAll(toRemove);
+        }
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/survey/contentCriteriaTable");
+        mav.addObject("contentCriteria", surveyContentCriterias);
+
+        return mav;
+
+    }
+    
+    /**
+     * 
+     * @param entityId
+     * @param codeId
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/saveSelCodeSet", method = RequestMethod.POST)
+    public @ResponseBody Integer saveSelCodeSet(@RequestParam(value = "entityId", required = true) Integer entityId, @RequestParam(value = "codeId", required = true) Integer codeId) throws Exception {
+        
+        Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
+        
+        while (it.hasNext()) {
+            
+            surveyContentCriteria criteria = it.next();
+            
+            if(criteria.getSchoolId() == entityId && criteria.getCodeId() == codeId) {
+               criteria.setChecked(true);
+            }
+        }
+        
+        return (Integer) 1;
+    }
+    
+    /**
+     * 
+     * @param entityId
+     * @param codeId
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/removeSelCodeSet", method = RequestMethod.POST)
+    public @ResponseBody Integer removeSelCodeSet(@RequestParam(value = "entityId", required = true) Integer entityId, @RequestParam(value = "codeId", required = true) Integer codeId) throws Exception {
+        
+        Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
+        
+        while (it.hasNext()) {
+            
+            surveyContentCriteria criteria = it.next();
+            
+            if(criteria.getSchoolId() == entityId && criteria.getCodeId() == codeId) {
+               criteria.setChecked(false);
+            }
+        }
+        
+        return (Integer) 1;
+    }
 }

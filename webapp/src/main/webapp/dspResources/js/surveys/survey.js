@@ -7,47 +7,130 @@
 
 jQuery(function ($) {
 
-    $("input:text,form").attr("autocomplete", "off");
 
-    $('.input-daterange').datepicker({autoclose: true});
-    $('.date-picker').datepicker({
-        autoclose: true,
-        todayHighlight: true
-    })
-            //show datepicker when clicking on the icon
-            .next().on(ace.click_event, function () {
-        $(this).prev().focus();
+    $(document).ready(function () {
+
+        $("input:text,form").attr("autocomplete", "off");
+
+        $('.input-daterange').datepicker({autoclose: true});
+        $('.date-picker').datepicker({
+            autoclose: true,
+            todayHighlight: true
+        })
+                //show datepicker when clicking on the icon
+                .next().on(ace.click_event, function () {
+            $(this).prev().focus();
+        });
+
+        var surveyId = $('#submittedSurveyId').val();
+
+        if (surveyId > 0) {
+
+            $('.selectedSchools').each(function () {
+                var entityId = $(this).val();
+
+                if ($(this).is(':checked')) {
+                    $.ajax({
+                        url: 'getEntityCodeSets',
+                        data: {'entityId': entityId, 'surveyId': surveyId},
+                        type: "GET",
+                        success: function (data) {
+                            $('#contentAndCriteriaDiv').html(data);
+                        }
+                    });
+                }
+            });
+        }
     });
-    
+
+
+    /* If editing or viewing need to get the content area */
+
+
+    /* Get the content area and criteria for the clicked school */
+    $(document).on('click', '.selectedSchools', function () {
+        var entityId = $(this).val();
+
+        if ($(this).is(':checked')) {
+            $.ajax({
+                url: 'getEntityCodeSets',
+                data: {'entityId': entityId, 'surveyId': 0},
+                type: "GET",
+                success: function (data) {
+                    $('#contentAndCriteriaDiv').html(data);
+                }
+            });
+        }
+        else {
+            $.ajax({
+                url: 'removeCodeSets',
+                data: {'entityId': entityId},
+                type: "GET",
+                success: function (data) {
+                    $('#contentAndCriteriaDiv').html(data);
+                }
+            });
+        }
+    });
+
+    /* Save the code set when selected */
+    $(document).on('click', '.contentSel', function () {
+        var entityId = $(this).attr('rel');
+        var codeId = $(this).val();
+
+        if ($(this).is(':checked')) {
+            $.ajax({
+                url: 'saveSelCodeSet',
+                data: {'entityId': entityId, 'codeId': codeId},
+                type: "POST",
+                success: function (data) {
+                }
+            });
+        }
+        else {
+            $.ajax({
+                url: 'removeSelCodeSet',
+                data: {'entityId': entityId, 'codeId': codeId},
+                type: "POST",
+                success: function (data) {
+                }
+            });
+        }
+
+
+    })
+
     /* Handle multiple answer questions */
-    $(document).on('change', '.multiAns', function() {
-        
-          var qId = 0;
-          var enterVals = false;
-          var answerValues = [];
-          $('.multiAns').each(function() {
-             var nextqId = $(this).attr('rel');
-             
-             if(qId != nextqId) {
-                 if(qId != 0) {enterVals = true}
-                 qId = nextqId;
-             }
-             answerValues.push($(this).val());
-             
-              if(enterVals == true) {
-                var s = answerValues.join('^^^^^'); 
-                $('#multiAns_'+qId).val(s);
+    $(document).on('change', '.multiAns', function () {
+
+        var qId = 0;
+        var enterVals = false;
+        var answerValues = [];
+        $('.multiAns').each(function () {
+            var nextqId = $(this).attr('rel');
+
+            if (qId != nextqId) {
+                if (qId != 0) {
+                    enterVals = true
+                }
+                qId = nextqId;
+            }
+            answerValues.push($(this).val());
+
+            if (enterVals == true) {
+                var s = answerValues.join('^^^^^');
+                $('#multiAns_' + qId).val(s);
                 enterVals = false;
                 answerValues = [];
-              } 
-             
-          });    
-          
-          if(enterVals == false) {
-            var s = answerValues.join('^^^^^'); 
-            $('#multiAns_'+qId).val(s);
-          }   
-                
+            }
+
+        });
+
+        if (enterVals == false) {
+            var s = answerValues.join('^^^^^');
+            $('#multiAns_' + qId).val(s);
+        }
+
     });
 
     /* Function to control clicking a page number on the left pane */
@@ -74,7 +157,7 @@ jQuery(function ($) {
     /* Function to process the NEXT button */
     $(document).on('click', '.nextPage', function (event) {
         var errorsFound = 0;
-        
+
         /* Make sure at lease one school is checked */
         $('#entityList').val("");
         var schools = [];
@@ -86,18 +169,18 @@ jQuery(function ($) {
         var s = schools.join(',');
 
         $('#entityList').val(s);
-        
+
         errorsFound = checkSurveyFields();
 
         if (errorsFound == 0) {
             $('#action').val("next");
             $('#lastQNumAnswered').val($('.qNumber:last').attr('rel'));
-            
+
             /* Remove any disabled options */
             $('input, select').attr('disabled', false);
             $('input, radio').attr('disabled', false);
             $('input, checkbox').attr('disabled', false);
-            
+
             $("#survey").submit();
         }
 
@@ -108,7 +191,7 @@ jQuery(function ($) {
 
     /* Function to process the PREVIOUS button */
     $(document).on('click', '.prevPage', function () {
-        
+
         /* Make sure at lease one school is checked */
         $('#entityList').val("");
         var schools = [];
@@ -120,15 +203,15 @@ jQuery(function ($) {
         var s = schools.join(',');
 
         $('#entityList').val(s)
-        
+
         $('#action').val("prev");
         $('#lastQNumAnswered').val($('.qNumber:first').attr('rel'));
-        
+
         /* Remove any disabled options */
         $('input, select').attr('disabled', false);
         $('input, radio').attr('disabled', false);
         $('input, checkbox').attr('disabled', false);
-        
+
         $("#survey").submit();
     });
 

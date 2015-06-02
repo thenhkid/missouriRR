@@ -14,7 +14,7 @@
     <div class="col-xs-12">
 
         <form:form class="form-horizontal" id="survey" modelAttribute="survey" method="post" action="submitSurvey" role="form">
-            <input type="hidden" name="submittedSurveyId" value="${survey.submittedSurveyId}" />
+            <input type="hidden" name="submittedSurveyId" id="submittedSurveyId" value="${survey.submittedSurveyId}" />
             <input type="hidden" name="surveyId" value="${survey.surveyId}" /> 
             <input type="hidden" name="engagementId" value="${survey.engagementId}" /> 
             <input type="hidden" name="clientId" value="${survey.clientId}" /> 
@@ -59,7 +59,7 @@
                                                         <c:forEach items="${district.schoolList}" var="school">
                                                             <div class="checkbox">
                                                                 <label>
-                                                                    <input class="selectedSchools" name="form-field-checkbox" type="checkbox" class="ace" value="${school.schoolId}" <c:if test="${fn:contains(survey.entityIds, school.schoolId)}">checked="checked"</c:if> <c:if test="${disabled == true}">disabled</c:if>  />
+                                                                    <input class="selectedSchools ace" name="form-field-checkbox" type="checkbox"  value="${school.schoolId}" <c:if test="${fn:contains(survey.entityIds, school.schoolId)}">checked="checked"</c:if> <c:if test="${disabled == true}">disabled</c:if>  />
                                                                     <span class="lbl"> ${school.schoolName}</span>
                                                                 </label>
                                                             </div>
@@ -88,12 +88,7 @@
                         </div>
 
                         <div class="widget-body">
-                            <div class="widget-main">
-                                <div>
-
-                                </div>
-
-                            </div>
+                            <div class="widget-main no-padding" id="contentAndCriteriaDiv" style="max-height:200px; overflow: auto"></div>
                         </div>
                     </div>
                 </div><!-- /.span -->
@@ -143,7 +138,7 @@
                                                         <%-- Select Box --%>    
                                                         <c:when test="${question.answerTypeId == 2}">
                                                             <select <c:if test="${disabled == true}">disabled</c:if> rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="2" class="form-control ${question.required == true ? ' required' : '' }" name="surveyPageQuestions[${q.index}].questionValue" style="background-color:#ffffff; width: 750px;">
-                                                                <option value="">- Select an Answer -</option>
+                                                                    <option value="">- Select an Answer -</option>
                                                                 <c:forEach items="${question.questionChoices}" var="choiceDetails">
                                                                     <option value="${choiceDetails.id}" <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">selected="selected"</c:if></c:otherwise></c:choose>>${choiceDetails.choiceText}</option>
                                                                 </c:forEach>
@@ -158,29 +153,29 @@
                                                                         <div class="col-xs-8 col-sm-11">
                                                                             <div class="input-group">
                                                                                 <input <c:if test="${disabled == true}">readonly</c:if> class="form-control ${disabled == false ? ' date-picker' : '' } ${question.required == true ? ' required' : '' }" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="6" id="id-date-picker-1" type="text" name="surveyPageQuestions[${q.index}].questionValue" data-date-format="${question.dateFormatType == 2 ? 'dd/mm/yyyy' : 'mm/dd/yyyy' }" value="${question.questionValue}" />
-                                                                                <span class="input-group-addon">
-                                                                                    <i class="fa fa-calendar bigger-110"></i>
-                                                                                </span>
+                                                                                    <span class="input-group-addon">
+                                                                                        <i class="fa fa-calendar bigger-110"></i>
+                                                                                    </span>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
                                                                 </c:when>
                                                                 <%-- Date Range --%>
                                                                 <c:when test="${question.dateType == 2}">
-                                                                
+
                                                                     <input type="hidden" ${question.required == true ? 'class="required"' : '' } rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="6" id="multiAns_${question.id}" name="surveyPageQuestions[${q.index}].questionValue" value="${question.questionValue}" />
                                                                     <c:set var="dateParts" value="${fn:split(question.questionValue,'^^^^^')}" />
                                                                     <div class="row">
                                                                         <div class="col-xs-8 col-sm-11">
                                                                             <div class="input-daterange input-group">
                                                                                 <input type="text" <c:if test="${disabled == true}">readonly</c:if> class="multiAns input-sm form-control" rel="${question.id}" value="${dateParts[0]}" />
-                                                                                <span class="input-group-addon">
-                                                                                    <i class="fa fa-arrow-right"></i>
-                                                                                </span>
-                                                                                <input type="text" <c:if test="${disabled == true}">readonly</c:if> class="multiAns input-sm form-control" rel="${question.id}" value="${dateParts[1]}" />
+                                                                                    <span class="input-group-addon">
+                                                                                        <i class="fa fa-arrow-right"></i>
+                                                                                    </span>
+                                                                                    <input type="text" <c:if test="${disabled == true}">readonly</c:if> class="multiAns input-sm form-control" rel="${question.id}" value="${dateParts[1]}" />
+                                                                                </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
                                                                 </c:when>     
                                                                 <%-- Time Only --%>    
                                                                 <c:otherwise>            
@@ -258,7 +253,7 @@
                                                     <div  ${question.answerTypeId == 1 ? 'style="padding-top:10px;"' : ''}>
                                                         <p>${question.otherLabel}</p>
                                                         <input type="text" class="form-control" <c:if test="${disabled == true}">readonly</c:if> name="surveyPageQuestions[${q.index}].questionOtherValue" value="${question.questionOtherValue}" style="background-color:#ffffff; width:500px;" />
-                                                    </div>
+                                                        </div>
                                                 </c:if>      
                                                 <div id="errorMsg_${question.id}" style="display:none;" class="alert alert-danger" role="alert"></div>   
                                                 <hr />
@@ -273,7 +268,7 @@
                                                 Save
                                             </button>
                                         </c:if>
-                                        
+
                                         <c:choose>
                                             <c:when test="${survey.pageId == survey.lastPageId}">
                                                 <c:if test="${survey.currentPage != 1}">
