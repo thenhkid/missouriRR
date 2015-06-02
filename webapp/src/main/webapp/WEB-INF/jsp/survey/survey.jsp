@@ -18,7 +18,7 @@
             <input type="hidden" name="surveyId" value="${survey.surveyId}" /> 
             <input type="hidden" name="engagementId" value="${survey.engagementId}" /> 
             <input type="hidden" name="clientId" value="${survey.clientId}" /> 
-            <input type="hidden" name="currentPage" value="${survey.currentPage}" />
+            <input type="hidden" name="currentPage" id="currentPage" value="${survey.currentPage}" />
             <input type="hidden" name="lastQNumAnswered" id="lastQNumAnswered" value="" />
             <input type="hidden" name="totalPages" value="${survey.totalPages}" />
             <input type="hidden" name="surveyTitle" value="${survey.surveyTitle}" />

@@ -709,7 +709,28 @@ public class surveyController {
             /**
              * Submit answers to DB *
              */
-            surveyManager.submitSurvey(userDetails.getId(), programId, survey, questionAnswers, submitted, selectedEntities);
+            Integer submittedSurveyId = surveyManager.submitSurvey(userDetails.getId(), programId, survey, questionAnswers, submitted, selectedEntities);
+
+            if (surveyContentCriterias != null) {
+                Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
+                
+                /* Delete existing code sets */
+                surveyManager.deleteSurveyCodeSets(submittedSurveyId);
+                
+                while (it.hasNext()) {
+
+                    surveyContentCriteria criteria = it.next();
+
+                    if (criteria.isChecked()) {
+                        submittedsurveycontentcriteria savedCodeSets = new submittedsurveycontentcriteria();
+                        savedCodeSets.setCodeId(criteria.getCodeId());
+                        savedCodeSets.setEntityId(criteria.getSchoolId());
+                        savedCodeSets.setSubmittedSurveyId(submittedSurveyId);
+
+                        surveyManager.submitSurveyCodeSets(savedCodeSets);
+                    }
+                }
+            }
 
             encryptObject encrypt = new encryptObject();
             Map<String, String> map;
@@ -733,7 +754,28 @@ public class surveyController {
                 /**
                  * Submit answers to DB *
                  */
-                surveyManager.submitSurvey(userDetails.getId(), programId, survey, questionAnswers, submitted, selectedEntities);
+                Integer submittedSurveyId = surveyManager.submitSurvey(userDetails.getId(), programId, survey, questionAnswers, submitted, selectedEntities);
+
+                if (surveyContentCriterias != null) {
+                    Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
+                    
+                    /* Delete existing code sets */
+                    surveyManager.deleteSurveyCodeSets(submittedSurveyId);
+
+                    while (it.hasNext()) {
+
+                        surveyContentCriteria criteria = it.next();
+
+                        if (criteria.isChecked()) {
+                            submittedsurveycontentcriteria savedCodeSets = new submittedsurveycontentcriteria();
+                            savedCodeSets.setCodeId(criteria.getCodeId());
+                            savedCodeSets.setEntityId(criteria.getSchoolId());
+                            savedCodeSets.setSubmittedSurveyId(submittedSurveyId);
+
+                            surveyManager.submitSurveyCodeSets(savedCodeSets);
+                        }
+                    }
+                }
 
                 mav.setViewName("/completedSurvey");
                 surveys surveyDetails = surveyManager.getSurveyDetails(survey.getSurveyId());
@@ -791,7 +833,8 @@ public class surveyController {
      * @throws Exception
      */
     @RequestMapping(value = "/getEntityCodeSets", method = RequestMethod.GET)
-    public @ResponseBody ModelAndView getEntityCodeSets(@RequestParam(value = "entityId", required = true) Integer entityId, @RequestParam(value = "surveyId", required = true) Integer surveyId) throws Exception {
+    public @ResponseBody
+    ModelAndView getEntityCodeSets(@RequestParam(value = "entityId", required = true) Integer entityId, @RequestParam(value = "surveyId", required = true) Integer surveyId) throws Exception {
 
         programHierarchyDetails entityDetails = hierarchymanager.getProgramHierarchyItemDetails(entityId);
 
@@ -810,11 +853,11 @@ public class surveyController {
                 newCriteria.setCodeValue(codeDetails.getCode());
                 newCriteria.setSchoolId(entityId);
                 newCriteria.setSchoolName(entityDetails.getName());
-                
-                if(surveyId > 0) {
+
+                if (surveyId > 0) {
                     submittedsurveycontentcriteria codesetFound = surveyManager.getSurveyContentCriteria(surveyId, entityId, activityCode);
-                    
-                    if(codesetFound.getId() > 0) {
+
+                    if (codesetFound != null && codesetFound.getId() > 0) {
                         newCriteria.setChecked(true);
                     }
                 }
@@ -839,22 +882,23 @@ public class surveyController {
      * @throws Exception
      */
     @RequestMapping(value = "/removeCodeSets", method = RequestMethod.GET)
-    public @ResponseBody ModelAndView removeCodeSets(@RequestParam(value = "entityId", required = true) Integer entityId) throws Exception {
+    public @ResponseBody
+    ModelAndView removeCodeSets(@RequestParam(value = "entityId", required = true) Integer entityId) throws Exception {
 
         Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
-        
+
         List<surveyContentCriteria> toRemove = new ArrayList<surveyContentCriteria>();
 
         while (it.hasNext()) {
-            
+
             surveyContentCriteria criteria = it.next();
-            
-            if(criteria.getSchoolId() == entityId) {
+
+            if (criteria.getSchoolId() == entityId) {
                 toRemove.add(criteria);
             }
         }
-        
-        if(toRemove != null && !toRemove.isEmpty()) {
+
+        if (toRemove != null && !toRemove.isEmpty()) {
             surveyContentCriterias.removeAll(toRemove);
         }
 
@@ -865,52 +909,54 @@ public class surveyController {
         return mav;
 
     }
-    
+
     /**
-     * 
+     *
      * @param entityId
      * @param codeId
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     @RequestMapping(value = "/saveSelCodeSet", method = RequestMethod.POST)
-    public @ResponseBody Integer saveSelCodeSet(@RequestParam(value = "entityId", required = true) Integer entityId, @RequestParam(value = "codeId", required = true) Integer codeId) throws Exception {
-        
+    public @ResponseBody
+    Integer saveSelCodeSet(@RequestParam(value = "entityId", required = true) Integer entityId, @RequestParam(value = "codeId", required = true) Integer codeId) throws Exception {
+
         Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
-        
+
         while (it.hasNext()) {
-            
+
             surveyContentCriteria criteria = it.next();
-            
-            if(criteria.getSchoolId() == entityId && criteria.getCodeId() == codeId) {
-               criteria.setChecked(true);
+
+            if (criteria.getSchoolId() == entityId && criteria.getCodeId() == codeId) {
+                criteria.setChecked(true);
             }
         }
-        
+
         return (Integer) 1;
     }
-    
+
     /**
-     * 
+     *
      * @param entityId
      * @param codeId
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     @RequestMapping(value = "/removeSelCodeSet", method = RequestMethod.POST)
-    public @ResponseBody Integer removeSelCodeSet(@RequestParam(value = "entityId", required = true) Integer entityId, @RequestParam(value = "codeId", required = true) Integer codeId) throws Exception {
-        
+    public @ResponseBody
+    Integer removeSelCodeSet(@RequestParam(value = "entityId", required = true) Integer entityId, @RequestParam(value = "codeId", required = true) Integer codeId) throws Exception {
+
         Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
-        
+
         while (it.hasNext()) {
-            
+
             surveyContentCriteria criteria = it.next();
-            
-            if(criteria.getSchoolId() == entityId && criteria.getCodeId() == codeId) {
-               criteria.setChecked(false);
+
+            if (criteria.getSchoolId() == entityId && criteria.getCodeId() == codeId) {
+                criteria.setChecked(false);
             }
         }
-        
+
         return (Integer) 1;
     }
 }

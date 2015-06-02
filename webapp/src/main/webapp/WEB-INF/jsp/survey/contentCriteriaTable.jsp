@@ -24,7 +24,7 @@
                 <c:forEach var="content" items="${contentCriteria}">
                     <tr>
                         <td class="center">
-                            <input type="checkbox" class="contentSel" rel="${content.schoolId}" value="${content.codeId}" />
+                            <input type="checkbox" class="contentSel" rel="${content.schoolId}" value="${content.codeId}" <c:if test="${content.checked == true}">checked="checked"</c:if> />
                         </td>
                         <td>
                             ${content.schoolName}
