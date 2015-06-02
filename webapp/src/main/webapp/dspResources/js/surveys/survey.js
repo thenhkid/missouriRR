@@ -24,27 +24,20 @@ jQuery(function ($) {
 
         var surveyId = $('#submittedSurveyId').val();
 
-        if (surveyId > 0) {
-            var currentPage = $('#currentPage').val();
-            
-            if(currentPage == 1) {
+        $('.selectedSchools').each(function () {
+            var entityId = $(this).val();
 
-                $('.selectedSchools').each(function () {
-                    var entityId = $(this).val();
-
-                    if ($(this).is(':checked')) {
-                        $.ajax({
-                            url: 'getEntityCodeSets',
-                            data: {'entityId': entityId, 'surveyId': surveyId},
-                            type: "GET",
-                            success: function (data) {
-                                $('#contentAndCriteriaDiv').html(data);
-                            }
-                        });
+            if ($(this).is(':checked')) {
+                $.ajax({
+                    url: 'getEntityCodeSets',
+                    data: {'entityId': entityId, 'surveyId': surveyId},
+                    type: "GET",
+                    success: function (data) {
+                        $('#contentAndCriteriaDiv').html(data);
                     }
                 });
             }
-        }
+        });
     });
 
 

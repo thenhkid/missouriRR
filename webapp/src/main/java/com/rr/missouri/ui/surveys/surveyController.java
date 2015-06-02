@@ -594,7 +594,6 @@ public class surveyController {
                             if (choiceDetails.getSkipToPageId() > 0) {
                                 SurveyPages pageDetails = surveyManager.getSurveyPageDetails(choiceDetails.getSkipToPageId());
                                 goToPage = pageDetails.getPageNum();
-                                System.out.println("gotopage: " + goToPage);
                             }
 
                             goToQuestion = choiceDetails.getSkipToQuestionId();
@@ -713,10 +712,10 @@ public class surveyController {
 
             if (surveyContentCriterias != null) {
                 Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
-                
+
                 /* Delete existing code sets */
                 surveyManager.deleteSurveyCodeSets(submittedSurveyId);
-                
+
                 while (it.hasNext()) {
 
                     surveyContentCriteria criteria = it.next();
@@ -758,7 +757,7 @@ public class surveyController {
 
                 if (surveyContentCriterias != null) {
                     Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
-                    
+
                     /* Delete existing code sets */
                     surveyManager.deleteSurveyCodeSets(submittedSurveyId);
 
@@ -844,26 +843,42 @@ public class surveyController {
         if (activityCodes != null && !activityCodes.isEmpty()) {
 
             for (Integer activityCode : activityCodes) {
+                boolean codeSetFound = false;
+               
+                Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
 
-                activityCodes codeDetails = activitycodemanager.getActivityCodeById(activityCode);
+                while (it.hasNext()) {
 
-                surveyContentCriteria newCriteria = new surveyContentCriteria();
-                newCriteria.setCodeId(activityCode);
-                newCriteria.setCodeDesc(codeDetails.getCodeDesc());
-                newCriteria.setCodeValue(codeDetails.getCode());
-                newCriteria.setSchoolId(entityId);
-                newCriteria.setSchoolName(entityDetails.getName());
-
-                if (surveyId > 0) {
-                    submittedsurveycontentcriteria codesetFound = surveyManager.getSurveyContentCriteria(surveyId, entityId, activityCode);
-
-                    if (codesetFound != null && codesetFound.getId() > 0) {
-                        newCriteria.setChecked(true);
+                    surveyContentCriteria criteria = it.next();
+                    
+                    if (criteria.getSchoolId() == entityId && criteria.getCodeId() == activityCode) {
+                        codeSetFound = true;
                     }
                 }
+                
+                if(codeSetFound == false) {
 
-                surveyContentCriterias.add(newCriteria);
+                    activityCodes codeDetails = activitycodemanager.getActivityCodeById(activityCode);
 
+                    surveyContentCriteria newCriteria = new surveyContentCriteria();
+                    newCriteria.setCodeId(activityCode);
+                    newCriteria.setCodeDesc(codeDetails.getCodeDesc());
+                    newCriteria.setCodeValue(codeDetails.getCode());
+                    newCriteria.setSchoolId(entityId);
+                    newCriteria.setSchoolName(entityDetails.getName());
+
+                    if (surveyId > 0) {
+                        submittedsurveycontentcriteria codesetFound = surveyManager.getSurveyContentCriteria(surveyId, entityId, activityCode);
+
+                        if (codesetFound != null && codesetFound.getId() > 0) {
+                            newCriteria.setChecked(true);
+                        }
+                    }
+
+                    surveyContentCriterias.add(newCriteria);
+                
+                }
+                    
             }
         }
 
