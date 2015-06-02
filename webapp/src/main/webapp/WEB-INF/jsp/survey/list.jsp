@@ -47,7 +47,7 @@
                         <th scope="col" >Submitted By</th>
                         <th scope="col" class="center  hidden-480">Submitted</th>
                         <th scope="col">School(s)</th>
-                        <th scope="col">Content Area - Criteria</th>
+                        <%--<th scope="col">Content Area - Criteria</th>--%>
                         <th scope="col" class="center"></th>
                     </tr>
                 </thead>
@@ -87,7 +87,7 @@
                                             </ul>
                                         </c:if>
                                     </td>
-                                    <td></td>
+                                    <%--<td></td>--%>
                                     <td>
                                         <div class="hidden-sm hidden-xs action-buttons">
                                             <c:choose>

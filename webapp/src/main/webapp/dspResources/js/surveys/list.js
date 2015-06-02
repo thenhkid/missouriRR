@@ -60,7 +60,6 @@ jQuery(function ($) {
                 "aoColumns": [
                     null, null, null,
                     {"bSortable": false},
-                    {"bSortable": false},
                     {"bSortable": false}
                 ],
                 "aaSorting": []
@@ -158,7 +157,7 @@ jQuery(function ($) {
         //ColVis extension
         var colvis = new $.fn.dataTable.ColVis(oTable1, {
             "buttonText": "<i class='fa fa-search'></i>",
-            "aiExclude": [5],
+            "aiExclude": [4],
             "bShowAll": true,
             //"bRestore": true,
             "sAlign": "right",
