@@ -27,7 +27,6 @@
             <input type="hidden" name="saveButton" value="${survey.saveButton}" />
             <input type="hidden" name="action" value="" id="action" />
             <input type="hidden" name="goToPage" value="0" id="goToPage" />
-            <input type="hidden" name="entityIds" value="${survey.entityIds}" id="entityList" />
             <input type="hidden" name="selectedEntities" value="${selectedEntities}" />
             <input type="hidden" name="disabled" value="${disabled}" />
             <input type="hidden" name="pageId" value="${survey.pageId}" />
@@ -48,27 +47,16 @@
                         <div class="widget-body">
                             <div id="errorMsg_schools" style="display:none;" class="alert alert-danger" role="alert"></div>   
                             <div class="widget-main">
-                                <div>
-                                    <div class="row" style="max-height:200px; overflow: auto">
+                                <div class="has-error">
+                                    <select multiple="" name="entityIds" class="chosen-select form-control <c:if test="${disabled == true}">disabled</c:if>" id="schoolSelect" data-placeholder="Select Schools...">
                                         <c:forEach items="${selDistricts}" var="district">
-                                            <div class="col-xs-12 col-sm-5">
-                                                <div class="control-group">
-                                                    <label class="control-label bolder blue">${district.districtName}</label>
-
-                                                    <c:if test="${not empty district.schoolList}">
-                                                        <c:forEach items="${district.schoolList}" var="school">
-                                                            <div class="checkbox">
-                                                                <label>
-                                                                    <input class="selectedSchools ace" name="form-field-checkbox" type="checkbox"  value="${school.schoolId}" <c:if test="${fn:contains(survey.entityIds, school.schoolId)}">checked="checked"</c:if> <c:if test="${disabled == true}">disabled</c:if>  />
-                                                                    <span class="lbl"> ${school.schoolName}</span>
-                                                                </label>
-                                                            </div>
-                                                        </c:forEach>
-                                                    </c:if>
-                                                </div>
-                                            </div>
-                                        </c:forEach>  
-                                    </div>
+                                            <optgroup label="${district.districtName}">
+                                                <c:forEach items="${district.schoolList}" var="school">
+                                                    <option value="${school.schoolId}" <c:if test="${fn:contains(survey.entityIds, school.schoolId)}">selected</c:if>>${school.schoolName}</option>
+                                                </c:forEach>
+                                            </optgroup>
+                                        </c:forEach>
+                                    </select>
                                 </div>
                             </div>
                         </div>

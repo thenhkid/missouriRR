@@ -17,7 +17,6 @@
 
         <div class="clearfix">
             <div class="pull-right">
-
                 <form:form id="districtSelectForm" method="POST" action="/surveys/startSurvey" role="form">
                     <input type="hidden" name="s" id="surveyId" value="${selSurvey}" />
                     <ul class="list-unstyled spaced2">

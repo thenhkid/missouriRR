@@ -10,6 +10,31 @@ jQuery(function ($) {
 
     $(document).ready(function () {
 
+        if (!ace.vars['touch']) {
+            $('.chosen-select').chosen({allow_single_deselect: true});
+            //resize the chosen on window resize
+
+            $(window)
+                    .off('resize.chosen')
+                    .on('resize.chosen', function () {
+                        $('.chosen-select').each(function () {
+                            var $this = $(this);
+                            $this.next().css({'width': $this.parent().width()});
+                        })
+                    }).trigger('resize.chosen');
+            //resize chosen on sidebar collapse/expand
+            $(document).on('settings.ace.chosen', function (e, event_name, event_val) {
+                if (event_name != 'sidebar_collapsed')
+                    return;
+                $('.chosen-select').each(function () {
+                    var $this = $(this);
+                    $this.next().css({'width': $this.parent().width()});
+                })
+            });
+
+
+        }
+
         $("input:text,form").attr("autocomplete", "off");
 
         $('.input-daterange').datepicker({autoclose: true});
@@ -23,11 +48,12 @@ jQuery(function ($) {
         });
 
         var surveyId = $('#submittedSurveyId').val();
+       
+        var selectedSchools = $('#schoolSelect').val();
+        
+        if(selectedSchools != null) {
+            $.each(selectedSchools, function (i, entityId) {
 
-        $('.selectedSchools').each(function () {
-            var entityId = $(this).val();
-
-            if ($(this).is(':checked')) {
                 $.ajax({
                     url: 'getEntityCodeSets',
                     data: {'entityId': entityId, 'surveyId': surveyId},
@@ -36,39 +62,39 @@ jQuery(function ($) {
                         $('#contentAndCriteriaDiv').html(data);
                     }
                 });
-            }
-        });
+
+            });
+        }
     });
 
 
     /* If editing or viewing need to get the content area */
 
-
     /* Get the content area and criteria for the clicked school */
-    $(document).on('click', '.selectedSchools', function () {
-        var entityId = $(this).val();
-
-        if ($(this).is(':checked')) {
+    $('#schoolSelect').on('change', function (evt, params) {
+        if (params.selected > 0) {
             $.ajax({
                 url: 'getEntityCodeSets',
-                data: {'entityId': entityId, 'surveyId': 0},
+                data: {'entityId': params.selected, 'surveyId': 0},
                 type: "GET",
                 success: function (data) {
                     $('#contentAndCriteriaDiv').html(data);
                 }
             });
         }
-        else {
+        else if (params.deselected > 0) {
             $.ajax({
                 url: 'removeCodeSets',
-                data: {'entityId': entityId},
+                data: {'entityId': params.deselected},
                 type: "GET",
                 success: function (data) {
                     $('#contentAndCriteriaDiv').html(data);
                 }
             });
         }
+
     });
+
 
     /* Save the code set when selected */
     $(document).on('click', '.contentSel', function () {
@@ -155,18 +181,6 @@ jQuery(function ($) {
     $(document).on('click', '.nextPage', function (event) {
         var errorsFound = 0;
 
-        /* Make sure at lease one school is checked */
-        $('#entityList').val("");
-        var schools = [];
-        $('.selectedSchools').each(function () {
-            if ($(this).is(":checked")) {
-                schools.push($(this).val());
-            }
-        });
-        var s = schools.join(',');
-
-        $('#entityList').val(s);
-
         errorsFound = checkSurveyFields();
 
         if (errorsFound == 0) {
@@ -189,18 +203,6 @@ jQuery(function ($) {
     /* Function to process the PREVIOUS button */
     $(document).on('click', '.prevPage', function () {
 
-        /* Make sure at lease one school is checked */
-        $('#entityList').val("");
-        var schools = [];
-        $('.selectedSchools').each(function () {
-            if ($(this).is(":checked")) {
-                schools.push($(this).val());
-            }
-        });
-        var s = schools.join(',');
-
-        $('#entityList').val(s)
-
         $('#action').val("prev");
         $('#lastQNumAnswered').val($('.qNumber:first').attr('rel'));
 
@@ -215,18 +217,6 @@ jQuery(function ($) {
     /* Function to process the COMPLETE button */
     $(document).on('click', '.completeSurvey', function (event) {
         var errorsFound = 0;
-
-        /* Make sure at lease one school is checked */
-        $('#entityList').val("");
-        var schools = [];
-        $('.selectedSchools').each(function () {
-            if ($(this).is(":checked")) {
-                schools.push($(this).val());
-            }
-        });
-        var s = schools.join(',');
-
-        $('#entityList').val(s);
 
         errorsFound = checkSurveyFields();
 
@@ -244,18 +234,6 @@ jQuery(function ($) {
     /* Function to process the SAVE button */
     $(document).on('click', '.saveSurvey', function () {
 
-        /* Make sure at lease one school is checked */
-        $('#entityList').val("");
-        var schools = [];
-        $('.selectedSchools').each(function () {
-            if ($(this).is(":checked")) {
-                schools.push($(this).val());
-            }
-        });
-        var s = schools.join(',');
-
-        $('#entityList').val(s);
-
         $('#action').val("save");
         $('#lastQNumAnswered').val(1);
         $("#survey").submit();
@@ -269,9 +247,9 @@ function checkSurveyFields() {
     $('div').removeClass("has-error");
     $('.alert-danger').html("");
     $('.alert-danger').hide();
-
+    
     //Make sure at least one school is selcted
-    if ($('#entityList').val() == "") {
+    if ($('#schoolSelect').val() == "" || $('#schoolSelect').val() == null) {
         $('#errorMsg_schools').html("At least one school must be selected.");
         $('#errorMsg_schools').show();
     }
