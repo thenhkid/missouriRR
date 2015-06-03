@@ -45,9 +45,8 @@
                         </div>
 
                         <div class="widget-body">
-                            <div id="errorMsg_schools" style="display:none;" class="alert alert-danger" role="alert"></div>   
                             <div class="widget-main">
-                                <div class="has-error">
+                                <div>
                                     <select multiple="" name="entityIds" class="chosen-select form-control <c:if test="${disabled == true}">disabled</c:if>" id="schoolSelect" data-placeholder="Select Schools...">
                                         <c:forEach items="${selDistricts}" var="district">
                                             <optgroup label="${district.districtName}">
@@ -57,8 +56,9 @@
                                             </optgroup>
                                         </c:forEach>
                                     </select>
+                                    <div id="errorMsg_schools" style="display: none; color:#A94442" class="help-block col-xs-12 col-sm-reset inline"></div>         
                                 </div>
-                            </div>
+                            </div>   
                         </div>
                     </div>
                 </div><!-- /.span -->
@@ -106,10 +106,10 @@
                                                 <input type="hidden" name="surveyPageQuestions[${q.index}].surveyPageId" value="${question.surveyPageId}" />
                                                 <input type="hidden" id="requiredMsg${question.id}" value="${question.requiredResponse}" />
 
-                                                <div>
+                                                <div id="questionOuterDiv_${question.id}">
                                                     <c:if test="${question.answerTypeId != 7}">
                                                         <c:set var="qNum" value="${qNum + 1}" scope="page"/>
-                                                        <label for="surveyPageQuestions[${q.index}].questionValue" class="qNumber" rel="${qNum}"><h5><c:if test="${question.required == true}">*&nbsp;</c:if>${qNum}.&nbsp; ${question.question}</h5></label>
+                                                        <label for="surveyPageQuestions[${q.index}].questionValue" class="qNumber control-label" rel="${qNum}"><h5><c:if test="${question.required == true}">*&nbsp;</c:if>${qNum}.&nbsp; ${question.question}</h5></label>
                                                     </c:if>
                                                     <c:choose>
                                                         <c:when test="${question.answerTypeId == 7}">
@@ -236,14 +236,15 @@
                                                             </c:choose>
                                                         </c:when>
                                                     </c:choose>
+                                                    <div id="errorMsg_${question.id}" style="display:none;" class="help-block col-xs-12 col-sm-reset inline"></div> 
                                                 </div>
                                                 <c:if test="${question.otherOption == true && question.otherDspChoice == 2}">
                                                     <div  ${question.answerTypeId == 1 ? 'style="padding-top:10px;"' : ''}>
                                                         <p>${question.otherLabel}</p>
                                                         <input type="text" class="form-control" <c:if test="${disabled == true}">readonly</c:if> name="surveyPageQuestions[${q.index}].questionOtherValue" value="${question.questionOtherValue}" style="background-color:#ffffff; width:500px;" />
-                                                        </div>
-                                                </c:if>      
-                                                <div id="errorMsg_${question.id}" style="display:none;" class="alert alert-danger" role="alert"></div>   
+                                                    </div>
+                                                </c:if>   
+                                                
                                                 <hr />
                                             </c:forEach>
                                         </c:when>

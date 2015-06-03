@@ -245,8 +245,8 @@ function checkSurveyFields() {
     var errorFound = 0;
 
     $('div').removeClass("has-error");
-    $('.alert-danger').html("");
-    $('.alert-danger').hide();
+    $('.help-block').html("");
+    $('.help-block').hide();
     
     //Make sure at least one school is selcted
     if ($('#schoolSelect').val() == "" || $('#schoolSelect').val() == null) {
@@ -268,7 +268,7 @@ function checkSurveyFields() {
         if (qType == 3 || qType == 2 | qType == 6) {
 
             if ($(this).val() === '') {
-                $('#qNum' + qId).addClass("has-error");
+                $('#questionOuterDiv_'+qId).addClass("has-error");
                 $('#errorMsg_' + qId).html(requiredMsg);
                 $('#errorMsg_' + qId).show();
                 errorFound = 1;
@@ -277,7 +277,7 @@ function checkSurveyFields() {
         // Multiple Choice
         else if (qType == 1) {
             if ($('input[name="' + qName + '"]:checked').length == 0) {
-                $('#qNum' + qId).addClass("has-error");
+                $('#questionOuterDiv_'+qId).addClass("has-error");
                 $('#errorMsg_' + qId).html(requiredMsg);
                 $('#errorMsg_' + qId).show();
                 errorFound = 1;
@@ -295,7 +295,7 @@ function checkSurveyFields() {
             var emailValidated = validateEmail(emailVal);
 
             if (emailValidated === false) {
-                $('#qNum' + qId).addClass("has-error");
+                $('#questionOuterDiv_'+qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid email address.');
                 $('#errorMsg_' + qId).show();
                 errorFound = 1;
@@ -312,7 +312,7 @@ function checkSurveyFields() {
             var phoneValidated = validatePhone(phoneVal);
 
             if (phoneValidated === false) {
-                $('#qNum' + qId).addClass("has-error");
+                $('#questionOuterDiv_'+qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid phone number.');
                 $('#errorMsg_' + qId).show();
                 errorFound = 1;
@@ -329,7 +329,7 @@ function checkSurveyFields() {
             var fieldValidated = validateNumericValue(fieldVal);
 
             if (fieldValidated === false) {
-                $('#qNum' + qId).addClass("has-error");
+                $('#questionOuterDiv_'+qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('The value must be numeric.');
                 $('#errorMsg_' + qId).show();
                 errorFound = 1;
@@ -346,7 +346,7 @@ function checkSurveyFields() {
             var URLValidated = validateURL(URLVal);
 
             if (URLValidated === false) {
-                $('#qNum' + qId).addClass("has-error");
+                $('#questionOuterDiv_'+qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid URL.');
                 $('#errorMsg_' + qId).show();
                 errorFound = 1;
@@ -363,7 +363,7 @@ function checkSurveyFields() {
             var DateValidated = validateDate(dateVal);
 
             if (DateValidated === false) {
-                $('#qNum' + qId).addClass("has-error");
+                $('#questionOuterDiv_'+qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid Date, format should be mm/dd/yyyy.');
                 $('#errorMsg_' + qId).show();
                 errorFound = 1;
