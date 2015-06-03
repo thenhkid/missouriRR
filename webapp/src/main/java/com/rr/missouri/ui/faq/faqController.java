@@ -5,9 +5,11 @@
  */
 package com.rr.missouri.ui.faq;
 
+import com.registryKit.faq.faqCategories;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.registryKit.faq.faqManager;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,7 +37,9 @@ public class faqController {
         
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/faq");
-
+        
+         List <faqCategories> categoryList = faqManager.getFAQCategories(programId);
+         mav.addObject("categoryList", categoryList);
         return mav;
     }
     
