@@ -135,12 +135,17 @@ public class surveyController {
             surveyId = Integer.parseInt(result[0].substring(4));
 
         } else {
-            surveyId = surveyList.get(0).getId();
+            if(surveyList.size() > 0){
+                surveyId = surveyList.get(0).getId();
+            }
+            else{
+                surveyId = 0;
+            }
         }
         mav.addObject("selSurvey", surveyId);
 
         surveys surveyDetails = surveyManager.getSurveyDetails(surveyId);
-        mav.addObject("surveyName", surveyDetails.getTitle());
+        mav.addObject("surveyName", "test");
 
         /* Get a list of completed surveys the logged in user has access to */
         User userDetails = (User) session.getAttribute("userDetails");

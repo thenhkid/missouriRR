@@ -81,67 +81,6 @@
     </div>
 </div>
 
-<div id="createEventForm" style="display:none;">
-    <div style="width:240px;">
-        <form>
-            <div class="form-group">
-                <select name="colorpicker-picker-longlist">
-                    <option value="#7bd148">Green</option>
-                    <option value="#5484ed">Bold blue</option>
-                    <option value="#a4bdfc">Blue</option>
-                    <option value="#46d6db">Turquoise</option>
-                    <option value="#7ae7bf">Light green</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="sr-only" for="eventName">Event Name</label>
-                <input type="text" class="form-control" name="eventName" placeholder="New Event" />
-            </div>
-            <div class="form-group">
-                <label class="sr-only" for="eventLocation">Event Location</label>
-                <input type="text" class="form-control" name="eventLocation" placeholder="Event Location" />
-            </div>
-            <hr />
-            <div class="form-group">
-                <label class="sr-only" for="eventDate">Event Date</label>
-                <input type="text" class="form-control eventDate" name="eventDate" placeholder="Event Date" />
-            </div>
-            <div class="form-group">
-                <div class="row clearfix">
-                    <div class="col-md-5">
-                        <select class="form-control"></select>
-                    </div>
-                    <div class="col-md-2">
-                        to
-                    </div>
-                    <div class="col-md-5">
-                        <select class="form-control"></select>
-                    </div>
-                </div>
-            </div>
-            <hr />
-            <div class="form-group">
-                <label for="eventNotes">Notes</label>
-                <textarea type="text" class="form-control" name="eventNotes"></textarea>
-            </div>
-            <hr />
-            <div class="form-group">
-                <label for="document1">Documents</label>
-                <input type="text" class="form-control" name="document1" placeholder="Attachment Name" />
-                <input type="file" id="exampleInputFile">
-            </div>
-            <hr />
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox"> Alert all users of this new event?
-                </label>
-            </div>
-            <hr />
-            <button type="submit" class="btn btn-primary">Create</button>
-        </form>
-    </div>
-</div>
-
 <!-- Event Type Manager Modal -->
 <div class="modal fade" id="eventTypeManagerModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">

@@ -4,12 +4,19 @@
  * and open the template in the editor.
  */
 
-jQuery(function ($) {
+jQuery(function($) {
+    
+    var calendar;
+    var eventContainer;
+    
+    $(document).ready(function() {
+        
+    });
 
     /* initialize the external events
      -----------------------------------------------------------------*/
 
-    $('#external-events div.external-event').each(function () {
+    $('#external-events div.external-event').each(function() {
 
         // create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
         // it doesn't need to have a start or end
@@ -29,7 +36,44 @@ jQuery(function ($) {
 
     });
 
+    $(document).on("click", ".eventSave", function() {
+        
+        var eventTypeId = $('#hiddenEventTypeId').val();
+        var eventName = $('.popover-content div form div.form-group .eventName').val();
+        var eventLocation = $('.popover-content div form div.form-group .eventLocation').val();
+        var eventStartDate = $('.popover-content div form div.form-group .eventStartDate').val();
+        var eventEndDate = $('.popover-content div form div.form-group .eventEndDate').val();
+        var eventStartTime = $('.popover-content div form div.form-group .timeFrom').val();
+        var eventEndTime = $('.popover-content div form div.form-group .timeTo').val();
+        var eventNotes = $('.popover-content div form div.form-group .eventNotes').val();
+        var eventId = 0;
 
+        $.ajax({
+            url: '/calendar/saveEvent.do',
+            type: 'POST',
+            data: {
+                'eventId':eventId,
+                'eventTypeId':eventTypeId,
+                'eventName':eventName,
+                'eventLocation':eventLocation,
+                'eventStartDate':eventStartDate,
+                'eventEndDate':eventEndDate,
+                'eventStartTime':eventStartTime,
+                'eventEndTime':eventEndTime,
+                'eventNotes':eventNotes
+            },
+            success: function(data) {
+                //bootbox.hideAll();
+                $('.popover').popover('destroy');
+                calendar.fullCalendar('refetchEvents');
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+
+        return false;
+    });
 
     /* initialize the calendar
      -----------------------------------------------------------------*/
@@ -38,9 +82,21 @@ jQuery(function ($) {
     var d = date.getDate();
     var m = date.getMonth();
     var y = date.getFullYear();
-
-
-    var calendar = $('#calendar').fullCalendar({
+    
+    var typeArray = [];
+    $.each($("input[name='eventTypeIdFilter']:checked"), function(){
+        typeArray.push($(this).val());
+    });
+        
+    var events = {
+        url: '/calendar/getEventsJSON.do',
+        type: 'GET',
+        data: {
+          eventTypeId: typeArray.toString()
+        }
+    };
+    
+    calendar = $('#calendar').fullCalendar({
         //isRTL: true,
         buttonHtml: {
             prev: '<i class="ace-icon fa fa-chevron-left"></i>',
@@ -51,29 +107,10 @@ jQuery(function ($) {
             center: 'title',
             right: 'month,agendaWeek,agendaDay'
         },
-        events: [
-            {
-                title: 'All Day Event',
-                start: new Date(y, m, 1),
-                className: 'label-important'
-            },
-            {
-                title: 'Long Event',
-                start: moment().subtract(5, 'days').format('YYYY-MM-DD'),
-                end: moment().subtract(1, 'days').format('YYYY-MM-DD'),
-                className: 'label-success'
-            },
-            {
-                title: 'Some Event',
-                start: new Date(y, m, d - 3, 16, 0),
-                allDay: false,
-                className: 'label-info'
-            }
-        ]
-        ,
+        events: events,
         editable: true,
         droppable: true, // this allows things to be dropped onto the calendar !!!
-        drop: function (date, allDay) { // this function is called when something is dropped
+        drop: function(date, allDay) { // this function is called when something is dropped
 
             // retrieve the dropped element's stored Event Object
             var originalEventObject = $(this).data('eventObject');
@@ -103,73 +140,499 @@ jQuery(function ($) {
         ,
         selectable: true,
         selectHelper: true,
-        select: function (start, end, allDay) {
-
-            bootbox.prompt("New Event Title:", function (title) {
-                if (title !== null) {
-                    calendar.fullCalendar('renderEvent',
-                            {
-                                title: title,
-                                start: start,
-                                end: end,
-                                allDay: allDay,
-                                className: 'label-info'
-                            },
-                    true // make the event "stick"
-                            );
-                }
-            });
-
-
-            calendar.fullCalendar('unselect');
+        /*select: function (start, end, allDay) {
+         
+         bootbox.prompt("New Event Title:", function (title) {
+         if (title !== null) {
+         calendar.fullCalendar('renderEvent',
+         {
+         title: title,
+         start: start,
+         end: end,
+         allDay: allDay,
+         className: 'label-info'
+         },
+         true // make the event "stick"
+         );
+         }
+         });
+         
+         
+         calendar.fullCalendar('unselect');
+         }*/
+        select: function(start, end, allDay) {
+            
         }
         ,
-        eventClick: function (calEvent, jsEvent, view) {
+        dayClick: function(date, jsEvent, view) {
+            var tempThis = $(this);
+            
+            $.ajax({
+                url: '/calendar/getNewEventForm.do',
+                type: 'GET',
+                success: function(data) {
+                    $('.popover').popover('destroy');
 
-            //display a modal
-            var modal =
-                    '<div class="modal fade">\
-			  <div class="modal-dialog">\
-			   <div class="modal-content">\
-				 <div class="modal-body">\
-				   <button type="button" class="close" data-dismiss="modal" style="margin-top:-10px;">&times;</button>\
-				   <form class="no-margin">\
-					  <label>Change event name &nbsp;</label>\
-					  <input class="middle" autocomplete="off" type="text" value="' + calEvent.title + '" />\
-					 <button type="submit" class="btn btn-sm btn-success"><i class="ace-icon fa fa-check"></i> Save</button>\
-				   </form>\
-				 </div>\
-				 <div class="modal-footer">\
-					<button type="button" class="btn btn-sm btn-danger" data-action="delete"><i class="ace-icon fa fa-trash-o"></i> Delete Event</button>\
-					<button type="button" class="btn btn-sm" data-dismiss="modal"><i class="ace-icon fa fa-times"></i> Cancel</button>\
-				 </div>\
-			  </div>\
-			 </div>\
-			</div>';
+                    $(tempThis).popover({
+                        trigger: 'focus',
+                        content: data,
+                        placement: 'auto right',
+                        html: true,
+                        title: 'Create Event',
+                        container: 'body',
+                        callback: function () {
 
+                        }
+                    });
+                    $(tempThis).popover('toggle');
 
-            var modal = $(modal).appendTo('body');
-            modal.find('form').on('submit', function (ev) {
-                ev.preventDefault();
+                    $('.newEventColor').simplecolorpicker().on('change', function() {
+                        queryEventType($('.newEventColor').val());
+                    });
+                    
+                    $('.timeFrom').timepicker({'scrollDefault':'now'});
+                    $('.timeFrom').val($('.timeFrom option:first').val());
+                    $('.timeFrom').on('changeTime',function(){
 
-                calEvent.title = $(this).find("input[type=text]").val();
-                calendar.fullCalendar('updateEvent', calEvent);
-                modal.modal("hide");
+                        var date = new Date();
+                        date.setHours(0);
+                        date.setMinutes(0);
+                        date.setSeconds(0);
+
+                        var timePicked = $(this).val().indexOf(':');
+                        timePicked = $(this).val().substring(0,timePicked);
+
+                        if($(this).val().indexOf('am') > 0 && parseInt(timePicked) == 12){
+                            timePicked = parseInt(timePicked)-12;
+                        }
+                        else if($(this).val().indexOf('pm') > 0 && parseInt(timePicked) < 12){
+                            timePicked = parseInt(timePicked)+12;
+                        }
+                        date.setHours(parseInt(timePicked)+1);
+
+                        var minutesPicked = $(this).val().indexOf(':');
+                        minutesPicked = $(this).val().substring(minutesPicked+1,minutesPicked+3);
+                        date.setMinutes(minutesPicked);
+
+                        $('.timeTo').timepicker('setTime',date);
+
+                    });
+
+                    $('.timeTo').timepicker({'scrollDefault':'now'});
+                    $(".eventStartDate").datepicker({
+                        showOtherMonths: true,
+                        selectOtherMonths: true
+                    });
+                    
+                    $(".eventStartDate").datepicker("setDate",date.format('MM/DD/YYYY'));
+                    $(".eventEndDate").datepicker("setDate",date.format('MM/DD/YYYY'));
+                    
+                    $(document).on("change", ".eventStartDate", function() {
+                        $(".eventEndDate").val($(this).val());
+                        $(".eventEndDate").datepicker("setDate",$(this).val());
+                    });
+
+                    $(".eventEndDate").datepicker({
+                        showOtherMonths: true,
+                        selectOtherMonths: true
+                    });
+                },
+                error: function(error) {
+                    console.log(error);
+                }
             });
-            modal.find('button[data-action=delete]').on('click', function () {
-                calendar.fullCalendar('removeEvents', function (ev) {
-                    return (ev._id == calEvent._id);
-                })
-                modal.modal("hide");
-            });
-
-            modal.modal('show').on('hidden', function () {
-                modal.remove();
-            });
-
-
         }
+        ,
+        eventClick: function(calEvent, jsEvent, view) {
+            var eventId = calEvent._id;
+            
+            var tempThis = $(this);
+            
+            eventContainer = tempThis;
+            
+            $.ajax({
+                url: '/calendar/getEventDetails.do',
+                type: 'GET',
+                data: {
+                    'eventId':eventId
+                },
+                success: function(data) {
+                    
+                    $('.popover').popover('destroy');
+                    
+                    $(tempThis).popover({
+                        trigger: 'focus',
+                        content: data,
+                        placement: 'auto right',
+                        html: true,
+                        title: '',
+                        container: 'body',
+                        callback: function () {
+                            
+                        }
+                    });
+                    $(tempThis).popover('toggle');
+                    
+                    $('.newEventColor').simplecolorpicker().on('change', function() {
+                        queryEventType($('.newEventColor').val());
+                    });
+                    $('.timeFrom').timepicker({'scrollDefault':'now'});
+                    $('.timeFrom').on('changeTime',function(){
 
+                        var date = new Date();
+                        date.setHours(0);
+                        date.setMinutes(0);
+                        date.setSeconds(0);
+
+                        var timePicked = $(this).val().indexOf(':');
+                        timePicked = $(this).val().substring(0,timePicked);
+
+                        if($(this).val().indexOf('am') > 0 && parseInt(timePicked) == 12){
+                            timePicked = parseInt(timePicked)-12;
+                        }
+                        else if($(this).val().indexOf('pm') > 0 && parseInt(timePicked) < 12){
+                            timePicked = parseInt(timePicked)+12;
+                        }
+                        date.setHours(parseInt(timePicked)+1);
+
+                        var minutesPicked = $(this).val().indexOf(':');
+                        minutesPicked = $(this).val().substring(minutesPicked+1,minutesPicked+3);
+                        date.setMinutes(minutesPicked);
+
+                        $('.timeTo').timepicker('setTime',date);
+
+                    });
+                    $('.timeTo').timepicker({'scrollDefault':'now'});
+                    $(".eventStartDate").datepicker({
+                        showOtherMonths: true,
+                        selectOtherMonths: true
+                    });
+                    $(".eventEndDate").datepicker({
+                        showOtherMonths: true,
+                        selectOtherMonths: true
+                    });
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        }
+    });
+    
+    function queryEventType(eventColor){
+        $.ajax({
+            url: '/calendar/getEventTypeId.do',
+            type: 'GET',
+            data: {
+                'eventColor' : eventColor
+            },
+            success: function(data) {
+                $('#hiddenEventTypeId').val(data);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    }
+    
+    $(document).on('click', 'div.fc-bg table tbody tr td', function(e){
+        $('.popover').popover('destroy');
     });
 
+    var loadEventTypesDatatableObject;
+        
+    function loadEventTypeDatatable(){
+        $('#eventTypesTable').dataTable().fnDestroy();
+
+        loadEventTypesDatatableObject = $('#eventTypesTable').dataTable({
+            "processing": true,
+            "bServerSide": false,
+            "sAjaxSource": "/calendar/getEventTypesDatatable.do",
+            "sScrollY": "160px",
+            "bPaginate": false,
+            "bScrollCollapse": true,
+            "bAutoWidth": true,
+            "bFilter": false,
+            "aaSorting": [[0, "desc"]],
+            "sDom": '<"top">rt<"bottom"lp><"clear">',
+            "fnDrawCallback": function(oSettings) {
+                //$('#dataTableCount').html(this.fnGetData().length);
+            },
+            "aoColumns": [
+                {"bSortable": false, "sClass": "center", "sWidth": "10px"},
+                {"bSortable": true, "sClass": "left"},
+                {"bSortable": true, "sClass": "center"},
+                {"bSortable": false, "sClass": "center"}
+            ]
+        });
+    }
+    
+    $(document).on("show.bs.modal", "#eventTypeManagerModel", function() {
+        loadEventTypeDatatable();
+    });
+    
+    $(document).on("shown.bs.modal", "#eventTypeManagerModel", function() {
+        loadEventTypesDatatableObject.fnAdjustColumnSizing();
+    });
+
+    $(document).on("hide.bs.modal", "#eventTypeManagerModel", function() {
+        //alert('load modal table with js now');
+        $('#newEventTypeForm').hide();
+    });
+
+    $(document).on("click", "a#eventTypeManagerModel", function() {
+        $('.popover').popover('destroy');
+        $.ajax({
+            url: '/calendar/getNewEventTypeForm.do',
+            type: 'GET',
+            success: function(data) {
+                var modal = $(data).appendTo('body');
+                modal.modal('show');
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    });
+    
+    $(document).on("click", "#addNewEventTypeButton", function() {
+        $('#eventTypeHeading').html("New Event Type");
+        var eventTypeId = $('#eventTypeId').val(0);
+        var eventTypeColor = $('#eventTypeColor').val("");
+        var eventType = $('#eventType').val("");
+        var adminOnly = $('#adminOnly').attr("checked",false);
+        $('#newEventTypeForm').show();
+        $('.eventTypeColor').simplecolorpicker('selectColor',$('.eventTypeColor option:first').val()).on('change', function() {
+            $('.eventTypeColorField').val($('.eventTypeColor').val());
+        });
+
+        $('.eventTypeColorField').val($('.eventTypeColor').val());
+    });
+    
+    $(document).on("click", "#newEventSaveButton", function() {
+        var eventTypeId = $('#eventTypeId').val();
+        var eventTypeColor = $('#eventTypeColorField').val();
+        var eventType = $('#eventType').val();
+        if($('#adminOnly').is(":checked")){
+            var adminOnly = "true";
+        }
+        else{
+            var adminOnly = "false";
+        }
+
+        $.ajax({
+            url: '/calendar/saveEventType.do',
+            type: 'POST',
+            data: {
+                'eventTypeId':eventTypeId,
+                'eventTypeColor': eventTypeColor,
+                'eventType': eventType,
+                'adminOnly': adminOnly
+            },
+            success: function(data) {
+                $('#newEventTypeForm').hide();
+                var eventTypeId = $('#eventTypeId').val(0);
+                var eventTypeColor = $('#eventTypeColor').val("");
+                var eventType = $('#eventType').val("");
+                var adminOnly = $('#adminOnly').attr("checked",false);
+                loadEventTypeDatatable();
+                calendar.fullCalendar('refetchEvents');
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+
+        return false;
+    });
+    
+    $(document).on("click", "input[name='eventTypeIdFilter']", function() {
+        var typeArray = [];
+        $.each($("input[name='eventTypeIdFilter']:checked"), function(){
+            typeArray.push($(this).val());
+        });
+        
+        var events = {
+            url: '/calendar/getEventsJSON.do',
+            type: 'GET',
+            data: {
+              eventTypeId: typeArray.toString()
+            }
+        };
+        calendar.fullCalendar('removeEventSource', events);
+        calendar.fullCalendar('addEventSource', events);
+        //calendar.fullCalendar('refetchEvents');
+        return false;
+    });
+    
+    $(document).on("click", ".editEventTypeButton", function() {
+        var eventTypeId = $(this).attr("rel");
+        $('#newEventTypeForm').show();
+
+        $('#eventTypeHeading').html("Edit Event Type");
+        
+        $('.eventTypeColor').simplecolorpicker().on('change', function() {
+            $('.eventTypeColorField').val($('.eventTypeColor').val());
+        });
+        
+        $.ajax({
+            url: '/calendar/getEventType.do',
+            type: 'GET',
+            data: {
+                'eventTypeId':eventTypeId
+            },
+            success: function(data) {
+                var eventTypeId = $('#eventTypeId').val(data[0]);
+                var eventTypeColor = $('.eventTypeColorField').val(data[3]);
+                $('.eventTypeColor').simplecolorpicker('selectColor', data[3]);
+                var eventType = $('#eventType').val(data[2]);
+                var adminOnly = $('#adminOnly').attr("checked",data[4]);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+
+        return false;
+    });
+    
+    $(document).on("click", "#categoriesToShow", function() {
+        $('.popover').popover('destroy');
+        var tempThis = $(this);
+        $.ajax({
+            url: '/calendar/getEventCategories.do',
+            type: 'GET',
+            success: function(data) {
+                $(tempThis).popover({
+                    trigger: 'focus',
+                    content: data,
+                    placement: 'auto bottom',
+                    html: true,
+                    title: 'Event Categories',
+                    container: 'body',
+                    callback: function () {
+
+                    }
+                });
+                $(tempThis).popover('toggle');
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    });
+    
+    $(document).on("click", ".deleteEvent", function() {
+        var eventId = $(this).attr('rel');
+        $('.popover').popover('destroy');
+        bootbox.confirm({ 
+            size: 'small',
+            message: "Are you sure you want to delete this event?", 
+            callback: function(result){
+                if(result == true){
+                    $.ajax({
+                        url: '/calendar/deleteEvent.do',
+                        type: 'POST',
+                        data: {
+                            'eventId':eventId
+                        },
+                        success: function(data) {
+                            calendar.fullCalendar('removeEvents', function(ev) {
+                                return (ev._id == eventId);
+                            });
+                        },
+                        error: function(error) {
+                            console.log(error);
+                        }
+                    });
+                }
+            }
+        });
+        return false;
+    });
+    
+    $(document).on("click", ".editEvent", function() {
+        var eventId = $(this).attr('rel');
+        var tempThis = $(this).parent().parent().parent();
+        $('.popover').popover('destroy');
+        
+        $.ajax({
+            url: '/calendar/getEditEventForm.do',
+            type: 'GET',
+            data: {
+                'eventId':eventId
+            },
+            success: function(data) {
+                
+
+                $(eventContainer).popover({
+                    trigger: 'focus',
+                    content: data,
+                    placement: 'auto right',
+                    html: true,
+                    title: 'Create Event',
+                    container: 'body',
+                    callback: function () {
+
+                    }
+                });
+                
+                //$(tempThis).html(data);
+                
+                $(eventContainer).popover('toggle');
+
+                $('.newEventColor').simplecolorpicker().on('change', function() {
+                    queryEventType($('.newEventColor').val());
+                });
+
+                $('.timeFrom').timepicker({'scrollDefault':'now'});
+                $('.timeFrom').on('changeTime',function(){
+
+                    var date = new Date();
+                    date.setHours(0);
+                    date.setMinutes(0);
+                    date.setSeconds(0);
+
+                    var timePicked = $(this).val().indexOf(':');
+                    timePicked = $(this).val().substring(0,timePicked);
+
+                    if($(this).val().indexOf('am') > 0 && parseInt(timePicked) == 12){
+                        timePicked = parseInt(timePicked)-12;
+                    }
+                    else if($(this).val().indexOf('pm') > 0 && parseInt(timePicked) < 12){
+                        timePicked = parseInt(timePicked)+12;
+                    }
+                    date.setHours(parseInt(timePicked)+1);
+
+                    var minutesPicked = $(this).val().indexOf(':');
+                    minutesPicked = $(this).val().substring(minutesPicked+1,minutesPicked+3);
+                    date.setMinutes(minutesPicked);
+
+                    $('.timeTo').timepicker('setTime',date);
+
+                });
+
+                $('.timeTo').timepicker({'scrollDefault':'now'});
+                $(".eventStartDate").datepicker({
+                    showOtherMonths: true,
+                    selectOtherMonths: true
+                });
+
+                $(document).on("change", ".eventStartDate", function() {
+                    $(".eventEndDate").val($(this).val());
+                    $(".eventEndDate").datepicker("setDate",$(this).val());
+                });
+
+                $(".eventEndDate").datepicker({
+                    showOtherMonths: true,
+                    selectOtherMonths: true
+                });
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+
+        return false;
+    });
 });
