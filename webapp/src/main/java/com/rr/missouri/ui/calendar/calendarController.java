@@ -49,6 +49,10 @@ public class calendarController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/calendar");
         
+        List<calendarEventTypes> eventTypes = calendarManager.getEventCategories(programId);
+        
+        mav.addObject("eventTypes",eventTypes);
+        
         return mav;
     }
     

@@ -446,12 +446,25 @@ jQuery(function($) {
         return false;
     });
     
-    $(document).on("click", "input[name='eventTypeIdFilter']", function() {
-        var typeArray = [];
-        $.each($("input[name='eventTypeIdFilter']:checked"), function(){
-            typeArray.push($(this).val());
-        });
+    $(document).on("click", ".showCategory", function() {
+        var clickedCategory = $(this).attr('rel');
         
+        /* Uncheck */
+        if($(this).find("i.fa-check").length > 0) {
+            $(this).find("i").removeClass('fa-check');
+        }
+        else {
+            $(this).find("i").addClass('fa-check');
+        }
+        
+        var typeArray = [];
+        
+         $('.showCategory').each(function() {
+            if($(this).find("i.fa-check").length > 0) {
+                typeArray.push($(this).attr('rel'));
+            }
+        });
+       
         var events = {
             url: '/calendar/getEventsJSON.do',
             type: 'GET',
@@ -461,7 +474,8 @@ jQuery(function($) {
         };
         calendar.fullCalendar('removeEventSource', events);
         calendar.fullCalendar('addEventSource', events);
-        //calendar.fullCalendar('refetchEvents');
+        
+       
         return false;
     });
     
