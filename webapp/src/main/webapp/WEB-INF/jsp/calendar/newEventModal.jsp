@@ -10,13 +10,15 @@
 <div id="createEventForm">
     <div>
         <form>
+            <input type="hidden" name="hiddenEventTypeId" id="hiddenEventTypeId" value="${event.eventTypeId}" />
             <div class="form-group">
-                <select name="newEventColor" class="newEventColor">
-                    <c:forEach var="eventType" items="${eventTypes}">
-                        <option value="${eventType.eventTypeColor}" ${eventType.selectedColor}>${eventType.eventType}</option>
-                    </c:forEach>
-                </select>
-                <input type="hidden" name="hiddenEventTypeId" id="hiddenEventTypeId" value="${event.eventTypeId}" />
+                <div class="pull-right">
+                    <select name="newEventColor" id="simple-colorpicker-1" class="hide" rel="${selectedEventTypeColor}">
+                        <c:forEach var="eventType" items="${eventTypes}">
+                            <option value="${eventType.eventTypeColor}">${eventType.eventType}</option>
+                        </c:forEach>
+                    </select>
+                </div>
             </div>
             <div class="form-group">
                 <label class="sr-only" for="eventName">Event Name</label>
@@ -69,7 +71,16 @@
                 </label>
             </div>
             <hr />
-            <button type="submit" class="btn btn-primary eventSave">Create</button>
+            <button type="submit" class="btn btn-mini btn-primary eventSave">
+                <i class="ace-icon fa fa-save bigger-120 white"></i>
+                Save
+            </button>
+            <c:if test="${event.id > 0}">
+                <button type="submit" class="btn btn-mini btn-danger deleteEvent" rel="${event.id}">
+                    <i class="ace-icon fa fa-trash bigger-120 white"></i>
+                    Delete
+                </button>
+            </c:if>
         </form>
     </div>
 </div>

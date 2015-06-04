@@ -20,7 +20,7 @@ jQuery(function ($) {
                 buttonClass: 'btn btn-white btn-primary',
                 enableClickableOptGroups: true,
                 disableIfEmpty: true,
-                nonSelectedText: 'Select your districts!',
+                nonSelectedText: 'Select your districts',
                 numberDisplayed: 2,
                 templates: {
                     button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown"></button>',

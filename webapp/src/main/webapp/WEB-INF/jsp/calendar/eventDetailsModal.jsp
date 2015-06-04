@@ -36,7 +36,6 @@
                     <option value="">Email: 1 Day before event</option>
                 </select>
             </div>
-            <button type="submit" class="btn btn-success editEvent" rel="${event.id}">Edit</button> <button type="submit" class="btn btn-danger deleteEvent" rel="${event.id}">Delete</button>
         </form>
     </div>
 </div>

@@ -40,13 +40,13 @@
 
         <div>
             <table <c:if test="${not empty submittedSurveys}">id="dynamic-table"</c:if> class="table table-striped table-bordered table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col" class="center"><i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i> Date Submitted</th>
-                        <th scope="col" >Submitted By</th>
-                        <th scope="col" class="center  hidden-480">Submitted</th>
-                        <th scope="col">School(s)</th>
-                        <%--<th scope="col">Content Area - Criteria</th>--%>
+                    <thead>
+                        <tr>
+                            <th scope="col" class="center"><i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i> Date Submitted</th>
+                            <th scope="col" >Submitted By</th>
+                            <th scope="col" class="center  hidden-480">Submitted</th>
+                            <th scope="col">School(s)</th>
+                            <%--<th scope="col">Content Area - Criteria</th>--%>
                         <th scope="col" class="center"></th>
                     </tr>
                 </thead>
@@ -75,15 +75,14 @@
                                     </td>
                                     <td>
                                         <c:if test="${not empty submittedSurvey.selectedEntities}">
-                                            <ul class="list-unstyled spaced">
-
-                                                <c:forEach var="entity" items="${submittedSurvey.selectedEntities}">
-                                                    <li>
-                                                        <i class="ace-icon fa fa-building bigger-110 purple"></i>
-                                                        ${entity}
-                                                    </li>
-                                                </c:forEach>
-                                            </ul>
+                                            <div class="row">
+                                            <c:forEach var="entity" items="${submittedSurvey.selectedEntities}">
+                                                <div class="col-md-2">
+                                                    <i class="ace-icon fa fa-building bigger-110 purple"></i>
+                                                    ${entity}
+                                                </div>
+                                            </c:forEach>   
+                                            </div>
                                         </c:if>
                                     </td>
                                     <%--<td></td>--%>
