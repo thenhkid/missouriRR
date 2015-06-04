@@ -289,10 +289,12 @@ public class surveyController {
             encryptObject encrypt = new encryptObject();
             Map<String, String> map;
 
-            List<school> schoolList = new ArrayList<school>();
+           
             districtList = new ArrayList<district>();
 
             for (Integer entity : selectedEntities) {
+                
+                List<school> schoolList = new ArrayList<school>();
 
                 district district = new district();
                 district.setDistrictId(entity);
@@ -429,10 +431,11 @@ public class surveyController {
         /* Get a list of available schools for the selected districts */
         if (selectedEntities != null && !selectedEntities.isEmpty() && !"".equals(selectedEntities)) {
 
-            List<school> schoolList = new ArrayList<school>();
             districtList = new ArrayList<district>();
 
             for (Integer entityId : selectedEntities) {
+                
+                List<school> schoolList = new ArrayList<school>();
 
                 district district = new district();
                 district.setDistrictId(entityId);
