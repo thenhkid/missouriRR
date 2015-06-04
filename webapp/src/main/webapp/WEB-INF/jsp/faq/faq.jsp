@@ -4,6 +4,7 @@
     Author     : chadmccue
 --%>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <div class="page-header">
     <h1>
@@ -20,13 +21,18 @@
         <!-- PAGE CONTENT BEGINS -->
         <div class="tabbable">
             <ul class="nav nav-tabs padding-18 tab-size-bigger" id="myTab">
-                <li class="active">
-                    <a data-toggle="tab" href="#faq-tab-1">
-                        <i class="blue ace-icon fa fa-question-circle bigger-120"></i>
-                        General
-                    </a>
-                </li>
-
+                
+                <%-- start looping here --%>
+                <c:forEach var="category" items="${categoryList}">
+                    
+                    <li <c:if test="${category.displayPos==1}">class="active"</c:if>>
+                        <a data-toggle="tab" href="#faq-tab-${category.displayPos}">
+                            <i class="blue ace-icon fa fa-question-circle bigger-120"></i>
+                            ${category.categoryName}
+                        </a>
+                    </li>
+                </c:forEach>
+                    <%--
                 <li>
                     <a data-toggle="tab" href="#faq-tab-2">
                         <i class="green ace-icon fa fa-user bigger-120"></i>
@@ -40,27 +46,27 @@
                         Payments
                     </a>
                 </li>
-
+                --%>
                 <li class="dropdown">
                     <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                         <i class="purple ace-icon fa fa-magic bigger-120"></i>
 
-                        Misc
+                        Settings
                         <i class="ace-icon fa fa-caret-down"></i>
                     </a>
 
                     <ul class="dropdown-menu dropdown-lighter dropdown-125">
                         <li>
-                            <a data-toggle="tab" href="#faq-tab-4"> Affiliates </a>
+                            <a data-toggle="tab" href="#faq-tab-4" id="addCatogy"> Add Category </a>
                         </li>
 
                         <li>
-                            <a data-toggle="tab" href="#faq-tab-4"> Merchants </a>
+                            <a data-toggle="tab" href="#faq-tab-4" id="addQuestion"> Add Question </a>
                         </li>
                     </ul>
                 </li><!-- /.dropdown -->
             </ul>
-
+            <%-- here we query the questions for each category --%>
             <div class="tab-content no-border padding-24">
                 <div id="faq-tab-1" class="tab-pane fade in active">
                     <h4 class="blue">

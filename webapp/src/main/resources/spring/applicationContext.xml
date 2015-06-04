@@ -33,6 +33,7 @@
                 <value>/WEB-INF/tileDefs/reports.xml</value>
                 <value>/WEB-INF/tileDefs/calendar.xml</value>
                 <value>/WEB-INF/tileDefs/faq.xml</value>
+                <value>/WEB-INF/tileDefs/forum.xml</value>
             </list>
         </property>
     </bean>

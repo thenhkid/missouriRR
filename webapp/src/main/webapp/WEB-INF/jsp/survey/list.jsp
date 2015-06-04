@@ -17,7 +17,6 @@
 
         <div class="clearfix">
             <div class="pull-right">
-
                 <form:form id="districtSelectForm" method="POST" action="/surveys/startSurvey" role="form">
                     <input type="hidden" name="s" id="surveyId" value="${selSurvey}" />
                     <ul class="list-unstyled spaced2">
@@ -36,18 +35,18 @@
             <div class="pull-left tableTools-container"></div>
         </div>                
         <div class="table-header">
-            Results for "Latest ${surveyName} Activity Logs"
+            Submissions for "Latest ${surveyName} Activity Logs"
         </div>
 
         <div>
-            <table id="dynamic-table" class="table table-striped table-bordered table-hover">
+            <table <c:if test="${not empty submittedSurveys}">id="dynamic-table"</c:if> class="table table-striped table-bordered table-hover">
                 <thead>
                     <tr>
                         <th scope="col" class="center"><i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i> Date Submitted</th>
                         <th scope="col" >Submitted By</th>
                         <th scope="col" class="center  hidden-480">Submitted</th>
                         <th scope="col">School(s)</th>
-                        <th scope="col">Content Area - Criteria</th>
+                        <%--<th scope="col">Content Area - Criteria</th>--%>
                         <th scope="col" class="center"></th>
                     </tr>
                 </thead>
@@ -87,25 +86,25 @@
                                             </ul>
                                         </c:if>
                                     </td>
-                                    <td></td>
+                                    <%--<td></td>--%>
                                     <td>
                                         <div class="hidden-sm hidden-xs action-buttons">
                                             <c:choose>
                                                 <c:when test="${submittedSurvey.submitted == true}">
                                                     <c:choose>
-                                                        <c:when test="${allowEdit == false}">
-                                                            <a href="surveys/editSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="" role="button">
+                                                        <c:when test="${allowEdit == true}">
+                                                            <a href="surveys/editSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Survey" role="button">
                                                                 <button class="btn btn-xs btn-success">
                                                                     <i class="ace-icon fa fa-pencil bigger-120"></i>
                                                                 </button>
                                                             </a>
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <a href="surveys/viewSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="" role="button">
-                                                            <button class="btn btn-xs btn-info">
-                                                                <i class="ace-icon fa fa-search-plus bigger-120"></i>
-                                                            </button>
-                                                        </a>
+                                                            <a href="surveys/viewSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Survey" role="button">
+                                                                <button class="btn btn-xs btn-info">
+                                                                    <i class="ace-icon fa fa-search-plus bigger-120"></i>
+                                                                </button>
+                                                            </a>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </c:when>
