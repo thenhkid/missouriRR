@@ -12,11 +12,17 @@
 
         <title><tiles:insertAttribute name="title" /></title>
         <meta name="description" content="page description" />
-
+        
         <link href="<%=request.getContextPath()%>/dspResources/css/bootstrap.min.css" rel="stylesheet" />
         <link href="<%=request.getContextPath()%>/dspResources/css/font-awesome.min.css" rel="stylesheet" /><!-- only if needed -->
 
         <link href="<%=request.getContextPath()%>/dspResources/css/ace-fonts.min.css" rel="stylesheet" /><!-- you can also use google hosted fonts -->
+        
+        <link href="<%=request.getContextPath()%>/dspResources/css/datepicker.min.css" rel="stylesheet" />
+        <link href="<%=request.getContextPath()%>/dspResources/css/jquery.simplecolorpicker.css" rel="stylesheet" />
+        <link href="<%=request.getContextPath()%>/dspResources/css/jquery.timepicker.css" rel="stylesheet" />
+        <link href="<%=request.getContextPath()%>/dspResources/css/jquery.dataTables.css" rel="stylesheet" />
+        <link href="<%=request.getContextPath()%>/dspResources/css/jquery.dataTables.css" rel="stylesheet" />
         
         <tiles:useAttribute id="cssList" name="customCSS" classname="java.util.List" ignore="true" />
         <c:forEach var="cssFile" items="${cssList}">

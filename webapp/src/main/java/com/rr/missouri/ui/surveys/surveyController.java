@@ -147,12 +147,17 @@ public class surveyController {
             surveyId = Integer.parseInt(result[0].substring(4));
 
         } else {
-            surveyId = surveyList.get(0).getId();
+            if(surveyList.size() > 0){
+                surveyId = surveyList.get(0).getId();
+            }
+            else{
+                surveyId = 0;
+            }
         }
         mav.addObject("selSurvey", surveyId);
 
         surveys surveyDetails = surveyManager.getSurveyDetails(surveyId);
-        mav.addObject("surveyName", surveyDetails.getTitle());
+        mav.addObject("surveyName", "test");
 
         /* Get a list of completed surveys the logged in user has access to */
         User userDetails = (User) session.getAttribute("userDetails");
@@ -289,10 +294,12 @@ public class surveyController {
             encryptObject encrypt = new encryptObject();
             Map<String, String> map;
 
-            List<school> schoolList = new ArrayList<school>();
+           
             districtList = new ArrayList<district>();
 
             for (Integer entity : selectedEntities) {
+                
+                List<school> schoolList = new ArrayList<school>();
 
                 district district = new district();
                 district.setDistrictId(entity);
@@ -429,10 +436,11 @@ public class surveyController {
         /* Get a list of available schools for the selected districts */
         if (selectedEntities != null && !selectedEntities.isEmpty() && !"".equals(selectedEntities)) {
 
-            List<school> schoolList = new ArrayList<school>();
             districtList = new ArrayList<district>();
 
             for (Integer entityId : selectedEntities) {
+                
+                List<school> schoolList = new ArrayList<school>();
 
                 district district = new district();
                 district.setDistrictId(entityId);

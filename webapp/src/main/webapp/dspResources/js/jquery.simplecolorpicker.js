@@ -110,6 +110,7 @@
      * @param color the hexadecimal color to select, ex: '#fbd75b'
      */
     selectColor: function(color) {
+        
       var self = this;
 
       var $colorSpan = self.$colorList.find('> span.color').filter(function() {
@@ -166,6 +167,7 @@
      * The user clicked on a color inside $colorList.
      */
     colorSpanClicked: function(e) {
+        
       // When a color is clicked, make it the new selected one (unless disabled)
       if ($(e.target).is('[data-disabled]') === false) {
         this.selectColorSpan($(e.target));
