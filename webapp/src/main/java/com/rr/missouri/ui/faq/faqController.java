@@ -38,8 +38,9 @@ public class faqController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/faq");
         
-         List <faqCategories> categoryList = faqManager.getFAQCategories(programId);
-         mav.addObject("categoryList", categoryList);
+        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
+        
+        mav.addObject("categoryList", categoryList);
         return mav;
     }
     
