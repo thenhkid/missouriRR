@@ -75,18 +75,18 @@
                                     </td>
                                     <td>
                                         <c:if test="${not empty submittedSurvey.selectedEntities}">
-                                            <div class="row">
-                                            <c:forEach var="entity" items="${submittedSurvey.selectedEntities}">
-                                                <div class="col-md-2">
-                                                    <i class="ace-icon fa fa-building bigger-110 purple"></i>
-                                                    ${entity}
-                                                </div>
-                                            </c:forEach>   
-                                            </div>
+                                           <ul class="list-unstyled spaced">
+                                                <c:forEach var="entity" items="${submittedSurvey.selectedEntities}">
+                                                    <li>
+                                                        <i class="ace-icon fa fa-building bigger-110 purple"></i>
+                                                        ${entity}
+                                                    </li>
+                                                </c:forEach>
+                                            </ul>
                                         </c:if>
                                     </td>
                                     <%--<td></td>--%>
-                                    <td>
+                                    <td class="center">
                                         <div class="hidden-sm hidden-xs action-buttons">
                                             <c:choose>
                                                 <c:when test="${submittedSurvey.submitted == true}">
