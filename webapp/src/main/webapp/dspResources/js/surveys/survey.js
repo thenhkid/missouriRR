@@ -10,6 +10,49 @@ jQuery(function ($) {
 
     $(document).ready(function () {
 
+       /* $('.multiselect').multiselect({
+            maxHeight: 300,
+            buttonWidth: '500px',
+            enableFiltering: true,
+            buttonClass: 'btn btn-white btn-primary',
+            enableClickableOptGroups: true,
+            disableIfEmpty: true,
+            nonSelectedText: 'Select Schools...',
+            numberDisplayed: 5,
+            templates: {
+                button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown"></button>',
+                ul: '<ul class="multiselect-container dropdown-menu"></ul>',
+                filter: '',
+                filterClearBtn: '<span class="input-group-btn"><button class="btn btn-default btn-white btn-grey multiselect-clear-filter" type="button"><i class="fa fa-times-circle red2"></i></button></span>',
+                li: '<li><a href="javascript:void(0);" ><label></label></a></li>',
+                divider: '<li class="multiselect-item divider"></li>',
+                liGroup: '<li class="multiselect-item group"><label class="multiselect-group" style="padding-left:5px; font-weight:bold;"></label></li>'
+            },
+            onChange: function (option, checked, select) {
+
+                if (checked == true) {
+                    $.ajax({
+                        url: 'getEntityCodeSets',
+                        data: {'entityId': option.val(), 'surveyId': 0},
+                        type: "GET",
+                        success: function (data) {
+                            $('#contentAndCriteriaDiv').html(data);
+                        }
+                    });
+                }
+                else {
+                    $.ajax({
+                        url: 'removeCodeSets',
+                        data: {'entityId': option.val()},
+                        type: "GET",
+                        success: function (data) {
+                            $('#contentAndCriteriaDiv').html(data);
+                        }
+                    });
+                }
+            }
+        });*/
+
         if (!ace.vars['touch']) {
             $('.chosen-select').chosen({allow_single_deselect: true});
             //resize the chosen on window resize
@@ -32,7 +75,6 @@ jQuery(function ($) {
                 })
             });
 
-
         }
 
         $("input:text,form").attr("autocomplete", "off");
@@ -48,21 +90,23 @@ jQuery(function ($) {
         });
 
         var surveyId = $('#submittedSurveyId').val();
-       
+
         var selectedSchools = $('#schoolSelect').val();
-        
-        if(selectedSchools != null) {
+
+        if (selectedSchools != null) {
+            var schools = [];
             $.each(selectedSchools, function (i, entityId) {
+                schools.push(entityId);
+            });
+            var schoolList = schools.join(',');
 
-                $.ajax({
-                    url: 'getEntityCodeSets',
-                    data: {'entityId': entityId, 'surveyId': surveyId},
-                    type: "GET",
-                    success: function (data) {
-                        $('#contentAndCriteriaDiv').html(data);
-                    }
-                });
-
+            $.ajax({
+                url: 'getEntityCodeSets',
+                data: {'entityId': schoolList, 'surveyId': surveyId},
+                type: "GET",
+                success: function (data) {
+                    $('#contentAndCriteriaDiv').html(data);
+                }
             });
         }
     });
@@ -247,7 +291,7 @@ function checkSurveyFields() {
     $('div').removeClass("has-error");
     $('.help-block').html("");
     $('.help-block').hide();
-    
+
     //Make sure at least one school is selcted
     if ($('#schoolSelect').val() == "" || $('#schoolSelect').val() == null) {
         $('#errorMsg_schools').html("At least one school must be selected.");
@@ -268,7 +312,7 @@ function checkSurveyFields() {
         if (qType == 3 || qType == 2 | qType == 6) {
 
             if ($(this).val() === '') {
-                $('#questionOuterDiv_'+qId).addClass("has-error");
+                $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html(requiredMsg);
                 $('#errorMsg_' + qId).show();
                 errorFound = 1;
@@ -277,7 +321,7 @@ function checkSurveyFields() {
         // Multiple Choice
         else if (qType == 1) {
             if ($('input[name="' + qName + '"]:checked').length == 0) {
-                $('#questionOuterDiv_'+qId).addClass("has-error");
+                $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html(requiredMsg);
                 $('#errorMsg_' + qId).show();
                 errorFound = 1;
@@ -295,7 +339,7 @@ function checkSurveyFields() {
             var emailValidated = validateEmail(emailVal);
 
             if (emailValidated === false) {
-                $('#questionOuterDiv_'+qId).addClass("has-error");
+                $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid email address.');
                 $('#errorMsg_' + qId).show();
                 errorFound = 1;
@@ -312,7 +356,7 @@ function checkSurveyFields() {
             var phoneValidated = validatePhone(phoneVal);
 
             if (phoneValidated === false) {
-                $('#questionOuterDiv_'+qId).addClass("has-error");
+                $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid phone number.');
                 $('#errorMsg_' + qId).show();
                 errorFound = 1;
@@ -329,7 +373,7 @@ function checkSurveyFields() {
             var fieldValidated = validateNumericValue(fieldVal);
 
             if (fieldValidated === false) {
-                $('#questionOuterDiv_'+qId).addClass("has-error");
+                $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('The value must be numeric.');
                 $('#errorMsg_' + qId).show();
                 errorFound = 1;
@@ -346,7 +390,7 @@ function checkSurveyFields() {
             var URLValidated = validateURL(URLVal);
 
             if (URLValidated === false) {
-                $('#questionOuterDiv_'+qId).addClass("has-error");
+                $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid URL.');
                 $('#errorMsg_' + qId).show();
                 errorFound = 1;
@@ -363,7 +407,7 @@ function checkSurveyFields() {
             var DateValidated = validateDate(dateVal);
 
             if (DateValidated === false) {
-                $('#questionOuterDiv_'+qId).addClass("has-error");
+                $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid Date, format should be mm/dd/yyyy.');
                 $('#errorMsg_' + qId).show();
                 errorFound = 1;

@@ -147,10 +147,9 @@ public class surveyController {
             surveyId = Integer.parseInt(result[0].substring(4));
 
         } else {
-            if(surveyList.size() > 0){
+            if (surveyList.size() > 0) {
                 surveyId = surveyList.get(0).getId();
-            }
-            else{
+            } else {
                 surveyId = 0;
             }
         }
@@ -294,11 +293,10 @@ public class surveyController {
             encryptObject encrypt = new encryptObject();
             Map<String, String> map;
 
-           
             districtList = new ArrayList<district>();
 
             for (Integer entity : selectedEntities) {
-                
+
                 List<school> schoolList = new ArrayList<school>();
 
                 district district = new district();
@@ -439,7 +437,7 @@ public class surveyController {
             districtList = new ArrayList<district>();
 
             for (Integer entityId : selectedEntities) {
-                
+
                 List<school> schoolList = new ArrayList<school>();
 
                 district district = new district();
@@ -834,64 +832,68 @@ public class surveyController {
     }
 
     /**
-     *
+     *  The 'getEntityCodeSets' GET request will get all the code sets for the selected entities.
      * @param entityId
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/getEntityCodeSets", method = RequestMethod.GET)
     public @ResponseBody
-    ModelAndView getEntityCodeSets(@RequestParam(value = "entityId", required = true) Integer entityId, @RequestParam(value = "surveyId", required = true) Integer surveyId) throws Exception {
+    ModelAndView getEntityCodeSets(@RequestParam(value = "entityId", required = true) List<Integer> entityIdList, @RequestParam(value = "surveyId", required = true) Integer surveyId) throws Exception {
 
-        programHierarchyDetails entityDetails = hierarchymanager.getProgramHierarchyItemDetails(entityId);
+        for (Integer entityId : entityIdList) {
+            programHierarchyDetails entityDetails = hierarchymanager.getProgramHierarchyItemDetails(entityId);
 
-        /* Get the associated code sets for the passed in entity */
-        List<Integer> activityCodes = activitycodemanager.getActivityCodesForEntity(entityId);
+            /* Get the associated code sets for the passed in entity */
+            List<Integer> activityCodes = activitycodemanager.getActivityCodesForEntity(entityId);
 
-        if (activityCodes != null && !activityCodes.isEmpty()) {
+            if (activityCodes != null && !activityCodes.isEmpty()) {
 
-            for (Integer activityCode : activityCodes) {
-                boolean codeSetFound = false;
-               
-                Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
+                for (Integer activityCode : activityCodes) {
+                    boolean codeSetFound = false;
 
-                while (it.hasNext()) {
+                    Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
 
-                    surveyContentCriteria criteria = it.next();
-                    
-                    if (criteria.getSchoolId() == entityId && criteria.getCodeId() == activityCode) {
-                        codeSetFound = true;
-                    }
-                }
-                
-                if(codeSetFound == false) {
+                    while (it.hasNext()) {
 
-                    activityCodes codeDetails = activitycodemanager.getActivityCodeById(activityCode);
+                        surveyContentCriteria criteria = it.next();
 
-                    surveyContentCriteria newCriteria = new surveyContentCriteria();
-                    newCriteria.setCodeId(activityCode);
-                    newCriteria.setCodeDesc(codeDetails.getCodeDesc());
-                    newCriteria.setCodeValue(codeDetails.getCode());
-                    newCriteria.setSchoolId(entityId);
-                    newCriteria.setSchoolName(entityDetails.getName());
-
-                    if (surveyId > 0) {
-                        submittedsurveycontentcriteria codesetFound = surveyManager.getSurveyContentCriteria(surveyId, entityId, activityCode);
-
-                        if (codesetFound != null && codesetFound.getId() > 0) {
-                            newCriteria.setChecked(true);
+                        if (criteria.getSchoolId() == entityId && criteria.getCodeId() == activityCode) {
+                            codeSetFound = true;
                         }
                     }
 
-                    surveyContentCriterias.add(newCriteria);
-                
+                    if (codeSetFound == false) {
+
+                        activityCodes codeDetails = activitycodemanager.getActivityCodeById(activityCode);
+
+                        surveyContentCriteria newCriteria = new surveyContentCriteria();
+                        newCriteria.setCodeId(activityCode);
+                        newCriteria.setCodeDesc(codeDetails.getCodeDesc());
+                        newCriteria.setCodeValue(codeDetails.getCode());
+                        newCriteria.setSchoolId(entityId);
+                        newCriteria.setSchoolName(entityDetails.getName());
+
+                        if (surveyId > 0) {
+                            submittedsurveycontentcriteria codesetFound = surveyManager.getSurveyContentCriteria(surveyId, entityId, activityCode);
+
+                            if (codesetFound != null && codesetFound.getId() > 0) {
+                                newCriteria.setChecked(true);
+                            }
+                        }
+
+                        surveyContentCriterias.add(newCriteria);
+
+                    }
+
                 }
-                    
             }
         }
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/survey/contentCriteriaTable");
+
+        /* Sort surveyContentCriterias */
         mav.addObject("contentCriteria", surveyContentCriterias);
 
         return mav;
@@ -899,7 +901,7 @@ public class surveyController {
     }
 
     /**
-     *
+     * The 'removeCodeSets' GET request will remove the selected code set from the entity.
      * @param entityId
      * @return
      * @throws Exception

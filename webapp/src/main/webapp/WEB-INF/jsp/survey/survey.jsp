@@ -47,6 +47,15 @@
                         <div class="widget-body">
                             <div class="widget-main">
                                 <div>
+                                    <%--<select id="schoolSelect" name="entityIds" class="multiselect form-control <c:if test="${disabled == true}">disabled</c:if>" multiple="">
+                                        <c:forEach items="${selDistricts}" var="district">
+                                            <optgroup label="${district.districtName}">
+                                                <c:forEach items="${district.schoolList}" var="school">
+                                                    <option value="${school.schoolId}" <c:if test="${fn:contains(survey.entityIds, school.schoolId)}">selected</c:if>>${school.schoolName}</option>
+                                                </c:forEach>
+                                            </optgroup>
+                                        </c:forEach>
+                                    </select>--%>
                                     <select multiple="" name="entityIds" class="chosen-select form-control <c:if test="${disabled == true}">disabled</c:if>" id="schoolSelect" data-placeholder="Select Schools...">
                                         <c:forEach items="${selDistricts}" var="district">
                                             <optgroup label="${district.districtName}">
@@ -242,9 +251,9 @@
                                                     <div  ${question.answerTypeId == 1 ? 'style="padding-top:10px;"' : ''}>
                                                         <p>${question.otherLabel}</p>
                                                         <input type="text" class="form-control" <c:if test="${disabled == true}">readonly</c:if> name="surveyPageQuestions[${q.index}].questionOtherValue" value="${question.questionOtherValue}" style="background-color:#ffffff; width:500px;" />
-                                                    </div>
+                                                        </div>
                                                 </c:if>   
-                                                
+
                                                 <hr />
                                             </c:forEach>
                                         </c:when>

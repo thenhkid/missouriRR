@@ -46,8 +46,10 @@
             <add-attribute value="/dspResources/js/date-time/moment.min.js" />
             <add-attribute value="/dspResources/js/date-time/daterangepicker.min.js" />
             <add-attribute value="/dspResources/js/date-time/bootstrap-datetimepicker.min.js" />
+            <add-attribute value="/dspResources/js/bootstrap-multiselect.min.js" />
         </put-list-attribute>
         <put-list-attribute name="customCSS">
+            <add-attribute value="/dspResources/css/bootstrap-multiselect.min.css" />
             <add-attribute value="/dspResources/css/chosen.min.css" />
             <add-attribute value="/dspResources/css/datepicker.min.css" />
             <add-attribute value="/dspResources/css/bootstrap-timepicker.min.css" />
