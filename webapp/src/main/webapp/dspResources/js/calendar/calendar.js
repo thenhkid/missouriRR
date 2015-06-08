@@ -11,6 +11,8 @@ jQuery(function ($) {
 
     $(document).ready(function () {
 
+
+
     });
 
     /* initialize the external events
@@ -38,30 +40,14 @@ jQuery(function ($) {
 
     $(document).on("click", ".eventSave", function () {
 
-        var eventTypeId = $('#hiddenEventTypeId').val();
-        var eventName = $('.popover-content div form div.form-group .eventName').val();
-        var eventLocation = $('.popover-content div form div.form-group .eventLocation').val();
-        var eventStartDate = $('.popover-content div form div.form-group .eventStartDate').val();
-        var eventEndDate = $('.popover-content div form div.form-group .eventEndDate').val();
-        var eventStartTime = $('.popover-content div form div.form-group .timeFrom').val();
-        var eventEndTime = $('.popover-content div form div.form-group .timeTo').val();
-        var eventNotes = $('.popover-content div form div.form-group .eventNotes').val();
-        var eventId = 0;
+        var formData = $("#eventForm").serializefiles();
 
         $.ajax({
             url: '/calendar/saveEvent.do',
             type: 'POST',
-            data: {
-                'eventId': eventId,
-                'eventTypeId': eventTypeId,
-                'eventName': eventName,
-                'eventLocation': eventLocation,
-                'eventStartDate': eventStartDate,
-                'eventEndDate': eventEndDate,
-                'eventStartTime': eventStartTime,
-                'eventEndTime': eventEndTime,
-                'eventNotes': eventNotes
-            },
+            contentType: false,
+            processData: false,
+            data: formData,
             success: function (data) {
                 //bootbox.hideAll();
                 $('.popover').popover('destroy');
@@ -166,13 +152,13 @@ jQuery(function ($) {
                         }
                     });
                     $(tempThis).popover('toggle');
-                    
+
                     //$('#simple-colorpicker-1').ace_colorpicker('pick', 2);//select 2nd color
 
                     $('#simple-colorpicker-1').ace_colorpicker()
-                    .on('change', function () {
-                        queryEventType(this.value);
-                    });
+                            .on('change', function () {
+                                queryEventType(this.value);
+                            });
 
                     $('.timeFrom').timepicker({'scrollDefault': 'now'});
                     $('.timeFrom').val($('.timeFrom option:first').val());
@@ -220,6 +206,21 @@ jQuery(function ($) {
                         showOtherMonths: true,
                         selectOtherMonths: true
                     });
+
+                    /* File input */
+                    $('#id-input-file-2').ace_file_input({
+                        style: 'well',
+                        btn_choose: 'Drop files here or click to choose',
+                        btn_change: null,
+                        no_icon: 'ace-icon fa fa-cloud-upload',
+                        droppable: false,
+                        thumbnail: 'small',
+                        whitelist: 'pdf|doc|docx|gif|png|jpg|jpeg',
+                        blacklist: 'exe|php',
+                        before_remove: function () {
+                            return true;
+                        }
+                    });
                 },
                 error: function (error) {
                     console.log(error);
@@ -252,14 +253,14 @@ jQuery(function ($) {
                         title: 'Event Details <button type="button" id="closePopover" class="close pull-right">&times;</button>',
                         container: 'body'
                     });
-                    
+
                     $(tempThis).popover('toggle');
-                    
+
                     $('#simple-colorpicker-1').ace_colorpicker('pick', $('#simple-colorpicker-1').attr('rel'))
-                    .on('change', function () {
-                        queryEventType(this.value);
-                    });
-                    
+                            .on('change', function () {
+                                queryEventType(this.value);
+                            });
+
 
                     $('.timeFrom').timepicker({'scrollDefault': 'now'});
                     $('.timeFrom').on('changeTime', function () {
@@ -295,6 +296,21 @@ jQuery(function ($) {
                     $(".eventEndDate").datepicker({
                         showOtherMonths: true,
                         selectOtherMonths: true
+                    });
+
+                    /* File input */
+                    $('#id-input-file-2').ace_file_input({
+                        style: 'well',
+                        btn_choose: 'Drop files here or click to choose',
+                        btn_change: null,
+                        no_icon: 'ace-icon fa fa-cloud-upload',
+                        droppable: false,
+                        thumbnail: 'small',
+                        whitelist: 'pdf|doc|docx|gif|png|jpg|jpeg',
+                        blacklist: 'exe|php',
+                        before_remove: function () {
+                            return true;
+                        }
                     });
                 },
                 error: function (error) {
@@ -555,5 +571,45 @@ jQuery(function ($) {
         return false;
     });
 
-    
+
+    $.fn.serializefiles = function () {
+        var obj = $(this);
+        /* ADD FILE TO PARAM AJAX */
+        var formData = new FormData();
+        $.each($(obj).find("input[type='file']"), function (i, tag) {
+            $.each($(tag)[0].files, function (i, file) {
+                formData.append(tag.name, file);
+            });
+        });
+        var params = $(obj).serializeArray();
+        $.each(params, function (i, val) {
+            formData.append(val.name, val.value);
+        });
+        return formData;
+    };
+
+    /* Remove existing document */
+    $(document).on('click', '.removeAttachment', function () {
+
+        var confirmed = confirm("Are you sure you want to remove this document?");
+
+        if (confirmed) {
+            var docId = $(this).attr('rel');
+            $.ajax({
+                url: '/calendar/deleteEventDocument.do',
+                type: 'POST',
+                data: {
+                    'documentId': docId
+                },
+                success: function (data) {
+                    $('#docDiv_'+docId).remove();
+                },
+                error: function (error) {
+                    
+                }
+            });
+        }
+
+    });
+
 });

@@ -17,6 +17,23 @@
         <p>${event.eventNotes}</p>
         <p></p>
         <hr>
+        <c:if test="${not empty calendarEvent.existingDocuments}">
+            <hr>
+            <div class="form-group">
+                <label for="document1">Uploaded Documents</label>
+                <c:forEach var="document" items="${calendarEvent.existingDocuments}">
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="fa fa-file bigger-110 orange"></i>
+                        </span>
+                        <input id="" readonly="" class="form-control active" type="text" name="date-range-picker" title="${document.documentTitle}" placeholder="${document.documentTitle}"></input>
+                        <span class="input-group-addon">
+                            <a href="javascript:void(0)" class="removeAttachment" rel="${document.id}"><i class="fa fa-times bigger-110 red"></i></a>
+                        </span>
+                    </div>
+                </c:forEach>
+            </div>
+        </c:if>
         <h5>Documents</h5>
         <p>Document<a href="">Document Link</a></p>
         <p>Document<a href="">Document Link</a></p>

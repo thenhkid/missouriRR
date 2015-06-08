@@ -5,11 +5,13 @@
  */
 package com.rr.missouri.ui.calendar;
 
+import com.registryKit.calendar.calendarEventDocuments;
 import com.registryKit.calendar.calendarEventTypeColors;
 import com.registryKit.calendar.calendarEventTypes;
 import com.registryKit.calendar.calendarEvents;
 import com.registryKit.calendar.calendarManager;
 import com.registryKit.user.User;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -22,9 +24,14 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -156,75 +163,73 @@ public class calendarController {
 
     @RequestMapping(value = "/saveEvent.do", method = RequestMethod.POST)
     public @ResponseBody
-    Integer saveEvent(HttpSession session, HttpServletRequest request) throws Exception {
+    Integer saveEvent(@ModelAttribute(value = "calendarEvent") calendarEvents calendarEvent, BindingResult errors, @RequestParam(value = "alertAllUsers", required = false, defaultValue = "false") boolean alertUsers, 
+            @RequestParam(value = "eventDocuments", required = false) List<MultipartFile> eventDocuments,
+            HttpSession session, HttpServletRequest request) throws Exception {
 
-        calendarEvents eventObject = null;
-
+        if (errors.hasErrors()) {
+           for(ObjectError error : errors.getAllErrors()) {
+               System.out.println(error.getDefaultMessage());
+           }
+         }
+        
         User userDetails = (User) session.getAttribute("userDetails");
-
-        String eventId = request.getParameter("eventId");
-        String eventTypeId = request.getParameter("eventTypeId");
-        String eventName = request.getParameter("eventName");
-        String eventLocation = request.getParameter("eventLocation");
-        String eventStartDate = request.getParameter("eventStartDate");
-        String eventEndDate = request.getParameter("eventEndDate");
-        String eventStartTime = request.getParameter("eventStartTime");
-        String eventEndTime = request.getParameter("eventEndTime");
-        String eventNotes = request.getParameter("eventNotes");
-        String alertUsers = request.getParameter("alertUsers");
 
         boolean alertAllUsers = false;
 
         if ("true".equals(alertUsers)) {
             alertAllUsers = true;
         }
-
-        if (Integer.parseInt(eventId) == 0) {
-            eventObject = new calendarEvents();
-            eventObject.setProgramId(programId);
-            eventObject.setEventTitle(eventName);
-            eventObject.setEventLocation(eventLocation);
-            eventObject.setSystemUserId(userDetails.getId());
-
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-
-            eventObject.setEventStartDate(sdf.parse(eventStartDate));
-            eventObject.setEventEndDate(sdf.parse(eventEndDate));
-            eventObject.setEventStartTime(eventStartTime);
-            eventObject.setEventEndTime(eventEndTime);
-            eventObject.setEventNotes(eventNotes);
-            eventObject.setEventTypeId(Integer.parseInt(eventTypeId));
-        } else {
-            /*eventTypeObject = calendarManager.getEventType(Integer.parseInt(eventTypeId));
-             eventTypeObject.setProgramId(programId);
-             eventTypeObject.setEventType(eventType);
-             eventTypeObject.setEventTypeColor(eventTypeColor);
-             eventTypeObject.setAdminOnly(isAdminOnly);*/
+        
+        /* Need to transfer String start and end date to real date */
+        DateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+        Date realStartDate = format.parse(calendarEvent.getStartDate());
+        Date realEndDate = format.parse(calendarEvent.getEndDate());
+        
+        calendarEvent.setEventStartDate(realStartDate);
+        calendarEvent.setEventEndDate(realEndDate);
+        
+        if(eventDocuments != null) {
+            calendarEvent.setUploadedDocuments(eventDocuments);
         }
 
-        calendarManager.saveEvent(eventObject);
+        calendarManager.saveEvent(calendarEvent);
 
         return 1;
 
     }
 
+    /**
+     * 
+     * @param session
+     * @param request
+     * @return
+     * @throws Exception 
+     */
     @RequestMapping(value = "/getEventDetails.do", method = RequestMethod.GET)
     public ModelAndView getEventDetails(HttpSession session, HttpServletRequest request) throws Exception {
 
         Integer eventId = Integer.parseInt(request.getParameter("eventId"));
 
-        calendarEvents eventObject = calendarManager.getEventDetails(eventId);
+        calendarEvents eventDetails = calendarManager.getEventDetails(eventId);
 
-        calendarEventTypes eventTypeObject = calendarManager.getEventType(eventObject.getEventTypeId());
+        calendarEventTypes eventTypeObject = calendarManager.getEventType(eventDetails.getEventTypeId());
 
-        eventObject.setEventColor(eventTypeObject.getEventTypeColor());
+        eventDetails.setEventColor(eventTypeObject.getEventTypeColor());
+        
+        /* See if there are any existing documents */
+        List<calendarEventDocuments> existingDocuments = calendarManager.getEventDocuments(eventDetails.getId());
+        
+        if(existingDocuments != null) {
+            eventDetails.setExistingDocuments(existingDocuments);
+        }
 
         ModelAndView mav = new ModelAndView();
-        mav.addObject("event", eventObject);
+        mav.addObject("calendarEvent", eventDetails);
 
         User userDetails = (User) session.getAttribute("userDetails");
 
-        if (eventObject.getSystemUserId() == userDetails.getId()) {
+        if (eventDetails.getSystemUserId() == userDetails.getId()) {
             mav.setViewName("/calendar/newEventModal");
 
             List<calendarEventTypes> eventTypes = calendarManager.getEventTypeColors(0);
@@ -246,6 +251,13 @@ public class calendarController {
         return mav;
     }
 
+    /**
+     * 
+     * @param session
+     * @param request
+     * @return
+     * @throws Exception 
+     */
     @RequestMapping(value = "/deleteEvent.do", method = RequestMethod.POST)
     public @ResponseBody
     Integer deleteEvent(HttpSession session, HttpServletRequest request) throws Exception {
@@ -255,18 +267,51 @@ public class calendarController {
         calendarManager.deleteEvent(Integer.parseInt(eventId));
 
         return 1;
-
+    }
+    
+    /**
+     * The 'deleteEventDocument' POST request will remove the clicked uploaded document.
+     * 
+     * @param documentId The id of the clicked document.
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/deleteEventDocument.do", method = RequestMethod.POST) 
+    public @ResponseBody Integer deleteEventDocument(@RequestParam(value = "documentId", required = true) Integer documentId) throws Exception {
+        
+        calendarManager.deleteEventDocument(documentId);
+        
+        return 1;
     }
 
+    /**
+     * 
+     * @param session
+     * @param request
+     * @return
+     * @throws Exception 
+     */
     @RequestMapping(value = "/getNewEventForm.do", method = RequestMethod.GET)
     public ModelAndView getNewEventForm(HttpSession session, HttpServletRequest request) throws Exception {
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/calendar/newEventModal");
-
+        
         List<calendarEventTypes> eventTypes = calendarManager.getEventTypeColors(0);
 
         mav.addObject("eventTypes", eventTypes);
+        
+         User userDetails = (User) session.getAttribute("userDetails");
+        
+        /* Create an empty calender event */
+        calendarEvents newCalendarEvent = new calendarEvents();
+        newCalendarEvent.setProgramId(programId);
+        newCalendarEvent.setSystemUserId(userDetails.getId());
+        
+        /* Set the event type by default to the first one in the system */
+        newCalendarEvent.setEventTypeId(eventTypes.get(0).getId());
+        mav.addObject("calendarEvent", newCalendarEvent);
+        
 
         return mav;
     }
