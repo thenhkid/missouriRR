@@ -602,14 +602,15 @@ jQuery(function ($) {
                     'documentId': docId
                 },
                 success: function (data) {
-                    $('#docDiv_'+docId).remove();
+                    $('#docDiv_' + docId).remove();
                 },
                 error: function (error) {
-                    
+
                 }
             });
         }
 
     });
 
+    
 });

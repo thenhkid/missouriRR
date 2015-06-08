@@ -3,40 +3,38 @@
     Created on : Jun 2, 2015, 10:55:11 AM
     Author     : Jim
 --%>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
+<style>
+    .ellipsis {
+        display: inline-block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;     /** IE6+, Firefox 7+, Opera 11+, Chrome, Safari **/
+        -o-text-overflow: ellipsis;  /** Opera 9 & 10 **/
+        width: 200px; 
+    }
+</style>
+
 <div>
     <div>
-        <p><div style="width:20px; height:20px; background-color:${event.eventColor}"></div></p>
-        <p>${event.eventTitle}</p>
-        <p>${event.eventLocation}</p>
+        <p><div style="width:20px; height:20px; background-color:${calendarEvent.eventColor}"></div></p>
+        <p>${calendarEvent.eventTitle}</p>
+        <p>${calendarEvent.eventLocation}</p>
         <hr>
-        <p><fmt:formatDate value="${event.eventStartDate}" type="date" pattern="MMM dd, yyyy" /> ${event.eventStartTime} - ${event.eventEndTime}</p>
-        <p>${event.eventNotes}</p>
+        <p><fmt:formatDate value="${calendarEvent.eventStartDate}" type="date" pattern="MMM dd, yyyy" /> ${calendarEvent.eventStartTime} - ${calendarEvent.eventEndTime}</p>
+        <p>${calendarEvent.eventNotes}</p>
         <p></p>
-        <hr>
         <c:if test="${not empty calendarEvent.existingDocuments}">
             <hr>
-            <div class="form-group">
-                <label for="document1">Uploaded Documents</label>
-                <c:forEach var="document" items="${calendarEvent.existingDocuments}">
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <i class="fa fa-file bigger-110 orange"></i>
-                        </span>
-                        <input id="" readonly="" class="form-control active" type="text" name="date-range-picker" title="${document.documentTitle}" placeholder="${document.documentTitle}"></input>
-                        <span class="input-group-addon">
-                            <a href="javascript:void(0)" class="removeAttachment" rel="${document.id}"><i class="fa fa-times bigger-110 red"></i></a>
-                        </span>
-                    </div>
-                </c:forEach>
-            </div>
+            <h5>Event Documents</h5>
+            <c:forEach var="document" items="${calendarEvent.existingDocuments}">
+                <p class="ellipsis"> <i class="fa fa-file bigger-110 orange"></i> <a href="" title="${document.documentTitle}">${document.documentTitle}</a></p>
+
+            </c:forEach>
         </c:if>
-        <h5>Documents</h5>
-        <p>Document<a href="">Document Link</a></p>
-        <p>Document<a href="">Document Link</a></p>
         <hr>
         <h5>Notification Alerts</h5>
         <form>
