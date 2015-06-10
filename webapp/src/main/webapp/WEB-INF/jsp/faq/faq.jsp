@@ -6,6 +6,7 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <div class="page-header">
     <h1>
@@ -43,11 +44,15 @@
 
                     <ul class="dropdown-menu dropdown-lighter dropdown-125">
                         <li>
-                            <a data-toggle="tab" href="#faq-tab-4" id="addCatogy"> Add Category </a>
+                            <a data-toggle="tab" href="#faq-tab-s" id="addCategory">Add Category</a>
                         </li>
 
                         <li>
-                            <a data-toggle="tab" href="#faq-tab-4" id="addQuestion"> Add Question </a>
+                            <a data-toggle="tab" href="#faq-tab-s" id="addQuestion"> Add Question </a>
+                        </li>
+                        
+                        <li>
+                            <a data-toggle="tab" href="#faq-tab-s" id="addDocument"> Add Document</a>
                         </li>
                     </ul>
                 </li><!-- /.dropdown -->
@@ -60,7 +65,13 @@
                     <div id="faq-tab-${category.id}" class="tab-pane fade in <c:if test="${category.displayPos==1}">active</c:if>">
                         <h4 class="blue">
                             <i class="ace-icon fa fa-check bigger-110"></i>
-                            ${category.categoryName}
+                            ${category.categoryName} 
+                            <a href="#" class="btn-sm btn-app btn-primary editCategory" rel="${category.id}">
+                                            <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
+                                            Edit
+                                        </a>
+                                        <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
+                                        </sec:authorize>
                         </h4>
 
                     <div class="space-8"></div>
@@ -72,9 +83,16 @@
                             <div class="panel-heading">
                                 <a href="#faq-${category.id}-${question.id}" data-parent="#faq-list-${category.id}" data-toggle="collapse" class="accordion-toggle collapsed">
                                     <i class="ace-icon fa fa-chevron-left pull-right" data-icon-hide="ace-icon fa fa-chevron-down" data-icon-show="ace-icon fa fa-chevron-left"></i>
-
                                     <i class="ace-icon fa fa-user bigger-130"></i>
-                                    &nbsp; ${question.question}
+                                    &nbsp; ${question.question} 
+                                    <%-- code to restrict who sees this -- need to move between sec tag --%>
+                                    
+                                        <a href="#" class="btn-xs btn-app btn-success no-radius editQuestion" rel="${question.id}">
+					<i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
+                                            Edit
+                                        </a>
+                                    <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
+                                    </sec:authorize>
                                 </a>
                             </div>
 
@@ -93,6 +111,12 @@
                                               </c:otherwise>
                                           </c:choose>
                                           <a href="${location}" target=_blank">${document.documentTitle}</a>
+                                          <a href="#" class="btn-xs btn-app btn-yellow no-radius editDocument" rel="${document.id}">
+                                            <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
+                                            Edit
+                                        </a>
+                                        <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
+                                        </sec:authorize>
                                     </c:forEach>
                                 </div>
                             </div>  
