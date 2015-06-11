@@ -52,8 +52,8 @@ jQuery(function ($) {
                 }, 1000);
             }
         });
-        
-        $(document).on('click', '#clearSearch', function() {
+
+        $(document).on('click', '#clearSearch', function () {
             $('#calendarDiv').removeClass("col-sm-8");
             $('#calendarDiv').addClass("col-sm-10");
             $('#searchResults').html("");
@@ -149,7 +149,7 @@ jQuery(function ($) {
             left: 'title',
             center: '',
             //right: 'month,agendaWeek,agendaDay'
-             right: 'prev,next today'
+            right: 'prev,next today'
         },
         events: events,
         timezone: 'local',
@@ -191,102 +191,106 @@ jQuery(function ($) {
         ,
         dayClick: function (date, jsEvent, view) {
 
-            $('.popover').popover('destroy');
-            var tempThis = $(this);
+            /* Check to see if the user has create permission */
+            if ($('.calRow').attr('createPermission') == "true") {
+                
+                $('.popover').popover('destroy');
+                var tempThis = $(this);
 
-            $.ajax({
-                url: '/calendar/getNewEventForm.do',
-                type: 'GET',
-                success: function (data) {
+                $.ajax({
+                    url: '/calendar/getNewEventForm.do',
+                    type: 'GET',
+                    success: function (data) {
 
-                    data = $(data);
+                        data = $(data);
 
-                    data.find('#simple-colorpicker-1').ace_colorpicker()
-                            .on('change', function () {
-                                queryEventType(this.value);
-                            });
+                        data.find('#simple-colorpicker-1').ace_colorpicker()
+                                .on('change', function () {
+                                    queryEventType(this.value);
+                                });
 
-                    /* File input */
-                    data.find('#id-input-file-2').ace_file_input({
-                        style: 'well',
-                        btn_choose: 'click to upload files',
-                        btn_change: null,
-                        no_icon: 'ace-icon fa fa-cloud-upload',
-                        droppable: false,
-                        thumbnail: 'small',
-                        whitelist: 'pdf|doc|docx|gif|png|jpg|jpeg',
-                        blacklist: 'exe|php',
-                        before_remove: function () {
-                            return true;
-                        }
-                    });
+                        /* File input */
+                        data.find('#id-input-file-2').ace_file_input({
+                            style: 'well',
+                            btn_choose: 'click to upload files',
+                            btn_change: null,
+                            no_icon: 'ace-icon fa fa-cloud-upload',
+                            droppable: false,
+                            thumbnail: 'small',
+                            allowExt: ['pdf','doc','docx','gif','png','jpg','jpeg','xls','xlsx'],
+                            before_remove: function () {
+                                return true;
+                            }
+                        });
 
-                    data.find('.timeFrom').timepicker({'scrollDefault': 'now'});
-                    data.find('.timeFrom').val($('.timeFrom option:first').val());
-                    data.find('.timeFrom').on('changeTime', function () {
+                        data.find('.timeFrom').timepicker({'scrollDefault': 'now'});
+                        data.find('.timeFrom').val($('.timeFrom option:first').val());
+                        data.find('.timeFrom').on('changeTime', function () {
 
-                        var date = new Date();
-                        date.setHours(0);
-                        date.setMinutes(0);
-                        date.setSeconds(0);
+                            var date = new Date();
+                            date.setHours(0);
+                            date.setMinutes(0);
+                            date.setSeconds(0);
 
-                        var timePicked = $(this).val().indexOf(':');
-                        timePicked = $(this).val().substring(0, timePicked);
+                            var timePicked = $(this).val().indexOf(':');
+                            timePicked = $(this).val().substring(0, timePicked);
 
-                        if ($(this).val().indexOf('am') > 0 && parseInt(timePicked) == 12) {
-                            timePicked = parseInt(timePicked) - 12;
-                        }
-                        else if ($(this).val().indexOf('pm') > 0 && parseInt(timePicked) < 12) {
-                            timePicked = parseInt(timePicked) + 12;
-                        }
-                        date.setHours(parseInt(timePicked) + 1);
+                            if ($(this).val().indexOf('am') > 0 && parseInt(timePicked) == 12) {
+                                timePicked = parseInt(timePicked) - 12;
+                            }
+                            else if ($(this).val().indexOf('pm') > 0 && parseInt(timePicked) < 12) {
+                                timePicked = parseInt(timePicked) + 12;
+                            }
+                            date.setHours(parseInt(timePicked) + 1);
 
-                        var minutesPicked = $(this).val().indexOf(':');
-                        minutesPicked = $(this).val().substring(minutesPicked + 1, minutesPicked + 3);
-                        date.setMinutes(minutesPicked);
+                            var minutesPicked = $(this).val().indexOf(':');
+                            minutesPicked = $(this).val().substring(minutesPicked + 1, minutesPicked + 3);
+                            date.setMinutes(minutesPicked);
 
-                        $('.timeTo').timepicker('setTime', date);
+                            $('.timeTo').timepicker('setTime', date);
 
-                    });
+                        });
 
-                    data.find(".timeTo").timepicker({'scrollDefault': 'now'});
-                    data.find(".eventStartDate").datepicker({
-                        showOtherMonths: true,
-                        selectOtherMonths: true
-                    });
+                        data.find(".timeTo").timepicker({'scrollDefault': 'now'});
+                        data.find(".eventStartDate").datepicker({
+                            showOtherMonths: true,
+                            selectOtherMonths: true
+                        });
 
-                    data.find(".eventStartDate").datepicker("setDate", date.format('MM/DD/YYYY'));
-                    data.find(".eventEndDate").datepicker("setDate", date.format('MM/DD/YYYY'));
+                        data.find(".eventStartDate").datepicker("setDate", date.format('MM/DD/YYYY'));
+                        data.find(".eventEndDate").datepicker("setDate", date.format('MM/DD/YYYY'));
 
-                    data.find(".eventEndDate").datepicker({
-                        showOtherMonths: true,
-                        selectOtherMonths: true
-                    });
+                        data.find(".eventEndDate").datepicker({
+                            showOtherMonths: true,
+                            selectOtherMonths: true
+                        });
 
-                    $(tempThis).popover({
-                        trigger: 'focus',
-                        content: data,
-                        placement: 'auto right',
-                        html: true,
-                        title: 'Create Event  <button type="button" id="closePopover" class="close pull-right">&times;</button>',
-                        container: 'body',
-                        callback: function () {
+                        $(tempThis).popover({
+                            trigger: 'focus',
+                            content: data,
+                            placement: 'auto right',
+                            html: true,
+                            title: 'Create Event  <button type="button" id="closePopover" class="close pull-right">&times;</button>',
+                            container: 'body',
+                            callback: function () {
 
-                        }
-                    });
-                    $(tempThis).popover('toggle');
+                            }
+                        });
+                        $(tempThis).popover('toggle');
 
-                    $(document).on("change", ".eventStartDate", function () {
-                        $(".eventEndDate").val($(this).val());
-                        $(".eventEndDate").datepicker("setDate", $(this).val());
-                    });
+                        $(document).on("change", ".eventStartDate", function () {
+                            $(".eventEndDate").val($(this).val());
+                            $(".eventEndDate").datepicker("setDate", $(this).val());
+                        });
 
 
-                },
-                error: function (error) {
-                    console.log(error);
-                }
-            });
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            }
+
         }
         ,
         eventClick: function (calEvent, jsEvent, view) {
@@ -312,6 +316,20 @@ jQuery(function ($) {
                             .on('change', function () {
                                 queryEventType(this.value);
                             });
+                            
+                            /* File input */
+                        data.find('#id-input-file-2').ace_file_input({
+                            style: 'well',
+                            btn_choose: 'click to upload files',
+                            btn_change: null,
+                            no_icon: 'ace-icon fa fa-cloud-upload',
+                            droppable: false,
+                            thumbnail: 'small',
+                            allowExt: ['pdf','doc','docx','gif','png','jpg','jpeg','xls','xlsx'],
+                            before_remove: function () {
+                                return true;
+                            }
+                        });
 
                     data.find('.timeFrom').timepicker({'scrollDefault': 'now'});
                     data.find('.timeFrom').on('changeTime', function () {

@@ -11,11 +11,11 @@ import com.registryKit.calendar.calendarEventTypes;
 import com.registryKit.calendar.calendarEvents;
 import com.registryKit.calendar.calendarManager;
 import com.registryKit.user.User;
+import com.registryKit.user.userManager;
+import com.registryKit.user.userProgramModules;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -41,18 +41,26 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping("/calendar")
 public class calendarController {
+    
+    private static Integer moduleId = 7;
 
     @Autowired
     calendarManager calendarManager;
+    
+    @Autowired
+    private userManager usermanager;
 
     @Value("${programId}")
     private Integer programId;
 
     @Value("${topSecret}")
     private String topSecret;
+    
+    private static boolean allowCreate = false;
+    private static boolean allowEdit = false;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ModelAndView calendarHome() throws Exception {
+    public ModelAndView calendarHome(HttpSession session) throws Exception {
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/calendar");
@@ -60,6 +68,15 @@ public class calendarController {
         List<calendarEventTypes> eventTypes = calendarManager.getEventCategories(programId);
 
         mav.addObject("eventTypes", eventTypes);
+        
+        /* Get a list of completed surveys the logged in user has access to */
+        User userDetails = (User) session.getAttribute("userDetails");
+        
+        /* Get user permissions */
+        userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
+        allowCreate = modulePermissions.isAllowCreate();
+        
+        mav.addObject("allowCreate", allowCreate);
 
         return mav;
     }
@@ -262,7 +279,8 @@ public class calendarController {
         if (eventDetails.getSystemUserId() == userDetails.getId()) {
             mav.setViewName("/calendar/newEventModal");
 
-            List<calendarEventTypes> eventTypes = calendarManager.getEventTypeColors(0);
+            //List<calendarEventTypes> eventTypes = calendarManager.getEventTypeColors(0);
+            List<calendarEventTypes> eventTypes = calendarManager.getEventCategories(programId);
             mav.addObject("eventTypes", eventTypes);
 
             List<calendarEventTypes> selectedEventTypes = calendarManager.getEventTypeColors(eventId);
@@ -327,8 +345,9 @@ public class calendarController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/calendar/newEventModal");
         
-        List<calendarEventTypes> eventTypes = calendarManager.getEventTypeColors(0);
-
+        //List<calendarEventTypes> eventTypes = calendarManager.getEventTypeColors(0);
+        List<calendarEventTypes> eventTypes = calendarManager.getEventCategories(programId);
+         
         mav.addObject("eventTypes", eventTypes);
         
          User userDetails = (User) session.getAttribute("userDetails");

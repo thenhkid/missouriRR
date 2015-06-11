@@ -21,7 +21,9 @@
             <div class="form-group pull-right">
                 <select name="newEventColor" id="simple-colorpicker-1" class="hide" rel="${selectedEventTypeColor}">
                     <c:forEach var="eventType" items="${eventTypes}">
-                        <option value="${eventType.eventTypeColor}">${eventType.eventType}</option>
+                        <c:if test="${eventType.adminOnly == false || (eventType.adminOnly == true && sessionScope.userDetails.roleId == 2)}">
+                            <option value="${eventType.eventTypeColor}">${eventType.eventType}</option>
+                        </c:if>
                     </c:forEach>
                 </select>
             </div>

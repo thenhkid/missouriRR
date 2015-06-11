@@ -26,7 +26,6 @@
             <add-attribute value="/dspResources/js/date-time/bootstrap-datepicker.min.js" />
             <add-attribute value="/dspResources/js/date-time/jquery.timepicker.min.js" />
             <add-attribute value="/dspResources/js/jquery.simplecolorpicker.js" />
-            <add-attribute value="/dspResources/js/dataTables/jquery.dataTables.min.js" />
             <add-attribute value="/dspResources/js/bootstrap-colorpicker.min.js" />
             <add-attribute value="/dspResources/js/ace-elements.min.js" />
         </put-list-attribute>
