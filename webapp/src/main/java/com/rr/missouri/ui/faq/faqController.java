@@ -12,6 +12,8 @@ import com.registryKit.faq.faqManager;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -48,30 +50,51 @@ public class faqController {
     
     @RequestMapping(value = "/getCategoryForm.do", method = RequestMethod.POST)
     public @ResponseBody
-    Integer displayNewCatForm(@RequestParam(value = "entityId", required = false) 
-            Integer entityId, @RequestParam(value = "codeId", required = false) Integer codeId) 
+    ModelAndView displayCatForm(
+            @RequestParam(value = "toDo", required = true) String toDo, 
+            @RequestParam(value = "categoryId", required = false) Integer categoryId) 
             throws Exception {
-
-        //we get add Category Form
-        return (Integer) 1;
+        
+        ModelAndView mav = new ModelAndView();
+        //we return form
+        faqCategories category = new faqCategories();
+        Integer maxDisPos = faqManager.getFAQCategories(programId).size();
+        
+        if (toDo.equalsIgnoreCase("Edit")) {
+            category = faqManager.getCategoryById(categoryId);
+        } else {
+            category.setDisplayPos(maxDisPos + 1);
+            maxDisPos = maxDisPos + 1;
+        }
+        
+        mav.addObject("category", category);
+        
+        //we add max display order
+        mav.addObject("maxPos", maxDisPos);
+        mav.setViewName("/faq/categoryModal");
+        return mav;
     }
     
     
     @RequestMapping(value = "/addCategory.do", method = RequestMethod.POST)
     public @ResponseBody
-    Integer AddCategory(@RequestParam(value = "entityId", required = false) 
-            Integer entityId, @RequestParam(value = "codeId", required = false) Integer codeId) 
+    ModelAndView AddCategory(@ModelAttribute(value = "category") faqCategories category, BindingResult errors) 
             throws Exception {
 
-        //we check to see if cat is in use, we return form
-        /**
-         * 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/faq/categoryModal");
+        if (errors.hasErrors()) {
+            return mav;
+        }
+        faqCategories faqOld = faqManager.getCategoryById(category.getId());
+        //grab display positions and make sure we switch out if changed
+        if (faqOld.getDisplayPos() != category.getDisplayPos()) {
+            //we switch and update the one that is being replaced
+        }
+        //insert or update here
+        
+        //
         return mav;
-         */
-        // if not, we add category and we return 1
-        return (Integer) 1;
     }
     
     @RequestMapping(value = "/editCategory.do", method = RequestMethod.POST)
