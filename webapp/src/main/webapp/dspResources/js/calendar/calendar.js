@@ -9,9 +9,66 @@ jQuery(function ($) {
     var calendar;
     var eventContainer;
 
+    var typewatch = (function () {
+        var timer = 0;
+        return function (callback, ms) {
+            clearTimeout(timer);
+            timer = setTimeout(callback, ms);
+        };
+    })();
+
     $(document).ready(function () {
 
+        $(document).on("keyup", "#nav-search-input", function () {
 
+            if ($(this).val() == "") {
+                $('#calendarDiv').removeClass("col-sm-8");
+                $('#calendarDiv').addClass("col-sm-10");
+                $('#searchResults').html("");
+                $('#searchResults').hide();
+                $('#clearSearch').hide();
+            }
+            else {
+
+                var searchTerm = $(this).val();
+
+                typewatch(function () {
+                    $('#clearSearch').show();
+
+                    $.ajax({
+                        url: '/calendar/searchEvents.do',
+                        data: {
+                            'searchTerm': searchTerm
+                        },
+                        type: "GET",
+                        success: function (data) {
+                            $('#calendarDiv').removeClass("col-sm-10");
+                            $('#calendarDiv').addClass("col-sm-8");
+                            $('#searchResults').html(data);
+                            $('#searchResults').show();
+                        }
+                    });
+
+                }, 1000);
+            }
+        });
+        
+        $(document).on('click', '#clearSearch', function() {
+            $('#calendarDiv').removeClass("col-sm-8");
+            $('#calendarDiv').addClass("col-sm-10");
+            $('#searchResults').html("");
+            $('#searchResults').hide();
+            $('#clearSearch').hide();
+            $('#nav-search-input').val("");
+        });
+
+        $(document).on('click', '.loadeventfound', function () {
+            var start = $(this).attr('start');
+            var end = $(this).attr('end');
+
+            calendar.fullCalendar('gotoDate', $.fullCalendar.moment(start));
+
+        });
 
     });
 
@@ -89,9 +146,10 @@ jQuery(function ($) {
             next: '<i class="ace-icon fa fa-chevron-right"></i>'
         },
         header: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'month,agendaWeek,agendaDay'
+            left: 'title',
+            center: '',
+            //right: 'month,agendaWeek,agendaDay'
+             right: 'prev,next today'
         },
         events: events,
         timezone: 'local',
@@ -132,13 +190,78 @@ jQuery(function ($) {
         }
         ,
         dayClick: function (date, jsEvent, view) {
+
+            $('.popover').popover('destroy');
             var tempThis = $(this);
 
             $.ajax({
                 url: '/calendar/getNewEventForm.do',
                 type: 'GET',
                 success: function (data) {
-                    $('.popover').popover('destroy');
+
+                    data = $(data);
+
+                    data.find('#simple-colorpicker-1').ace_colorpicker()
+                            .on('change', function () {
+                                queryEventType(this.value);
+                            });
+
+                    /* File input */
+                    data.find('#id-input-file-2').ace_file_input({
+                        style: 'well',
+                        btn_choose: 'click to upload files',
+                        btn_change: null,
+                        no_icon: 'ace-icon fa fa-cloud-upload',
+                        droppable: false,
+                        thumbnail: 'small',
+                        whitelist: 'pdf|doc|docx|gif|png|jpg|jpeg',
+                        blacklist: 'exe|php',
+                        before_remove: function () {
+                            return true;
+                        }
+                    });
+
+                    data.find('.timeFrom').timepicker({'scrollDefault': 'now'});
+                    data.find('.timeFrom').val($('.timeFrom option:first').val());
+                    data.find('.timeFrom').on('changeTime', function () {
+
+                        var date = new Date();
+                        date.setHours(0);
+                        date.setMinutes(0);
+                        date.setSeconds(0);
+
+                        var timePicked = $(this).val().indexOf(':');
+                        timePicked = $(this).val().substring(0, timePicked);
+
+                        if ($(this).val().indexOf('am') > 0 && parseInt(timePicked) == 12) {
+                            timePicked = parseInt(timePicked) - 12;
+                        }
+                        else if ($(this).val().indexOf('pm') > 0 && parseInt(timePicked) < 12) {
+                            timePicked = parseInt(timePicked) + 12;
+                        }
+                        date.setHours(parseInt(timePicked) + 1);
+
+                        var minutesPicked = $(this).val().indexOf(':');
+                        minutesPicked = $(this).val().substring(minutesPicked + 1, minutesPicked + 3);
+                        date.setMinutes(minutesPicked);
+
+                        $('.timeTo').timepicker('setTime', date);
+
+                    });
+
+                    data.find(".timeTo").timepicker({'scrollDefault': 'now'});
+                    data.find(".eventStartDate").datepicker({
+                        showOtherMonths: true,
+                        selectOtherMonths: true
+                    });
+
+                    data.find(".eventStartDate").datepicker("setDate", date.format('MM/DD/YYYY'));
+                    data.find(".eventEndDate").datepicker("setDate", date.format('MM/DD/YYYY'));
+
+                    data.find(".eventEndDate").datepicker({
+                        showOtherMonths: true,
+                        selectOtherMonths: true
+                    });
 
                     $(tempThis).popover({
                         trigger: 'focus',
@@ -153,74 +276,12 @@ jQuery(function ($) {
                     });
                     $(tempThis).popover('toggle');
 
-                    //$('#simple-colorpicker-1').ace_colorpicker('pick', 2);//select 2nd color
-
-                    $('#simple-colorpicker-1').ace_colorpicker()
-                            .on('change', function () {
-                                queryEventType(this.value);
-                            });
-
-                    $('.timeFrom').timepicker({'scrollDefault': 'now'});
-                    $('.timeFrom').val($('.timeFrom option:first').val());
-                    $('.timeFrom').on('changeTime', function () {
-
-                        var date = new Date();
-                        date.setHours(0);
-                        date.setMinutes(0);
-                        date.setSeconds(0);
-
-                        var timePicked = $(this).val().indexOf(':');
-                        timePicked = $(this).val().substring(0, timePicked);
-
-                        if ($(this).val().indexOf('am') > 0 && parseInt(timePicked) == 12) {
-                            timePicked = parseInt(timePicked) - 12;
-                        }
-                        else if ($(this).val().indexOf('pm') > 0 && parseInt(timePicked) < 12) {
-                            timePicked = parseInt(timePicked) + 12;
-                        }
-                        date.setHours(parseInt(timePicked) + 1);
-
-                        var minutesPicked = $(this).val().indexOf(':');
-                        minutesPicked = $(this).val().substring(minutesPicked + 1, minutesPicked + 3);
-                        date.setMinutes(minutesPicked);
-
-                        $('.timeTo').timepicker('setTime', date);
-
-                    });
-
-                    $('.timeTo').timepicker({'scrollDefault': 'now'});
-                    $(".eventStartDate").datepicker({
-                        showOtherMonths: true,
-                        selectOtherMonths: true
-                    });
-
-                    $(".eventStartDate").datepicker("setDate", date.format('MM/DD/YYYY'));
-                    $(".eventEndDate").datepicker("setDate", date.format('MM/DD/YYYY'));
-
                     $(document).on("change", ".eventStartDate", function () {
                         $(".eventEndDate").val($(this).val());
                         $(".eventEndDate").datepicker("setDate", $(this).val());
                     });
 
-                    $(".eventEndDate").datepicker({
-                        showOtherMonths: true,
-                        selectOtherMonths: true
-                    });
 
-                    /* File input */
-                    $('#id-input-file-2').ace_file_input({
-                        style: 'well',
-                        btn_choose: 'Drop files here or click to choose',
-                        btn_change: null,
-                        no_icon: 'ace-icon fa fa-cloud-upload',
-                        droppable: false,
-                        thumbnail: 'small',
-                        whitelist: 'pdf|doc|docx|gif|png|jpg|jpeg',
-                        blacklist: 'exe|php',
-                        before_remove: function () {
-                            return true;
-                        }
-                    });
                 },
                 error: function (error) {
                     console.log(error);
@@ -229,6 +290,8 @@ jQuery(function ($) {
         }
         ,
         eventClick: function (calEvent, jsEvent, view) {
+            $('.popover').popover('destroy');
+
             var eventId = calEvent._id;
 
             var tempThis = $(this);
@@ -243,27 +306,15 @@ jQuery(function ($) {
                 },
                 success: function (data) {
 
-                    $('.popover').popover('destroy');
+                    data = $(data);
 
-                    $(tempThis).popover({
-                        trigger: 'focus',
-                        content: data,
-                        placement: 'auto right',
-                        html: true,
-                        title: 'Event Details <button type="button" id="closePopover" class="close pull-right">&times;</button>',
-                        container: 'body'
-                    });
-
-                    $(tempThis).popover('toggle');
-
-                    $('#simple-colorpicker-1').ace_colorpicker('pick', $('#simple-colorpicker-1').attr('rel'))
+                    data.find('#simple-colorpicker-1').ace_colorpicker('pick', $('#simple-colorpicker-1').attr('rel'))
                             .on('change', function () {
                                 queryEventType(this.value);
                             });
 
-
-                    $('.timeFrom').timepicker({'scrollDefault': 'now'});
-                    $('.timeFrom').on('changeTime', function () {
+                    data.find('.timeFrom').timepicker({'scrollDefault': 'now'});
+                    data.find('.timeFrom').on('changeTime', function () {
 
                         var date = new Date();
                         date.setHours(0);
@@ -288,30 +339,28 @@ jQuery(function ($) {
                         $('.timeTo').timepicker('setTime', date);
 
                     });
-                    $('.timeTo').timepicker({'scrollDefault': 'now'});
-                    $(".eventStartDate").datepicker({
+                    data.find('.timeTo').timepicker({'scrollDefault': 'now'});
+                    data.find(".eventStartDate").datepicker({
                         showOtherMonths: true,
                         selectOtherMonths: true
                     });
-                    $(".eventEndDate").datepicker({
+                    data.find(".eventEndDate").datepicker({
                         showOtherMonths: true,
                         selectOtherMonths: true
                     });
 
-                    /* File input */
-                    $('#id-input-file-2').ace_file_input({
-                        style: 'well',
-                        btn_choose: 'Drop files here or click to choose',
-                        btn_change: null,
-                        no_icon: 'ace-icon fa fa-cloud-upload',
-                        droppable: false,
-                        thumbnail: 'small',
-                        whitelist: 'pdf|doc|docx|gif|png|jpg|jpeg',
-                        blacklist: 'exe|php',
-                        before_remove: function () {
-                            return true;
-                        }
+                    $(tempThis).popover({
+                        trigger: 'focus',
+                        content: data,
+                        placement: 'auto right',
+                        html: true,
+                        title: 'Event Details <button type="button" id="closePopover" class="close pull-right">&times;</button>',
+                        container: 'body'
                     });
+
+                    $(tempThis).popover('toggle');
+
+
                 },
                 error: function (error) {
                     console.log(error);
@@ -612,5 +661,5 @@ jQuery(function ($) {
 
     });
 
-    
+
 });

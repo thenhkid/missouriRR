@@ -63,6 +63,36 @@ public class calendarController {
 
         return mav;
     }
+    
+    /**
+     * The 'searchEvents' POST request will search the events table for logged events.
+     * 
+     * @param session
+     * @param searchTerm The term to match events to.
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "searchEvents.do", method = RequestMethod.GET)
+    public @ResponseBody ModelAndView searchEvents(HttpSession session, @RequestParam(value = "searchTerm", required = true) String searchTerm) throws Exception {
+        
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/calendar/searchResults");
+        
+        List<calendarEvents> events = calendarManager.searchEvents(programId, searchTerm);
+        
+        if(events != null && events.size() > 0) {
+            for(calendarEvents event : events) {
+                calendarEventTypes eventTypeObject = calendarManager.getEventType(event.getEventTypeId());
+
+                event.setEventColor(eventTypeObject.getEventTypeColor());
+            }
+        }
+        
+        mav.addObject("foundEvents", events);
+        
+        return mav;
+        
+    }
 
     @RequestMapping(value = "/getEventTypesDatatable.do", method = RequestMethod.GET)
     public @ResponseBody

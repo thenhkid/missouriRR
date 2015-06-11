@@ -18,39 +18,55 @@
     }
 </style>
 
-<div>
-    <div>
-        <p><div style="width:20px; height:20px; background-color:${calendarEvent.eventColor}"></div></p>
-        <p>${calendarEvent.eventTitle}</p>
-        <p>${calendarEvent.eventLocation}</p>
-        <hr>
-        <p><fmt:formatDate value="${calendarEvent.eventStartDate}" type="date" pattern="MMM dd, yyyy" /> ${calendarEvent.eventStartTime} - ${calendarEvent.eventEndTime}</p>
-        <p>${calendarEvent.eventNotes}</p>
-        <p></p>
-        <c:if test="${not empty calendarEvent.existingDocuments}">
-            <hr>
-            <h5>Event Documents</h5>
+<div class="page-content">
+    <div class="row">
+        <div class="pull-right">
+            <div style="width:15px; height:15px; background-color:${calendarEvent.eventColor}"></div>
+        </div>
+    </div>
+    <div class="row">
+        ${calendarEvent.eventTitle}
+    </div>    
+    <c:if test="${not empty calenderEvent.eventLocation}">
+        <div class="row">
+            ${calendarEvent.eventLocation}
+        </div>
+    </c:if>
+    <div class="row"><hr></div>
+    <div class="row">
+        <strong><fmt:formatDate value="${calendarEvent.eventStartDate}" type="date" pattern="MMM dd, yyyy" /> ${calendarEvent.eventStartTime} - ${calendarEvent.eventEndTime}</strong>
+    </div>
+    <c:if test="${not empty calenderEvent.eventNotes}">
+        <div class="row">
+            ${calendarEvent.eventNotes}
+        </div>
+    </c:if>
+    <c:if test="${not empty calendarEvent.existingDocuments}">
+        <div class="row"><hr></div>
+        <div class="row">
+            <h5>Documents</h5>
             <c:forEach var="document" items="${calendarEvent.existingDocuments}">
-                <p class="ellipsis"> <i class="fa fa-file bigger-110 orange"></i> <a href="" title="${document.documentTitle}">${document.documentTitle}</a></p>
-
-            </c:forEach>
-        </c:if>
-        <hr>
+                <span class="ellipsis"><i class="fa fa-file bigger-110 orange"></i> <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.documentTitle}&foldername=calendarUploadedFiles"/>" title="${document.documentTitle}">${document.documentTitle}</a></span>
+             </c:forEach>
+        </div>
+    </c:if>
+    <div class="row"><hr></div> 
+    <div class="row">
         <h5>Notification Alerts</h5>
-        <form>
-            <div class="form-group">
-                <select name="" class="">
-                    <option value="">None</option>
-                    <option value="">Email: At time of event</option>
-                    <option value="">Email: 5 Min before event</option>
-                    <option value="">Email: 10 Min before event</option>
-                    <option value="">Email: 15 Min before event</option>
-                    <option value="">Email: 30 Min before event</option>
-                    <option value="">Email: 1 Hour before event</option>
-                    <option value="">Email: 2 Hour before event</option>
-                    <option value="">Email: 1 Day before event</option>
-                </select>
-            </div>
-        </form>
+        <div class="form-group">
+            <select name="" class="">
+                <option value="">None</option>
+                <option value="">Email: At time of event</option>
+                <option value="">Email: 5 Min before event</option>
+                <option value="">Email: 10 Min before event</option>
+                <option value="">Email: 15 Min before event</option>
+                <option value="">Email: 30 Min before event</option>
+                <option value="">Email: 1 Hour before event</option>
+                <option value="">Email: 2 Hour before event</option>
+                <option value="">Email: 1 Day before event</option>
+            </select>
+        </div>
     </div>
 </div>
+
+

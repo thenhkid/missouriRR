@@ -8,33 +8,38 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<div id="createEventForm">
-    <div>
-        <form:form id="eventForm" modelAttribute="calendarEvent" role="form" class="form" method="post" enctype="multipart/form-data">
-            <form:hidden path="eventTypeId" id="hiddenEventTypeId" value="${event.eventTypeId}" />
-            <form:hidden path="id" />
-            <form:hidden path="programId" />
-            <form:hidden path="systemUserId" />
-            <form:hidden path="eventStartDate" />
-            <form:hidden path="eventEndDate" />
-            <div class="form-group">
-                <div class="pull-right">
-                    <select name="newEventColor" id="simple-colorpicker-1" class="hide" rel="${selectedEventTypeColor}">
-                        <c:forEach var="eventType" items="${eventTypes}">
-                            <option value="${eventType.eventTypeColor}">${eventType.eventType}</option>
-                        </c:forEach>
-                    </select>
-                </div>
+<div class="page-content" id="createEventForm">
+    <form:form id="eventForm" modelAttribute="calendarEvent" role="form" class="form" method="post" enctype="multipart/form-data">
+        <form:hidden path="eventTypeId" id="hiddenEventTypeId" value="${event.eventTypeId}" />
+        <form:hidden path="id" />
+        <form:hidden path="programId" />
+        <form:hidden path="systemUserId" />
+        <form:hidden path="eventStartDate" />
+        <form:hidden path="eventEndDate" />
+
+        <div class="row">
+            <div class="form-group pull-right">
+                <select name="newEventColor" id="simple-colorpicker-1" class="hide" rel="${selectedEventTypeColor}">
+                    <c:forEach var="eventType" items="${eventTypes}">
+                        <option value="${eventType.eventTypeColor}">${eventType.eventType}</option>
+                    </c:forEach>
+                </select>
             </div>
+        </div>
+        <div class="row">
             <div class="form-group">
                 <label class="sr-only" for="eventName">Event Name</label>
                 <form:input path="eventTitle" class="form-control eventName" placeholder="Event Name" />
             </div>
+        </div>            
+        <div class="row">
             <div class="form-group">
                 <label class="sr-only" for="eventLocation">Event Location</label>
                 <form:input path="eventLocation" class="form-control eventLocation" placeholder="Event Location"  />
             </div>
             <hr />
+        </div>
+        <div class="row">
             <div class="form-group">
                 <div class="row clearfix">
                     <div class="col-md-6">
@@ -49,6 +54,8 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="row">
             <div class="form-group">
                 <div class="row clearfix">
                     <div class="col-md-6">
@@ -62,12 +69,17 @@
                 </div>
             </div>
             <hr />
+        </div>
+        <div class="row">
             <div class="form-group">
                 <label for="eventNotes">Notes</label>
                 <form:textarea path="eventNotes" class="form-control eventNotes" placeholder="Notes" />
             </div>
             <hr />
-            <c:if test="${not empty calendarEvent.existingDocuments}">
+        </div>
+
+        <c:if test="${not empty calendarEvent.existingDocuments}">
+            <div class="row">
                 <div class="form-group">
                     <label for="document1">Uploaded Documents</label>
                     <c:forEach var="document" items="${calendarEvent.existingDocuments}">
@@ -82,7 +94,9 @@
                         </div>
                     </c:forEach>
                 </div>
-            </c:if>
+            </div>
+        </c:if>
+        <div class="row">
             <div class="form-group">         
                 <label for="document1">Documents</label>
                 <div class="form-group">
@@ -91,7 +105,9 @@
                     </div>
                 </div>
             </div>
-            <hr />
+        </div>
+        <div class="row">
+             <hr />
             <div class="form-group">
                 <div class="checkbox">
                     <label>
@@ -100,6 +116,8 @@
                 </div>
             </div>    
             <hr />
+        </div>
+        <div class="row">
             <button type="submit" class="btn btn-mini btn-primary eventSave">
                 <i class="ace-icon fa fa-save bigger-120 white"></i>
                 Save
@@ -110,6 +128,8 @@
                     Delete
                 </button>
             </c:if>
-        </form:form>
-    </div>
+        </div>
+
+
+    </form:form>
 </div>
