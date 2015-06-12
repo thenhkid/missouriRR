@@ -13,6 +13,7 @@ jQuery(function ($) {
         $.ajax({
             type: 'POST',
             url: '/faq/getCategoryForm.do',
+            data:{'categoryId':0, 'toDo':'Add'},
             success: function(data) {
                 bootbox.dialog({
                     message: data,
@@ -33,9 +34,11 @@ jQuery(function ($) {
   
     //clicking on add category link in dropdown
     $('.editCategory').on('click', function () {
+        var categoryId = $(this).attr('rel');
         $.ajax({
             type: 'POST',
             url: '/faq/getCategoryForm.do',
+            data:{'categoryId':categoryId, 'toDo':'Edit'},
             success: function(data) {
                 bootbox.dialog({
                     message: data,
@@ -176,6 +179,9 @@ jQuery(function ($) {
      * too much clicking.....
      * **/
     function categoryFn(toDo) {
+        
+        var formData = $("#eventForm").serializefiles();
+        
         var submitURL = "/faq/addCategory.do";
         if (toDo == 'edit') {
            submitURL = "/faq/editCategory.do";
@@ -185,7 +191,7 @@ jQuery(function ($) {
         $.ajax({
             type: 'POST',
             url: submitURL,
-            data:{'categoryId':'1'}, // need to replace
+            data:formData, // need to replace
             
             success: function(data) {
                 var responseData = ("Added " + data);
