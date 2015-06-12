@@ -161,7 +161,7 @@ public class surveyController {
         /* Get a list of completed surveys the logged in user has access to */
         User userDetails = (User) session.getAttribute("userDetails");
 
-        List<submittedSurveys> submittedSurveys = surveyManager.getEntitySurveys(userDetails.getId());
+        List<submittedSurveys> submittedSurveys = surveyManager.getEntitySurveys(userDetails);
 
         /* Need to get the selected entities */
         if (submittedSurveys != null && !submittedSurveys.isEmpty()) {
@@ -178,7 +178,7 @@ public class surveyController {
                 survey.setEncryptedId(encrypted[0]);
                 survey.setEncryptedSecret(encrypted[1]);
 
-                List<Integer> selectedEntities = surveyManager.getSubmittedSurveyEntities(survey.getId(), userDetails.getId());
+                List<Integer> selectedEntities = surveyManager.getSubmittedSurveyEntities(survey.getId(), userDetails);
 
                 if (selectedEntities != null && !selectedEntities.isEmpty()) {
 
@@ -202,8 +202,15 @@ public class surveyController {
 
         /* Get user permissions */
         userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
-        allowCreate = modulePermissions.isAllowCreate();
-        allowEdit = modulePermissions.isAllowEdit();
+        if(userDetails.getRoleId() == 2) {
+            allowCreate = true;
+            allowEdit = true;
+        }
+        else {
+            allowCreate = modulePermissions.isAllowCreate();
+            allowEdit = modulePermissions.isAllowEdit();
+        }
+        
 
         mav.addObject("allowCreate", allowCreate);
         mav.addObject("allowEdit", allowEdit);
@@ -304,8 +311,13 @@ public class surveyController {
 
                 programHierarchyDetails districtDetails = hierarchymanager.getProgramHierarchyItemDetails(entity);
                 district.setDistrictName(districtDetails.getName());
+                
+                Integer userId = 0;
+                if(userDetails.getRoleId() == 3) {
+                    userId = userDetails.getId();
+                }
 
-                List schools = hierarchymanager.getProgramOrgHierarchyItems(programId, 3, entity, userDetails.getId());
+                List schools = hierarchymanager.getProgramOrgHierarchyItems(programId, 3, entity, userId);
 
                 if (!schools.isEmpty() && schools.size() > 0) {
 
@@ -402,7 +414,7 @@ public class surveyController {
         survey.setNextButton(surveyDetails.getNextButtonText());
         survey.setSaveButton(surveyDetails.getDoneButtonText());
         survey.setSubmittedSurveyId(submittedSurveyId);
-        survey.setEntityIds(surveyManager.getSubmittedSurveyEntities(submittedSurveyId, userDetails.getId()));
+        survey.setEntityIds(surveyManager.getSubmittedSurveyEntities(submittedSurveyId, userDetails));
 
         encryptObject encrypt = new encryptObject();
         Map<String, String> map;
@@ -445,8 +457,13 @@ public class surveyController {
 
                 programHierarchyDetails districtDetails = hierarchymanager.getProgramHierarchyItemDetails(entityId);
                 district.setDistrictName(districtDetails.getName());
+                
+                Integer userId = 0;
+                if(userDetails.getRoleId() == 3) {
+                    userId = userDetails.getId();
+                }
 
-                List schools = hierarchymanager.getProgramOrgHierarchyItems(programId, 3, entityId, userDetails.getId());
+                List schools = hierarchymanager.getProgramOrgHierarchyItems(programId, 3, entityId, userId);
 
                 if (!schools.isEmpty() && schools.size() > 0) {
 

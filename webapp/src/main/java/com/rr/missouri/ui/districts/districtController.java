@@ -60,7 +60,11 @@ public class districtController {
         programOrgHierarchy topLevel = hierarchymanager.getProgramOrgHierarchyBydspPos(1, programId);
         
         /* Get a list of top level entities */
-        List<programHierarchyDetails> counties = hierarchymanager.getProgramHierarchyItems(topLevel.getId(), userDetails.getId());
+        Integer userId = 0;
+        if(userDetails.getRoleId() == 3) {
+            userId = userDetails.getId();
+        }
+        List<programHierarchyDetails> counties = hierarchymanager.getProgramHierarchyItems(topLevel.getId(), userId);
         
         List<county> countyList = new ArrayList<county>();
         
@@ -73,7 +77,7 @@ public class districtController {
             newCounty.setCountyId(county.getId());
             newCounty.setCountyName(county.getName());
             
-            List districts = hierarchymanager.getProgramOrgHierarchyItems(programId, 2, county.getId(), userDetails.getId());
+            List districts = hierarchymanager.getProgramOrgHierarchyItems(programId, 2, county.getId(), userId);
         
             List<district> districtList = new ArrayList<district>();
 

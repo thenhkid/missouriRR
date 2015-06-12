@@ -74,8 +74,15 @@ public class calendarController {
         
         /* Get user permissions */
         userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
-        allowCreate = modulePermissions.isAllowCreate();
         
+        
+        if(userDetails.getRoleId() == 2) {
+            allowCreate = true;
+        }
+        else {
+            allowCreate = modulePermissions.isAllowCreate();
+        }
+         
         mav.addObject("allowCreate", allowCreate);
 
         return mav;
