@@ -9,12 +9,12 @@ jQuery(function ($) {
     $("input:text,form").attr("autocomplete", "off");
         
     //clicking on add category link in dropdown
-    $('#addCategory').on('click', function () {
+    $('#addCategory').on('click', function (event) {
         $.ajax({
             type: 'POST',
             url: '/faq/getCategoryForm.do',
             data:{'categoryId':0, 'toDo':'Add'},
-            success: function(data) {
+            success: function(data, event) {
                 bootbox.dialog({
                     message: data,
                     title: "Add A Category",
@@ -23,7 +23,7 @@ jQuery(function ($) {
                             label: "Add",
                             className: "btn-primary",
                             callback: function() {
-                              categoryFn("add");
+                              categoryFn("add", event);
                             } 
                         },
                     }
@@ -178,13 +178,20 @@ jQuery(function ($) {
     /** this function handle category, should change alert to set text on page instead.
      * too much clicking.....
      * **/
-    function categoryFn(toDo) {
+    function categoryFn(toDo, event) {
         
-        var formData = $("#eventForm").serializefiles();
-        
+        var formData = $("#categoryForm").serialize();
+        /** make sure there is a category**/
+       if ($('#categoryName').val().trim() == "") {
+            $('#categoryNameDiv').addClass("has-error");
+      	    $('#categoryNameMsg').addClass("has-error");
+      	    $('#categoryNameMsg').html('Category Name is required field.');
+            event.preventDefault();
+            return false;
+        }
         var submitURL = "/faq/addCategory.do";
         if (toDo == 'edit') {
-           submitURL = "/faq/editCategory.do";
+           submitURL = "/faq/addCategory.do";
         } else if (toDo == 'delete') {
            submitURL = "/faq/deleteCategory.do";
         }
@@ -194,15 +201,14 @@ jQuery(function ($) {
             data:formData, // need to replace
             
             success: function(data) {
-                var responseData = ("Added " + data);
-                if (data == "2") {
-                  responseData = ("Edit " + data); 
+                var responseData = ("Category Added");
+                if (data == "2"){
+                    responseData = ("Category Edited");
                 } else if (data == "3"){
-                   responseData = ("Deleted " + data);
-                } 
-                    bootbox.alert(responseData, function() {
-                });
-                 
+                    responseData = ("Category Deleted");
+                }
+                //TODO this should refresh the correct cat, q, or document div
+                window.location.replace("/faq");  
             }
         });
     }

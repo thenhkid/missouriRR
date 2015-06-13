@@ -64,6 +64,7 @@ public class faqController {
             category = faqManager.getCategoryById(categoryId);
         } else {
             category.setDisplayPos(maxDisPos + 1);
+            category.setProgramId(programId);
             maxDisPos = maxDisPos + 1;
         }
         
@@ -80,20 +81,31 @@ public class faqController {
     public @ResponseBody
     ModelAndView AddCategory(@ModelAttribute(value = "category") faqCategories category, BindingResult errors) 
             throws Exception {
-
+        
+        Integer maxDisPos = faqManager.getFAQCategories(programId).size();
+        
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/faq/categoryModal");
-        if (errors.hasErrors()) {
-            return mav;
-        }
-        faqCategories faqOld = faqManager.getCategoryById(category.getId());
-        //grab display positions and make sure we switch out if changed
-        if (faqOld.getDisplayPos() != category.getDisplayPos()) {
-            //we switch and update the one that is being replaced
+        mav.addObject("category", category);
+        mav.addObject("maxPos", maxDisPos);
+        
+        faqCategories categoryToReplace = faqManager.getCategoryByDspPos(programId, category.getDisplayPos());
+                    
+        //see if any category is using the new display position
+        if (categoryToReplace != null) {
+                if(category.getId() == 0) {
+                    categoryToReplace.setDisplayPos(maxDisPos);
+                } else {
+                    //get old position
+                    categoryToReplace.setDisplayPos(faqManager.getCategoryById(category.getId()).getDisplayPos());
+                }
+                faqManager.saveCategory(categoryToReplace);
         }
         //insert or update here
-        
-        //
+        faqManager.saveCategory(category);
+        //return correct message
+        mav.setViewName("/faq/result");
+        mav.addObject("edited", 1);
         return mav;
     }
     

@@ -9,15 +9,15 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <div id="addCategoryForm">
-    
     <div>
         <form:form id="categoryForm" modelAttribute="category" role="form" class="form" method="post">
             <form:hidden path="id" />
             <form:hidden path="programId" />
-           <div class="form-group ${status.error ? 'has-error' : '' }">
-                <label for="categoryName">Category Name</label>
-                <form:input path="categoryName" class="form-control categoryName" placeholder="Category Name ${maxPos}" />
-            </div>
+           <div class="form-group" id="categoryNameDiv">
+                <label  class="control-label" for="categoryName">Category Name*</label>
+                <form:input id="categoryName" path="categoryName" class="form-control" placeholder="Category Name" />
+                <span id="categoryNameMsg" class="control-label"></span>  
+           </div>
             
             <div class="form-group">
                  <label for="timeFrom">Display Position</label>
@@ -26,8 +26,7 @@
                             <option value="${displayPosition}" <c:if test="${displayPosition == category.displayPos}"> selected </c:if>>${displayPosition}</option>
                         </c:forEach>
                 </form:select>
-            </div>
-            
+            </div>           
         </form:form>
     </div>
 </div>
