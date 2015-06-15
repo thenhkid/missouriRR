@@ -408,110 +408,107 @@ jQuery(function ($) {
         $('.popover').popover('destroy');
     });
 
-    var loadEventTypesDatatableObject;
-
-    function loadEventTypeDatatable() {
-        $('#eventTypesTable').dataTable().fnDestroy();
-
-        loadEventTypesDatatableObject = $('#eventTypesTable').dataTable({
-            "processing": true,
-            "bServerSide": false,
-            "sAjaxSource": "/calendar/getEventTypesDatatable.do",
-            "sScrollY": "160px",
-            "bPaginate": false,
-            "bScrollCollapse": true,
-            "bAutoWidth": true,
-            "bFilter": false,
-            "aaSorting": [[0, "desc"]],
-            "sDom": '<"top">rt<"bottom"lp><"clear">',
-            "fnDrawCallback": function (oSettings) {
-                //$('#dataTableCount').html(this.fnGetData().length);
-            },
-            "aoColumns": [
-                {"bSortable": false, "sClass": "center", "sWidth": "10px"},
-                {"bSortable": true, "sClass": "left"},
-                {"bSortable": true, "sClass": "center"},
-                {"bSortable": false, "sClass": "center"}
-            ]
-        });
-    }
-
-    $(document).on("show.bs.modal", "#eventTypeManagerModel", function () {
-        loadEventTypeDatatable();
-    });
-
-    $(document).on("shown.bs.modal", "#eventTypeManagerModel", function () {
-        loadEventTypesDatatableObject.fnAdjustColumnSizing();
-    });
-
-    $(document).on("hide.bs.modal", "#eventTypeManagerModel", function () {
-        //alert('load modal table with js now');
-        $('#newEventTypeForm').hide();
-    });
-
+    
     $(document).on("click", "a#eventTypeManagerModel", function () {
         $('.popover').popover('destroy');
         $.ajax({
-            url: '/calendar/getNewEventTypeForm.do',
+            url: '/calendar/getEventTypes.do',
             type: 'GET',
             success: function (data) {
-                var modal = $(data).appendTo('body');
-                modal.modal('show');
+                data = $(data);
+                
+                data.find('#eventTypeColorField').colorpicker().on('changeColor', function (event){
+                        $('#eventTypeColorFieldInput').val(event.color.toHex());
+                        $('#eventTypeColorField').attr('data-color',event.color.toHex());
+                        $('#eventTypeColorFieldAddon').css("background-color", event.color.toHex());
+                        $('#eventTypeColorField').colorpicker('hide');
+                });
+                
+                bootbox.dialog({
+                    title: "Event types",
+                    message: data
+                });
+                
             },
             error: function (error) {
                 console.log(error);
             }
         });
     });
+    
+    function checkAvailableColors() {
+        var result = "";
+        $.ajax({
+            url: '/calendar/isColorAvailable.do',
+            type: 'GET',
+            async: false,
+            data: {
+                'hexColor': $('#eventTypeColorFieldInput').val()
+            },
+            success: function (data) {
+                result = data;
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+        return result;
+    }
 
     $(document).on("click", "#addNewEventTypeButton", function () {
-        $('#eventTypeHeading').html("New Event Type");
-        var eventTypeId = $('#eventTypeId').val(0);
-        var eventTypeColor = $('#eventTypeColor').val("");
-        var eventType = $('#eventType').val("");
-        var adminOnly = $('#adminOnly').attr("checked", false);
         $('#newEventTypeForm').show();
-        $('.eventTypeColor').simplecolorpicker('selectColor', $('.eventTypeColor option:first').val()).on('change', function () {
-            $('.eventTypeColorField').val($('.eventTypeColor').val());
-        });
-
-        $('.eventTypeColorField').val($('.eventTypeColor').val());
     });
 
     $(document).on("click", "#newEventSaveButton", function () {
-        var eventTypeId = $('#eventTypeId').val();
-        var eventTypeColor = $('#eventTypeColorField').val();
-        var eventType = $('#eventType').val();
-        if ($('#adminOnly').is(":checked")) {
-            var adminOnly = "true";
+        
+        var noErrors = true;
+        
+        var isAvailable = checkAvailableColors();
+        
+        if(isAvailable === 0) {
+            noErrors = false;
         }
-        else {
-            var adminOnly = "false";
+        
+        if ($('#eventType').val() === "") {
+            
         }
-
-        $.ajax({
-            url: '/calendar/saveEventType.do',
-            type: 'POST',
-            data: {
-                'eventTypeId': eventTypeId,
-                'eventTypeColor': eventTypeColor,
-                'eventType': eventType,
-                'adminOnly': adminOnly
-            },
-            success: function (data) {
-                $('#newEventTypeForm').hide();
-                var eventTypeId = $('#eventTypeId').val(0);
-                var eventTypeColor = $('#eventTypeColor').val("");
-                var eventType = $('#eventType').val("");
-                var adminOnly = $('#adminOnly').attr("checked", false);
-                loadEventTypeDatatable();
-                calendar.fullCalendar('refetchEvents');
-            },
-            error: function (error) {
-                console.log(error);
+        
+        
+        if(noErrors == true) {
+            var eventTypeId = $('#eventTypeId').val();
+            var eventTypeColor = $('#eventTypeColorField').val();
+            var eventType = $('#eventType').val();
+            if ($('#adminOnly').is(":checked")) {
+                var adminOnly = "true";
             }
-        });
+            else {
+                var adminOnly = "false";
+            }
 
+            $.ajax({
+                url: '/calendar/saveEventType.do',
+                type: 'POST',
+                data: {
+                    'eventTypeId': eventTypeId,
+                    'eventTypeColor': eventTypeColor,
+                    'eventType': eventType,
+                    'adminOnly': adminOnly
+                },
+                success: function (data) {
+                    $('#newEventTypeForm').hide();
+                    var eventTypeId = $('#eventTypeId').val(0);
+                    var eventTypeColor = $('#eventTypeColor').val("");
+                    var eventType = $('#eventType').val("");
+                    var adminOnly = $('#adminOnly').attr("checked", false);
+                    loadEventTypeDatatable();
+                    calendar.fullCalendar('refetchEvents');
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+        
         return false;
     });
 

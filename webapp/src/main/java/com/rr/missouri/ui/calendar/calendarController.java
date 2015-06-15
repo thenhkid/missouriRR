@@ -118,29 +118,6 @@ public class calendarController {
         
     }
 
-    @RequestMapping(value = "/getEventTypesDatatable.do", method = RequestMethod.GET)
-    public @ResponseBody
-    JSONObject getEventTypesDatatable(HttpSession session, HttpServletRequest request) throws Exception {
-
-        JSONObject data = new JSONObject();
-
-        String eventType = request.getParameter("eventType");
-        String eventTypeColor = request.getParameter("eventTypeColor");
-        String adminOnly = request.getParameter("adminOnly");
-
-        JSONArray eventTypesJSON = calendarManager.returnEventTypesJSON(programId);
-
-        data.put("draw", 1);
-        data.put("recordsTotal", eventTypesJSON.size());
-        data.put("recordsFiltered", eventTypesJSON.size());
-        data.put("aaData", eventTypesJSON);
-        data.put("sEcho", 0 + 1);
-        data.put("iDisplayLength", eventTypesJSON.size());
-
-        return data;
-
-    }
-
     @RequestMapping(value = "/saveEventType.do", method = RequestMethod.POST)
     public @ResponseBody
     Integer saveEventType(HttpSession session, HttpServletRequest request) throws Exception {
@@ -371,18 +348,44 @@ public class calendarController {
 
         return mav;
     }
-
-    @RequestMapping(value = "/getNewEventTypeForm.do", method = RequestMethod.GET)
-    public ModelAndView getNewEventTypeForm(HttpSession session, HttpServletRequest request) throws Exception {
+    
+    /**
+     * 
+     * @param session
+     * @param request
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/getEventTypes.do", method = RequestMethod.GET)
+    public ModelAndView getEventTypes(HttpSession session, HttpServletRequest request) throws Exception {
 
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("/calendar/newEventTypeModal");
+        mav.setViewName("/calendar/eventTypes");
+        
+        List<calendarEventTypes> eventTypes = calendarManager.getCalendarEventTypes(programId);
+        mav.addObject("eventTypes", eventTypes);
 
         List<calendarEventTypeColors> eventTypeColors = calendarManager.getAllEventTypeColors();
 
         mav.addObject("colors", eventTypeColors);
 
         return mav;
+    }
+    
+    @RequestMapping(value = "/isColorAvailable.do", method = RequestMethod.GET)
+    public @ResponseBody Integer isColorAvailable(HttpSession session, @RequestParam(value = "hexColor", required = true) String hexColor) throws Exception {
+        Integer isAvailable = 0;
+        
+        boolean isAvailableBool = calendarManager.isColorAvailable(programId, hexColor);
+        
+        if(isAvailableBool) {
+            isAvailable = 1;
+        }
+        else {
+            isAvailable = 0;
+        }
+        
+        return isAvailable;
     }
 
     @RequestMapping(value = "/getEventTypeId.do", method = RequestMethod.GET)
