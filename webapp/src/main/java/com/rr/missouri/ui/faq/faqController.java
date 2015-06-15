@@ -9,6 +9,7 @@ import com.registryKit.faq.faqCategories;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.registryKit.faq.faqManager;
+import com.registryKit.faq.faqQuestions;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -77,17 +78,14 @@ public class faqController {
     }
     
     
-    @RequestMapping(value = "/addCategory.do", method = RequestMethod.POST)
+    @RequestMapping(value = "/saveCategory.do", method = RequestMethod.POST)
     public @ResponseBody
-    ModelAndView AddCategory(@ModelAttribute(value = "category") faqCategories category, BindingResult errors) 
+    ModelAndView saveCategory(@ModelAttribute(value = "category") faqCategories category, BindingResult errors) 
             throws Exception {
         
         Integer maxDisPos = faqManager.getFAQCategories(programId).size();
         
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("/faq/categoryModal");
-        mav.addObject("category", category);
-        mav.addObject("maxPos", maxDisPos);
         
         faqCategories categoryToReplace = faqManager.getCategoryByDspPos(programId, category.getDisplayPos());
                     
@@ -105,178 +103,102 @@ public class faqController {
         faqManager.saveCategory(category);
         //return correct message
         mav.setViewName("/faq/result");
-        mav.addObject("edited", 1);
+        if (category.getId() == 0) {
+            mav.addObject("edited", 1);
+        } else {
+            mav.addObject("edited", 2);
+        }
         return mav;
     }
     
-    @RequestMapping(value = "/editCategory.do", method = RequestMethod.POST)
-    public @ResponseBody
-    Integer editCategory(@RequestParam(value = "categoryId", required = false)  Integer categoryId)
-            throws Exception {
-
-        //we check to see if cat is in use, we return form
-        /**
-         * 
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("/faq/categoryModal");
-        return mav;
-         */
-        // if not, we add category and we return 1
-        return (Integer) 2;
-    }
-    
+    /**
+     * This takes in a category and deletes its questions and documents
+     * @param category
+     * @param errors
+     * @return
+     * @throws Exception 
+     */
     @RequestMapping(value = "/deleteCategory.do", method = RequestMethod.POST)
     public @ResponseBody
-    Integer deleteCategory(@RequestParam(value = "categoryId", required = false)  Integer categoryId)
+    ModelAndView deleteCategory(@ModelAttribute(value = "category") faqCategories category, BindingResult errors)
             throws Exception {
-
-        //we check to see if cat is in use, we return form
-        /**
-         * 
+        System.out.println(category.getId());
+        faqManager.deleteCategory(category);
+        //reorder all displayPos
+        faqManager.reOrderCategoryByDspPos(programId);
+   
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("/faq/categoryModal");
+        mav.setViewName("/faq/result");
+        mav.addObject("edited", 3);
         return mav;
-         */
-        // if not, we add category and we return 1
-        return (Integer) 3;
     }
     
     @RequestMapping(value = "/getQuestionForm.do", method = RequestMethod.POST)
     public @ResponseBody
-    Integer newQuestionForm(
-            @RequestParam(value = "questionId", required = false) Integer questionId) 
+    ModelAndView displayQuestionForm(
+            @RequestParam(value = "toDo", required = true) String toDo, 
+            @RequestParam(value = "questionId", required = true) Integer questionId
+            ) 
             throws Exception {
-
-        //we check to see if cat is in use, we return form
-        /**
-         * 
+        
+        //need category list
+        List <faqCategories> categories = faqManager.getFAQCategories(programId);
         ModelAndView mav = new ModelAndView();
+        
+        faqQuestions question = new faqQuestions();
+        Integer maxDisPos = 0;
+        if (toDo.equalsIgnoreCase("Edit")) {
+            question = faqManager.getQuestionById(questionId);
+            maxDisPos = faqManager.getFAQQuestions(question.getCategoryId()).size() + 1;
+        } else {
+            maxDisPos = faqManager.getFAQQuestions(categories.get(0).getId()).size();
+            question.setDisplayPos(maxDisPos + 1);
+            question.setCategoryId(categories.get(0).getId());
+            maxDisPos = maxDisPos + 1;
+        }
+        
+        mav.addObject("question", question);
+        mav.addObject("categories", categories);
+        
+        //we add max display order
+        mav.addObject("maxPos", maxDisPos);
         mav.setViewName("/faq/questionModal");
         return mav;
-         */
-        // if not, we add category and we return 1
-        return (Integer) 1;
-    }
-    
-    @RequestMapping(value = "/addQuestion.do", method = RequestMethod.POST)
-    public @ResponseBody  
-        Integer addQuestion(
-            @RequestParam(value = "questionId", required = false) Integer questionId) 
-            throws Exception {
-
-        //we check to see if cat is in use, we return form
-        /**
-         * 
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("/faq/questionModal");
-        return mav;
-         */
-        // if not, we add category and we return 1
-        return (Integer) 1;
     }
     
     
-    @RequestMapping(value = "/editQuestion.do", method = RequestMethod.POST)
+    
+    @RequestMapping(value = "/saveQuestion.do", method = RequestMethod.POST)
     public @ResponseBody
-    Integer editQuestion(
-            @RequestParam(value = "questionId", required = false) Integer questionId) 
+    ModelAndView saveQuestion(@ModelAttribute(value = "question") faqQuestions question, BindingResult errors) 
             throws Exception {
-
-        //we check to see if cat is in use, we return form
-        /**
-         * 
+        
+        Integer maxDisPos = faqManager.getFAQQuestions(question.getCategoryId()).size();
+        
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("/faq/questionModal");
+        
+        faqQuestions questionToReplace = faqManager.getQuestionByDspPos(question.getCategoryId(), question.getDisplayPos());
+                    
+        //see if any category is using the new display position
+        if (questionToReplace != null) {
+                if(question.getId() == 0) {
+                    questionToReplace.setDisplayPos(maxDisPos);
+                } else {
+                    //get old position
+                    questionToReplace.setDisplayPos(faqManager.getQuestionById(question.getId()).getDisplayPos());
+                }
+                faqManager.saveQuestion(questionToReplace);
+        }
+        //insert or update here
+        faqManager.saveQuestion(question);
+        //return correct message
+        mav.setViewName("/faq/result");
+        if (question.getId() == 0) {
+            mav.addObject("edited", 1);
+        } else {
+            mav.addObject("edited", 2);
+        }
         return mav;
-         */
-        // if not, we add category and we return 1
-        return (Integer) 2;
-    }
-    
-    @RequestMapping(value = "/deleteQuestion.do", method = RequestMethod.POST)
-    public @ResponseBody
-    Integer deleteQuestion(
-            @RequestParam(value = "questionId", required = false) Integer questionId) 
-            throws Exception {
-
-        //we check to see if cat is in use, we return form
-        /**
-         * 
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("/faq/questionModal");
-        return mav;
-         */
-        // if not, we add category and we return 1
-        return (Integer) 3;
-    }
-    
-    @RequestMapping(value = "/getDocumentForm.do", method = RequestMethod.POST)
-    public @ResponseBody
-    Integer newDocumentForm(
-            @RequestParam(value = "documentId", required = false) Integer documentId) 
-            throws Exception {
-
-        //we check to see if cat is in use, we return form
-        /**
-         * 
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("/faq/questionModal");
-        return mav;
-         */
-        // if not, we add category and we return 1
-        return (Integer) 1;
-    }
-    
-    @RequestMapping(value = "/addDocument.do", method = RequestMethod.POST)
-    public @ResponseBody  
-        Integer addDocument(
-            @RequestParam(value = "documentId", required = false) Integer documentId) 
-            throws Exception {
-
-        //we check to see if cat is in use, we return form
-        /**
-         * 
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("/faq/questionModal");
-        return mav;
-         */
-        // if not, we add category and we return 1
-        return (Integer) 1;
-    }
-    
-    
-    @RequestMapping(value = "/editDocument.do", method = RequestMethod.POST)
-    public @ResponseBody
-    Integer editDocument(
-            @RequestParam(value = "documentId", required = false) Integer documentId) 
-            throws Exception {
-
-        //we check to see if cat is in use, we return form
-        /**
-         * 
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("/faq/questionModal");
-        return mav;
-         */
-        // if not, we add category and we return 1
-        return (Integer) 2;
-    }
-    
-    @RequestMapping(value = "/deleteDocument.do", method = RequestMethod.POST)
-    public @ResponseBody
-    Integer deleteDocument(
-            @RequestParam(value = "documentId", required = false) Integer documentId) 
-            throws Exception {
-
-        //we check to see if cat is in use, we return form
-        /**
-         * 
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("/faq/questionModal");
-        return mav;
-         */
-        // if not, we add category and we return 1
-        return (Integer) 3;
     }
     
     

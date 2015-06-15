@@ -65,12 +65,53 @@ jQuery(function ($) {
         });
     });
     
+    /** this function handle category, should change alert to set text on page instead.
+     * too much clicking.....
+     * **/
+    function categoryFn(toDo, event) {
+        
+        var formData = $("#categoryForm").serialize();
+        /** make sure there is a category**/
+       if ($('#categoryName').val().trim() == "") {
+            $('#categoryNameDiv').addClass("has-error");
+      	    $('#categoryNameMsg').addClass("has-error");
+      	    $('#categoryNameMsg').html('Category Name is required field.');
+            event.preventDefault();
+            return false;
+        }
+        var submitURL = "/faq/saveCategory.do";
+        if (toDo == 'delete') {
+           submitURL = "/faq/deleteCategory.do";
+        }
+        $.ajax({
+            type: 'POST',
+            url: submitURL,
+            data:formData, // need to replace
+            
+            success: function(data) {
+                var responseData = ("Category Added");
+                //TODO 
+                /** need to make sure we have some sort of status messages **/
+                if (data == "2"){
+                    responseData = ("Category Edited");
+                } else if (data == "3"){
+                    responseData = ("Category Deleted");
+                }
+                //TODO this should refresh the correct cat, q, or document div
+                window.location.replace("/faq");  
+            }
+        });
+    }
+    /** end of category **/
+    
+    /** start of question **/
     //clicking on add question link in dropdown
-    $('#addQuestion').on('click', function () {
+    $('#addQuestion').on('click', function (event) {
         $.ajax({
             type: 'POST',
             url: '/faq/getQuestionForm.do',
-            success: function(data) {
+            data:{'questionId':0, 'toDo':'Add'},
+            success: function(data, event) {
                 bootbox.dialog({
                     message: data,
                     title: "Add A Question",
@@ -79,7 +120,7 @@ jQuery(function ($) {
                             label: "Add",
                             className: "btn-primary",
                             callback: function() {
-                              questionFn("add");
+                              questionFn("add", event);
                             } 
                         },
                     }
@@ -88,11 +129,13 @@ jQuery(function ($) {
         });
     });
   
-    //clicking on add category link in dropdown
+    //clicking on add question link in dropdown
     $('.editQuestion').on('click', function () {
+        var questionId = $(this).attr('rel');
         $.ajax({
             type: 'POST',
             url: '/faq/getQuestionForm.do',
+            data:{'questionId':questionId, 'toDo':'Edit'},
             success: function(data) {
                 bootbox.dialog({
                     message: data,
@@ -119,81 +162,35 @@ jQuery(function ($) {
         });
     });
     
-    //clicking on add document link in dropdown
-    $('#addDocument').on('click', function () {
-        $.ajax({
-            type: 'POST',
-            url: '/faq/getDocumentForm.do',
-            success: function(data) {
-                bootbox.dialog({
-                    message: data,
-                    title: "Add A Document",
-                    buttons: {
-                        success: {
-                            label: "Add",
-                            className: "btn-primary",
-                            callback: function() {
-                              documentFn("add");
-                            } 
-                        },
-                    }
-                });
-            }
-        });
-    });
-  
-    //clicking on add category link in dropdown
-    $('.editDocument').on('click', function () {
-        $.ajax({
-            type: 'POST',
-            url: '/faq/getDocumentForm.do',
-            success: function(data) {
-                bootbox.dialog({
-                    message: data,
-                    title: "Edit Document",
-                    buttons: {
-                        success: {
-                            label: "Edit",
-                            className: "btn-primary",
-                            callback: function() {
-                              documentFn("edit");
-                            } 
-                        },
-                        delete: {
-                            label: "Delete",
-                            className: "btn-danger",
-                            callback: function() {
-                              //add confirm box
-                              documentFn("delete");
-                            } 
-                        },
-                    }
-                });
-            }
-        });
-    });
-    
-    
-    
-    /** this function handle category, should change alert to set text on page instead.
+    /** this function handle question, should change alert to set text on page instead.
      * too much clicking.....
      * **/
-    function categoryFn(toDo, event) {
-        
-        var formData = $("#categoryForm").serialize();
+    function questionFn(toDo, event) {
+       var error = 0;
         /** make sure there is a category**/
-       if ($('#categoryName').val().trim() == "") {
-            $('#categoryNameDiv').addClass("has-error");
-      	    $('#categoryNameMsg').addClass("has-error");
-      	    $('#categoryNameMsg').html('Category Name is required field.');
+       if ($('#question').val().trim() == "") {
+            $('#questionDiv').addClass("has-error");
+      	    $('#questionMsg').addClass("has-error");
+      	    $('#questionMsg').html('Question is required field.');
+            error ++;
+        }
+        
+        if ($('#answer').val().trim() == "") {
+            $('#answerDiv').addClass("has-error");
+      	    $('#answerMsg').addClass("has-error");
+      	    $('#answerMsg').html('Answer is required field.');
+            error ++;
+        }
+        
+        if (error > 0) {
             event.preventDefault();
             return false;
         }
-        var submitURL = "/faq/addCategory.do";
-        if (toDo == 'edit') {
-           submitURL = "/faq/addCategory.do";
-        } else if (toDo == 'delete') {
-           submitURL = "/faq/deleteCategory.do";
+        
+        var formData = $("#questionForm").serialize();
+        var submitURL = "/faq/saveQuestion.do";
+        if (toDo == 'delete') {
+           submitURL = "/faq/deleteQuestion.do";
         }
         $.ajax({
             type: 'POST',
@@ -201,72 +198,18 @@ jQuery(function ($) {
             data:formData, // need to replace
             
             success: function(data) {
-                var responseData = ("Category Added");
+                var responseData = ("Question Added");
+                //TODO 
+                /** need to make sure we have some sort of status messages **/
                 if (data == "2"){
-                    responseData = ("Category Edited");
+                    responseData = ("Question Edited");
                 } else if (data == "3"){
-                    responseData = ("Category Deleted");
+                    responseData = ("Question Deleted");
                 }
                 //TODO this should refresh the correct cat, q, or document div
                 window.location.replace("/faq");  
             }
         });
     }
-    
-  
-    /** this function uses ajax to handle questions, need to submit question object **/
-    function questionFn(toDo) {
-        var submitURL = "/faq/addQuestion.do";
-        if (toDo == 'edit') {
-           submitURL = "/faq/editQuestion.do";
-        } else if (toDo == 'delete') {
-           submitURL = "/faq/deleteQuestion.do";
-        }
-        $.ajax({
-            type: 'POST',
-            url: submitURL,
-            data:{'questionId':'1'}, // need to replace
-            
-            success: function(data) {
-                var responseData = ("Added " + data);
-                if (data == "2") {
-                  responseData = ("Edit " + data); 
-                } else if (data == "3"){
-                   responseData = ("Deleted " + data);
-                } 
-                    bootbox.alert(responseData, function() {
-                });
-                 
-            }
-        });
-    }
-    
-    /** this function uses ajax to handle documents, need to submit document object **/
-    function documentFn(toDo) {
-        var submitURL = "/faq/addDocument.do";
-        if (toDo == 'edit') {
-           submitURL = "/faq/editDocument.do";
-        } else if (toDo == 'delete') {
-           submitURL = "/faq/deleteDocument.do";
-        }
-        $.ajax({
-            type: 'POST',
-            url: submitURL,
-            data:{'documentId':'1'}, // need to replace
-            
-            success: function(data) {
-                var responseData = ("Added " + data);
-                if (data == "2") {
-                  responseData = ("Edit " + data); 
-                } else if (data == "3"){
-                   responseData = ("Deleted " + data);
-                } 
-                    bootbox.alert(responseData, function() {
-                });
-                 
-            }
-        });
-    }
-    
     
 });
