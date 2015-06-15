@@ -46,6 +46,8 @@ public class faqController {
         List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
         
         mav.addObject("categoryList", categoryList);
+        mav.addObject("activeCat", categoryList.get(0).getId());
+        
         return mav;
     }
     
@@ -79,35 +81,44 @@ public class faqController {
     
     
     @RequestMapping(value = "/saveCategory.do", method = RequestMethod.POST)
-    public @ResponseBody
+    public //@ResponseBody
     ModelAndView saveCategory(@ModelAttribute(value = "category") faqCategories category, BindingResult errors) 
             throws Exception {
         
-        Integer maxDisPos = faqManager.getFAQCategories(programId).size();
-        
+        Integer maxDisPos = faqManager.getFAQCategories(programId).size() + 1;
         ModelAndView mav = new ModelAndView();
         
         faqCategories categoryToReplace = faqManager.getCategoryByDspPos(programId, category.getDisplayPos());
                     
         //see if any category is using the new display position
         if (categoryToReplace != null) {
-                if(category.getId() == 0) {
-                    categoryToReplace.setDisplayPos(maxDisPos);
-                } else {
-                    //get old position
-                    categoryToReplace.setDisplayPos(faqManager.getCategoryById(category.getId()).getDisplayPos());
-                }
-                faqManager.saveCategory(categoryToReplace);
+            if (categoryToReplace.getId() != 0) {
+                    if(category.getId() == 0) {
+                        categoryToReplace.setDisplayPos(maxDisPos);
+                    } else {
+                        //get old position
+                        faqCategories categoryOld = faqManager.getCategoryById(category.getId());
+                        categoryToReplace.setDisplayPos(categoryOld.getDisplayPos());
+                        System.out.println(categoryToReplace.getCategoryName());
+                    }
+                    faqManager.saveCategory(categoryToReplace);
+            }
         }
+
         //insert or update here
+        if (category.getId() == 0) {
+            //if someone keep hitting refresh
+            category.setDisplayPos(maxDisPos + 1);
+        }
         faqManager.saveCategory(category);
         //return correct message
-        mav.setViewName("/faq/result");
-        if (category.getId() == 0) {
-            mav.addObject("edited", 1);
-        } else {
-            mav.addObject("edited", 2);
-        }
+        mav.setViewName("/faq");
+        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
+        mav.addObject("categoryList", categoryList);
+        mav.addObject("activeCat", category.getId());
+        
+        // here we define which tab should be active
+        
         return mav;
     }
     
@@ -119,17 +130,19 @@ public class faqController {
      * @throws Exception 
      */
     @RequestMapping(value = "/deleteCategory.do", method = RequestMethod.POST)
-    public @ResponseBody
+    public // @ResponseBody
     ModelAndView deleteCategory(@ModelAttribute(value = "category") faqCategories category, BindingResult errors)
             throws Exception {
-        System.out.println(category.getId());
+        
         faqManager.deleteCategory(category);
         //reorder all displayPos
         faqManager.reOrderCategoryByDspPos(programId);
    
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("/faq/result");
-        mav.addObject("edited", 3);
+        mav.setViewName("/faq");
+        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
+        mav.addObject("categoryList", categoryList);
+        mav.addObject("activeCat", categoryList.get(0).getId());
         return mav;
     }
     
@@ -144,7 +157,7 @@ public class faqController {
         //need category list
         List <faqCategories> categories = faqManager.getFAQCategories(programId);
         ModelAndView mav = new ModelAndView();
-        
+        mav.setViewName("/faq/questionModal");
         faqQuestions question = new faqQuestions();
         Integer maxDisPos = 0;
         if (toDo.equalsIgnoreCase("Edit")) {
@@ -162,42 +175,100 @@ public class faqController {
         
         //we add max display order
         mav.addObject("maxPos", maxDisPos);
-        mav.setViewName("/faq/questionModal");
+        mav.addObject("displayPos", question.getDisplayPos());
+        
         return mav;
     }
     
-    
+    @RequestMapping(value = "/chagneDisplayPosList.do", method = RequestMethod.POST)
+    public @ResponseBody
+    ModelAndView getDisplayPosList(
+            @RequestParam(value = "categoryId", required = true) Integer categoryId
+            ) 
+            throws Exception {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/faq/qDisplayPos");
+        List <faqQuestions> questionList = faqManager.getFAQQuestions(categoryId);
+        mav.addObject("displayPos", (questionList.size()+1));
+        mav.addObject("maxPos", (questionList.size()+1));
+        
+        return mav;
+    }
     
     @RequestMapping(value = "/saveQuestion.do", method = RequestMethod.POST)
-    public @ResponseBody
+    public
     ModelAndView saveQuestion(@ModelAttribute(value = "question") faqQuestions question, BindingResult errors) 
             throws Exception {
         
         Integer maxDisPos = faqManager.getFAQQuestions(question.getCategoryId()).size();
-        
         ModelAndView mav = new ModelAndView();
-        
+        Integer activeQId = question.getId();
+        //see if we are replacing a question's positon
         faqQuestions questionToReplace = faqManager.getQuestionByDspPos(question.getCategoryId(), question.getDisplayPos());
-                    
+        
         //see if any category is using the new display position
         if (questionToReplace != null) {
-                if(question.getId() == 0) {
-                    questionToReplace.setDisplayPos(maxDisPos);
-                } else {
-                    //get old position
-                    questionToReplace.setDisplayPos(faqManager.getQuestionById(question.getId()).getDisplayPos());
-                }
-                faqManager.saveQuestion(questionToReplace);
-        }
-        //insert or update here
-        faqManager.saveQuestion(question);
+            if(question.getId() == 0) {
+                        //new question get the same position, question.getDisplayPos, old questions get max position
+                        questionToReplace.setDisplayPos(maxDisPos +1);
+                        faqManager.saveQuestion(questionToReplace);
+                        faqManager.saveQuestion(question);
+                    } else {
+                        /**
+                         * existing
+                         * It is more complicated if question is existing and being moved to another category and
+                         * have its displayPos changed.
+                         */
+                        faqQuestions questionOld = faqManager.getQuestionById(question.getId());
+                        //1 we check to see if category has changed
+                        if (question.getCategoryId() == questionOld.getCategoryId()) {
+                            //we are just swapping places
+                            questionToReplace.setDisplayPos(questionOld.getDisplayPos());
+                            faqManager.saveQuestion(questionToReplace);
+                            faqManager.saveQuestion(question);
+                            
+                        }  else {
+                            //if it is not in the same category
+                            //moving to same category means adding new question
+                            questionToReplace.setDisplayPos(maxDisPos+1);
+                            faqManager.saveQuestion(questionToReplace);
+                            faqManager.saveQuestion(question);
+                            //we reorder old category
+                            faqManager.reOrderQuestionByDspPos(questionOld.getCategoryId());                           
+                        } 
+                    }
+            }  else { //simply adding a new question
+                question.setDisplayPos(maxDisPos +1);
+                activeQId = faqManager.saveQuestion(question);
+            }
+
+        
         //return correct message
-        mav.setViewName("/faq/result");
-        if (question.getId() == 0) {
-            mav.addObject("edited", 1);
-        } else {
-            mav.addObject("edited", 2);
-        }
+        mav.setViewName("/faq");
+        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
+        mav.addObject("categoryList", categoryList);
+        mav.addObject("activeCat", question.getCategoryId());
+        mav.addObject("activeQuestion", activeQId);
+        
+        // here we define which tab should be active
+        
+        return mav;
+    }
+    
+    @RequestMapping(value = "/deleteQuestion.do", method = RequestMethod.POST)
+    public // @ResponseBody
+    ModelAndView deleteCategory(@ModelAttribute(value = "question") faqQuestions question, BindingResult errors)
+            throws Exception {
+        
+        faqManager.deleteQuestion(question);
+        //reorder all displayPos
+        faqManager.reOrderQuestionByDspPos(question.getCategoryId());
+   
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/faq");
+        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
+        mav.addObject("categoryList", categoryList);
+        mav.addObject("activeCat", categoryList.get(0).getId());
         return mav;
     }
     

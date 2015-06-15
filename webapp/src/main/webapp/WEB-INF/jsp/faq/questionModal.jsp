@@ -12,10 +12,10 @@
 <div id="questionFormDiv">
     <div>
         <form:form id="questionForm" modelAttribute="question" role="form" class="form" method="post">
-            <form:hidden path="id" />
+            <form:hidden path="id"/>
            <div class="form-group" id="cateogryIdDiv">
                 <label for="timeFrom">Category</label>
-                <form:select path="categoryId" class="form-control" name="categoryId" id="categoryIdDropDown">
+                <form:select path="categoryId" class="form-control" name="categoryId" id="categoryId">
                         <c:forEach  var="category" items="${categories}">
                             <option value="${category.id}" <c:if test="${category.id == question.categoryId}"> selected </c:if>>${category.categoryName}</option>
                         </c:forEach>
@@ -32,14 +32,7 @@
                 <form:textarea id="answer" path="answer" class="form-control" placeholder="Answer" />
                 <span id="answerMsg" class="control-label"></span>  
            </div> 
-            <div class="form-group">
-                 <label for="timeFrom">Display Position</label>
-                <form:select path="displayPos" class="form-control" name="displayPos" id="displayPos">
-                        <c:forEach  var="displayPosition" begin="1" end="${maxPos}" >
-                            <option value="${displayPosition}" <c:if test="${displayPosition == question.displayPos}"> selected </c:if>>${displayPosition}</option>
-                        </c:forEach>
-                </form:select>
-            </div>           
+           <c:import url="qDisplayPos.jsp"></c:import>             
         </form:form>
     </div>
 </div>

@@ -33,13 +33,13 @@ jQuery(function ($) {
     });
   
     //clicking on add category link in dropdown
-    $('.editCategory').on('click', function () {
+    $('.editCategory').on('click', function (event) {
         var categoryId = $(this).attr('rel');
         $.ajax({
             type: 'POST',
             url: '/faq/getCategoryForm.do',
             data:{'categoryId':categoryId, 'toDo':'Edit'},
-            success: function(data) {
+            success: function(data, event) {
                 bootbox.dialog({
                     message: data,
                     title: "Edit Category",
@@ -48,7 +48,7 @@ jQuery(function ($) {
                             label: "Edit",
                             className: "btn-primary",
                             callback: function() {
-                              categoryFn("edit");
+                              categoryFn("edit", event);
                             } 
                         },
                         delete: {
@@ -56,7 +56,7 @@ jQuery(function ($) {
                             className: "btn-danger",
                             callback: function() {
                               //add confirm box
-                              categoryFn("delete");
+                              categoryFn("delete", event);
                             } 
                         },
                     }
@@ -83,24 +83,10 @@ jQuery(function ($) {
         if (toDo == 'delete') {
            submitURL = "/faq/deleteCategory.do";
         }
-        $.ajax({
-            type: 'POST',
-            url: submitURL,
-            data:formData, // need to replace
-            
-            success: function(data) {
-                var responseData = ("Category Added");
-                //TODO 
-                /** need to make sure we have some sort of status messages **/
-                if (data == "2"){
-                    responseData = ("Category Edited");
-                } else if (data == "3"){
-                    responseData = ("Category Deleted");
-                }
-                //TODO this should refresh the correct cat, q, or document div
-                window.location.replace("/faq");  
-            }
-        });
+        
+        $("#categoryForm").attr("action", submitURL);
+        $("#categoryForm").submit();
+        
     }
     /** end of category **/
     
@@ -130,7 +116,7 @@ jQuery(function ($) {
     });
   
     //clicking on add question link in dropdown
-    $('.editQuestion').on('click', function () {
+    $('.editQuestion').on('click', function (event) {
         var questionId = $(this).attr('rel');
         $.ajax({
             type: 'POST',
@@ -145,7 +131,7 @@ jQuery(function ($) {
                             label: "Edit",
                             className: "btn-primary",
                             callback: function() {
-                              questionFn("edit");
+                              questionFn("edit", event);
                             } 
                         },
                         delete: {
@@ -153,7 +139,7 @@ jQuery(function ($) {
                             className: "btn-danger",
                             callback: function() {
                               //add confirm box
-                              questionFn("delete");
+                              questionFn("delete", event);
                             } 
                         },
                     }
@@ -162,10 +148,12 @@ jQuery(function ($) {
         });
     });
     
-    /** this function handle question, should change alert to set text on page instead.
-     * too much clicking.....
-     * **/
+    
+    
     function questionFn(toDo, event) {
+        
+       var formData = $("#questionForm").serialize();
+        /** make sure there is a category**/
        var error = 0;
         /** make sure there is a category**/
        if ($('#question').val().trim() == "") {
@@ -187,29 +175,14 @@ jQuery(function ($) {
             return false;
         }
         
-        var formData = $("#questionForm").serialize();
         var submitURL = "/faq/saveQuestion.do";
         if (toDo == 'delete') {
            submitURL = "/faq/deleteQuestion.do";
         }
-        $.ajax({
-            type: 'POST',
-            url: submitURL,
-            data:formData, // need to replace
-            
-            success: function(data) {
-                var responseData = ("Question Added");
-                //TODO 
-                /** need to make sure we have some sort of status messages **/
-                if (data == "2"){
-                    responseData = ("Question Edited");
-                } else if (data == "3"){
-                    responseData = ("Question Deleted");
-                }
-                //TODO this should refresh the correct cat, q, or document div
-                window.location.replace("/faq");  
-            }
-        });
+        
+        $("#questionForm").attr("action", submitURL);
+        $("#questionForm").submit();
+        
     }
     
 });

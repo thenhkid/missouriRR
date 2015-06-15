@@ -28,7 +28,7 @@
                 
                 <%-- start looping here --%>
                 <c:forEach var="category" items="${categoryList}">
-                    <li <c:if test="${category.displayPos==1}">class="active"</c:if>>
+                    <li <c:if test="${category.id == activeCat}">class="active"</c:if>>
                         <a data-toggle="tab" href="#faq-tab-${category.id}">
                             <i class="blue ace-icon fa fa-question-circle bigger-120"></i>
                             ${category.categoryName}
@@ -64,7 +64,7 @@
             <%-- here we query the questions for each category --%>
             <div class="tab-content no-border padding-24">
                 <c:forEach var="category" items="${categoryList}">
-                    <div id="faq-tab-${category.id}" class="tab-pane fade in <c:if test="${category.displayPos==1}">active</c:if>">
+                    <div id="faq-tab-${category.id}" class="tab-pane fade in <c:if test="${category.id == activeCat}">active</c:if>">
                         <h4 class="blue">
                             <i class="ace-icon fa fa-check bigger-110"></i>
                             ${category.categoryName} 
@@ -84,9 +84,9 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <a href="#faq-${category.id}-${question.id}" data-parent="#faq-list-${category.id}" data-toggle="collapse" class="accordion-toggle collapsed">
-                                    <i class="ace-icon fa fa-chevron-left pull-right" data-icon-hide="ace-icon fa fa-chevron-down" data-icon-show="ace-icon fa fa-chevron-left"></i>
-                                    <i class="ace-icon fa fa-user bigger-130"></i>
-                                    &nbsp; ${question.question} 
+                                    <i class="ace-icon fa <c:if test='${question.id != activeQuestion}'>fa-chevron-left</c:if><c:if test='${question.id == activeQuestion}'>fa-chevron-down</c:if> pull-right" data-icon-hide="ace-icon fa fa-chevron-down" data-icon-show="ace-icon fa <c:if test='${question.id == activeQuestion}'>in</c:if> fa-chevron-left"></i>
+                                    <i class='ace-icon fa fa-user bigger-130'></i>
+                                    &nbsp; ${question.question} - ${question.id}
                                     <%-- code to restrict who sees this -- need to move between sec tag --%>
                                     
                                         <a href="#" class="btn-xs btn-app btn-success no-radius editQuestion" rel="${question.id}">
@@ -98,7 +98,7 @@
                                 </a>
                             </div>
 
-                            <div class="panel-collapse collapse" id="faq-${category.id}-${question.id}">
+                                        <div class="panel-collapse collapse <c:if test='${question.id == activeQuestion}'>in</c:if>" id="faq-${category.id}-${question.id}">
                                 <div class="panel-body">
                                     ${question.answer}
                                     <%-- loop documents here --%>
