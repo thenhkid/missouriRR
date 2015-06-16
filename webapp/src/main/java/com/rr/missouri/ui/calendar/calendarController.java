@@ -373,10 +373,10 @@ public class calendarController {
     }
     
     @RequestMapping(value = "/isColorAvailable.do", method = RequestMethod.GET)
-    public @ResponseBody Integer isColorAvailable(HttpSession session, @RequestParam(value = "hexColor", required = true) String hexColor) throws Exception {
+    public @ResponseBody Integer isColorAvailable(HttpSession session, @RequestParam(value = "hexColor", required = true) String hexColor, @RequestParam(value = "eventId", required = true) Integer eventId) throws Exception {
         Integer isAvailable = 0;
         
-        boolean isAvailableBool = calendarManager.isColorAvailable(programId, hexColor);
+        boolean isAvailableBool = calendarManager.isColorAvailable(programId, hexColor, eventId);
         
         if(isAvailableBool) {
             isAvailable = 1;

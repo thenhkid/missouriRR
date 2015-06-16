@@ -1,0 +1,8 @@
+
+Calendar
+    - When adding or saving event types it should refresh the list in bootbox and the Categories to show list.
+
+    - Work on the event notification Preferences
+
+    - Figure out how to get the "..." in the middle of the attachments so you can see the extension at the end.
+

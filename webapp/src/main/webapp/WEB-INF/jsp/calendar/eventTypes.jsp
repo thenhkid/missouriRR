@@ -40,7 +40,7 @@
                                 </td>
                                 <td class="center">
                                     <div class="hidden-sm hidden-xs btn-group">
-                                        <button class="btn btn-xs btn-info">
+                                        <button class="btn btn-xs btn-info editEventTypeButton" rel="${eventType.id}">
                                             <i class="ace-icon fa fa-pencil bigger-120"></i>
                                         </button>
                                     </div>
@@ -60,27 +60,29 @@
         </table>
     </div>
 </div>
-<div id="newEventTypeForm" class="row">
+<div id="newEventTypeForm" class="row" style="display:none;">
     <div class="col-sm-12">
         <form>
             <input type="hidden" id="eventTypeId" name="eventTypeId" value="0" />
             <h4 id="eventTypeHeading"></h4>
             <hr />
-            <div class="clearfix">
-                <label for="eventTypeColorField">Color Picker</label>
-            </div>
-            <div class="form-group">
+            <div id="eventColorDiv" class="form-group">
+                <label for="eventTypeColorFieldInput" class="control-label">Color Picker</label>
                 <div class="control-group">
                     <div class="input-group" data-color="#F5F5F5" data-color-format="hex" id="eventTypeColorField">
                         <input type="text" id="eventTypeColorFieldInput" class="form-control" value="" readonly="true" >
                         <span class="input-group-addon center white" id="eventTypeColorFieldAddon" style="background-color:#e23b3b; height:15px; width: 15px;"></span>
                     </div>
                 </div>
+                <div id="errorMsg_eventCategoryColor" style="display:none;" class="help-block col-xs-12 col-sm-reset inline"></div> 
             </div>
-            <div class="form-group">
-                <label for="eventCategory">Event Type Category</label>
+            
+            <div id="eventCategoryDiv" class="form-group">
+                <label for="eventCategory" class="control-label">Event Type Category</label>
                 <input type="text" class="form-control" id="eventType" name="eventType" placeholder="Category Name" />
+                <div id="errorMsg_eventCategory" style="display:none;" class="help-block col-xs-12 col-sm-reset inline"></div> 
             </div>
+            
             <div class="checkbox">
                 <label>
                     <input type="checkbox" id="adminOnly" name="adminOnly" value="1" /> Admin Only Event

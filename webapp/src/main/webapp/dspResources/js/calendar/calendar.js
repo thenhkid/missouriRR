@@ -193,7 +193,7 @@ jQuery(function ($) {
 
             /* Check to see if the user has create permission */
             if ($('.calRow').attr('createPermission') == "true") {
-                
+
                 $('.popover').popover('destroy');
                 var tempThis = $(this);
 
@@ -217,7 +217,7 @@ jQuery(function ($) {
                             no_icon: 'ace-icon fa fa-cloud-upload',
                             droppable: false,
                             thumbnail: 'small',
-                            allowExt: ['pdf','doc','docx','gif','png','jpg','jpeg','xls','xlsx'],
+                            allowExt: ['pdf', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
                             before_remove: function () {
                                 return true;
                             }
@@ -316,20 +316,20 @@ jQuery(function ($) {
                             .on('change', function () {
                                 queryEventType(this.value);
                             });
-                            
-                            /* File input */
-                        data.find('#id-input-file-2').ace_file_input({
-                            style: 'well',
-                            btn_choose: 'click to upload files',
-                            btn_change: null,
-                            no_icon: 'ace-icon fa fa-cloud-upload',
-                            droppable: false,
-                            thumbnail: 'small',
-                            allowExt: ['pdf','doc','docx','gif','png','jpg','jpeg','xls','xlsx'],
-                            before_remove: function () {
-                                return true;
-                            }
-                        });
+
+                    /* File input */
+                    data.find('#id-input-file-2').ace_file_input({
+                        style: 'well',
+                        btn_choose: 'click to upload files',
+                        btn_change: null,
+                        no_icon: 'ace-icon fa fa-cloud-upload',
+                        droppable: false,
+                        thumbnail: 'small',
+                        allowExt: ['pdf', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
+                        before_remove: function () {
+                            return true;
+                        }
+                    });
 
                     data.find('.timeFrom').timepicker({'scrollDefault': 'now'});
                     data.find('.timeFrom').on('changeTime', function () {
@@ -408,7 +408,7 @@ jQuery(function ($) {
         $('.popover').popover('destroy');
     });
 
-    
+
     $(document).on("click", "a#eventTypeManagerModel", function () {
         $('.popover').popover('destroy');
         $.ajax({
@@ -416,34 +416,35 @@ jQuery(function ($) {
             type: 'GET',
             success: function (data) {
                 data = $(data);
-                
-                data.find('#eventTypeColorField').colorpicker().on('changeColor', function (event){
-                        $('#eventTypeColorFieldInput').val(event.color.toHex());
-                        $('#eventTypeColorField').attr('data-color',event.color.toHex());
-                        $('#eventTypeColorFieldAddon').css("background-color", event.color.toHex());
-                        $('#eventTypeColorField').colorpicker('hide');
+
+                data.find('#eventTypeColorField').colorpicker().on('changeColor', function (event) {
+                    $('#eventTypeColorFieldInput').val(event.color.toHex());
+                    $('#eventTypeColorField').attr('data-color', event.color.toHex());
+                    $('#eventTypeColorFieldAddon').css("background-color", event.color.toHex());
+                    $('#eventTypeColorField').colorpicker('hide');
                 });
-                
+
                 bootbox.dialog({
-                    title: "Event types",
+                    title: "Event Types",
                     message: data
                 });
-                
+
             },
             error: function (error) {
                 console.log(error);
             }
         });
     });
-    
-    function checkAvailableColors() {
+
+    function checkAvailableColors(eventId) {
         var result = "";
         $.ajax({
             url: '/calendar/isColorAvailable.do',
             type: 'GET',
             async: false,
             data: {
-                'hexColor': $('#eventTypeColorFieldInput').val()
+                'hexColor': $('#eventTypeColorFieldInput').val(),
+                'eventId': eventId
             },
             success: function (data) {
                 result = data;
@@ -458,25 +459,67 @@ jQuery(function ($) {
     $(document).on("click", "#addNewEventTypeButton", function () {
         $('#newEventTypeForm').show();
     });
+    
+    $(document).on("click", ".editEventTypeButton", function () {
+        var eventTypeId = $(this).attr("rel");
+        $('#newEventTypeForm').show();
+
+        $('#eventTypeHeading').html("Edit Event Type");
+
+        $('.eventTypeColor').simplecolorpicker().on('change', function () {
+            $('.eventTypeColorField').val($('.eventTypeColor').val());
+        });
+
+        $.ajax({
+            url: '/calendar/getEventType.do',
+            type: 'GET',
+            data: {
+                'eventTypeId': eventTypeId
+            },
+            success: function (data) {
+                $('#eventTypeId').val(data[0]);
+                $('.eventTypeColorField').val(data[3]);
+                $('#eventTypeColorFieldInput').val(data[3]);
+                $('#eventTypeColorField').attr('data-color', data[3]);
+                $('#eventTypeColorFieldAddon').css("background-color", data[3]);
+                $('#eventType').val(data[2]);
+                $('#adminOnly').attr("checked", data[4]);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
+        return false;
+    });
 
     $(document).on("click", "#newEventSaveButton", function () {
         
+        $('div').removeClass("has-error");
+        $('.help-block').html("");
+        $('.help-block').hide();
+
         var noErrors = true;
-        
-        var isAvailable = checkAvailableColors();
-        
-        if(isAvailable === 0) {
+
+        var isAvailable = checkAvailableColors($('#eventTypeId').val());
+
+        if (isAvailable === 0) {
+            $('#eventColorDiv').addClass('has-error');
+            $('#errorMsg_eventCategoryColor').html('The selected color is already in use.');
+            $('#errorMsg_eventCategoryColor').show();
             noErrors = false;
         }
-        
+
         if ($('#eventType').val() === "") {
-            
+            $('#eventCategoryDiv').addClass('has-error');
+            $('#errorMsg_eventCategory').html('The event category is required');
+            $('#errorMsg_eventCategory').show();
+            noErrors = false;
         }
-        
-        
-        if(noErrors == true) {
+
+        if (noErrors == true) {
             var eventTypeId = $('#eventTypeId').val();
-            var eventTypeColor = $('#eventTypeColorField').val();
+            var eventTypeColor = $('#eventTypeColorFieldInput').val();
             var eventType = $('#eventType').val();
             if ($('#adminOnly').is(":checked")) {
                 var adminOnly = "true";
@@ -484,7 +527,7 @@ jQuery(function ($) {
             else {
                 var adminOnly = "false";
             }
-
+            
             $.ajax({
                 url: '/calendar/saveEventType.do',
                 type: 'POST',
@@ -496,11 +539,10 @@ jQuery(function ($) {
                 },
                 success: function (data) {
                     $('#newEventTypeForm').hide();
-                    var eventTypeId = $('#eventTypeId').val(0);
-                    var eventTypeColor = $('#eventTypeColor').val("");
-                    var eventType = $('#eventType').val("");
-                    var adminOnly = $('#adminOnly').attr("checked", false);
-                    loadEventTypeDatatable();
+                    $('#eventTypeId').val(0);
+                    $('#eventTypeColorFieldInput').val("");
+                    $('#eventType').val("");
+                    $('#adminOnly').attr("checked", false);
                     calendar.fullCalendar('refetchEvents');
                 },
                 error: function (error) {
@@ -508,7 +550,7 @@ jQuery(function ($) {
                 }
             });
         }
-        
+
         return false;
     });
 
@@ -545,36 +587,7 @@ jQuery(function ($) {
         return false;
     });
 
-    $(document).on("click", ".editEventTypeButton", function () {
-        var eventTypeId = $(this).attr("rel");
-        $('#newEventTypeForm').show();
-
-        $('#eventTypeHeading').html("Edit Event Type");
-
-        $('.eventTypeColor').simplecolorpicker().on('change', function () {
-            $('.eventTypeColorField').val($('.eventTypeColor').val());
-        });
-
-        $.ajax({
-            url: '/calendar/getEventType.do',
-            type: 'GET',
-            data: {
-                'eventTypeId': eventTypeId
-            },
-            success: function (data) {
-                var eventTypeId = $('#eventTypeId').val(data[0]);
-                var eventTypeColor = $('.eventTypeColorField').val(data[3]);
-                $('.eventTypeColor').simplecolorpicker('selectColor', data[3]);
-                var eventType = $('#eventType').val(data[2]);
-                var adminOnly = $('#adminOnly').attr("checked", data[4]);
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        });
-
-        return false;
-    });
+    
 
     $(document).on("click", "#categoriesToShow", function () {
         $('.popover').popover('destroy');
