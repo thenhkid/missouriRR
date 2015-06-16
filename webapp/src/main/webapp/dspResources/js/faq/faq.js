@@ -103,7 +103,7 @@ jQuery(function ($) {
                     title: "Add A Question",
                     buttons: {
                         success: {
-                            label: "Add",
+                            label: "Save",
                             className: "btn-primary",
                             callback: function() {
                               questionFn("add", event);
@@ -128,7 +128,7 @@ jQuery(function ($) {
                     title: "Edit Question",
                     buttons: {
                         success: {
-                            label: "Edit",
+                            label: "Save",
                             className: "btn-primary",
                             callback: function() {
                               questionFn("edit", event);
@@ -184,5 +184,8 @@ jQuery(function ($) {
         $("#questionForm").submit();
         
     }
+    
+    /** end of editing questions **/
+
     
 });

@@ -14,4 +14,20 @@ jQuery(function ($) {
             }
         });
     }); 
+
+        $('.deleteDocument').click(function() {        	
+        var documentId = $(this).attr('rel');
+        alert(documentId);
+        //we refresh the dropdown with max pos for the category
+        $.ajax({
+            type: 'POST',
+            url: "/faq/deleteDocument.do",
+            data:{'documentId': documentId}, 
+            success: function(data) {
+                 $("#documentListDiv").html(data);
+            }
+        });
+    }); 
+    
+    
 });

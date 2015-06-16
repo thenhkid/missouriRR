@@ -104,21 +104,11 @@
                                     <%-- loop documents here --%>
                                     <c:forEach var="document" items="${question.faqQuestionDocuments}">
                                         <br/>
-                                          <c:choose>
-                                              <c:when test="${!fn:contains(document.documentLocation, 'http')}">
-                                                  <c:set var="location" value="faq/viewDoc.jsp?i=${document.id}"/> 
-                                              </c:when>
-                                              <c:otherwise>
-                                                  <c:set var="location" value="${document.documentLocation}"/>
-                                              </c:otherwise>
-                                          </c:choose>
-                                          <a href="${location}" target=_blank">${document.documentTitle}</a>
-                                          <a href="#" class="btn-xs btn-app btn-yellow no-radius editDocument" rel="${document.id}">
-                                            <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
-                                            Edit
-                                        </a>
-                                        <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
-                                        </sec:authorize>
+                                          
+                                          <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.documentTitle}&foldername=faqUploadedFiles"/>">
+                                             ${document.documentTitle}
+                                          </a>
+                                          
                                     </c:forEach>
                                 </div>
                             </div>  

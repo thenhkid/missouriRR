@@ -9,6 +9,7 @@ import com.registryKit.faq.faqCategories;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.registryKit.faq.faqManager;
+import com.registryKit.faq.faqQuestionDocuments;
 import com.registryKit.faq.faqQuestions;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -177,6 +179,11 @@ public class faqController {
         mav.addObject("maxPos", maxDisPos);
         mav.addObject("displayPos", question.getDisplayPos());
         
+        /** add documents if any **/
+        if (toDo.equalsIgnoreCase("Edit")) {
+            List <faqQuestionDocuments> documentList = faqManager.getFAQQuestionDocuments(question.getId());
+            mav.addObject("documentList", documentList);
+        }
         return mav;
     }
     
@@ -197,7 +204,9 @@ public class faqController {
     
     @RequestMapping(value = "/saveQuestion.do", method = RequestMethod.POST)
     public
-    ModelAndView saveQuestion(@ModelAttribute(value = "question") faqQuestions question, BindingResult errors) 
+    ModelAndView saveQuestion(@ModelAttribute(value = "question") faqQuestions question, BindingResult errors,
+            @RequestParam(value = "faqDocuments", required = false) List<MultipartFile> faqDocuments
+            ) 
             throws Exception {
         
         Integer maxDisPos = faqManager.getFAQQuestions(question.getCategoryId()).size();
@@ -242,15 +251,21 @@ public class faqController {
                 activeQId = faqManager.saveQuestion(question);
             }
 
+        /** documents**/
+        if (faqDocuments.size() > 0) {
+            question.setId(activeQId);
+            faqManager.saveDocuments(question, faqDocuments);
+        }
+        
         
         //return correct message
         mav.setViewName("/faq");
         List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
         mav.addObject("categoryList", categoryList);
+        // here we define which tab should be active
         mav.addObject("activeCat", question.getCategoryId());
         mav.addObject("activeQuestion", activeQId);
         
-        // here we define which tab should be active
         
         return mav;
     }
@@ -269,6 +284,37 @@ public class faqController {
         List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
         mav.addObject("categoryList", categoryList);
         mav.addObject("activeCat", categoryList.get(0).getId());
+        return mav;
+    }
+    
+    
+    @RequestMapping(value = "/chagneQuestionList.do", method = RequestMethod.POST)
+    public @ResponseBody
+    ModelAndView getQuestionsList(
+            @RequestParam(value = "categoryId", required = true) Integer categoryId
+            ) 
+            throws Exception {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/faq/questionDropDown");
+        List <faqQuestions> questionList = faqManager.getFAQQuestions(categoryId);
+        mav.addObject("displayPos", (questionList.size()+1));
+        mav.addObject("maxPos", (questionList.size()+1));
+        
+        return mav;
+    }
+    
+    @RequestMapping(value = "/deleteDocument.do", method = RequestMethod.POST)
+    public @ResponseBody
+    ModelAndView getDisplayDivList(
+            @RequestParam(value = "documentId", required = true) Integer documentId
+            ) 
+            throws Exception {
+        
+        faqQuestionDocuments documentDetail = faqManager.getDocumentById(documentId);
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/faq/qDocumentInc");
+        List <faqQuestionDocuments> documentList = faqManager.getFAQQuestionDocuments(documentDetail.getFaqQuestionId());
+        mav.addObject("documentList", documentList);
         return mav;
     }
     
