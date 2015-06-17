@@ -280,7 +280,6 @@ public class faqController {
             )
             throws Exception {
         faqQuestions question = faqManager.getQuestionById(questionId);
-        System.out.println(question.getCategoryId());
         faqManager.deleteQuestion(question);
         //reorder all displayPos
         faqManager.reOrderQuestionByDspPos(question.getCategoryId());
