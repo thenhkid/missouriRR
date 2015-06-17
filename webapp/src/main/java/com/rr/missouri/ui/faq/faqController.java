@@ -87,33 +87,32 @@ public class faqController {
     ModelAndView saveCategory(@ModelAttribute(value = "category") faqCategories category, BindingResult errors) 
             throws Exception {
         
-        Integer maxDisPos = faqManager.getFAQCategories(programId).size() + 1;
-        ModelAndView mav = new ModelAndView();
-        
+        Integer maxDisPos = faqManager.getFAQCategories(programId).size();
         faqCategories categoryToReplace = faqManager.getCategoryByDspPos(programId, category.getDisplayPos());
                     
         //see if any category is using the new display position
         if (categoryToReplace != null) {
-            if (categoryToReplace.getId() != 0) {
+                    // add & replace
                     if(category.getId() == 0) {
-                        categoryToReplace.setDisplayPos(maxDisPos);
+                        categoryToReplace.setDisplayPos(maxDisPos + 1);
                     } else {
+                        //edit and replace
                         //get old position
                         faqCategories categoryOld = faqManager.getCategoryById(category.getId());
-                        categoryToReplace.setDisplayPos(categoryOld.getDisplayPos());
-                        System.out.println(categoryToReplace.getCategoryName());
-                    }
+                        categoryToReplace.setDisplayPos(categoryOld.getDisplayPos()); 
+                    } 
                     faqManager.saveCategory(categoryToReplace);
-            }
+                    faqManager.saveCategory(category);
+        } else {
+            //just adding
+            category.setDisplayPos(maxDisPos + 1);
+            //insert or update here
+            faqManager.saveCategory(category);
         }
 
-        //insert or update here
-        if (category.getId() == 0) {
-            //if someone keep hitting refresh
-            category.setDisplayPos(maxDisPos + 1);
-        }
-        faqManager.saveCategory(category);
-        //return correct message
+
+        
+        ModelAndView mav = new ModelAndView();
         mav.setViewName("/faq");
         List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
         mav.addObject("categoryList", categoryList);
@@ -164,12 +163,11 @@ public class faqController {
         Integer maxDisPos = 0;
         if (toDo.equalsIgnoreCase("Edit")) {
             question = faqManager.getQuestionById(questionId);
-            maxDisPos = faqManager.getFAQQuestions(question.getCategoryId()).size() + 1;
+            maxDisPos = faqManager.getFAQQuestions(question.getCategoryId()).size();
         } else {
-            maxDisPos = faqManager.getFAQQuestions(categories.get(0).getId()).size();
+            maxDisPos = faqManager.getFAQQuestions(categories.get(0).getId()).size() + 1;
             question.setDisplayPos(maxDisPos + 1);
             question.setCategoryId(categories.get(0).getId());
-            maxDisPos = maxDisPos + 1;
         }
         
         mav.addObject("question", question);
@@ -190,14 +188,27 @@ public class faqController {
     @RequestMapping(value = "/chagneDisplayPosList.do", method = RequestMethod.POST)
     public @ResponseBody
     ModelAndView getDisplayPosList(
-            @RequestParam(value = "categoryId", required = true) Integer categoryId
+            @RequestParam(value = "categoryId", required = true) Integer categoryId,
+             @RequestParam(value = "questionId", required = true) Integer questionId
             ) 
             throws Exception {
+        
+        faqQuestions question = new faqQuestions ();
+        if (questionId != 0) {
+            question = faqManager.getQuestionById(questionId);
+        }
+        
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/faq/qDisplayPos");
         List <faqQuestions> questionList = faqManager.getFAQQuestions(categoryId);
-        mav.addObject("displayPos", (questionList.size()+1));
-        mav.addObject("maxPos", (questionList.size()+1));
+        if (question.getCategoryId() != categoryId) {
+            mav.addObject("displayPos", (questionList.size()+1));
+            mav.addObject("maxPos", (questionList.size()) + 1);
+        } else {
+            mav.addObject("displayPos", question.getDisplayPos());
+            mav.addObject("maxPos", (questionList.size()));
+        }
+        
         
         return mav;
     }
@@ -221,7 +232,7 @@ public class faqController {
                         //new question get the same position, question.getDisplayPos, old questions get max position
                         questionToReplace.setDisplayPos(maxDisPos +1);
                         faqManager.saveQuestion(questionToReplace);
-                        faqManager.saveQuestion(question);
+                        activeQId = faqManager.saveQuestion(question);
                     } else {
                         /**
                          * existing
@@ -234,14 +245,14 @@ public class faqController {
                             //we are just swapping places
                             questionToReplace.setDisplayPos(questionOld.getDisplayPos());
                             faqManager.saveQuestion(questionToReplace);
-                            faqManager.saveQuestion(question);
+                            activeQId = faqManager.saveQuestion(question);
                             
                         }  else {
                             //if it is not in the same category
                             //moving to same category means adding new question
                             questionToReplace.setDisplayPos(maxDisPos+1);
                             faqManager.saveQuestion(questionToReplace);
-                            faqManager.saveQuestion(question);
+                            activeQId = faqManager.saveQuestion(question);
                             //we reorder old category
                             faqManager.reOrderQuestionByDspPos(questionOld.getCategoryId());                           
                         } 
@@ -252,7 +263,8 @@ public class faqController {
             }
 
         /** documents**/
-        if (faqDocuments.size() > 0) {
+        
+        if (faqDocuments != null) {
             question.setId(activeQId);
             faqManager.saveDocuments(question, faqDocuments);
         }
@@ -311,6 +323,9 @@ public class faqController {
             throws Exception {
         
         faqQuestionDocuments documentDetail = faqManager.getDocumentById(documentId);
+        faqManager.deleteDocumentById(documentId);
+        /** remove document **/
+        
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/faq/qDocumentInc");
         List <faqQuestionDocuments> documentList = faqManager.getFAQQuestionDocuments(documentDetail.getFaqQuestionId());

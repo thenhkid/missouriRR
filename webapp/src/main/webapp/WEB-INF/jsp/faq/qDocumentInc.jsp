@@ -19,15 +19,14 @@
                <%-- documents for questions --%>
                
                 <c:forEach  var="document" items="${documentList}">
-                    <div class="row" style="margin-top:20px;">
-                  <div class="col-sm-4">
-                    <a href="#" class="btn-xs btn-app btn-danger deleteDocument" rel="${document.id}">
-                                                 <i class="ace-icon fa fa-trash-o smaller-90"></i>
-                                                 Delete
-                                                 </a>
-                                             <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
-                                             </sec:authorize>
-                  </a>                             
+                  <div class="row" style="margin-top:20px;">
+                    <div class="col-sm-4">
+                          <a href="#" class="btn-xs btn-app btn-danger deleteDocument" rel="${document.id}">
+                                                       <i class="ace-icon fa fa-trash-o smaller-90"></i>
+                                                       Delete
+                          </a>
+                                               <sec:authorize access="hasAnyRole('ROLE_ADMIN')">
+                                               </sec:authorize>                          
                     </div>   
                   <div class="col-lg-4">
                     <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.documentTitle}&foldername=faqUploadedFiles"/>">

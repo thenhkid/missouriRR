@@ -19,13 +19,21 @@ jQuery(function ($) {
                     message: data,
                     title: "Add A Category",
                     buttons: {
+                        cancel: {
+                            label: "Cancel",
+                            className: "btn-default",
+                            callback: function() {
+                            
+                            } 
+                        },
                         success: {
-                            label: "Add",
+                            label: "Save",
                             className: "btn-primary",
                             callback: function() {
                               categoryFn("add", event);
                             } 
                         },
+                        
                     }
                 });
             }
@@ -44,8 +52,15 @@ jQuery(function ($) {
                     message: data,
                     title: "Edit Category",
                     buttons: {
+                        cancel: {
+                            label: "Cancel",
+                            className: "btn-default",
+                            callback: function() {
+                            
+                            } 
+                        },
                         success: {
-                            label: "Edit",
+                            label: "Save",
                             className: "btn-primary",
                             callback: function() {
                               categoryFn("edit", event);
@@ -59,6 +74,7 @@ jQuery(function ($) {
                               categoryFn("delete", event);
                             } 
                         },
+                        
                     }
                 });
             }
@@ -102,6 +118,13 @@ jQuery(function ($) {
                     message: data,
                     title: "Add A Question",
                     buttons: {
+                        cancel: {
+                            label: "Cancel",
+                            className: "btn-default",
+                            callback: function() {
+                            
+                            } 
+                        },
                         success: {
                             label: "Save",
                             className: "btn-primary",
@@ -109,6 +132,7 @@ jQuery(function ($) {
                               questionFn("add", event);
                             } 
                         },
+                        
                     }
                 });
             }
@@ -127,6 +151,13 @@ jQuery(function ($) {
                     message: data,
                     title: "Edit Question",
                     buttons: {
+                        cancel: {
+                            label: "Cancel",
+                            className: "btn-default",
+                            callback: function() {
+                            
+                            } 
+                        },
                         success: {
                             label: "Save",
                             className: "btn-primary",
@@ -142,6 +173,7 @@ jQuery(function ($) {
                               questionFn("delete", event);
                             } 
                         },
+                        
                     }
                 });
             }

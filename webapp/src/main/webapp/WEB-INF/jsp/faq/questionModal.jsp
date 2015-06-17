@@ -17,7 +17,7 @@
                 <form:hidden path="id"/>
                <div class="form-group" id="cateogryIdDiv">
                     <label for="timeFrom">Select a Category</label>
-                    <form:select path="categoryId" class="form-control" name="categoryId" id="categoryId">
+                    <form:select path="categoryId" class="form-control" name="categoryId" id="categoryId" rel="${question.id}">
                             <c:forEach  var="category" items="${categories}">
                                 <option value="${category.id}" <c:if test="${category.id == question.categoryId}"> selected </c:if>>${category.categoryName}</option>
                             </c:forEach>

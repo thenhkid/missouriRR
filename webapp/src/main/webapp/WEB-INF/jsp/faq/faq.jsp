@@ -52,10 +52,6 @@
                         <li>
                             <a data-toggle="tab" href="#faq-tab-s" id="addQuestion"> Add Question </a>
                         </li>
-                        
-                        <li>
-                            <a data-toggle="tab" href="#faq-tab-s" id="addDocument"> Add Document</a>
-                        </li>
                     </ul>
                 </li><!-- /.dropdown -->
                 <%-- /settings --%>
@@ -86,7 +82,7 @@
                                 <a href="#faq-${category.id}-${question.id}" data-parent="#faq-list-${category.id}" data-toggle="collapse" class="accordion-toggle collapsed">
                                     <i class="ace-icon fa <c:if test='${question.id != activeQuestion}'>fa-chevron-left</c:if><c:if test='${question.id == activeQuestion}'>fa-chevron-down</c:if> pull-right" data-icon-hide="ace-icon fa fa-chevron-down" data-icon-show="ace-icon fa <c:if test='${question.id == activeQuestion}'>in</c:if> fa-chevron-left"></i>
                                     <i class='ace-icon fa fa-user bigger-130'></i>
-                                    &nbsp; ${question.question} - ${question.id}
+                                    &nbsp; ${question.question}
                                     <%-- code to restrict who sees this -- need to move between sec tag --%>
                                     
                                         <a href="#" class="btn-xs btn-app btn-success no-radius editQuestion" rel="${question.id}">
