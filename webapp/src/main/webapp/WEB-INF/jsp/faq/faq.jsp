@@ -28,9 +28,9 @@
                 
                 <%-- start looping here --%>
                 <c:forEach var="category" items="${categoryList}">
-                    <li <c:if test="${category.id == activeCat}">class="active"</c:if>>
+                    <li class="center <c:if test="${category.id == activeCat}">active</c:if>">
                         <a data-toggle="tab" href="#faq-tab-${category.id}">
-                            <i class="blue ace-icon fa fa-question-circle bigger-120"></i>
+                            <span class="badge badge-info">${fn:substring(category.categoryName, 0, 1)}</span><br />
                             ${category.categoryName}
                         </a>
                     </li>
@@ -38,19 +38,16 @@
                     
                 <%-- settings --%>
                 <sec:authorize access="hasAnyRole('ROLE_USER', 'ROLE_PROGRAMADMIN', 'ROLE_SYSTEMADMIN')">
-                <li class="dropdown">
+                <li class="dropdown center">
                     <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                        <i class="purple ace-icon fa fa-magic bigger-120"></i>
-
+                        <span class="badge badge-info">S</span><br />
                         Settings
                         <i class="ace-icon fa fa-caret-down"></i>
                     </a>
-
                     <ul class="dropdown-menu dropdown-lighter dropdown-125">
                         <li>
                             <a data-toggle="tab" href="#faq-tab-s" id="addCategory">Add Category</a>
                         </li>
-
                         <li>
                             <a data-toggle="tab" href="#faq-tab-s" id="addQuestion"> Add Question </a>
                         </li>
