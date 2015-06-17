@@ -27,8 +27,8 @@
             <ul class="nav nav-tabs padding-18 tab-size-bigger" id="myTab">
                 
                 <%-- start looping here --%>
-                <c:forEach var="category" items="${categoryList}">
-                    <li class="center <c:if test="${category.id == activeCat}">active</c:if>">
+                <c:forEach var="category" items="${categoryList}" varStatus="loop">
+                    <li class="center <c:if test="${empty activeCat && loop.index == 0}">active</c:if><c:if test="${category.id == activeCat}">active</c:if>">
                         <a data-toggle="tab" href="#faq-tab-${category.id}">
                             <span class="badge badge-info">${fn:substring(category.categoryName, 0, 1)}</span><br />
                             ${category.categoryName}
@@ -59,11 +59,11 @@
                 
             <%-- here we query the questions for each category --%>
             <div class="tab-content no-border padding-24">
-                <c:forEach var="category" items="${categoryList}">
-                    <div id="faq-tab-${category.id}" class="tab-pane fade in <c:if test="${category.id == activeCat}">active</c:if>">
+                <c:forEach var="category" items="${categoryList}" varStatus="loop">
+                    <div id="faq-tab-${category.id}" class="tab-pane fade in <c:if test="${empty activeCat && loop.index == 0}">active</c:if><c:if test="${category.id == activeCat}">active</c:if>">
                         <h4 class="blue">
                             <i class="ace-icon fa fa-check bigger-110"></i>
-                            ${category.categoryName} 
+                            ${category.categoryName}
                             <sec:authorize access="hasAnyRole('ROLE_USER', 'ROLE_PROGRAMADMIN', 'ROLE_SYSTEMADMIN')">
                             <a href="#" class="btn-sm btn-app btn-primary editCategory" rel="${category.id}">
                                             <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>

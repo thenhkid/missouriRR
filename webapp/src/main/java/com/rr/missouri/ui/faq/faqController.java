@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
@@ -41,16 +42,13 @@ public class faqController {
    private String topSecret;
    
    @RequestMapping(value = "", method = RequestMethod.GET)
-    public ModelAndView faq() throws Exception {
+    public ModelAndView faq(RedirectAttributes redirectAttr) throws Exception {
         
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/faq");
         
         List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
-        
         mav.addObject("categoryList", categoryList);
-        mav.addObject("activeCat", categoryList.get(0).getId());
-        
         return mav;
     }
     
@@ -85,7 +83,8 @@ public class faqController {
     
     @RequestMapping(value = "/saveCategory.do", method = RequestMethod.POST)
     public //@ResponseBody
-    ModelAndView saveCategory(@ModelAttribute(value = "category") faqCategories category, BindingResult errors) 
+    ModelAndView saveCategory(@ModelAttribute(value = "category") faqCategories category, BindingResult errors,
+            RedirectAttributes redirectAttr) 
             throws Exception {
         
         Integer maxDisPos = faqManager.getFAQCategories(programId).size();
@@ -111,29 +110,24 @@ public class faqController {
             faqManager.saveCategory(category);
         }
 
-
-        
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("/faq");
+        ModelAndView mav = new ModelAndView(new RedirectView("/faq"));
         List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
-        mav.addObject("categoryList", categoryList);
-        mav.addObject("activeCat", category.getId());
-        
-        // here we define which tab should be active
-        
+        redirectAttr.addFlashAttribute("categoryList", categoryList);
+        redirectAttr.addFlashAttribute("activeCat", category.getId());
         return mav;
     }
     
     /**
-     * This takes in a category and deletes its questions and documents
-     * @param category
-     * @param errors
+     * this method deletes a category and refreshes the main faq screen to reflect as such
+     * @param categoryId
+     * @param redirectAttr
      * @return
      * @throws Exception 
      */
     @RequestMapping(value = "/deleteCategory.do", method = RequestMethod.POST)
     public // @ResponseBody
-    ModelAndView deleteCategory(@RequestParam(value = "categoryId", required = true) Integer categoryId)
+    ModelAndView deleteCategory(@RequestParam(value = "categoryId", required = true) Integer categoryId,
+            RedirectAttributes redirectAttr)
             throws Exception {
         
         faqCategories category = faqManager.getCategoryById(categoryId);
@@ -143,8 +137,8 @@ public class faqController {
    
         ModelAndView mav = new ModelAndView(new RedirectView("/faq"));
         List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
-        mav.addObject("categoryList", categoryList);
-        mav.addObject("activeCat", categoryList.get(0).getId());
+        redirectAttr.addFlashAttribute("categoryList", categoryList);
+        redirectAttr.addFlashAttribute("activeCat", categoryList.get(0).getId());
         return mav;
     }
     
@@ -217,12 +211,12 @@ public class faqController {
     @RequestMapping(value = "/saveQuestion.do", method = RequestMethod.POST)
     public
     ModelAndView saveQuestion(@ModelAttribute(value = "question") faqQuestions question, BindingResult errors,
-            @RequestParam(value = "faqDocuments", required = false) List<MultipartFile> faqDocuments
+            @RequestParam(value = "faqDocuments", required = false) List<MultipartFile> faqDocuments,
+            RedirectAttributes redirectAttr
             ) 
             throws Exception {
         
         Integer maxDisPos = faqManager.getFAQQuestions(question.getCategoryId()).size();
-        ModelAndView mav = new ModelAndView();
         Integer activeQId = question.getId();
         //see if we are replacing a question's positon
         faqQuestions questionToReplace = faqManager.getQuestionByDspPos(question.getCategoryId(), question.getDisplayPos());
@@ -270,43 +264,38 @@ public class faqController {
             faqManager.saveDocuments(question, faqDocuments);
         }
         
-        
-        //return correct message
-        mav.setViewName("/faq");
+        ModelAndView mav = new ModelAndView(new RedirectView("/faq"));
         List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
-        mav.addObject("categoryList", categoryList);
-        // here we define which tab should be active
-        mav.addObject("activeCat", question.getCategoryId());
-        mav.addObject("activeQuestion", activeQId);
-        
-        
+        redirectAttr.addFlashAttribute("categoryList", categoryList);
+        redirectAttr.addFlashAttribute("activeCat", question.getCategoryId());
+        redirectAttr.addFlashAttribute("activeQuestion", activeQId);
         return mav;
     }
     
     @RequestMapping(value = "/deleteQuestion.do", method = RequestMethod.POST)
     public // @ResponseBody
     ModelAndView deleteQuestion(
-            @RequestParam(value = "questionId", required = true) Integer questionId
+            @RequestParam(value = "questionId", required = true) Integer questionId,
+            RedirectAttributes redirectAttr
             )
             throws Exception {
         faqQuestions question = faqManager.getQuestionById(questionId);
-
+        System.out.println(question.getCategoryId());
         faqManager.deleteQuestion(question);
         //reorder all displayPos
         faqManager.reOrderQuestionByDspPos(question.getCategoryId());
    
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("/faq");
+        ModelAndView mav = new ModelAndView(new RedirectView("/faq"));
         List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
-        mav.addObject("categoryList", categoryList);
-        mav.addObject("activeCat", question.getCategoryId());
+        redirectAttr.addFlashAttribute("categoryList", categoryList);
+        redirectAttr.addFlashAttribute("activeCat", question.getCategoryId());
         return mav;
     }
     
     
     @RequestMapping(value = "/chagneQuestionList.do", method = RequestMethod.POST)
     public @ResponseBody
-    ModelAndView getQuestionsList(
+    ModelAndView changeQuestionsList(
             @RequestParam(value = "categoryId", required = true) Integer categoryId
             ) 
             throws Exception {
@@ -321,7 +310,7 @@ public class faqController {
     
     @RequestMapping(value = "/deleteDocument.do", method = RequestMethod.POST)
     public @ResponseBody
-    ModelAndView getDisplayDivList(
+    ModelAndView deleteDocument(
             @RequestParam(value = "documentId", required = true) Integer documentId
             ) 
             throws Exception {
@@ -340,17 +329,17 @@ public class faqController {
     
     @RequestMapping(value = "/refreshQ.do", method = RequestMethod.POST)
     public
-    ModelAndView saveQuestion(@ModelAttribute(value = "question") faqQuestions question) 
+    ModelAndView refreshQuestion(@ModelAttribute(value = "question") faqQuestions question,
+            RedirectAttributes redirectAttr) 
             throws Exception {
         
-        ModelAndView mav = new ModelAndView();
         faqQuestions currentQuestion = faqManager.getQuestionById(question.getId());
-        mav.setViewName("/faq");
-        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
-        mav.addObject("categoryList", categoryList);
         // here we define which tab should be active
-        mav.addObject("activeCat", currentQuestion.getCategoryId());
-        mav.addObject("activeQuestion", currentQuestion.getId());
+        ModelAndView mav = new ModelAndView(new RedirectView("/faq"));
+        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
+        redirectAttr.addFlashAttribute("categoryList", categoryList);
+        redirectAttr.addFlashAttribute("activeCat", currentQuestion.getCategoryId());
+        redirectAttr.addFlashAttribute("activeQuestion", currentQuestion.getId());
         return mav;
     }
     
