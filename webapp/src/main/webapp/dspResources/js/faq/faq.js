@@ -155,7 +155,8 @@ jQuery(function ($) {
                             label: "Cancel",
                             className: "btn-default",
                             callback: function() {
-                            
+                             /** need to refresh faq to the correct category**/
+                             questionRefreshFn();
                             } 
                         },
                         success: {
@@ -212,6 +213,17 @@ jQuery(function ($) {
            submitURL = "/faq/deleteQuestion.do";
         }
         
+        $("#questionForm").attr("action", submitURL);
+        $("#questionForm").submit();
+        
+    }
+    
+    
+    function questionRefreshFn() {
+        
+        var formData = $("#questionForm").serialize();
+       
+        var submitURL = "/faq/refreshQ.do";
         $("#questionForm").attr("action", submitURL);
         $("#questionForm").submit();
         

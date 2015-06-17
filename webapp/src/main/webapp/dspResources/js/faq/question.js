@@ -21,7 +21,7 @@ jQuery(function ($) {
         var documentId = $(this).attr('rel');
         bootbox.confirm({
             size: 'small',
-            message: "Are you sure you want to delete this event?",
+            message: "Are you sure you want to delete this document?",
             callback: function (result) {
                 if (result == true) {
                     $.ajax({

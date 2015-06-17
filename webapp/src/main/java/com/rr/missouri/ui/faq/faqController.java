@@ -334,4 +334,20 @@ public class faqController {
     }
     
     
+    @RequestMapping(value = "/refreshQ.do", method = RequestMethod.POST)
+    public
+    ModelAndView saveQuestion(@ModelAttribute(value = "question") faqQuestions question) 
+            throws Exception {
+        
+        ModelAndView mav = new ModelAndView();
+        faqQuestions currentQuestion = faqManager.getQuestionById(question.getId());
+        mav.setViewName("/faq");
+        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
+        mav.addObject("categoryList", categoryList);
+        // here we define which tab should be active
+        mav.addObject("activeCat", currentQuestion.getCategoryId());
+        mav.addObject("activeQuestion", currentQuestion.getId());
+        return mav;
+    }
+    
 }
