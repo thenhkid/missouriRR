@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 /**
  *
@@ -132,15 +133,15 @@ public class faqController {
      */
     @RequestMapping(value = "/deleteCategory.do", method = RequestMethod.POST)
     public // @ResponseBody
-    ModelAndView deleteCategory(@ModelAttribute(value = "category") faqCategories category, BindingResult errors)
+    ModelAndView deleteCategory(@RequestParam(value = "categoryId", required = true) Integer categoryId)
             throws Exception {
         
+        faqCategories category = faqManager.getCategoryById(categoryId);
         faqManager.deleteCategory(category);
         //reorder all displayPos
         faqManager.reOrderCategoryByDspPos(programId);
    
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("/faq");
+        ModelAndView mav = new ModelAndView(new RedirectView("/faq"));
         List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
         mav.addObject("categoryList", categoryList);
         mav.addObject("activeCat", categoryList.get(0).getId());
@@ -284,9 +285,12 @@ public class faqController {
     
     @RequestMapping(value = "/deleteQuestion.do", method = RequestMethod.POST)
     public // @ResponseBody
-    ModelAndView deleteCategory(@ModelAttribute(value = "question") faqQuestions question, BindingResult errors)
+    ModelAndView deleteQuestion(
+            @RequestParam(value = "questionId", required = true) Integer questionId
+            )
             throws Exception {
-        
+        faqQuestions question = faqManager.getQuestionById(questionId);
+
         faqManager.deleteQuestion(question);
         //reorder all displayPos
         faqManager.reOrderQuestionByDspPos(question.getCategoryId());
@@ -295,7 +299,7 @@ public class faqController {
         mav.setViewName("/faq");
         List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
         mav.addObject("categoryList", categoryList);
-        mav.addObject("activeCat", categoryList.get(0).getId());
+        mav.addObject("activeCat", question.getCategoryId());
         return mav;
     }
     

@@ -71,7 +71,7 @@ jQuery(function ($) {
                             className: "btn-danger",
                             callback: function() {
                               //add confirm box
-                              categoryFn("delete", event);
+                              deleteCategory ($("#id").val());
                             } 
                         },
                         
@@ -96,14 +96,26 @@ jQuery(function ($) {
             return false;
         }
         var submitURL = "/faq/saveCategory.do";
-        if (toDo == 'delete') {
-           submitURL = "/faq/deleteCategory.do";
-        }
+        
         
         $("#categoryForm").attr("action", submitURL);
         $("#categoryForm").submit();
         
     }
+    
+    function deleteCategory (categoryId) {
+        bootbox.confirm({
+            size: 'small',
+            message: "Are you sure you want to delete this category?  All associated questions and documents will be deleted.",
+            callback: function (result) {
+                if (result == true) {
+                    $("#deleteCategory").attr("action", "/faq/deleteCategory.do");
+                    $("#deleteCategoryId").val(categoryId);
+                    $("#deleteCategory").submit();
+                }
+            }
+        });
+     }
     /** end of category **/
     
     /** start of question **/
@@ -171,7 +183,8 @@ jQuery(function ($) {
                             className: "btn-danger",
                             callback: function() {
                               //add confirm box
-                              questionFn("delete", event);
+                              //questionFn("delete", event); 
+                              deleteQuestion ($("#id").val());
                             } 
                         },
                         
@@ -181,14 +194,23 @@ jQuery(function ($) {
         });
     });
     
-    
-    
+    function deleteQuestion (questionId) {
+        bootbox.confirm({
+            size: 'small',
+            message: "Are you sure you want to delete this question?  All associated documents will be deleted.",
+            callback: function (result) {
+                if (result == true) {
+                    $("#deleteQuestion").attr("action", "/faq/deleteQuestion.do");
+                    $("#deleteQuestionId").val(questionId);
+                    $("#deleteQuestion").submit();
+                }
+            }
+        });
+     }
     function questionFn(toDo, event) {
-        
-       var formData = $("#questionForm").serialize();
-        /** make sure there is a category**/
+       /** make sure there is a category**/
        var error = 0;
-        /** make sure there is a category**/
+        /** make sure there is a question**/
        if ($('#question').val().trim() == "") {
             $('#questionDiv').addClass("has-error");
       	    $('#questionMsg').addClass("has-error");
@@ -209,10 +231,6 @@ jQuery(function ($) {
         }
         
         var submitURL = "/faq/saveQuestion.do";
-        if (toDo == 'delete') {
-           submitURL = "/faq/deleteQuestion.do";
-        }
-        
         $("#questionForm").attr("action", submitURL);
         $("#questionForm").submit();
         
