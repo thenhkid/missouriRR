@@ -29,7 +29,7 @@
                         <div class="timeline-items">
                             <div class="timeline-item clearfix">
                                 <div class="timeline-info">
-                                    <img alt="Susan't Avatar" src="dist/avatars/avatar1.png" />
+                                    <img alt="Susan't Avatar" src="<%=request.getContextPath()%>/dspResources/img/avatars/avatar2.png" />
                                     <span class="label label-info label-sm">16:22</span>
                                 </div>
 
