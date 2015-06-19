@@ -21,7 +21,7 @@ jQuery(function ($) {
         var documentId = $(this).attr('rel');
         bootbox.confirm({
             size: 'small',
-            message: "Are you sure you want to delete this document?",
+            message: "Are you sure you want to delete this document? It will be deleted permanently after you hit submit.",
             callback: function (result) {
                 if (result == true) {
                     $.ajax({

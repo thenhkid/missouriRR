@@ -7,7 +7,15 @@
 
 jQuery(function ($) {
     $("input:text,form").attr("autocomplete", "off");
-        
+    
+    var onCategory = 0;
+    //set active cat so we can load up correct cat on drop down when questions are added
+   
+    $('.categoryNav').on('click', function () {
+        onCategory = $(this).attr('rel');
+    });
+   
+   
     //clicking on add category link in dropdown
     $('#addCategory').on('click', function (event) {
         $.ajax({
@@ -121,10 +129,11 @@ jQuery(function ($) {
     /** start of question **/
     //clicking on add question link in dropdown
     $('#addQuestion').on('click', function (event) {
+        /** need to figure out which active category we are on **/
         $.ajax({
             type: 'POST',
             url: '/faq/getQuestionForm.do',
-            data:{'questionId':0, 'toDo':'Add'},
+            data:{'questionId':0, 'toDo':'Add', 'onCategory':onCategory},
             success: function(data, event) {
                 bootbox.dialog({
                     message: data,
@@ -157,7 +166,7 @@ jQuery(function ($) {
         $.ajax({
             type: 'POST',
             url: '/faq/getQuestionForm.do',
-            data:{'questionId':questionId, 'toDo':'Edit'},
+            data:{'questionId':questionId, 'toDo':'Edit', 'onCategory':0},
             success: function(data) {
                 bootbox.dialog({
                     message: data,

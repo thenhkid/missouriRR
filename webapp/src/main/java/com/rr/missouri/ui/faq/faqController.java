@@ -54,7 +54,7 @@ public class faqController {
     
     @RequestMapping(value = "/getCategoryForm.do", method = RequestMethod.POST)
     public @ResponseBody
-    ModelAndView displayCatForm(
+    ModelAndView getCategoryForm(
             @RequestParam(value = "toDo", required = true) String toDo, 
             @RequestParam(value = "categoryId", required = false) Integer categoryId) 
             throws Exception {
@@ -144,9 +144,10 @@ public class faqController {
     
     @RequestMapping(value = "/getQuestionForm.do", method = RequestMethod.POST)
     public @ResponseBody
-    ModelAndView displayQuestionForm(
+    ModelAndView getQuestionForm(
             @RequestParam(value = "toDo", required = true) String toDo, 
-            @RequestParam(value = "questionId", required = true) Integer questionId
+            @RequestParam(value = "questionId", required = true) Integer questionId,
+            @RequestParam(value = "onCategory", required = true) Integer onCategory
             ) 
             throws Exception {
         
@@ -156,11 +157,19 @@ public class faqController {
         mav.setViewName("/faq/questionModal");
         faqQuestions question = new faqQuestions();
         Integer maxDisPos = 0;
+        Integer categoryId = 0;
         if (toDo.equalsIgnoreCase("Edit")) {
             question = faqManager.getQuestionById(questionId);
             maxDisPos = faqManager.getFAQQuestions(question.getCategoryId()).size();
+            categoryId = question.getCategoryId();
         } else {
-            maxDisPos = faqManager.getFAQQuestions(categories.get(0).getId()).size() + 1;
+            
+            categoryId = categories.get(0).getId();
+            if (onCategory != 0) {
+                    categoryId = onCategory;
+            }
+            
+            maxDisPos = faqManager.getFAQQuestions(categoryId).size() + 1;
             question.setDisplayPos(maxDisPos + 1);
             question.setCategoryId(categories.get(0).getId());
         }
@@ -172,6 +181,8 @@ public class faqController {
         mav.addObject("maxPos", maxDisPos);
         mav.addObject("displayPos", question.getDisplayPos());
         
+        mav.addObject("activeCat", categoryId);
+        
         /** add documents if any **/
         if (toDo.equalsIgnoreCase("Edit")) {
             List <faqQuestionDocuments> documentList = faqManager.getFAQQuestionDocuments(question.getId());
@@ -182,7 +193,7 @@ public class faqController {
     
     @RequestMapping(value = "/chagneDisplayPosList.do", method = RequestMethod.POST)
     public @ResponseBody
-    ModelAndView getDisplayPosList(
+    ModelAndView chagneDisplayPosList(
             @RequestParam(value = "categoryId", required = true) Integer categoryId,
              @RequestParam(value = "questionId", required = true) Integer questionId
             ) 
