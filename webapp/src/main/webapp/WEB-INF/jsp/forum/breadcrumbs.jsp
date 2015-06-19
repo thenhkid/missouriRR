@@ -7,7 +7,7 @@
     </li>
 
     <li class="active">
-        FAQ
+        Forum Topics
     </li>
    
 </ul>
