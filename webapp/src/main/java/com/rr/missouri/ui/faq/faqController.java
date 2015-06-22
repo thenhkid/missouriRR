@@ -41,13 +41,15 @@ public class faqController {
    @Value("${topSecret}")
    private String topSecret;
    
+   private Integer statusId = 1;
+   
    @RequestMapping(value = "", method = RequestMethod.GET)
     public ModelAndView faq(RedirectAttributes redirectAttr) throws Exception {
         
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/faq");
         
-        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
+        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId, statusId);
         mav.addObject("categoryList", categoryList);
         return mav;
     }
@@ -62,7 +64,7 @@ public class faqController {
         ModelAndView mav = new ModelAndView();
         //we return form
         faqCategories category = new faqCategories();
-        Integer maxDisPos = faqManager.getFAQCategories(programId).size();
+        Integer maxDisPos = faqManager.getFAQCategories(programId, statusId).size();
         
         if (toDo.equalsIgnoreCase("Edit")) {
             category = faqManager.getCategoryById(categoryId);
@@ -87,8 +89,8 @@ public class faqController {
             RedirectAttributes redirectAttr) 
             throws Exception {
         
-        Integer maxDisPos = faqManager.getFAQCategories(programId).size();
-        faqCategories categoryToReplace = faqManager.getCategoryByDspPos(programId, category.getDisplayPos());
+        Integer maxDisPos = faqManager.getFAQCategories(programId, statusId).size();
+        faqCategories categoryToReplace = faqManager.getCategoryByDspPos(programId, category.getDisplayPos(), statusId);
                     
         //see if any category is using the new display position
         if (categoryToReplace != null) {
@@ -111,7 +113,7 @@ public class faqController {
         }
 
         ModelAndView mav = new ModelAndView(new RedirectView("/faq"));
-        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
+        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId, statusId);
         redirectAttr.addFlashAttribute("categoryList", categoryList);
         redirectAttr.addFlashAttribute("activeCat", category.getId());
         return mav;
@@ -133,12 +135,14 @@ public class faqController {
         faqCategories category = faqManager.getCategoryById(categoryId);
         faqManager.deleteCategory(category);
         //reorder all displayPos
-        faqManager.reOrderCategoryByDspPos(programId);
+        faqManager.reOrderCategoryByDspPos(programId, statusId);
    
         ModelAndView mav = new ModelAndView(new RedirectView("/faq"));
-        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
+        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId, statusId);
         redirectAttr.addFlashAttribute("categoryList", categoryList);
-        redirectAttr.addFlashAttribute("activeCat", categoryList.get(0).getId());
+        if (categoryList.size() > 0) {
+            redirectAttr.addFlashAttribute("activeCat", categoryList.get(0).getId());
+        }
         return mav;
     }
     
@@ -152,7 +156,7 @@ public class faqController {
             throws Exception {
         
         //need category list
-        List <faqCategories> categories = faqManager.getFAQCategories(programId);
+        List <faqCategories> categories = faqManager.getFAQCategories(programId, statusId);
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/faq/questionModal");
         faqQuestions question = new faqQuestions();
@@ -160,7 +164,7 @@ public class faqController {
         Integer categoryId = 0;
         if (toDo.equalsIgnoreCase("Edit")) {
             question = faqManager.getQuestionById(questionId);
-            maxDisPos = faqManager.getFAQQuestions(question.getCategoryId()).size();
+            maxDisPos = faqManager.getFAQQuestions(question.getCategoryId(), statusId).size();
             categoryId = question.getCategoryId();
         } else {
             
@@ -169,7 +173,7 @@ public class faqController {
                     categoryId = onCategory;
             }
             
-            maxDisPos = faqManager.getFAQQuestions(categoryId).size() + 1;
+            maxDisPos = faqManager.getFAQQuestions(categoryId, statusId).size() + 1;
             question.setDisplayPos(maxDisPos + 1);
             question.setCategoryId(categories.get(0).getId());
         }
@@ -185,7 +189,7 @@ public class faqController {
         
         /** add documents if any **/
         if (toDo.equalsIgnoreCase("Edit")) {
-            List <faqQuestionDocuments> documentList = faqManager.getFAQQuestionDocuments(question.getId());
+            List <faqQuestionDocuments> documentList = faqManager.getFAQQuestionDocuments(question.getId(), statusId);
             mav.addObject("documentList", documentList);
         }
         return mav;
@@ -206,7 +210,7 @@ public class faqController {
         
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/faq/qDisplayPos");
-        List <faqQuestions> questionList = faqManager.getFAQQuestions(categoryId);
+        List <faqQuestions> questionList = faqManager.getFAQQuestions(categoryId, statusId);
         if (question.getCategoryId() != categoryId) {
             mav.addObject("displayPos", (questionList.size()+1));
             mav.addObject("maxPos", (questionList.size()) + 1);
@@ -227,10 +231,10 @@ public class faqController {
             ) 
             throws Exception {
         
-        Integer maxDisPos = faqManager.getFAQQuestions(question.getCategoryId()).size();
+        Integer maxDisPos = faqManager.getFAQQuestions(question.getCategoryId(), statusId).size();
         Integer activeQId = question.getId();
         //see if we are replacing a question's positon
-        faqQuestions questionToReplace = faqManager.getQuestionByDspPos(question.getCategoryId(), question.getDisplayPos());
+        faqQuestions questionToReplace = faqManager.getQuestionByDspPos(question.getCategoryId(), question.getDisplayPos(), statusId);
         
         //see if any category is using the new display position
         if (questionToReplace != null) {
@@ -260,7 +264,7 @@ public class faqController {
                             faqManager.saveQuestion(questionToReplace);
                             activeQId = faqManager.saveQuestion(question);
                             //we reorder old category
-                            faqManager.reOrderQuestionByDspPos(questionOld.getCategoryId());                           
+                            faqManager.reOrderQuestionByDspPos(questionOld.getCategoryId(), statusId);                           
                         } 
                     }
             }  else { //simply adding a new question
@@ -276,7 +280,7 @@ public class faqController {
         }
         
         ModelAndView mav = new ModelAndView(new RedirectView("/faq"));
-        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
+        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId, statusId);
         redirectAttr.addFlashAttribute("categoryList", categoryList);
         redirectAttr.addFlashAttribute("activeCat", question.getCategoryId());
         redirectAttr.addFlashAttribute("activeQuestion", activeQId);
@@ -293,10 +297,10 @@ public class faqController {
         faqQuestions question = faqManager.getQuestionById(questionId);
         faqManager.deleteQuestion(question);
         //reorder all displayPos
-        faqManager.reOrderQuestionByDspPos(question.getCategoryId());
+        faqManager.reOrderQuestionByDspPos(question.getCategoryId(), statusId);
    
         ModelAndView mav = new ModelAndView(new RedirectView("/faq"));
-        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
+        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId, statusId);
         redirectAttr.addFlashAttribute("categoryList", categoryList);
         redirectAttr.addFlashAttribute("activeCat", question.getCategoryId());
         return mav;
@@ -311,7 +315,7 @@ public class faqController {
             throws Exception {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/faq/questionDropDown");
-        List <faqQuestions> questionList = faqManager.getFAQQuestions(categoryId);
+        List <faqQuestions> questionList = faqManager.getFAQQuestions(categoryId, statusId);
         mav.addObject("displayPos", (questionList.size()+1));
         mav.addObject("maxPos", (questionList.size()+1));
         
@@ -331,7 +335,7 @@ public class faqController {
         
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/faq/qDocumentInc");
-        List <faqQuestionDocuments> documentList = faqManager.getFAQQuestionDocuments(documentDetail.getFaqQuestionId());
+        List <faqQuestionDocuments> documentList = faqManager.getFAQQuestionDocuments(documentDetail.getFaqQuestionId(), statusId);
         mav.addObject("documentList", documentList);
         return mav;
     }
@@ -346,7 +350,7 @@ public class faqController {
         faqQuestions currentQuestion = faqManager.getQuestionById(question.getId());
         // here we define which tab should be active
         ModelAndView mav = new ModelAndView(new RedirectView("/faq"));
-        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId);
+        List <faqCategories> categoryList = faqManager.getFAQForProgram(programId, statusId);
         redirectAttr.addFlashAttribute("categoryList", categoryList);
         redirectAttr.addFlashAttribute("activeCat", currentQuestion.getCategoryId());
         redirectAttr.addFlashAttribute("activeQuestion", currentQuestion.getId());

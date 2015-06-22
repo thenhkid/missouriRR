@@ -48,9 +48,11 @@
                         <li>
                             <a data-toggle="tab" href="#faq-tab-s" id="addCategory">Add Category</a>
                         </li>
-                        <li>
-                            <a data-toggle="tab" href="#faq-tab-s" id="addQuestion"> Add Question </a>
-                        </li>
+                        <c:if test="${fn:length(categoryList) > 0}">
+                            <li>
+                                <a data-toggle="tab" href="#faq-tab-s" id="addQuestion"> Add Question </a>
+                            </li>
+                        </c:if>
                     </ul>
                 </li><!-- /.dropdown -->
                 </sec:authorize>
