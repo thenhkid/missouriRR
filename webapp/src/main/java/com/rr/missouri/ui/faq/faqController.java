@@ -11,7 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.registryKit.faq.faqManager;
 import com.registryKit.faq.faqQuestionDocuments;
 import com.registryKit.faq.faqQuestions;
+import com.registryKit.user.User;
+import com.registryKit.user.userActivity;
+import com.registryKit.user.userManager;
 import java.util.List;
+import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
@@ -34,6 +38,9 @@ public class faqController {
     
    @Autowired
    faqManager faqManager;
+   
+   @Autowired
+   userManager userManager;
     
    @Value("${programId}")
    private Integer programId;
@@ -86,7 +93,7 @@ public class faqController {
     @RequestMapping(value = "/saveCategory.do", method = RequestMethod.POST)
     public //@ResponseBody
     ModelAndView saveCategory(@ModelAttribute(value = "category") faqCategories category, BindingResult errors,
-            RedirectAttributes redirectAttr) 
+            RedirectAttributes redirectAttr, HttpSession session) 
             throws Exception {
         
         Integer maxDisPos = faqManager.getFAQCategories(programId, statusId).size();
@@ -111,6 +118,16 @@ public class faqController {
             //insert or update here
             faqManager.saveCategory(category);
         }
+        
+        /** log user **/
+        try {
+            userActivity ua = setUpFAQUserActivity(session);
+            ua.setMethodName("/saveCategory.do");
+            ua.setItemId(category.getId());
+            userManager.saveUserActivity(ua);
+        } catch (Exception ex) {
+            System.err.println(ex.toString() + " error at exception");
+        }
 
         ModelAndView mav = new ModelAndView(new RedirectView("/faq"));
         List <faqCategories> categoryList = faqManager.getFAQForProgram(programId, statusId);
@@ -129,7 +146,7 @@ public class faqController {
     @RequestMapping(value = "/deleteCategory.do", method = RequestMethod.POST)
     public // @ResponseBody
     ModelAndView deleteCategory(@RequestParam(value = "categoryId", required = true) Integer categoryId,
-            RedirectAttributes redirectAttr)
+            RedirectAttributes redirectAttr, HttpSession session)
             throws Exception {
         
         faqCategories category = faqManager.getCategoryById(categoryId);
@@ -143,6 +160,17 @@ public class faqController {
         if (categoryList.size() > 0) {
             redirectAttr.addFlashAttribute("activeCat", categoryList.get(0).getId());
         }
+        
+        /** log user **/
+        try {
+            userActivity ua = setUpFAQUserActivity(session);
+            ua.setMethodName("/deleteCategory.do");
+            ua.setItemId(categoryId);
+            userManager.saveUserActivity(ua);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
         return mav;
     }
     
@@ -195,9 +223,9 @@ public class faqController {
         return mav;
     }
     
-    @RequestMapping(value = "/chagneDisplayPosList.do", method = RequestMethod.POST)
+    @RequestMapping(value = "/changeDisplayPosList.do", method = RequestMethod.POST)
     public @ResponseBody
-    ModelAndView chagneDisplayPosList(
+    ModelAndView changeDisplayPosList(
             @RequestParam(value = "categoryId", required = true) Integer categoryId,
              @RequestParam(value = "questionId", required = true) Integer questionId
             ) 
@@ -227,7 +255,7 @@ public class faqController {
     public
     ModelAndView saveQuestion(@ModelAttribute(value = "question") faqQuestions question, BindingResult errors,
             @RequestParam(value = "faqDocuments", required = false) List<MultipartFile> faqDocuments,
-            RedirectAttributes redirectAttr
+            RedirectAttributes redirectAttr, HttpSession session
             ) 
             throws Exception {
         
@@ -279,6 +307,17 @@ public class faqController {
             faqManager.saveDocuments(question, faqDocuments);
         }
         
+        /** log user **/
+        try {
+            userActivity ua = setUpFAQUserActivity(session);
+            ua.setItemDesc("Saved Question with " + faqDocuments.size() + " documents.");
+            ua.setMethodName("/saveQuestion.do");
+            ua.setItemId(question.getId());
+            userManager.saveUserActivity(ua);
+        } catch (Exception ex) {
+            System.err.println(ex.toString() + " error at exception");
+        }
+        
         ModelAndView mav = new ModelAndView(new RedirectView("/faq"));
         List <faqCategories> categoryList = faqManager.getFAQForProgram(programId, statusId);
         redirectAttr.addFlashAttribute("categoryList", categoryList);
@@ -291,14 +330,23 @@ public class faqController {
     public // @ResponseBody
     ModelAndView deleteQuestion(
             @RequestParam(value = "questionId", required = true) Integer questionId,
-            RedirectAttributes redirectAttr
-            )
+            RedirectAttributes redirectAttr, HttpSession session)
             throws Exception {
         faqQuestions question = faqManager.getQuestionById(questionId);
         faqManager.deleteQuestion(question);
         //reorder all displayPos
         faqManager.reOrderQuestionByDspPos(question.getCategoryId(), statusId);
    
+        /** log user **/
+        try {
+            userActivity ua = setUpFAQUserActivity(session);
+            ua.setMethodName("/deleteQuestion.do");
+            ua.setItemId(questionId);
+            userManager.saveUserActivity(ua);
+        } catch (Exception ex) {
+            System.err.println(ex.toString() + " error at exception");
+        }
+        
         ModelAndView mav = new ModelAndView(new RedirectView("/faq"));
         List <faqCategories> categoryList = faqManager.getFAQForProgram(programId, statusId);
         redirectAttr.addFlashAttribute("categoryList", categoryList);
@@ -325,19 +373,32 @@ public class faqController {
     @RequestMapping(value = "/deleteDocument.do", method = RequestMethod.POST)
     public @ResponseBody
     ModelAndView deleteDocument(
-            @RequestParam(value = "documentId", required = true) Integer documentId
+            @RequestParam(value = "documentId", required = true) Integer documentId,
+            HttpSession session
             ) 
             throws Exception {
         
         faqQuestionDocuments documentDetail = faqManager.getDocumentById(documentId);
         faqManager.deleteDocumentById(documentId);
-        /** remove document **/
+        
+        /** log user **/
+        try {
+            userActivity ua = setUpFAQUserActivity(session);
+            ua.setMethodName("/deleteDocument.do");
+            ua.setItemId(documentId);
+            userManager.saveUserActivity(ua);
+        } catch (Exception ex) {
+            System.err.println(ex.toString() + " error at exception");
+        }
+        
         
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/faq/qDocumentInc");
         List <faqQuestionDocuments> documentList = faqManager.getFAQQuestionDocuments(documentDetail.getFaqQuestionId(), statusId);
         mav.addObject("documentList", documentList);
         return mav;
+        
+        
     }
     
     
@@ -355,6 +416,19 @@ public class faqController {
         redirectAttr.addFlashAttribute("activeCat", currentQuestion.getCategoryId());
         redirectAttr.addFlashAttribute("activeQuestion", currentQuestion.getId());
         return mav;
+    }
+    
+        
+    public userActivity setUpFAQUserActivity(HttpSession session) {
+            userActivity ua = new userActivity();
+        try {
+            User userDetails = (User) session.getAttribute("userDetails");
+            ua.setUserId(userDetails.getId());
+            ua.setControllerName("faqController");
+        } catch (Exception ex) {
+            System.err.println(ex.toString() + " error at exception");
+        }
+        return ua;
     }
     
 }

@@ -8,7 +8,7 @@ jQuery(function ($) {
         //we refresh the dropdown with max pos for the category
         $.ajax({
             type: 'POST',
-            url: "/faq/chagneDisplayPosList.do",
+            url: "/faq/changeDisplayPosList.do",
             data:{'categoryId': categoryId, 'questionId':questionId}, 
             success: function(data) {
                  $("#displayPosDiv").html(data);
