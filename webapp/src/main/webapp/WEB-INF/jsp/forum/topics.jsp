@@ -55,22 +55,23 @@
                         </tr>
                     </thead>
                     <tbody>
-
                         <c:forEach var="topic" items="${announcementTopics}">
                             <tr>
                                 <td class="col-md-6">
-                                    ${topic.title}
+                                    <a href="/forum/${topic.topicURL}">${topic.title}</a>
                                     <br />
-                                    by ${topic.postedByName} &Gt; <fmt:formatDate value="${topic.postedOn}" type="date" pattern="ddd MM dd, yyyy h:mm a" />
+                                    by ${topic.postedByName} &Gt; <fmt:formatDate value="${topic.postedOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
                                 </td>
-                                <td class="center">
+                                <td class="center col-md-2">
                                     ${topic.totalViews}
                                 </td>
-                                <td class="center">
+                                <td class="center col-md-2">
                                     ${topic.totalReplies}
                                 </td>
-                                <td>
-
+                                <td class="col-md-2">
+                                    ${topic.lastPostByName}
+                                    <br />
+                                    <fmt:formatDate value="${topic.lastPostOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
                                 </td>
                             </tr>
                         </c:forEach>
@@ -100,18 +101,20 @@
                         <c:forEach var="topic" items="${regularTopics}">
                             <tr>
                                 <td class="col-md-6">
-                                    ${topic.title}
+                                    <a href="/forum/${topic.topicURL}">${topic.title}</a>
                                     <br />
-                                    by ${topic.postedByName} &Gt; <fmt:formatDate value="${topic.postedOn}" type="date" pattern="ddd MM dd, yyyy h:mm a" />
+                                    by ${topic.postedByName} &Gt; <fmt:formatDate value="${topic.postedOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
                                 </td>
-                                <td class="center">
+                                <td class="center col-md-2">
                                     ${topic.totalViews}
                                 </td>
-                                <td class="center">
+                                <td class="center col-md-2">
                                     ${topic.totalReplies}
                                 </td>
-                                <td>
-
+                                <td class="col-md-2">
+                                    ${topic.lastPostByName}
+                                    <br />
+                                    <fmt:formatDate value="${topic.lastPostOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
                                 </td>
                             </tr>
                         </c:forEach>

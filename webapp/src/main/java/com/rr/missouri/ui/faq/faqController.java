@@ -371,12 +371,7 @@ public class faqController {
     }
     
     @RequestMapping(value = "/deleteDocument.do", method = RequestMethod.POST)
-    public @ResponseBody
-    ModelAndView deleteDocument(
-            @RequestParam(value = "documentId", required = true) Integer documentId,
-            HttpSession session
-            ) 
-            throws Exception {
+    public @ResponseBody ModelAndView deleteDocument(@RequestParam(value = "documentId", required = true) Integer documentId,HttpSession session) throws Exception {
         
         faqQuestionDocuments documentDetail = faqManager.getDocumentById(documentId);
         faqManager.deleteDocumentById(documentId);

@@ -29,6 +29,7 @@ jQuery(function ($) {
                         url: "/faq/deleteDocument.do",
                         data:{'documentId': documentId}, 
                         success: function (data) {
+                            $('#docDiv_'+documentId).remove();
                             $("#documentListDiv").html(data);
                         },
                         error: function (error) {

@@ -23,5 +23,16 @@
         </put-list-attribute>
     </definition>
     
+    <definition name="/topicMessages" extends="base.definition.calendar-ui">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/forum/breadcrumbs.jsp" />
+        <put-attribute name="body" value="/WEB-INF/jsp/forum/topicMessages.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/forum/messages.js" />
+        <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/bootbox.min.js" />
+            <add-attribute value="/dspResources/js/ace-elements.min.js" />
+        </put-list-attribute>
+    </definition>
+    
 
 </tiles-definitions>
