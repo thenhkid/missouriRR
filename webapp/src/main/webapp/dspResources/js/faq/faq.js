@@ -135,6 +135,24 @@ jQuery(function ($) {
             url: '/faq/getQuestionForm.do',
             data:{'questionId':0, 'toDo':'Add', 'onCategory':onCategory},
             success: function(data, event) {
+                
+                data = $(data);
+                    
+                /* File input */
+                data.find('#id-input-file-2').ace_file_input({
+                   style: 'well',
+                   btn_choose: 'click to upload files',
+                   btn_change: null,
+                   no_icon: 'ace-icon fa fa-cloud-upload',
+                   droppable: false,
+                   thumbnail: 'small',
+                   allowExt: ['pdf', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
+                   before_remove: function () {
+                       return true;
+                   }
+                });
+                
+                
                 bootbox.dialog({
                     message: data,
                     title: "Add A Question",
@@ -168,7 +186,25 @@ jQuery(function ($) {
             url: '/faq/getQuestionForm.do',
             data:{'questionId':questionId, 'toDo':'Edit', 'onCategory':0},
             success: function(data) {
+                
+                data = $(data);
+                    
+                /* File input */
+                data.find('#id-input-file-2').ace_file_input({
+                   style: 'well',
+                   btn_choose: 'click to upload files',
+                   btn_change: null,
+                   no_icon: 'ace-icon fa fa-cloud-upload',
+                   droppable: false,
+                   thumbnail: 'small',
+                   allowExt: ['pdf', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
+                   before_remove: function () {
+                       return true;
+                   }
+                });
+                
                 bootbox.dialog({
+                    
                     message: data,
                     title: "Edit Question",
                     buttons: {
