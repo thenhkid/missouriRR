@@ -37,14 +37,14 @@
                         <fieldset>
                             <label class="block clearfix">
                                 <span class="block input-icon input-icon-right">
-                                    <input type="text" class="form-control" placeholder="Username" name="j_username" value="jamesavilla@gmail.com" autofocus="true" autocomplete="off" />
+                                    <input type="text" class="form-control" placeholder="Username" name="j_username" value="missouri@gmail.com" autofocus="true" autocomplete="off" />
                                     <i class="ace-icon fa fa-user"></i>
                                 </span>
                             </label>
 
                             <label class="block clearfix">
                                 <span class="block input-icon input-icon-right">
-                                    <input type="password" class="form-control" placeholder="Password" name="j_password" value="jimvilla" autocomplete="off" />
+                                    <input type="password" class="form-control" placeholder="Password" name="j_password" value="missouri" autocomplete="off" />
                                     <i class="ace-icon fa fa-lock"></i>
                                 </span>
                             </label>
