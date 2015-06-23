@@ -6,6 +6,13 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
+<div class="row" style="margin-bottom:10px; margin-left:10px; margin-right:4px;">
+    <div class="col-sm-12">
+        <button class="btn btn-xs btn-info pull-right" id="addNewEventTypeButton">
+            <i class="ace-icon fa fa-plus bigger-120"></i>
+        </button>
+    </div>
+</div>
 
 <div class="row" style="height:250px; overflow: auto">
     <div class="col-sm-12">

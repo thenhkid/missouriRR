@@ -1,6 +1,6 @@
 
 Calendar
-    - When adding or saving event types it should refresh the list in bootbox and the Categories to show list.
+    - When adding or saving event types it should refresh the list in bootbox and the Categories to show list. - DONE jvilla
 
     - Work on the event notification Preferences
 

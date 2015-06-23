@@ -10,6 +10,7 @@ import com.registryKit.calendar.calendarEventTypeColors;
 import com.registryKit.calendar.calendarEventTypes;
 import com.registryKit.calendar.calendarEvents;
 import com.registryKit.calendar.calendarManager;
+import com.registryKit.calendar.calendarNotificationPreferences;
 import com.registryKit.user.User;
 import com.registryKit.user.userManager;
 import com.registryKit.user.userProgramModules;
@@ -334,7 +335,7 @@ public class calendarController {
          
         mav.addObject("eventTypes", eventTypes);
         
-         User userDetails = (User) session.getAttribute("userDetails");
+        User userDetails = (User) session.getAttribute("userDetails");
         
         /* Create an empty calender event */
         calendarEvents newCalendarEvent = new calendarEvents();
@@ -430,5 +431,101 @@ public class calendarController {
 
         return mav;
     }
+    
+    /**
+     * The 'getEventTypesColumn' GET request will return the html for the event types column on the calendar homepage.
+     * 
+     * @param session
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "getEventTypesColumn.do", method = RequestMethod.GET)
+    public @ResponseBody ModelAndView getEventTypesColumn(HttpSession session) throws Exception {
+        
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/calendar/eventTypesColumn");
+        
+        List<calendarEventTypes> eventTypes = calendarManager.getEventCategories(programId);
 
+        mav.addObject("eventTypes", eventTypes);
+        
+        return mav;
+        
+    }
+    
+    @RequestMapping(value = "/getEventNotificationModel.do", method = RequestMethod.GET)
+    public ModelAndView getEventNotificationModel(HttpSession session, HttpServletRequest request) throws Exception {
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/calendar/eventNotificationPreferences");
+        
+        User userDetails = (User) session.getAttribute("userDetails");
+        
+        calendarNotificationPreferences notificationPreferences = calendarManager.getNotificationPreferences(userDetails.getId());
+        
+        if(notificationPreferences != null){
+            mav.addObject("notificationPreferences", notificationPreferences);
+        }
+        else{
+            calendarNotificationPreferences newNotificationPreferences = new calendarNotificationPreferences();
+            newNotificationPreferences.setNewEventNotifications(false);
+            newNotificationPreferences.setAlwaysCreateAlert(false);
+            newNotificationPreferences.setSystemUserId(userDetails.getId());
+            newNotificationPreferences.setNotificationEmail(userDetails.getEmail());
+            mav.addObject("notificationPreferences", newNotificationPreferences);
+        }
+
+        return mav;
+    }
+    
+    @RequestMapping(value = "/saveNotificationPreferences.do", method = RequestMethod.POST)
+    public @ResponseBody Integer saveNotificationPreferences(@ModelAttribute(value = "notificationPreferences") calendarNotificationPreferences notificationPreferences, BindingResult errors, 
+            HttpSession session, HttpServletRequest request) throws Exception {
+        
+        User userDetails = (User) session.getAttribute("userDetails");
+
+        String preferencesId = request.getParameter("id");
+        String stopAllAlerts = request.getParameter("stopAllAlerts");
+        String alwaysCreateAlert = request.getParameter("alwaysCreateAlert");
+        String notificationFrequency = request.getParameter("notificationFrequency");
+        String alertEmailAddress = request.getParameter("alertEmailAddress");
+        
+        boolean stopAllAlertsFlag = false;
+        boolean alwaysCreateAlertFlag = false;
+
+        if ("true".equals(stopAllAlerts)) {
+            stopAllAlertsFlag = true;
+        }
+        
+        if ("true".equals(alwaysCreateAlert)) {
+            alwaysCreateAlertFlag = true;
+        }
+
+        /*if (Integer.parseInt(preferencesId) == 0) {
+            preferencesObject = new calendarNotificationPreferences();
+            preferencesObject.setSystemUserId(userDetails.getId());
+            preferencesObject.setNewEventNotifications(stopAllAlertsFlag);
+            preferencesObject.setAlwaysCreateAlert(alwaysCreateAlertFlag);
+            preferencesObject.setNotificationEmail(alertEmailAddress);
+            preferencesObject.setEmailAlertMin(Integer.parseInt(notificationFrequency));
+        } else {
+            preferencesObject.setId(Integer.parseInt(preferencesId));
+            preferencesObject.setSystemUserId(userDetails.getId());
+            preferencesObject.setNewEventNotifications(stopAllAlertsFlag);
+            preferencesObject.setAlwaysCreateAlert(alwaysCreateAlertFlag);
+            preferencesObject.setNotificationEmail(alertEmailAddress);
+            preferencesObject.setEmailAlertMin(Integer.parseInt(notificationFrequency));
+        }*/
+        
+        //notificationPreferences.setSystemUserId(userDetails.getId());
+        //notificationPreferences.setNewEventNotifications(stopAllAlertsFlag);
+        //notificationPreferences.setAlwaysCreateAlert(alwaysCreateAlertFlag);
+        //notificationPreferences.setNotificationEmail(alertEmailAddress);
+        //notificationPreferences.setEmailAlertMin(Integer.parseInt(notificationFrequency));
+            
+        calendarManager.saveNotificationPreferences(notificationPreferences);
+
+        return 1;
+
+    }
 }

@@ -435,6 +435,26 @@ jQuery(function ($) {
             }
         });
     });
+    
+    $(document).on("click", "a#eventNotificationManagerModel", function () {
+        $('.popover').popover('destroy');
+        $.ajax({
+            url: '/calendar/getEventNotificationModel.do',
+            type: 'GET',
+            success: function (data) {
+                data = $(data);
+
+                bootbox.dialog({
+                    title: "Event Notification Preferences",
+                    message: data
+                });
+
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    });
 
     function checkAvailableColors(eventId) {
         var result = "";
@@ -544,6 +564,7 @@ jQuery(function ($) {
                     $('#eventType').val("");
                     $('#adminOnly').attr("checked", false);
                     calendar.fullCalendar('refetchEvents');
+                    refreshEventTypesColumn();
                 },
                 error: function (error) {
                     console.log(error);
@@ -689,5 +710,47 @@ jQuery(function ($) {
 
     });
 
+    $(document).on('click', '#saveNotificationPreferences', function () {
+        
+        var formData = $("#notificationPreferencesForm").serialize();
+
+        $.ajax({
+            url: '/calendar/saveNotificationPreferences.do',
+            type: 'POST',
+            contentType: false,
+            processData: false,
+            data: formData,
+            success: function (data) {
+                console.log(data);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+        
+        return false;
+    });
+    
+    $(document).on('click', '#alwaysCreateAlert', function () {
+        if ($('#alwaysCreateAlert').is(":checked")) {
+            $('#notificationFrequencyDiv').show();
+        }
+        else {
+            $('#notificationFrequencyDiv').hide();
+        }
+    });
 
 });
+
+function refreshEventTypesColumn(){
+    $.ajax({
+        url: '/calendar/getEventTypesColumn.do',
+        type: 'GET',
+        success: function (data) {
+            $('#eventTypesColumn').html(data);
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+}
