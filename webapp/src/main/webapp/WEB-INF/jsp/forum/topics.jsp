@@ -60,7 +60,7 @@
                                 <td class="col-md-6">
                                     <a href="/forum/${topic.topicURL}">${topic.title}</a>
                                     <br />
-                                    by ${topic.postedByName} &Gt; <fmt:formatDate value="${topic.postedOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
+                                    by ${topic.postedByName} <i class="ace-icon fa fa-angle-double-right"></i> <fmt:formatDate value="${topic.postedOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
                                 </td>
                                 <td class="center col-md-2">
                                     ${topic.totalViews}

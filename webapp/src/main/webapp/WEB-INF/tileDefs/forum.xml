@@ -14,7 +14,7 @@
     
     <definition name="/forum" extends="base.definition.calendar-ui">
         <put-attribute name="title" value="" />
-        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/forum/breadcrumbs.jsp" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/forum/breadcrumbs.jsp?page=topics" />
         <put-attribute name="body" value="/WEB-INF/jsp/forum/topics.jsp" />
         <put-attribute name="jscript" value="/dspResources/js/forum/topics.js" />
         <put-list-attribute name="headScripts">
