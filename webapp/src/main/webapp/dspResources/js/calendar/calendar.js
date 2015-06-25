@@ -717,8 +717,6 @@ jQuery(function ($) {
         $.ajax({
             url: '/calendar/saveNotificationPreferences.do',
             type: 'POST',
-            contentType: false,
-            processData: false,
             data: formData,
             success: function (data) {
                 console.log(data);

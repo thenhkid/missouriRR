@@ -7,53 +7,62 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<div id="" class="row">
-    <div class="col-sm-12">
-        <form:form id="notificationPreferencesForm" modelAttribute="notificationPreferences" role="form" class="form" method="post">
+<div class="page-content">
+    <form:form id="notificationPreferencesForm" modelAttribute="notificationPreferences" role="form" class="form" method="post">
+        <form:hidden path="id" />
 
-            <form:input type="text" path="id" />
-
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" id="stopAllAlerts" name="stopAllAlerts" value="1" /> Stop all notifications for new events
-                </label>
-            </div>
-
-            <hr />
-
-            <div id="notificationDiv" <c:if test="${calendarNotificationPreferences.newEventNotifications == true}">style="display:none;"</c:if>>
+        <div class="row">
+            <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox" id="alwaysCreateAlert" name="alwaysCreateAlert" value="1" <c:if test="${calendarNotificationPreferences.alwaysCreateAlert == true}">checked="checked"</c:if> /> Always create an alert
+                        <form:checkbox path="newEventNotifications"   />  Stop all notifications for new events
                     </label>
                 </div>
-
-                <div>
-                    <select id="notificationFrequency" name="notificationFrequency" class="form-control">
-                        <option value="">-</option>
-                        <option value="0">Email: At time of event</option>
-                        <option value="5">Email: 5 Min before event</option>
-                        <option value="10">Email: 10 Min before event</option>
-                        <option value="15">Email: 15 Min before event</option>
-                        <option value="30">Email: 30 Min before event</option>
-                        <option value="60">Email: 1 hour before event</option>
-                        <option value="120">Email: 2 hour before event</option>
-                        <option value="1440">Email: 1 day before event</option>
-                        <option value="2880">Email: 2 days before event</option>
-                    </select>
-                </div>
-
-                <hr />
-
-                <div class="form-group">
-                    <label for="notificationEmail" class="control-label">Notification & Alert Email Address</label>
-                    <form:input path="notificationEmail" class="form-control" placeholder="Email Address" />
-                    <div id="error_alertEmailAddress" style="display:none;" class="help-block col-xs-12 col-sm-reset inline"></div> 
+            </div>
+        </div>
+        <div class="space-4"></div>
+        <div class="hr hr-dotted"></div>
+        <div class="row">
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <form:checkbox path="alwaysCreateAlert"   />  Always create an alert
+                    </label>
                 </div>
             </div>
-                
-            <button type="submit" class="btn btn-primary" id="saveNotificationPreferences" name="saveNotificationPreferences">Save</button>
-        </form:form>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <form:select path="emailAlertMin" class="form-control">
+                    <option value="">-</option>
+                    <option value="0" <c:if test="${notificationPreferences.emailAlertMin == 0}"> selected </c:if>>Email: At time of event</option>
+                    <option value="5" <c:if test="${notificationPreferences.emailAlertMin == 5}"> selected </c:if>>Email: 5 Min before event</option>
+                    <option value="10" <c:if test="${notificationPreferences.emailAlertMin == 10}"> selected </c:if>>Email: 10 Min before event</option>
+                    <option value="15" <c:if test="${notificationPreferences.emailAlertMin == 15}"> selected </c:if>>Email: 15 Min before event</option>
+                    <option value="30" <c:if test="${notificationPreferences.emailAlertMin == 30}"> selected </c:if>>Email: 30 Min before event</option>
+                    <option value="60" <c:if test="${notificationPreferences.emailAlertMin == 60}"> selected </c:if>>Email: 1 hour before event</option>
+                    <option value="120" <c:if test="${notificationPreferences.emailAlertMin == 120}"> selected </c:if>>Email: 2 hour before event</option>
+                    <option value="1440" <c:if test="${notificationPreferences.emailAlertMin == 1440}"> selected </c:if>>Email: 1 day before event</option>
+                    <option value="2880" <c:if test="${notificationPreferences.emailAlertMin == 2880}"> selected </c:if>>Email: 2 days before event</option>
+                </form:select>
+            </div>
+        </div>
+        <div class="space-4"></div>
+        <div class="hr hr-dotted"></div>
+        <div class="row">
+            <div class="form-group">
+                <label for="notificationEmail">Notification & Alert Email Address</label>
+                <form:input path="notificationEmail" class="form-control" placeholder="Notification & Alert Email Address" />
+            </div>
+        </div>
+        <div class="space-4"></div>
+        <div class="hr hr-dotted"></div>
+        <div class="row">
+            <button type="submit" class="btn btn-primary" id="saveNotificationPreferences">
+                <i class="ace-icon fa fa-save bigger-120 white"></i>
+                Save
+            </button>
+        </div>
+    </form:form>
 
-    </div>
 </div>

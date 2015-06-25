@@ -470,7 +470,6 @@ public class calendarController {
             calendarNotificationPreferences newNotificationPreferences = new calendarNotificationPreferences();
             newNotificationPreferences.setNewEventNotifications(false);
             newNotificationPreferences.setAlwaysCreateAlert(false);
-            newNotificationPreferences.setSystemUserId(userDetails.getId());
             newNotificationPreferences.setNotificationEmail(userDetails.getEmail());
             mav.addObject("notificationPreferences", newNotificationPreferences);
         }
@@ -483,46 +482,9 @@ public class calendarController {
             HttpSession session, HttpServletRequest request) throws Exception {
         
         User userDetails = (User) session.getAttribute("userDetails");
-
-        String preferencesId = request.getParameter("id");
-        String stopAllAlerts = request.getParameter("stopAllAlerts");
-        String alwaysCreateAlert = request.getParameter("alwaysCreateAlert");
-        String notificationFrequency = request.getParameter("notificationFrequency");
-        String alertEmailAddress = request.getParameter("alertEmailAddress");
         
-        boolean stopAllAlertsFlag = false;
-        boolean alwaysCreateAlertFlag = false;
+        notificationPreferences.setSystemUserId(userDetails.getId());
 
-        if ("true".equals(stopAllAlerts)) {
-            stopAllAlertsFlag = true;
-        }
-        
-        if ("true".equals(alwaysCreateAlert)) {
-            alwaysCreateAlertFlag = true;
-        }
-
-        /*if (Integer.parseInt(preferencesId) == 0) {
-            preferencesObject = new calendarNotificationPreferences();
-            preferencesObject.setSystemUserId(userDetails.getId());
-            preferencesObject.setNewEventNotifications(stopAllAlertsFlag);
-            preferencesObject.setAlwaysCreateAlert(alwaysCreateAlertFlag);
-            preferencesObject.setNotificationEmail(alertEmailAddress);
-            preferencesObject.setEmailAlertMin(Integer.parseInt(notificationFrequency));
-        } else {
-            preferencesObject.setId(Integer.parseInt(preferencesId));
-            preferencesObject.setSystemUserId(userDetails.getId());
-            preferencesObject.setNewEventNotifications(stopAllAlertsFlag);
-            preferencesObject.setAlwaysCreateAlert(alwaysCreateAlertFlag);
-            preferencesObject.setNotificationEmail(alertEmailAddress);
-            preferencesObject.setEmailAlertMin(Integer.parseInt(notificationFrequency));
-        }*/
-        
-        //notificationPreferences.setSystemUserId(userDetails.getId());
-        //notificationPreferences.setNewEventNotifications(stopAllAlertsFlag);
-        //notificationPreferences.setAlwaysCreateAlert(alwaysCreateAlertFlag);
-        //notificationPreferences.setNotificationEmail(alertEmailAddress);
-        //notificationPreferences.setEmailAlertMin(Integer.parseInt(notificationFrequency));
-            
         calendarManager.saveNotificationPreferences(notificationPreferences);
 
         return 1;
