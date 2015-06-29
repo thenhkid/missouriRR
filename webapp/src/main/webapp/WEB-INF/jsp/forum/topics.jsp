@@ -13,15 +13,11 @@
 <div class="col-xs-12">
     <div class="row">
         <div class="clearfix">
-            <div class="dropdown pull-left no-margin">
-                <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                    Preferences
-                    <span class="caret"></span>
+            <div class="pull-left no-margin">
+                <button class="btn btn-success btn-xs" type="button" id="newTopic">
+                    <i class="ace-icon fa fa-plus-square bigger-110"></i>
+                    New Topic
                 </button>
-                <ul class="dropdown-menu" role="menu" aria-labelledby="preferences">
-                <c:if test="${sessionScope.userDetails.roleId == 2}"><li role="presentation"><a role="menuitem" tabindex="-1" href="#" id="eventTypeManagerModel">Event Type Manager</a></li></c:if>
-                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Event Notification Preferences</a></li>
-                </ul>
             </div>
             <div class="pull-right">
                 <div class="widget-box transparent no-margin">
@@ -61,6 +57,18 @@
                                     <a href="/forum/${topic.topicURL}">${topic.title}</a>
                                     <br />
                                     by ${topic.postedByName} <i class="ace-icon fa fa-angle-double-right"></i> <fmt:formatDate value="${topic.postedOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
+                                    <c:if test="${sessionScope.userDetails.id == topic.postedBy}">
+                                        <div class="pull-right action-buttons">
+
+                                            <a href="#" class="editTopic" rel="${topic.id}">
+                                                <i class="ace-icon fa fa-pencil blue bigger-125"></i>
+                                            </a>
+
+                                            <a href="#" class="deleteTopic" rel="${topic.id}">
+                                                <i class="ace-icon fa fa-times red bigger-125"></i>
+                                            </a>
+                                        </div>
+                                    </c:if>
                                 </td>
                                 <td class="center col-md-2">
                                     ${topic.totalViews}
@@ -104,6 +112,18 @@
                                     <a href="/forum/${topic.topicURL}">${topic.title}</a>
                                     <br />
                                     by ${topic.postedByName} &Gt; <fmt:formatDate value="${topic.postedOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
+                                    <c:if test="${sessionScope.userDetails.id == topic.postedBy}">
+                                        <div class="pull-right action-buttons">
+
+                                            <a href="#" class="editTopic" rel="${topic.id}">
+                                                <i class="ace-icon fa fa-pencil blue bigger-125"></i>
+                                            </a>
+
+                                            <a href="#" class="deleteTopic" rel="${topic.id}">
+                                                <i class="ace-icon fa fa-times red bigger-125"></i>
+                                            </a>
+                                        </div>
+                                    </c:if>
                                 </td>
                                 <td class="center col-md-2">
                                     ${topic.totalViews}

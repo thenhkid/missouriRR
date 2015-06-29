@@ -19,15 +19,12 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  *
@@ -39,7 +36,7 @@ public class forumController {
 
     @Autowired
     forumManager forumManager;
-    
+
     @Value("${programId}")
     private Integer programId;
 
@@ -64,8 +61,7 @@ public class forumController {
     }
 
     /**
-     * The '/forum/${pathVariable}' GET request will return the message for the
-     * clicked topic.
+     * The '/forum/${pathVariable}' GET request will return the message for the clicked topic.
      *
      * @param pathVariable Will hold the url for the clicked variable
      * @return
@@ -73,24 +69,24 @@ public class forumController {
      */
     @RequestMapping(value = "/{pathVariable}", method = RequestMethod.GET)
     public ModelAndView forumTopicMessages(@PathVariable String pathVariable) throws Exception {
-        
+
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/topicMessages");
 
         forumTopics topicDetails = forumManager.getTopicByURL(pathVariable);
-        
+
         if (topicDetails != null) {
-        
+
             /* Need to log a view */
             Integer totalViews = topicDetails.getTotalViews();
-            if(totalViews != null && totalViews > 0) {
-                totalViews+=1;
-            }
-            else {
+            if (totalViews != null && totalViews > 0) {
+                totalViews += 1;
+            } else {
                 totalViews = 1;
             }
+
             topicDetails.setTotalViews(totalViews);
-            forumManager.saveTopic(topicDetails);
+            forumManager.updateTopic(topicDetails);
 
             mav.addObject("topicTitle", topicDetails.getTitle());
             mav.addObject("topicId", topicDetails.getId());
@@ -99,10 +95,11 @@ public class forumController {
         return mav;
 
     }
-    
+
     @RequestMapping(value = "/getTopicMessages.do", method = RequestMethod.GET)
-    public @ResponseBody ModelAndView getTopicMessages(@RequestParam(value = "topicId", required = true) Integer topicId) throws Exception {
-        
+    public @ResponseBody
+    ModelAndView getTopicMessages(@RequestParam(value = "topicId", required = true) Integer topicId) throws Exception {
+
         List<topicMessages> topicMessages = new ArrayList<topicMessages>();
 
         List<forumMessages> messages = forumManager.getTopicMessages(topicId);
@@ -163,52 +160,45 @@ public class forumController {
         }
 
         Collections.sort(topicMessages, Collections.reverseOrder());
-        
+
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/forum/messages");
         mav.addObject("topicMessages", topicMessages);
-        
+
         return mav;
-        
+
     }
-    
-    
+
     /**
-     * The '/form/getPostForm.do' GET request will return the topic message form.
-     * 
-     * @param topicId (requried) The id of the selected topic
-     * @param postId  (Optional) If passed in will hold the id of the selected topic message, if 0 then new message
-     * @param parentMessageId   (Optional) If passed in will hold the id of the message that the reply is for.
+     * The '/form/getTopicForm.do' GET request will return the topic message form.
+     *
+     * @param topicId (required) The id of the selected topic
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
-    @RequestMapping(value = "/getPostForm.do", method = RequestMethod.GET)
-    public @ResponseBody ModelAndView getPostForm(
-            @RequestParam(value = "topicId", required = true) Integer topicId, 
-            @RequestParam(value = "postId", required = false, defaultValue = "0") Integer postId,
-            @RequestParam(value = "parentMessageId", required = false, defaultValue = "0") Integer parentMessageId) throws Exception {
-        
+    @RequestMapping(value = "/getTopicForm.do", method = RequestMethod.GET)
+    public @ResponseBody
+    ModelAndView getTopicForm(
+            @RequestParam(value = "topicId", required = true) Integer topicId) throws Exception {
+
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("/forum/postFormModal");
-        
-        forumMessages messageDetails;
-        
-        if(postId == 0) {
-            messageDetails = new forumMessages();
-            messageDetails.setTopicId(topicId);
-            messageDetails.setParentMessageId(parentMessageId);
+        mav.setViewName("/forum/topicFormModal");
+
+        forumTopics topicDetails;
+
+        if (topicId == 0) {
+            topicDetails = new forumTopics();
+        } else {
+            topicDetails = forumManager.getTopicById(topicId);
         }
-        else {
-            messageDetails = forumManager.getTopicMessageDetails(postId);
-        }
-        mav.addObject("forumMessage", messageDetails);
-        
-        
+        mav.addObject("forumTopic", topicDetails);
+
         return mav;
     }
+
     
     /**
-     * The 'savePostForm' POST request will handle saving the new/updated post message.
+     * The 'saveTopicForm' POST request will handle saving the new/updated post message.
      * @param forumMessage
      * @param errors
      * @param redirectAttr
@@ -216,32 +206,144 @@ public class forumController {
      * @return
      * @throws Exception 
      */
-    @RequestMapping(value = "/savePostForm.do", method = RequestMethod.POST)
-    public @ResponseBody Integer savePostForm(@ModelAttribute(value = "forumMessage") forumMessages forumMessage, HttpSession session) throws Exception {
-      
+    @RequestMapping(value = "/saveTopicForm.do", method = RequestMethod.POST)
+    public @ResponseBody Integer saveTopicForm(@ModelAttribute(value = "forumTopic") forumTopics forumTopic, HttpSession session) throws Exception {
+
         /* Get a list of completed surveys the logged in user has access to */
         User userDetails = (User) session.getAttribute("userDetails");
+
+        forumTopic.setProgramId(programId);
         
+        /* Set the topic URL */
+        String topicURL = forumTopic.getTitle().replaceAll("\\W", "-");
+        
+        /* Check to see it topic URL exists */
+        forumTopics topicDetails = forumManager.getTopicByURL(topicURL); 
+        
+        Integer topicNum = 0;
+        String checktopicURL = topicURL;
+        
+        while (topicDetails != null) {
+            topicNum++;
+            
+            checktopicURL = topicURL.concat("-"+topicNum);
+            
+            topicDetails = forumManager.getTopicByURL(checktopicURL); 
+        }
+        
+        forumTopic.setTopicURL(checktopicURL);
+        
+        Integer topicId = 0;
+
+        /* Submit the initial message */
+        if(forumTopic.getId() == 0) {
+            topicId = forumManager.saveTopic(forumTopic);
+            
+            forumMessages messageDetails = new forumMessages();
+            messageDetails.setTopicId(topicId);
+            messageDetails.setMessage(forumTopic.getInitialMessage());
+            messageDetails.setSystemUserId(userDetails.getId());
+
+            forumManager.saveTopicMessage(messageDetails);
+        }
+        else {
+            forumManager.updateTopic(forumTopic);
+            topicId = forumTopic.getId();
+        }
+        
+        /* Return the topic Id */
+        return topicId;
+    }
+
+    /**
+     * The '/form/getPostForm.do' GET request will return the topic message form.
+     *
+     * @param topicId (requried) The id of the selected topic
+     * @param postId (Optional) If passed in will hold the id of the selected topic message, if 0 then new message
+     * @param parentMessageId (Optional) If passed in will hold the id of the message that the reply is for.
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getPostForm.do", method = RequestMethod.GET)
+    public @ResponseBody
+    ModelAndView getPostForm(
+            @RequestParam(value = "topicId", required = true) Integer topicId,
+            @RequestParam(value = "postId", required = false, defaultValue = "0") Integer postId,
+            @RequestParam(value = "parentMessageId", required = false, defaultValue = "0") Integer parentMessageId) throws Exception {
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/forum/postFormModal");
+
+        forumMessages messageDetails;
+
+        if (postId == 0) {
+            messageDetails = new forumMessages();
+            messageDetails.setTopicId(topicId);
+            messageDetails.setParentMessageId(parentMessageId);
+        } else {
+            messageDetails = forumManager.getTopicMessageDetails(postId);
+        }
+        mav.addObject("forumMessage", messageDetails);
+
+        return mav;
+    }
+
+    /**
+     * The 'savePostForm' POST request will handle saving the new/updated post message.
+     *
+     * @param forumMessage
+     * @param errors
+     * @param redirectAttr
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/savePostForm.do", method = RequestMethod.POST)
+    public @ResponseBody
+    Integer savePostForm(@ModelAttribute(value = "forumMessage") forumMessages forumMessage, HttpSession session) throws Exception {
+
+        /* Get a list of completed surveys the logged in user has access to */
+        User userDetails = (User) session.getAttribute("userDetails");
+
         forumMessage.setSystemUserId(userDetails.getId());
-        
+
         forumManager.saveTopicMessage(forumMessage);
-        
+
         /* Return the topic Id */
         return forumMessage.getTopicId();
     }
-    
+
     /**
      * The 'removePost' POST request will remove the clicked post.
-     * 
-     * @param postId    The id of the selected post to be removed.
+     *
+     * @param postId The id of the selected post to be removed.
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     @RequestMapping(value = "/removePost.do", method = RequestMethod.POST)
-    public @ResponseBody Integer removePost(@RequestParam(value = "postId", required = true) Integer postId) throws Exception {
-        
+    public @ResponseBody
+    Integer removePost(@RequestParam(value = "postId", required = true) Integer postId) throws Exception {
+
         forumManager.removeTopicMessage(postId);
-        
+
         return 1;
     }
+    
+    /**
+     * The 'removeForumTopic' POST request will remove the clicked post.
+     *
+     * @param topicId The id of the selected topic to be removed.
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/removeForumTopic.do", method = RequestMethod.POST)
+    public @ResponseBody
+    Integer removeTopic(@RequestParam(value = "topicId", required = true) Integer topicId) throws Exception {
+
+        forumManager.removeTopic(topicId);
+
+        return 1;
+    }
+    
+    
 }

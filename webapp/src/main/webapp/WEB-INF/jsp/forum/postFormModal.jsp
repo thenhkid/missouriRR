@@ -15,7 +15,7 @@
        <form:hidden path="parentMessageId" />
        <div class="form-group" id="messageDiv">
             <label  class="control-label" for="message">Message *</label>
-            <form:textarea path="message" class="form-control" id="message" />
+            <form:textarea path="message" class="form-control" id="message" rows="10" />
             <span id="messageMsg" class="control-label"></span>  
        </div>
     </form:form>

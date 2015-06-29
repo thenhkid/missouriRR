@@ -17,7 +17,7 @@ jQuery(function ($) {
         }
 
     });
-
+    
     $('#newPost').on('click', function () {
         var topicId = $(this).attr('rel');
 
@@ -62,7 +62,7 @@ jQuery(function ($) {
         }
 
     });
-
+    
     function showPostForm(topicId, postId, parentMessageId) {
         $.ajax({
             type: 'GET',
@@ -101,7 +101,8 @@ jQuery(function ($) {
             }
         });
     }
-
+    
+    
 
     function messageFn(event) {
 
