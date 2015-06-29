@@ -8,6 +8,16 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <div class="page-content">
+    <div class="alert alert-block alert-success successAlert" style="display:none;">
+        <button type="button" class="close" data-dismiss="alert">
+            <i class="ace-icon fa fa-times"></i>
+        </button>
+
+        <p><strong><i class="ace-icon fa fa-check"></i></strong>
+            You successfully updated your event notification settings.
+        </p>
+    </div>
+    
     <form:form id="notificationPreferencesForm" modelAttribute="notificationPreferences" role="form" class="form" method="post">
         <form:hidden path="id" />
 
@@ -15,23 +25,23 @@
             <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        <form:checkbox path="newEventNotifications"   />  Stop all notifications for new events
+                        <form:checkbox path="newEventNotifications" />  Stop all notifications for new events
                     </label>
                 </div>
             </div>
         </div>
         <div class="space-4"></div>
-        <div class="hr hr-dotted"></div>
-        <div class="row">
+        <div class="hr hr-dotted notificationsOptions" <c:if test="${notificationPreferences.newEventNotifications == true}">style="display: none;"</c:if>></div>
+        <div class="row notificationsOptions" <c:if test="${notificationPreferences.newEventNotifications == true}">style="display: none;"</c:if>>
             <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        <form:checkbox path="alwaysCreateAlert"   />  Always create an alert
+                        <form:checkbox path="alwaysCreateAlert" />  Always create an alert
                     </label>
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row notificationsOptions" id="alertFrequency" <c:if test="${notificationPreferences.alwaysCreateAlert == false}">style="display: none;"</c:if>>
             <div class="form-group">
                 <form:select path="emailAlertMin" class="form-control">
                     <option value="">-</option>
@@ -47,16 +57,16 @@
                 </form:select>
             </div>
         </div>
-        <div class="space-4"></div>
-        <div class="hr hr-dotted"></div>
-        <div class="row">
+        <div class="space-4 notificationsOptions" <c:if test="${notificationPreferences.newEventNotifications == true}">style="display: none;"</c:if>></div>
+        <div class="hr hr-dotted notificationsOptions" <c:if test="${notificationPreferences.newEventNotifications == true}">style="display: none;"</c:if>></div>
+        <div class="row notificationsOptions" <c:if test="${notificationPreferences.newEventNotifications == true}">style="display: none;"</c:if>>
             <div class="form-group">
                 <label for="notificationEmail">Notification & Alert Email Address</label>
                 <form:input path="notificationEmail" class="form-control" placeholder="Notification & Alert Email Address" />
             </div>
         </div>
-        <div class="space-4"></div>
-        <div class="hr hr-dotted"></div>
+        <div class="space-4 notificationsOptions" <c:if test="${notificationPreferences.newEventNotifications == true}">style="display: none;"</c:if>></div>
+        <div class="hr hr-dotted notificationsOptions" <c:if test="${notificationPreferences.newEventNotifications == true}">style="display: none;"</c:if>></div>
         <div class="row">
             <button type="submit" class="btn btn-primary" id="saveNotificationPreferences">
                 <i class="ace-icon fa fa-save bigger-120 white"></i>

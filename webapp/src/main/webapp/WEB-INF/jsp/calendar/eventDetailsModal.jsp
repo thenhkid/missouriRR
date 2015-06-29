@@ -6,11 +6,12 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <style>
     .ellipsis {
         display: inline-block;
-        white-space: nowrap;
+        //white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;     /** IE6+, Firefox 7+, Opera 11+, Chrome, Safari **/
         -o-text-overflow: ellipsis;  /** Opera 9 & 10 **/
@@ -46,8 +47,16 @@
         <div class="row">
             <h5>Documents</h5>
             <c:forEach var="document" items="${calendarEvent.existingDocuments}">
-                <span class="ellipsis"><i class="fa fa-file bigger-110 orange"></i> <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.documentTitle}&foldername=calendarUploadedFiles"/>" title="${document.documentTitle}">${document.documentTitle}</a></span>
-             </c:forEach>
+                <c:if test="${fn:length(document.documentTitle) > 20}">
+                    <c:set var="index" value="${document.documentTitle.lastIndexOf('.')}" />
+                    <c:set var="trimmedDocumentExtension" value="${fn:substring(document.documentTitle,index+1,fn:length(document.documentTitle))}" />
+                    <c:set var="trimmedDocumentTitle" value="${fn:substring(document.documentTitle, 0, 20)}...${trimmedDocumentExtension}" />
+                </c:if>
+                <c:if test="${fn:length(document.documentTitle) <= 20}">
+                    <c:set var="trimmedDocumentTitle" value="${document.documentTitle}" />
+                </c:if>
+                <span class="ellipsis"><i class="fa fa-file bigger-110 orange"></i> <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.documentTitle}&foldername=calendarUploadedFiles"/>" title="${document.documentTitle}">${trimmedDocumentTitle}</a></span>
+            </c:forEach>
         </div>
     </c:if>
     <div class="row"><hr></div> 

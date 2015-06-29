@@ -719,7 +719,10 @@ jQuery(function ($) {
             type: 'POST',
             data: formData,
             success: function (data) {
-                console.log(data);
+                $('.successAlert').show();
+                setTimeout(function(){
+                    bootbox.hideAll();
+                }, 2000);
             },
             error: function (error) {
                 console.log(error);
@@ -736,6 +739,19 @@ jQuery(function ($) {
         else {
             $('#notificationFrequencyDiv').hide();
         }
+    });
+    
+    $(document).on('click', '#newEventNotifications1', function () {
+        if($('#newEventNotifications1').is(':checked') == true){
+            $('.notificationsOptions').hide();
+        }
+        else{
+            $('.notificationsOptions').show();
+        }
+    });
+    
+    $(document).on('click', '#alwaysCreateAlert1', function () {
+        $('#alertFrequency').toggle();
     });
 
 });
