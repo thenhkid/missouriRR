@@ -305,6 +305,10 @@ public class forumController {
             messageDetails.setParentMessageId(parentMessageId);
         } else {
             messageDetails = forumManager.getTopicMessageDetails(postId);
+            
+            List <forumDocuments> documentList = forumManager.getMessageDocuments(postId);
+            mav.addObject("documentList", documentList);
+            
         }
         mav.addObject("forumMessage", messageDetails);
 
@@ -377,5 +381,18 @@ public class forumController {
         return 1;
     }
     
-    
+    /**
+     * The 'deleteDocument' POST request will remove the clicked uploaded document.
+     * 
+     * @param documentId The id of the clicked document.
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/deleteDocument.do", method = RequestMethod.POST) 
+    public @ResponseBody Integer deleteDocument(@RequestParam(value = "documentId", required = true) Integer documentId) throws Exception {
+        
+        forumManager.deleteDocumentById(documentId);
+        
+        return 1;
+    }
 }

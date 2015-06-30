@@ -63,6 +63,31 @@ jQuery(function ($) {
 
     });
     
+    /* Remove existing document */
+    $(document).on('click', '.deleteDocument', function () {
+
+        var confirmed = confirm("Are you sure you want to remove this document?");
+
+        if (confirmed) {
+            var docId = $(this).attr('rel');
+            $.ajax({
+                url: '/forum/deleteDocument.do',
+                type: 'POST',
+                data: {
+                    'documentId': docId
+                },
+                success: function (data) {
+                    $('#docDiv_' + docId).remove();
+                },
+                error: function (error) {
+
+                }
+            });
+        }
+
+    });
+    
+    
     function showPostForm(topicId, postId, parentMessageId, event) {
         $.ajax({
             type: 'GET',
