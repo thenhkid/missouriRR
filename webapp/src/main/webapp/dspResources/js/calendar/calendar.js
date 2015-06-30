@@ -225,6 +225,9 @@ jQuery(function ($) {
 
                         data.find('.timeFrom').timepicker({'scrollDefault': 'now'});
                         data.find('.timeFrom').val($('.timeFrom option:first').val());
+                        
+                        console.log($('.timeFrom option:first').val());
+                        
                         data.find('.timeFrom').on('changeTime', function () {
 
                             var date = new Date();
@@ -713,21 +716,37 @@ jQuery(function ($) {
     $(document).on('click', '#saveNotificationPreferences', function () {
         
         var formData = $("#notificationPreferencesForm").serialize();
-
-        $.ajax({
-            url: '/calendar/saveNotificationPreferences.do',
-            type: 'POST',
-            data: formData,
-            success: function (data) {
-                $('.successAlert').show();
-                setTimeout(function(){
-                    bootbox.hideAll();
-                }, 2000);
-            },
-            error: function (error) {
-                console.log(error);
+        var errorFound = false;
+        
+        if ($('#alwaysCreateAlert1').is(":checked")) {
+            if ($('#notificationEmail').val() == ''){
+                $('#notificationEmailGroup').addClass("has-error");
+                $('#notificationEmailMessage').addClass("has-error");
+                $('#notificationEmailMessage').html('The notification email address is required.');
+                errorFound = true;
             }
-        });
+        }
+        
+        if (errorFound == false) {
+            $('#notificationEmailGroup').removeClass("has-error");
+            $('#notificationEmailMessage').removeClass("has-error");
+            $('#notificationEmailMessage').html('');
+
+            $.ajax({
+                url: '/calendar/saveNotificationPreferences.do',
+                type: 'POST',
+                data: formData,
+                success: function (data) {
+                    $('.successAlert').show();
+                    setTimeout(function(){
+                        bootbox.hideAll();
+                    }, 2000);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
         
         return false;
     });
