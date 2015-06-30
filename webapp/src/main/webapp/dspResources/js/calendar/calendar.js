@@ -98,23 +98,47 @@ jQuery(function ($) {
     $(document).on("click", ".eventSave", function () {
 
         var formData = $("#eventForm").serializefiles();
-
-        $.ajax({
-            url: '/calendar/saveEvent.do',
-            type: 'POST',
-            contentType: false,
-            processData: false,
-            data: formData,
-            success: function (data) {
-                //bootbox.hideAll();
-                $('.popover').popover('destroy');
-                calendar.fullCalendar('refetchEvents');
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        });
-
+        
+        var errorFound = false;
+        
+        if ($('#eventStartTime').val() === "") {
+            $('#eventTimeDiv').addClass('has-error');
+            $('#eventStartTimeMessage').addClass('has-error');
+            $('#eventStartTimeMessage').html('The event start time is required.');
+            $('#eventStartTimeMessage').show();
+            errorFound = true;
+        }
+        
+        if ($('#eventEndTime').val() === "") {
+            $('#eventTimeDiv').addClass('has-error');
+            $('#eventEndTimeMessage').addClass('has-error');
+            $('#eventEndTimeMessage').html('The event end time is required.');
+            $('#eventEndTimeMessage').show();
+            errorFound = true;
+        }
+        
+        if (errorFound == false) {
+            $('#eventTimeDiv').removeClass('has-error');
+            $('#eventStartTimeMessage').removeClass('has-error');
+            $('#eventStartTimeMessage').html('');
+            
+            $.ajax({
+                url: '/calendar/saveEvent.do',
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function (data) {
+                    //bootbox.hideAll();
+                    $('.popover').popover('destroy');
+                    calendar.fullCalendar('refetchEvents');
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+        
         return false;
     });
 
@@ -224,9 +248,8 @@ jQuery(function ($) {
                         });
 
                         data.find('.timeFrom').timepicker({'scrollDefault': 'now'});
-                        data.find('.timeFrom').val($('.timeFrom option:first').val());
                         
-                        console.log($('.timeFrom option:first').val());
+                        data.find('.timeFrom').val($('.timeFrom option:first').val());
                         
                         data.find('.timeFrom').on('changeTime', function () {
 
