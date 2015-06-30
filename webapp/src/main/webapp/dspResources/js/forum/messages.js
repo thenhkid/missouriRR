@@ -18,27 +18,27 @@ jQuery(function ($) {
 
     });
     
-    $('#newPost').on('click', function () {
+    $('#newPost').on('click', function (event) {
         var topicId = $(this).attr('rel');
 
-        showPostForm(topicId, 0, 0);
+        showPostForm(topicId, 0, 0, event);
     });
 
-    $(document).on("click", ".editPost", function () {
+    $(document).on("click", ".editPost", function (event) {
 
         var topicId = $('.topicMessageContainer').attr('rel');
         var postId = $(this).attr('rel');
 
-        showPostForm(topicId, postId, 0);
+        showPostForm(topicId, postId, 0, event);
 
     });
 
-    $(document).on("click", ".reply", function () {
+    $(document).on("click", ".reply", function (event) {
 
         var topicId = $('.topicMessageContainer').attr('rel');
         var parentMessageId = $(this).attr('rel');
 
-        showPostForm(topicId, 0, parentMessageId);
+        showPostForm(topicId, 0, parentMessageId, event);
 
     });
 
@@ -63,12 +63,29 @@ jQuery(function ($) {
 
     });
     
-    function showPostForm(topicId, postId, parentMessageId) {
+    function showPostForm(topicId, postId, parentMessageId, event) {
         $.ajax({
             type: 'GET',
             url: '/forum/getPostForm.do',
             data: {'topicId': topicId, 'postId': postId, 'parentMessageId': parentMessageId},
-            success: function (data, event) {
+            success: function (data) {
+                
+                data = $(data);
+                    
+                /* File input */
+                data.find('#id-input-file-2').ace_file_input({
+                   style: 'well',
+                   btn_choose: 'click to upload files',
+                   btn_change: null,
+                   no_icon: 'ace-icon fa fa-cloud-upload',
+                   droppable: false,
+                   thumbnail: 'small',
+                   allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
+                   before_remove: function () {
+                       return true;
+                   }
+                });
+                
                 bootbox.dialog({
                     message: data,
                     title: "New Post",
@@ -84,16 +101,7 @@ jQuery(function ($) {
                             label: "Save",
                             className: "btn-primary",
                             callback: function () {
-                                var topicId = messageFn(event);
-
-                                if (topicId == 0) {
-                                    return false;
-                                }
-                                else {
-                                    $('#messagesDiv').html("");
-                                    loadTopicMessages(topicId);
-                                }
-
+                                return messageFn(event);
                             }
                         },
                     }
@@ -106,9 +114,6 @@ jQuery(function ($) {
 
     function messageFn(event) {
 
-        var formData = $("#postForm").serialize();
-
-        var topicId = 0;
         var errorFound = false;
 
         /** make sure there is a category **/
@@ -118,24 +123,15 @@ jQuery(function ($) {
             $('#messageMsg').html('The message is required.');
             errorFound = true;
         }
-
-        if (errorFound == false) {
-
-            $.ajax({
-                url: '/forum/savePostForm.do',
-                type: 'POST',
-                async: false,
-                data: formData,
-                success: function (data) {
-                    topicId = data;
-                },
-                error: function (error) {
-                    console.log(error);
-                }
-            });
+        
+        if(errorFound == true) {
+            event.preventDefault();
+            return false;
         }
-
-        return topicId;
+        
+        var submitURL = "/forum/savePostForm.do";
+        $("#postForm").attr("action", submitURL);
+        $("#postForm").submit();
 
     }
 
