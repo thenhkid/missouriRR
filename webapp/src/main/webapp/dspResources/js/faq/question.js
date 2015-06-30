@@ -16,7 +16,7 @@ jQuery(function ($) {
         });
     }); 
 
-        $('.deleteDocument').click(function() { 
+    $('.deleteDocument').click(function() { 
         // need to confirm
         var documentId = $(this).attr('rel');
         bootbox.confirm({

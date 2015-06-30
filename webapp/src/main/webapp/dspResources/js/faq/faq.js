@@ -146,7 +146,7 @@ jQuery(function ($) {
                    no_icon: 'ace-icon fa fa-cloud-upload',
                    droppable: false,
                    thumbnail: 'small',
-                   allowExt: ['pdf', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
+                   allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
                    before_remove: function () {
                        return true;
                    }
@@ -197,7 +197,7 @@ jQuery(function ($) {
                    no_icon: 'ace-icon fa fa-cloud-upload',
                    droppable: false,
                    thumbnail: 'small',
-                   allowExt: ['pdf', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
+                   allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
                    before_remove: function () {
                        return true;
                    }

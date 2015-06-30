@@ -5,6 +5,7 @@
  */
 package com.rr.missouri.ui.forum;
 
+import com.registryKit.forum.forumDocuments;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.registryKit.forum.forumManager;
@@ -24,7 +25,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 /**
  *
@@ -124,6 +128,13 @@ public class forumController {
                     if (!messageReplies.isEmpty()) {
                         message.setReplies(messageReplies);
                     }
+                    
+                    List <forumDocuments> documentList = forumManager.getMessageDocuments(message.getId());
+            
+                    if (!documentList.isEmpty()) {
+                        message.setForumDocuments(documentList);
+                    }
+                    
                     topicDateMessages.add(message);
 
                 } else if (date2.before(date1)) {
@@ -139,15 +150,27 @@ public class forumController {
                     if (!messageReplies.isEmpty()) {
                         message.setReplies(messageReplies);
                     }
+                    
+                    List <forumDocuments> documentList = forumManager.getMessageDocuments(message.getId());
+            
+                    if (!documentList.isEmpty()) {
+                        message.setForumDocuments(documentList);
+                    }
 
                     topicDateMessages.add(message);
 
                     date1 = date2;
                 } else {
                     List<forumMessages> messageReplies = forumManager.getTopicMessageReplies(message.getId());
-
+                    
                     if (!messageReplies.isEmpty()) {
                         message.setReplies(messageReplies);
+                    }
+                    
+                    List <forumDocuments> documentList = forumManager.getMessageDocuments(message.getId());
+            
+                    if (!documentList.isEmpty()) {
+                        message.setForumDocuments(documentList);
                     }
 
                     topicDateMessages.add(message);
@@ -282,6 +305,10 @@ public class forumController {
             messageDetails.setParentMessageId(parentMessageId);
         } else {
             messageDetails = forumManager.getTopicMessageDetails(postId);
+            
+            List <forumDocuments> documentList = forumManager.getMessageDocuments(postId);
+            mav.addObject("documentList", documentList);
+            
         }
         mav.addObject("forumMessage", messageDetails);
 
@@ -300,7 +327,9 @@ public class forumController {
      */
     @RequestMapping(value = "/savePostForm.do", method = RequestMethod.POST)
     public @ResponseBody
-    Integer savePostForm(@ModelAttribute(value = "forumMessage") forumMessages forumMessage, HttpSession session) throws Exception {
+    ModelAndView savePostForm(@ModelAttribute(value = "forumMessage") forumMessages forumMessage,
+            @RequestParam(value = "postDocuments", required = false) List<MultipartFile> postDocuments, RedirectAttributes redirectAttr,
+            HttpSession session) throws Exception {
 
         /* Get a list of completed surveys the logged in user has access to */
         User userDetails = (User) session.getAttribute("userDetails");
@@ -308,9 +337,16 @@ public class forumController {
         forumMessage.setSystemUserId(userDetails.getId());
 
         forumManager.saveTopicMessage(forumMessage);
+        
+        if (postDocuments != null) {
+            forumManager.saveDocuments(forumMessage, postDocuments);
+        }
+        
+        forumTopics topicDetails = forumManager.getTopicById(forumMessage.getTopicId());
+        
+        ModelAndView mav = new ModelAndView(new RedirectView("/forum/"+topicDetails.getTopicURL()));
+        return mav;
 
-        /* Return the topic Id */
-        return forumMessage.getTopicId();
     }
 
     /**
@@ -345,5 +381,18 @@ public class forumController {
         return 1;
     }
     
-    
+    /**
+     * The 'deleteDocument' POST request will remove the clicked uploaded document.
+     * 
+     * @param documentId The id of the clicked document.
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/deleteDocument.do", method = RequestMethod.POST) 
+    public @ResponseBody Integer deleteDocument(@RequestParam(value = "documentId", required = true) Integer documentId) throws Exception {
+        
+        forumManager.deleteDocumentById(documentId);
+        
+        return 1;
+    }
 }

@@ -30,7 +30,7 @@
             <c:forEach var="messageData" items="${message.messages}">
                 <div class="timeline-item clearfix">
                     <div class="timeline-info">
-                        <img alt="Susan't Avatar" src="<%=request.getContextPath()%>/dspResources/img/avatars/avatar2.png" />
+                        <img alt="" src="<%=request.getContextPath()%>/dspResources/img/avatars/avatar2.png" />
                         <span class="label label-info label-sm"><fmt:formatDate value="${messageData.dateCreated}" type="time" pattern="h:mm" /></span>
                     </div>
 
@@ -75,6 +75,18 @@
                                     </div>
 
                                 </c:if>
+                                    
+                                <c:if test="${not empty messageData.forumDocuments}">
+                                    <div class="space-8"></div>
+                                    <div style="padding-left:30px;">
+                                        <h6>Uploaded Documents</h6>
+                                        <c:forEach var="document" items="${messageData.forumDocuments}">
+                                            <div class="clearfix">
+                                                <i class="fa fa-file bigger-110 orange"></i> <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.documentTitle}&foldername=forumUploadedFiles"/>" title="${document.documentTitle}">${document.documentTitle}</a>
+                                            </div>
+                                        </c:forEach>
+                                   </div>
+                                </c:if>      
 
                                 <c:if test="${not empty messageData.replies}">
                                     <c:forEach var="reply" items="${messageData.replies}">
@@ -105,6 +117,7 @@
                                         </div>
                                     </c:forEach> 
                                 </c:if>
+                                     
                             </div>
                         </div>
                     </div>
