@@ -58,15 +58,17 @@
             </div>
         </div>
         <div class="row">
-            <div class="form-group">
+            <div class="form-group" id="eventTimeDiv">
                 <div class="row clearfix">
                     <div class="col-md-6">
                         <label for="timeFrom">Start Time</label>
                         <form:input path="eventStartTime" class="form-control timeFrom" placeholder="Start Time"  />
+                        <span id="eventStartTimeMessage" class="control-label"></span>
                     </div>
                     <div class="col-md-6">
                         <label for="timeFrom">End Time</label>
                         <form:input path="eventEndTime" class="form-control timeTo" name="timeTo" placeholder="End Time" />
+                        <span id="eventEndTimeMessage" class="control-label"></span>
                     </div>
                 </div>
             </div>

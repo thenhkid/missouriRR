@@ -60,9 +60,10 @@
         <div class="space-4 notificationsOptions" <c:if test="${notificationPreferences.newEventNotifications == true}">style="display: none;"</c:if>></div>
         <div class="hr hr-dotted notificationsOptions" <c:if test="${notificationPreferences.newEventNotifications == true}">style="display: none;"</c:if>></div>
         <div class="row notificationsOptions" <c:if test="${notificationPreferences.newEventNotifications == true}">style="display: none;"</c:if>>
-            <div class="form-group">
+            <div class="form-group" id="notificationEmailGroup">
                 <label for="notificationEmail">Notification & Alert Email Address</label>
                 <form:input path="notificationEmail" class="form-control" placeholder="Notification & Alert Email Address" />
+                <span id="notificationEmailMessage" class="control-label"></span>  
             </div>
         </div>
         <div class="space-4 notificationsOptions" <c:if test="${notificationPreferences.newEventNotifications == true}">style="display: none;"</c:if>></div>
