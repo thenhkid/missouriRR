@@ -9,6 +9,67 @@ jQuery(function ($) {
     
     $("input:text,form").attr("autocomplete", "off");
     
+    var typewatch = (function () {
+        var timer = 0;
+        return function (callback, ms) {
+            clearTimeout(timer);
+            timer = setTimeout(callback, ms);
+        };
+    })();
+    
+    $(document).ready(function () {
+
+        $(document).on("keyup", "#nav-search-input", function () {
+
+            if ($(this).val() == "") {
+                $('#topicsDiv').removeClass("col-sm-10");
+                $('#topicsDiv').addClass("col-sm-12");
+                $('#searchResults').html("");
+                $('#searchResults').hide();
+                $('#searchSpinner').hide();
+                $('#clearSearch').hide();
+            }
+            else {
+
+                var searchTerm = $(this).val();
+
+                typewatch(function () {
+                    $('#clearSearch').hide();
+                    $('#searchSpinner').show();
+
+                    $.ajax({
+                        url: '/forum/searchMessages.do',
+                        data: {
+                            'searchTerm': searchTerm
+                        },
+                        type: "GET",
+                        success: function (data) {
+                            $('#topicsDiv').removeClass("col-sm-12");
+                            $('#topicsDiv').addClass("col-sm-10");
+                            $('#searchResults').html(data);
+                            $('#searchResults').show();
+                            $('#searchSpinner').hide();
+                            $('#clearSearch').show();
+                        }
+                    });
+
+                }, 1000);
+            }
+        });
+
+        $(document).on('click', '#clearSearch', function () {
+            $('#topicsDiv').removeClass("col-sm-10");
+            $('#topicsDiv').addClass("col-sm-12");
+            $('#searchResults').html("");
+            $('#searchResults').hide();
+            $('#searchSpinner').hide();
+            $('#clearSearch').hide();
+            $('#nav-search-input').val("");
+        });
+        
+    });
+    
+    
     $('#newTopic').on('click', function () {
         showTopicForm(0);
     });

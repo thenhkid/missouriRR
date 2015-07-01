@@ -26,6 +26,7 @@ jQuery(function ($) {
                 $('#calendarDiv').addClass("col-sm-10");
                 $('#searchResults').html("");
                 $('#searchResults').hide();
+                $('#searchSpinner').hide();
                 $('#clearSearch').hide();
             }
             else {
@@ -33,7 +34,8 @@ jQuery(function ($) {
                 var searchTerm = $(this).val();
 
                 typewatch(function () {
-                    $('#clearSearch').show();
+                    $('#clearSearch').hide();
+                    $('#searchSpinner').show();
 
                     $.ajax({
                         url: '/calendar/searchEvents.do',
@@ -46,6 +48,8 @@ jQuery(function ($) {
                             $('#calendarDiv').addClass("col-sm-8");
                             $('#searchResults').html(data);
                             $('#searchResults').show();
+                            $('#searchSpinner').hide();
+                            $('#clearSearch').show();
                         }
                     });
 
@@ -58,6 +62,7 @@ jQuery(function ($) {
             $('#calendarDiv').addClass("col-sm-10");
             $('#searchResults').html("");
             $('#searchResults').hide();
+            $('#searchSpinner').hide();
             $('#clearSearch').hide();
             $('#nav-search-input').val("");
         });

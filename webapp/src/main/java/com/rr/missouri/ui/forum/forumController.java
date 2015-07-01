@@ -281,7 +281,7 @@ public class forumController {
     /**
      * The '/form/getPostForm.do' GET request will return the topic message form.
      *
-     * @param topicId (requried) The id of the selected topic
+     * @param topicId (required) The id of the selected topic
      * @param postId (Optional) If passed in will hold the id of the selected topic message, if 0 then new message
      * @param parentMessageId (Optional) If passed in will hold the id of the message that the reply is for.
      * @return
@@ -335,6 +335,7 @@ public class forumController {
         User userDetails = (User) session.getAttribute("userDetails");
 
         forumMessage.setSystemUserId(userDetails.getId());
+        forumMessage.setProgramId(programId);
 
         forumManager.saveTopicMessage(forumMessage);
         
@@ -394,5 +395,69 @@ public class forumController {
         forumManager.deleteDocumentById(documentId);
         
         return 1;
+    }
+    
+    
+    /**
+     * The 'searchMessages' GET request will search the forum messages table.
+     * 
+     * @param session
+     * @param searchTerm The term to search on messages.
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "searchMessages.do", method = RequestMethod.GET)
+    public @ResponseBody ModelAndView searchMessages(HttpSession session, @RequestParam(value = "searchTerm", required = true) String searchTerm) throws Exception {
+        
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/forum/searchResults");
+        
+        List<forumMessages> messages = forumManager.searchMessages(programId, searchTerm);
+        
+        if(messages != null && messages.size() > 0) {
+          
+            /* Highlight words */
+            String[] colors = new String[7];
+            colors[0] = "red";
+            colors[1] = "blue";
+            colors[2] = "green";
+            colors[3] = "orange";
+            colors[4] = "yellow";
+            colors[5] = "purple";
+            colors[6] = "pink";
+            
+            /* Limit returned text */
+            for(forumMessages message : messages) {
+                if(message.getMessage().length() > 200) {
+                    message.setMessage(message.getMessage().substring(0, 200));
+                }
+            }
+            
+            Integer counter = 0;
+            for(String word : searchTerm.split(" ")) {
+                
+                if(counter > 6) {
+                    counter = 0;
+                }
+                
+                String color = colors[counter];
+                
+                for(forumMessages message : messages) {
+                    forumTopics topicDetails = forumManager.getTopicById(message.getTopicId());
+                    message.setTopicTitle(topicDetails.getTitle());
+                    message.setTopicURL(topicDetails.getTopicURL());
+                    
+                    message.setMessage(message.getMessage().toLowerCase().replaceAll(word, "<span class='"+color+"'>"+word+"</span>"));
+                    
+                }
+                
+                counter++;
+            }
+        }
+        
+        mav.addObject("foundMessages", messages);
+        
+        return mav;
+        
     }
 }

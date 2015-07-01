@@ -27,6 +27,7 @@
                             <span class="block input-icon input-icon-right">
                                 <input type="text" placeholder="Search ..." class="width-150" id="nav-search-input" autocomplete="off" />
                                 <i id="clearSearch" class="ace-icon fa fa-times-circle red" style="cursor: pointer; display: none"></i>
+                                <i id="searchSpinner" class="ace-icon fa fa-spinner fa-spin red bigger-120"  style="display: none"></i>
                             </span>
                         </div>
                     </form>
@@ -35,112 +36,115 @@
         </div>
         <div class="hr dotted"></div>
     </div>
-    <c:if test="${not empty announcementTopics}">
-        <div class="row">
-            <div class="table-header">
-                Announcements
-            </div>
-            <div>
-                <table class="table table-striped table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col"></th>
-                            <th scope="col" class="center">Views</th>
-                            <th scope="col" class="center">Replies</th>
-                            <th scope="col">Last Post</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <c:forEach var="topic" items="${announcementTopics}">
+    <div id="topicsDiv" class="col-sm-12">
+        <c:if test="${not empty announcementTopics}">
+            <div class="row">
+                <div class="table-header">
+                    Announcements
+                </div>
+                <div>
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
                             <tr>
-                                <td class="col-md-6">
-                                    <a href="/forum/${topic.topicURL}">${topic.title}</a>
-                                    <br />
-                                    by ${topic.postedByName} <i class="ace-icon fa fa-angle-double-right"></i> <fmt:formatDate value="${topic.postedOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
-                                    <c:if test="${sessionScope.userDetails.id == topic.postedBy}">
-                                        <div class="pull-right action-buttons">
-
-                                            <a href="#" class="editTopic" rel="${topic.id}">
-                                                <i class="ace-icon fa fa-pencil blue bigger-125"></i>
-                                            </a>
-
-                                            <a href="#" class="deleteTopic" rel="${topic.id}">
-                                                <i class="ace-icon fa fa-times red bigger-125"></i>
-                                            </a>
-                                        </div>
-                                    </c:if>
-                                </td>
-                                <td class="center col-md-2">
-                                    ${topic.totalViews}
-                                </td>
-                                <td class="center col-md-2">
-                                    ${topic.totalReplies}
-                                </td>
-                                <td class="col-md-2">
-                                    ${topic.lastPostByName}
-                                    <br />
-                                    <fmt:formatDate value="${topic.lastPostOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
-                                </td>
+                                <th scope="col"></th>
+                                <th scope="col" class="center">Views</th>
+                                <th scope="col" class="center">Replies</th>
+                                <th scope="col">Last Post</th>
                             </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </c:if>
-    <c:if test="${not empty regularTopics && not empty announcementTopics}"><br /></c:if>
-    <c:if test="${not empty regularTopics}">
-        <div class="row">
-            <div class="table-header">
-                Topics
-            </div>
-            <div>
-                <table class="table table-striped table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col"></th>
-                            <th scope="col" class="center">Views</th>
-                            <th scope="col" class="center">Replies</th>
-                            <th scope="col">Last Post</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="topic" items="${announcementTopics}">
+                                <tr>
+                                    <td class="col-md-6">
+                                        <a href="/forum/${topic.topicURL}">${topic.title}</a>
+                                        <br />
+                                        by ${topic.postedByName} <i class="ace-icon fa fa-angle-double-right"></i> <fmt:formatDate value="${topic.postedOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
+                                        <c:if test="${sessionScope.userDetails.id == topic.postedBy}">
+                                            <div class="pull-right action-buttons">
 
-                        <c:forEach var="topic" items="${regularTopics}">
+                                                <a href="#" class="editTopic" rel="${topic.id}">
+                                                    <i class="ace-icon fa fa-pencil blue bigger-125"></i>
+                                                </a>
+
+                                                <a href="#" class="deleteTopic" rel="${topic.id}">
+                                                    <i class="ace-icon fa fa-times red bigger-125"></i>
+                                                </a>
+                                            </div>
+                                        </c:if>
+                                    </td>
+                                    <td class="center col-md-2">
+                                        ${topic.totalViews}
+                                    </td>
+                                    <td class="center col-md-2">
+                                        ${topic.totalReplies}
+                                    </td>
+                                    <td class="col-md-2">
+                                        ${topic.lastPostByName}
+                                        <br />
+                                        <fmt:formatDate value="${topic.lastPostOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </c:if>
+        <c:if test="${not empty regularTopics && not empty announcementTopics}"><br /></c:if>
+        <c:if test="${not empty regularTopics}">
+            <div class="row">
+                <div class="table-header">
+                    Topics
+                </div>
+                <div>
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
                             <tr>
-                                <td class="col-md-6">
-                                    <a href="/forum/${topic.topicURL}">${topic.title}</a>
-                                    <br />
-                                    by ${topic.postedByName} &Gt; <fmt:formatDate value="${topic.postedOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
-                                    <c:if test="${sessionScope.userDetails.id == topic.postedBy}">
-                                        <div class="pull-right action-buttons">
-
-                                            <a href="#" class="editTopic" rel="${topic.id}">
-                                                <i class="ace-icon fa fa-pencil blue bigger-125"></i>
-                                            </a>
-
-                                            <a href="#" class="deleteTopic" rel="${topic.id}">
-                                                <i class="ace-icon fa fa-times red bigger-125"></i>
-                                            </a>
-                                        </div>
-                                    </c:if>
-                                </td>
-                                <td class="center col-md-2">
-                                    ${topic.totalViews}
-                                </td>
-                                <td class="center col-md-2">
-                                    ${topic.totalReplies}
-                                </td>
-                                <td class="col-md-2">
-                                    ${topic.lastPostByName}
-                                    <br />
-                                    <fmt:formatDate value="${topic.lastPostOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
-                                </td>
+                                <th scope="col"></th>
+                                <th scope="col" class="center">Views</th>
+                                <th scope="col" class="center">Replies</th>
+                                <th scope="col">Last Post</th>
                             </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+
+                            <c:forEach var="topic" items="${regularTopics}">
+                                <tr>
+                                    <td class="col-md-6">
+                                        <a href="/forum/${topic.topicURL}">${topic.title}</a>
+                                        <br />
+                                        by ${topic.postedByName} &Gt; <fmt:formatDate value="${topic.postedOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
+                                        <c:if test="${sessionScope.userDetails.id == topic.postedBy}">
+                                            <div class="pull-right action-buttons">
+
+                                                <a href="#" class="editTopic" rel="${topic.id}">
+                                                    <i class="ace-icon fa fa-pencil blue bigger-125"></i>
+                                                </a>
+
+                                                <a href="#" class="deleteTopic" rel="${topic.id}">
+                                                    <i class="ace-icon fa fa-times red bigger-125"></i>
+                                                </a>
+                                            </div>
+                                        </c:if>
+                                    </td>
+                                    <td class="center col-md-2">
+                                        ${topic.totalViews}
+                                    </td>
+                                    <td class="center col-md-2">
+                                        ${topic.totalReplies}
+                                    </td>
+                                    <td class="col-md-2">
+                                        ${topic.lastPostByName}
+                                        <br />
+                                        <fmt:formatDate value="${topic.lastPostOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
-    </c:if>
+        </c:if>
+    </div>
+    <div id="searchResults" class="col-sm-2" style="display:none; background-color: #f2f2f2; height:100vh; overflow: auto"></div>
 </div>

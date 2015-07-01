@@ -29,6 +29,7 @@
                                     <span class="block input-icon input-icon-right">
                                         <input type="text" placeholder="Search ..." class="" id="nav-search-input" autocomplete="off" />
                                         <i id="clearSearch" class="ace-icon fa fa-times-circle red" style="cursor: pointer; display: none"></i>
+                                        <i id="searchSpinner" class="ace-icon fa fa-spinner fa-spin red bigger-120"  style="display: none"></i>
                                     </span>
                                 </div>
                             </form>
@@ -68,7 +69,7 @@
                     <div class="space"></div>
                     <div id="calendar"></div>
                 </div>
-                <div id="searchResults" class="col-sm-2" style="display:none; background-color: #f2f2f2; height:100vh"></div>
+                <div id="searchResults" class="col-sm-2" style="display:none; background-color: #f2f2f2; height:100vh; overflow: auto"></div>
             </div>
 
             <!-- PAGE CONTENT ENDS -->
