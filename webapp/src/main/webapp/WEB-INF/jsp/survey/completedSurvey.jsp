@@ -15,10 +15,10 @@
         
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h4>Completed Survey</h4>
+                <h4>Completed Activity Log</h4>
             </div>
              <div class="panel-body pageQuestionsPanel">
-                 You have completed the ${surveyDetails.title} survey.
+                 You have completed the ${surveyDetails.title} activity log.
              </div>
         </div>
     </div>

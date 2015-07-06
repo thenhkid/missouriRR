@@ -24,7 +24,7 @@
                             <span id="districtList"></span>
                             <a href="javascript:void(0);" id="createNewEntry" role="button" rel="${selSurvey}" class="btn btn-success">
                                 <i class="ace-icon fa fa-plus-square align-top bigger-150"></i>
-                                <strong>Start Survey</strong>
+                                <strong>Start Activity Log</strong>
                             </a>
                         </li>
                     </ul>

@@ -8,7 +8,7 @@
     <c:choose>
         <c:when test="${param['page'] == 'list'}">
             <li>
-                <a href="#">Surveys</a>
+                <a href="#">Activity Logs</a>
             </li>
 
             <li class="active">
@@ -17,35 +17,35 @@
         </c:when>
         <c:when test="${param['page'] == 'start'}">
             <li>
-                <a href="<c:url value="/surveys" />">Surveys</a>
+                <a href="<c:url value="/surveys" />">Activity Logs</a>
             </li>
             <li>
                 <a href="<c:url value="/surveys?i=${survey.encryptedId}&v=${survey.encryptedSecret}" />"> ${survey.surveyTitle}</a>
             </li>
             <li class="active">
-               Survey Details
+               Activity Log Details
             </li>
         </c:when> 
         <c:when test="${param['page'] == 'view'}">
             <li>
-                <a href="<c:url value="/surveys" />">Surveys</a>
+                <a href="<c:url value="/surveys" />">Activity Logs</a>
             </li>
             <li>
                 <a href="<c:url value="/surveys?i=${survey.encryptedId}&v=${survey.encryptedSecret}" />"> ${survey.title}</a>
             </li>
             <li class="active">
-              Survey Details
+              Activity Log Details
             </li>
         </c:when>   
         <c:when test="${param['page'] == 'complete'}">
             <li>
-                <a href="<c:url value="/surveys" />">Surveys</a>
+                <a href="<c:url value="/surveys" />">Activity Logs</a>
             </li>
             <li>
                 <a href="<c:url value="/surveys?i=${survey.encryptedId}&v=${survey.encryptedSecret}" />"> ${surveyDetails.title}</a>
             </li>
             <li class="active">
-              Survey Complete
+              Activity Log Complete
             </li>
         </c:when>        
     </c:choose>

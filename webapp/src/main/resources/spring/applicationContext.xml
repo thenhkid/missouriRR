@@ -34,6 +34,7 @@
                 <value>/WEB-INF/tileDefs/calendar.xml</value>
                 <value>/WEB-INF/tileDefs/faq.xml</value>
                 <value>/WEB-INF/tileDefs/forum.xml</value>
+                <value>/WEB-INF/tileDefs/importExport.xml</value>
             </list>
         </property>
     </bean>
