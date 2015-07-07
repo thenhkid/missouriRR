@@ -18,6 +18,17 @@
         <put-attribute name="body" value="/WEB-INF/jsp/importExport/export.jsp" />
         <put-attribute name="submenu" value="/WEB-INF/jsp/importExport/submenu.jsp?page=export" />
         <put-attribute name="jscript" value="/dspResources/js/importExport/export.js" />
+        <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/jquery-ui.custom.min.js" />
+            <add-attribute value="/dspResources/js/date-time/moment.min.js" />
+            <add-attribute value="/dspResources/js/bootbox.min.js" />
+            <add-attribute value="/dspResources/js/date-time/bootstrap-datepicker.min.js" />
+            <add-attribute value="/dspResources/js/date-time/jquery.timepicker.min.js" />
+            <add-attribute value="/dspResources/js/ace-elements.min.js" />
+        </put-list-attribute>
+        <put-list-attribute name="customCSS">
+            <add-attribute value="/dspResources/css/jquery-ui.custom.min.css" />
+        </put-list-attribute>
     </definition>
     
     

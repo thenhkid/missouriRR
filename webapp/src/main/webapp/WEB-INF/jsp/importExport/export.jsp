@@ -40,18 +40,27 @@
                         <tbody>
                             <c:forEach var="survey" items="${surveys}">
                                 <tr>
-                                    <td class="col-md-10">
+                                    <td class="col-md-9">
                                         ${survey.title}
                                     </td>
                                     <td class="center col-md-1">
-                                        10
+                                        ${survey.timesTaken}
                                     </td>
-                                    <td class="col-md-1 center">
-                                         <div class="action-buttons">
-                                            <a href="#" class="exportSurvey" rel="${survey.id}">
-                                                <i class="ace-icon fa fa-download blue bigger-125"></i>
+                                    <td class="${survey.timesTaken > 0 ? 'col-md-2' : 'col-md-1' } center">
+                                        <c:if test="${survey.timesTaken > 0}">
+                                         <div class="pull-left">
+                                            <a href="#" class="exportSurveyResponses" rel="${survey.id}" title="Export the activity log responses" style="text-decoration: none;">
+                                                <i class="menu-icon fa fa-download green bigger-125"></i>
+                                                <span class="menu-text green"><strong>Responses</strong></span>
                                             </a>
                                         </div>
+                                        </c:if>       
+                                        <div  <c:if test="${survey.timesTaken > 0}">class="pull-right"</c:if>>
+                                            <a href="#" class="exportSurveyQuestions" rel="${survey.id}" title="Export the activity log questions" style="text-decoration: none;">
+                                                <i class="menu-icon fa fa-download blue bigger-125"></i>
+                                                <span class="menu-text blue"><strong>Questions</strong></span>
+                                            </a>
+                                        </div>        
                                     </td>
                                 </tr>
                             </c:forEach>
