@@ -53,7 +53,7 @@ public class fileDownloadController {
 
                 program programDetails = programmanager.getProgramById(programId);
 
-                dir.setDir(programDetails.getProgramName(), foldername);
+                dir.setDir(programDetails.getProgramName().replaceAll(" ", "-").toLowerCase(), foldername);
             } else {
                 dir.setDirByName(foldername + "/");
             }
