@@ -212,8 +212,7 @@ jQuery(function ($) {
                             label: "Cancel",
                             className: "btn-default",
                             callback: function() {
-                             /** need to refresh faq to the correct category**/
-                             questionRefreshFn();
+                                
                             } 
                         },
                         success: {
