@@ -145,6 +145,7 @@ public class surveyController {
             String[] result = obj.toString().split((","));
 
             surveyId = Integer.parseInt(result[0].substring(4));
+            
 
         } else {
             if (surveyList.size() > 0) {
@@ -152,16 +153,17 @@ public class surveyController {
             } else {
                 surveyId = 0;
             }
+            
         }
         mav.addObject("selSurvey", surveyId);
 
         surveys surveyDetails = surveyManager.getSurveyDetails(surveyId);
-        mav.addObject("surveyName", "test");
+        mav.addObject("surveyName", surveyDetails.getTitle());
 
         /* Get a list of completed surveys the logged in user has access to */
         User userDetails = (User) session.getAttribute("userDetails");
 
-        List<submittedSurveys> submittedSurveys = surveyManager.getEntitySurveys(userDetails);
+        List<submittedSurveys> submittedSurveys = surveyManager.getEntitySurveys(userDetails, surveyId);
 
         /* Need to get the selected entities */
         if (submittedSurveys != null && !submittedSurveys.isEmpty()) {
@@ -599,43 +601,98 @@ public class surveyController {
                 }
 
                 if (questionFound == false) {
-                    surveyQuestionAnswers questionAnswer = new surveyQuestionAnswers();
+                    
 
                     if ((question.getAnswerTypeId() == 1 || question.getAnswerTypeId() == 2) && !"".equals(question.getQuestionValue())) {
+                        
+                        if(question.getQuestionValue().contains(",")) {
+                            String[] lineVector = question.getQuestionValue().split(",");
+                            
+                            for(int i = 0; i < lineVector.length; i++) {
+                                surveyQuestionAnswers questionAnswer = new surveyQuestionAnswers();
+                                Integer qAnsValue = Integer.parseInt(lineVector[i]);
+                                
+                                SurveyQuestionChoices choiceDetails = surveyManager.getSurveyQuestionChoice(qAnsValue);
+                                
+                                if (choiceDetails.getChoiceValue() > 0) {
+                                    questionAnswer.setAnswerId(choiceDetails.getChoiceValue());
+                                } else {
+                                    questionAnswer.setAnswerText(choiceDetails.getChoiceText());
+                                }
+                                
+                                if (choiceDetails.isSkipToEnd() == true) {
+                                    skipToEnd = true;
+                                } else {
+                                    if (choiceDetails.getSkipToPageId() > 0) {
+                                        SurveyPages pageDetails = surveyManager.getSurveyPageDetails(choiceDetails.getSkipToPageId());
+                                        goToPage = pageDetails.getPageNum();
+                                    }
 
-                        SurveyQuestionChoices choiceDetails = surveyManager.getSurveyQuestionChoice(Integer.parseInt(question.getQuestionValue()));
+                                    goToQuestion = choiceDetails.getSkipToQuestionId();
+                                }
+                                
+                                questionAnswer.setQuestionId(question.getId());
+                                questionAnswer.setProgramPatientId(survey.getClientId());
+                                questionAnswer.setProgramEngagementId(survey.getEngagementId());
+                                questionAnswer.setqNum(question.getQuestionNum());
+                                questionAnswer.setSurveyPageId(question.getSurveyPageId());
+                                questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
 
-                        if (choiceDetails.getChoiceValue() > 0) {
-                            questionAnswer.setAnswerId(choiceDetails.getChoiceValue());
-                        } else {
-                            questionAnswer.setAnswerText(choiceDetails.getChoiceText());
+                                questionAnswers.add(questionAnswer);
+                                
+                                if(i == 0) {
+                                    questionAnswer.setAnswerOther(question.getQuestionOtherValue());
+                                }
+                                
+                            }
+                            
                         }
+                        else {
+                            surveyQuestionAnswers questionAnswer = new surveyQuestionAnswers();
+                            SurveyQuestionChoices choiceDetails = surveyManager.getSurveyQuestionChoice(Integer.parseInt(question.getQuestionValue()));
 
-                        if (choiceDetails.isSkipToEnd() == true) {
-                            skipToEnd = true;
-                        } else {
-                            if (choiceDetails.getSkipToPageId() > 0) {
-                                SurveyPages pageDetails = surveyManager.getSurveyPageDetails(choiceDetails.getSkipToPageId());
-                                goToPage = pageDetails.getPageNum();
+                            if (choiceDetails.getChoiceValue() > 0) {
+                                questionAnswer.setAnswerId(choiceDetails.getChoiceValue());
+                            } else {
+                                questionAnswer.setAnswerText(choiceDetails.getChoiceText());
                             }
 
-                            goToQuestion = choiceDetails.getSkipToQuestionId();
+                            if (choiceDetails.isSkipToEnd() == true) {
+                                skipToEnd = true;
+                            } else {
+                                if (choiceDetails.getSkipToPageId() > 0) {
+                                    SurveyPages pageDetails = surveyManager.getSurveyPageDetails(choiceDetails.getSkipToPageId());
+                                    goToPage = pageDetails.getPageNum();
+                                }
+
+                                goToQuestion = choiceDetails.getSkipToQuestionId();
+                            }
+                            
+                            questionAnswer.setAnswerOther(question.getQuestionOtherValue());
+                            questionAnswer.setQuestionId(question.getId());
+                            questionAnswer.setProgramPatientId(survey.getClientId());
+                            questionAnswer.setProgramEngagementId(survey.getEngagementId());
+                            questionAnswer.setqNum(question.getQuestionNum());
+                            questionAnswer.setSurveyPageId(question.getSurveyPageId());
+                            questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
+
+                            questionAnswers.add(questionAnswer);
                         }
 
-                        questionAnswer.setAnswerOther(question.getQuestionOtherValue());
-
                     } else {
+                        surveyQuestionAnswers questionAnswer = new surveyQuestionAnswers();
                         questionAnswer.setAnswerText(question.getQuestionValue());
+                        
+                        questionAnswer.setQuestionId(question.getId());
+                        questionAnswer.setProgramPatientId(survey.getClientId());
+                        questionAnswer.setProgramEngagementId(survey.getEngagementId());
+                        questionAnswer.setqNum(question.getQuestionNum());
+                        questionAnswer.setSurveyPageId(question.getSurveyPageId());
+                        questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
+
+                        questionAnswers.add(questionAnswer);
                     }
 
-                    questionAnswer.setQuestionId(question.getId());
-                    questionAnswer.setProgramPatientId(survey.getClientId());
-                    questionAnswer.setProgramEngagementId(survey.getEngagementId());
-                    questionAnswer.setqNum(question.getQuestionNum());
-                    questionAnswer.setSurveyPageId(question.getSurveyPageId());
-                    questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
-
-                    questionAnswers.add(questionAnswer);
                 }
 
                 lastQuestionSaved = question.getQuestionNum();
