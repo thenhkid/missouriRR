@@ -122,10 +122,26 @@ jQuery(function ($) {
             errorFound = true;
         }
         
+        if ($('#eventTitle').val() === "") {
+            $('#eventTitleDiv').addClass('has-error');
+            $('#eventTitleMessage').addClass('has-error');
+            $('#eventTitleMessage').html('The event title is required.');
+            $('#eventTitleMessage').show();
+            errorFound = true;
+        }
+        
         if (errorFound == false) {
             $('#eventTimeDiv').removeClass('has-error');
             $('#eventStartTimeMessage').removeClass('has-error');
             $('#eventStartTimeMessage').html('');
+            
+            $('#eventTimeDiv').removeClass('has-error');
+            $('#eventEndTimeMessage').removeClass('has-error');
+            $('#eventEndTimeMessage').html('');
+            
+            $('#eventTitleDiv').removeClass('has-error');
+            $('#eventTitleMessage').removeClass('has-error');
+            $('#eventTitleMessage').html('');
             
             $.ajax({
                 url: '/calendar/saveEvent.do',
@@ -594,6 +610,7 @@ jQuery(function ($) {
                     $('#eventTypeColorFieldInput').val("");
                     $('#eventType').val("");
                     $('#adminOnly').attr("checked", false);
+                    refreshEventTypesModal();
                     calendar.fullCalendar('refetchEvents');
                     refreshEventTypesColumn();
                 },
@@ -809,6 +826,33 @@ function refreshEventTypesColumn(){
         type: 'GET',
         success: function (data) {
             $('#eventTypesColumn').html(data);
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+}
+
+function refreshEventTypesModal(){
+    bootbox.hideAll();
+    $.ajax({
+        url: '/calendar/getEventTypes.do',
+        type: 'GET',
+        success: function (data) {
+            data = $(data);
+
+            data.find('#eventTypeColorField').colorpicker().on('changeColor', function (event) {
+                $('#eventTypeColorFieldInput').val(event.color.toHex());
+                $('#eventTypeColorField').attr('data-color', event.color.toHex());
+                $('#eventTypeColorFieldAddon').css("background-color", event.color.toHex());
+                $('#eventTypeColorField').colorpicker('hide');
+            });
+
+            bootbox.dialog({
+                title: "Event Types",
+                message: data
+            });
+
         },
         error: function (error) {
             console.log(error);

@@ -22,7 +22,7 @@
 <div class="page-content">
     <div class="row">
         <div class="pull-right">
-            <div style="width:15px; height:15px; background-color:${calendarEvent.eventColor}"></div>
+            <div id="selectedEventColor" rel="${calendarEvent.eventColor}" style="width:15px; height:15px; background-color:${calendarEvent.eventColor}"></div>
         </div>
     </div>
     <div class="row">

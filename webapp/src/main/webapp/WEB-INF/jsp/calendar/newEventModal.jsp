@@ -22,16 +22,17 @@
                 <select name="newEventColor" id="simple-colorpicker-1" class="hide" rel="${selectedEventTypeColor}">
                     <c:forEach var="eventType" items="${eventTypes}">
                         <c:if test="${eventType.adminOnly == false || (eventType.adminOnly == true && sessionScope.userDetails.roleId == 2)}">
-                            <option value="${eventType.eventTypeColor}">${eventType.eventType}</option>
+                            <option value="${eventType.eventTypeColor}" <c:if test="${eventType.eventTypeColor == selectedEventTypeColor}">selected</c:if>>${eventType.eventType}</option>
                         </c:if>
                     </c:forEach>
                 </select>
             </div>
         </div>
         <div class="row">
-            <div class="form-group">
+            <div class="form-group" id="eventTitleDiv">
                 <label class="sr-only" for="eventName">Event Name</label>
                 <form:input path="eventTitle" class="form-control eventName" placeholder="Event Name" />
+                <span id="eventTitleMessage" class="control-label"></span>
             </div>
         </div>            
         <div class="row">
