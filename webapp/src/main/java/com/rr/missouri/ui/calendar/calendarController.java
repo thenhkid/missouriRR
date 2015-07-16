@@ -103,7 +103,9 @@ public class calendarController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/calendar/searchResults");
         
-        List<calendarEvents> events = calendarManager.searchEvents(programId, searchTerm);
+        User userDetails = (User) session.getAttribute("userDetails");
+        
+        List<calendarEvents> events = calendarManager.searchEvents(userDetails, programId, searchTerm);
         
         if(events != null && events.size() > 0) {
             for(calendarEvents event : events) {
