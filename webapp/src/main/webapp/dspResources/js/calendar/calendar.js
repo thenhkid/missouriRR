@@ -524,6 +524,14 @@ jQuery(function ($) {
     }
 
     $(document).on("click", "#addNewEventTypeButton", function () {
+        $('#eventTypeId').val(0);
+        $('.eventTypeColorField').val("");
+        $('#eventTypeColorFieldInput').val("#F5F5F5");
+        $('#eventTypeColorField').attr('data-color', "#F5F5F5");
+        $('#eventTypeColorFieldAddon').css("background-color", "#F5F5F5");
+        $('#eventType').val("");
+        $('#adminOnly').attr("checked", false);
+        $('#eventTypeHeading').html("Create Event Type");
         $('#newEventTypeForm').show();
     });
     
