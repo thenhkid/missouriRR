@@ -103,7 +103,9 @@ public class calendarController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/calendar/searchResults");
         
-        List<calendarEvents> events = calendarManager.searchEvents(programId, searchTerm);
+        User userDetails = (User) session.getAttribute("userDetails");
+        
+        List<calendarEvents> events = calendarManager.searchEvents(userDetails, programId, searchTerm);
         
         if(events != null && events.size() > 0) {
             for(calendarEvents event : events) {
@@ -179,12 +181,14 @@ public class calendarController {
     JSONArray getEventsJSON(HttpSession session, HttpServletRequest request) throws Exception {
 
         JSONObject data = new JSONObject();
-
+        
+        User userDetails = (User) session.getAttribute("userDetails");
+        
         String from = request.getParameter("start");
         String to = request.getParameter("end");
         String eventTypeId = request.getParameter("eventTypeId");
 
-        JSONArray eventsJSON = calendarManager.getEventsJSON(programId, from, to, eventTypeId);
+        JSONArray eventsJSON = calendarManager.getEventsJSON(userDetails, programId, from, to, eventTypeId);
 
         data.put("success", 1);
         data.put("result", eventsJSON);
