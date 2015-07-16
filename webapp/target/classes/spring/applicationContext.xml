@@ -68,9 +68,9 @@
 		</property>
    </bean>
     
-    <!--<bean id="emailMessageManagerImpl" class="com.rr.ui.service.impl.emailMessageManagerImpl">
+    <bean id="emailManager" class="com.registryKit.messenger.emailManager">
 	<property name="mailSender" ref="mailSender" />
-    </bean>-->
+    </bean>
     
     <context:property-placeholder location="file:${catalina.home}/properties/RR.properties"/>
    
