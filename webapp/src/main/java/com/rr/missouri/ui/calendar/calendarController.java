@@ -179,12 +179,14 @@ public class calendarController {
     JSONArray getEventsJSON(HttpSession session, HttpServletRequest request) throws Exception {
 
         JSONObject data = new JSONObject();
-
+        
+        User userDetails = (User) session.getAttribute("userDetails");
+        
         String from = request.getParameter("start");
         String to = request.getParameter("end");
         String eventTypeId = request.getParameter("eventTypeId");
 
-        JSONArray eventsJSON = calendarManager.getEventsJSON(programId, from, to, eventTypeId);
+        JSONArray eventsJSON = calendarManager.getEventsJSON(userDetails, programId, from, to, eventTypeId);
 
         data.put("success", 1);
         data.put("result", eventsJSON);
