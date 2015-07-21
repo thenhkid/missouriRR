@@ -419,12 +419,12 @@ public class forumController {
             /* Highlight words */
             String[] colors = new String[7];
             colors[0] = "red";
-            colors[1] = "blue";
-            colors[2] = "green";
-            colors[3] = "orange";
-            colors[4] = "yellow";
-            colors[5] = "purple";
-            colors[6] = "pink";
+            colors[1] = "green";
+            colors[2] = "orange";
+            colors[3] = "yellow";
+            colors[4] = "purple";
+            colors[5] = "pink";
+            colors[6] = "blue";
             
             /* Limit returned text */
             for(forumMessages message : messages) {
@@ -444,7 +444,8 @@ public class forumController {
                 
                 for(forumMessages message : messages) {
                     forumTopics topicDetails = forumManager.getTopicById(message.getTopicId());
-                    message.setTopicTitle(topicDetails.getTitle());
+                    
+                    message.setTopicTitle(topicDetails.getTitle().toLowerCase().replaceAll(word, "<span class='"+color+"'>"+word+"</span>"));
                     message.setTopicURL(topicDetails.getTopicURL());
                     
                     message.setMessage(message.getMessage().toLowerCase().replaceAll(word, "<span class='"+color+"'>"+word+"</span>"));

@@ -88,12 +88,18 @@
                                         <div class="panel panel-default">
                                             <div class="panel-heading clearfix">
                                                 <a href="#faq-${category.id}-${question.id}" data-parent="#faq-list-${category.id}" data-toggle="collapse" class="accordion-toggle collapsed">
-                                                    <i class="ace-icon fa fa-chevron-right smaller-80" data-icon-hide="ace-icon fa fa-chevron-down align-top" data-icon-show="ace-icon fa fa-chevron-right"></i>
+                                                    <i class="ace-icon fa smaller-80 
+                                                    <c:if test='${question.id != activeQuestion}'>fa-chevron-right</c:if>
+                                                    <c:if test='${question.id == activeQuestion}'>fa-chevron-down</c:if>" 
+                                                    data-icon-hide="ace-icon fa fa-chevron-down align-top " 
+                                                    data-icon-show="ace-icon fa fa-chevron-right">
+                                                    </i>
+                                                    
                                                     ${question.question}
                                                 </a>
                                             </div>
 
-                                            <div class="panel-collapse collapse" id="faq-${category.id}-${question.id}">
+                                            <div class="panel-collapse collapse <c:if test='${question.id == activeQuestion}'>in </c:if>" id="faq-${category.id}-${question.id}">
                                                 <div class="panel-body">
                                                     ${question.answer}
                                                     <c:if test="${not empty question.faqQuestionDocuments}">

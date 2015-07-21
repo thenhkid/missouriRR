@@ -5,7 +5,7 @@
 <ul class="submenu">
     <c:if test="${allowImport == true}">
         <li ${selSurvey == survey.id ? 'class="active"' : ''}>
-        <a href="/import">
+        <a href="/import-export/import">
             <i class="menu-icon fa fa-caret-right"></i>
             Import
         </a>
@@ -15,7 +15,7 @@
     </c:if>
     <c:if test="${allowExport == true}">
         <li ${selSurvey == survey.id ? 'class="active"' : ''}>
-        <a href="/export">
+        <a href="/import-export/export">
             <i class="menu-icon fa fa-caret-right"></i>
             Export
         </a>

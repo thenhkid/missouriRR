@@ -8,8 +8,8 @@ package com.rr.missouri.ui.controller;
 import com.registryKit.program.program;
 import com.registryKit.program.programManager;
 import com.registryKit.user.User;
-import com.registryKit.user.emailMessageManager;
-import com.registryKit.user.mailMessage;
+import com.registryKit.messenger.emailManager;
+import com.registryKit.messenger.emailMessage;
 import com.registryKit.user.userManager;
 import java.math.BigInteger;
 import java.util.Random;
@@ -42,7 +42,7 @@ public class mainController {
     private userManager usermanager;
     
     @Autowired
-    private emailMessageManager emailMessageManager;
+    private emailManager emailManager;
     
     @Autowired
     private programManager programmanager;
@@ -163,7 +163,7 @@ public class mainController {
         program programDetails = programmanager.getProgramById(programId);
 
         /* Sent Reset Email */
-        mailMessage messageDetails = new mailMessage();
+        emailMessage messageDetails = new emailMessage();
 
         messageDetails.settoEmailAddress(userDetails.getEmail());
         messageDetails.setmessageSubject(programDetails.getProgramName() + " Reset Password");
@@ -172,14 +172,14 @@ public class mainController {
         
         StringBuilder sb = new StringBuilder();
 
-        sb.append("Dear " + userDetails.getFirstName() + ",<br />");
-        sb.append("You have recently asked to reset your " + programDetails.getProgramName() + " password.<br /><br />");
-        sb.append("<a href='" + resetURL + randomCode + "'>Click here to reset your password.</a>");
+        sb.append("Dear ").append(userDetails.getFirstName()).append(",<br />");
+        sb.append("You have recently asked to reset your ").append(programDetails.getProgramName()).append(" password.<br /><br />");
+        sb.append("<a href='").append(resetURL).append(randomCode).append("'>Click here to reset your password.</a>");
 
         messageDetails.setmessageBody(sb.toString());
         messageDetails.setfromEmailAddress(programDetails.getEmailAddress());
 
-        emailMessageManager.sendEmail(messageDetails);
+        emailManager.sendEmail(messageDetails);
 
     }
 
