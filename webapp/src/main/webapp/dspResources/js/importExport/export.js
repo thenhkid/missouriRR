@@ -92,7 +92,6 @@ jQuery(function ($) {
 
         if (noErrors == true) {
 
-
             var formData = $("#exportForm").serialize();
 
             $.ajax({
