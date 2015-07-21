@@ -59,7 +59,7 @@
             </c:forEach>
         </div>
     </c:if>
-    <div class="row"><hr></div> 
+    <%--<div class="row"><hr></div> 
     <div class="row">
         <h5>Notification Alerts</h5>
         <div class="form-group">
@@ -75,7 +75,7 @@
                 <option value="">Email: 1 Day before event</option>
             </select>
         </div>
-    </div>
+    </div>--%>
 </div>
 
 
