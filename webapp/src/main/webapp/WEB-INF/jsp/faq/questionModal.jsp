@@ -26,7 +26,7 @@
 
                 <div class="form-group" id="questionDiv">
                     <label  class="control-label" for="question">Question*</label>
-                    <form:input id="question" path="question" class="form-control" placeholder="Question" />
+                    <form:input id="question" path="question" class="form-control" placeholder="Question" maxlength="255"/>
                     <span id="questionMsg" class="control-label"></span>  
                 </div>
                 <div class="form-group" id="answerDiv">

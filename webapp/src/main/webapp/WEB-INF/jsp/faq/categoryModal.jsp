@@ -15,7 +15,7 @@
             <form:hidden path="programId" />
            <div class="form-group" id="categoryNameDiv">
                 <label  class="control-label" for="categoryName">Category Name*</label>
-                <form:input id="categoryName" path="categoryName" class="form-control" placeholder="Category Name" />
+                <form:input id="categoryName" path="categoryName" class="form-control" placeholder="Category Name" maxlength="45" />
                 <span id="categoryNameMsg" class="control-label"></span>  
            </div>
             

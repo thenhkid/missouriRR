@@ -94,8 +94,6 @@ jQuery(function ($) {
      * **/
     function categoryFn(toDo, event) {
         
-        var formData = $("#categoryForm").serialize();
-        /** make sure there is a category**/
        if ($('#categoryName').val().trim() == "") {
             $('#categoryNameDiv').addClass("has-error");
       	    $('#categoryNameMsg').addClass("has-error");
@@ -107,6 +105,7 @@ jQuery(function ($) {
         
         
         $("#categoryForm").attr("action", submitURL);
+        $("#categoryForm").serialize();
         $("#categoryForm").submit();
         
     }
