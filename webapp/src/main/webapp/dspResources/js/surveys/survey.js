@@ -296,6 +296,7 @@ function checkSurveyFields() {
     if ($('#schoolSelect').val() == "" || $('#schoolSelect').val() == null) {
         $('#errorMsg_schools').html("At least one school must be selected.");
         $('#errorMsg_schools').show();
+        errorFound = 1;
     }
 
     //Look at all required fields.
