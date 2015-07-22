@@ -276,7 +276,7 @@ public class surveyController {
 
                 /* Get the pages */
                 List<SurveyPages> surveyPages = surveyManager.getSurveyPages(surveyId, false, 0, 0, 0);
-                SurveyPages currentPage = surveyManager.getSurveyPage(surveyId, true, 1, clientId, 0, 0, 0);
+                SurveyPages currentPage = surveyManager.getSurveyPage(surveyId, true, 1, clientId, 0, 0, 0, 0);
                 survey.setPageTitle(currentPage.getPageTitle());
                 survey.setSurveyPageQuestions(currentPage.getSurveyQuestions());
                 survey.setTotalPages(surveyPages.size());
@@ -430,7 +430,7 @@ public class surveyController {
 
         /* Get the pages */
         List<SurveyPages> surveyPages = surveyManager.getSurveyPages(submittedSurveyDetails.getSurveyId(), false, 0, 0, 0);
-        SurveyPages currentPage = surveyManager.getSurveyPage(submittedSurveyDetails.getSurveyId(), true, 1, clientId, 0, 0, submittedSurveyId);
+        SurveyPages currentPage = surveyManager.getSurveyPage(submittedSurveyDetails.getSurveyId(), true, 1, clientId, 0, 0, submittedSurveyId, 0);
         survey.setPageTitle(currentPage.getPageTitle());
         survey.setSurveyPageQuestions(currentPage.getSurveyQuestions());
         survey.setTotalPages(surveyPages.size());
@@ -544,6 +544,8 @@ public class surveyController {
             }
             survey.setEntityIds(entityIdList);
         }
+        
+        Integer lastQuestionSavedId = 0;
 
         if ("next".equals(action) || "done".equals(action) || "save".equals(action)) {
             goToPage = 0;
@@ -581,6 +583,8 @@ public class surveyController {
                                 }
 
                                 goToQuestion = choiceDetails.getSkipToQuestionId();
+                                
+                                lastQuestionSavedId = question.getId();
                             }
 
                             questionAnswer.setAnswerOther(question.getQuestionOtherValue());
@@ -595,6 +599,7 @@ public class surveyController {
                         questionAnswer.setqNum(question.getQuestionNum());
                         questionAnswer.setSurveyPageId(question.getSurveyPageId());
                         questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
+                        questionAnswer.setRelatedQuestionId(question.getRelatedQuestionId());
                     }
                 }
 
@@ -626,6 +631,8 @@ public class surveyController {
                                     }
 
                                     goToQuestion = choiceDetails.getSkipToQuestionId();
+                                    
+                                    lastQuestionSavedId = question.getId();
                                 }
 
                                 questionAnswer.setQuestionId(question.getId());
@@ -634,6 +641,7 @@ public class surveyController {
                                 questionAnswer.setqNum(question.getQuestionNum());
                                 questionAnswer.setSurveyPageId(question.getSurveyPageId());
                                 questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
+                                questionAnswer.setRelatedQuestionId(question.getRelatedQuestionId());
 
                                 questionAnswers.add(questionAnswer);
 
@@ -674,6 +682,8 @@ public class surveyController {
                                     }
 
                                     goToQuestion = choiceDetails.getSkipToQuestionId();
+                                    
+                                    lastQuestionSavedId = question.getId();
                                 }
 
                             } else {
@@ -687,6 +697,7 @@ public class surveyController {
                             questionAnswer.setqNum(question.getQuestionNum());
                             questionAnswer.setSurveyPageId(question.getSurveyPageId());
                             questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
+                            questionAnswer.setRelatedQuestionId(question.getRelatedQuestionId());
 
                             questionAnswers.add(questionAnswer);
                         }
@@ -701,6 +712,7 @@ public class surveyController {
                         questionAnswer.setqNum(question.getQuestionNum());
                         questionAnswer.setSurveyPageId(question.getSurveyPageId());
                         questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
+                        questionAnswer.setRelatedQuestionId(question.getRelatedQuestionId());
 
                         questionAnswers.add(questionAnswer);
                     }
@@ -749,7 +761,7 @@ public class surveyController {
             /* Remove this page from array */
             seenPages.remove(seenPages.size() - 1);
 
-            currentPage = surveyManager.getSurveyPage(survey.getSurveyId(), true, nextPage, survey.getClientId(), 0, goToQuestion, survey.getSubmittedSurveyId());
+            currentPage = surveyManager.getSurveyPage(survey.getSurveyId(), true, nextPage, survey.getClientId(), 0, goToQuestion, survey.getSubmittedSurveyId(), lastQuestionSavedId);
 
             Integer totalPageQuestions = 0;
             for (SurveyQuestions question : currentPage.getSurveyQuestions()) {
@@ -780,7 +792,7 @@ public class surveyController {
 
             seenPages.add(survey.getCurrentPage());
 
-            currentPage = surveyManager.getSurveyPage(survey.getSurveyId(), true, nextPage, survey.getClientId(), 0, goToQuestion, survey.getSubmittedSurveyId());
+            currentPage = surveyManager.getSurveyPage(survey.getSurveyId(), true, nextPage, survey.getClientId(), 0, goToQuestion, survey.getSubmittedSurveyId(), lastQuestionSavedId);
 
             qNum = survey.getLastQNumAnswered();
 

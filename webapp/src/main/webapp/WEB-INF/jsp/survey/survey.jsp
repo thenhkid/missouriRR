@@ -114,6 +114,7 @@
                                                 <input type="hidden" name="surveyPageQuestions[${q.index}].saveToFieldId" value="${question.saveToFieldId}" />
                                                 <input type="hidden" name="surveyPageQuestions[${q.index}].surveyPageId" value="${question.surveyPageId}" />
                                                 <input type="hidden" id="requiredMsg${question.id}" value="${question.requiredResponse}" />
+                                                <input type="hidden" name="surveyPageQuestions[${q.index}].relatedQuestionId" value="${question.relatedQuestionId}" />
 
                                                 <div id="questionOuterDiv_${question.id}">
                                                     <c:if test="${question.answerTypeId != 7}">
