@@ -266,6 +266,7 @@ public class forumController {
             messageDetails.setTopicId(topicId);
             messageDetails.setMessage(forumTopic.getInitialMessage());
             messageDetails.setSystemUserId(userDetails.getId());
+            messageDetails.setProgramId(programId);
 
             forumManager.saveTopicMessage(messageDetails);
         }
