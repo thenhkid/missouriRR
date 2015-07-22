@@ -42,7 +42,7 @@
                 <a href="<c:url value="/surveys" />">Activity Logs</a>
             </li>
             <li>
-                <a href="<c:url value="/surveys?i=${survey.encryptedId}&v=${survey.encryptedSecret}" />"> ${surveyDetails.title}</a>
+                <a href="<c:url value="/surveys?i=${i}&v=${v}" />"> ${surveyDetails.title}</a>
             </li>
             <li class="active">
               Activity Log Complete

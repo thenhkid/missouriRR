@@ -855,12 +855,24 @@ public class surveyController {
                         }
                     }
                 }
+                
+                encryptObject encrypt = new encryptObject();
+                Map<String, String> map;
+
+                //Encrypt the use id to pass in the url
+                map = new HashMap<String, String>();
+                map.put("id", Integer.toString(survey.getSurveyId()));
+                map.put("topSecret", topSecret);
+
+                String[] encrypted = encrypt.encryptObject(map);
 
                 mav.setViewName("/completedSurvey");
                 surveys surveyDetails = surveyManager.getSurveyDetails(survey.getSurveyId());
                 mav.addObject("surveyDetails", surveyDetails);
                 mav.addObject("selDistricts", districtList);
                 mav.addObject("surveys", surveys);
+                mav.addObject("i",encrypted[0]);
+                mav.addObject("v",encrypted[1]);
             } else {
 
             }
