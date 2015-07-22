@@ -182,10 +182,10 @@ public class importExportController {
         
         if(exportDetails.getQuestionOnly() == false) {
             /* Need to transfer String start and end date to real date */
-            DateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-            realStartDate = format.parse(exportDetails.getStartDate());
-            realEndDate = format.parse(exportDetails.getEndDate());
-
+            DateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+            realStartDate = format.parse(exportDetails.getStartDate() + " 00:00:00");
+            realEndDate = format.parse(exportDetails.getEndDate() + " 23:59:59");
+            
             exportDetails.setExportStartDate(realStartDate);
             exportDetails.setExportEndDate(realEndDate);
         }
