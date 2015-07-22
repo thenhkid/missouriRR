@@ -145,7 +145,6 @@ public class surveyController {
             String[] result = obj.toString().split((","));
 
             surveyId = Integer.parseInt(result[0].substring(4));
-            
 
         } else {
             if (surveyList.size() > 0) {
@@ -153,7 +152,7 @@ public class surveyController {
             } else {
                 surveyId = 0;
             }
-            
+
         }
         mav.addObject("selSurvey", surveyId);
 
@@ -204,15 +203,13 @@ public class surveyController {
 
         /* Get user permissions */
         userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
-        if(userDetails.getRoleId() == 2) {
+        if (userDetails.getRoleId() == 2) {
             allowCreate = true;
             allowEdit = true;
-        }
-        else {
+        } else {
             allowCreate = modulePermissions.isAllowCreate();
             allowEdit = modulePermissions.isAllowEdit();
         }
-        
 
         mav.addObject("allowCreate", allowCreate);
         mav.addObject("allowEdit", allowEdit);
@@ -313,9 +310,9 @@ public class surveyController {
 
                 programHierarchyDetails districtDetails = hierarchymanager.getProgramHierarchyItemDetails(entity);
                 district.setDistrictName(districtDetails.getName());
-                
+
                 Integer userId = 0;
-                if(userDetails.getRoleId() == 3) {
+                if (userDetails.getRoleId() == 3) {
                     userId = userDetails.getId();
                 }
 
@@ -459,9 +456,9 @@ public class surveyController {
 
                 programHierarchyDetails districtDetails = hierarchymanager.getProgramHierarchyItemDetails(entityId);
                 district.setDistrictName(districtDetails.getName());
-                
+
                 Integer userId = 0;
-                if(userDetails.getRoleId() == 3) {
+                if (userDetails.getRoleId() == 3) {
                     userId = userDetails.getId();
                 }
 
@@ -511,7 +508,8 @@ public class surveyController {
         boolean disabled = false;
         if ("/surveys/viewSurvey".equals(request.getServletPath())) {
             disabled = true;
-        }
+        } 
+
         mav.addObject("disabled", disabled);
 
         return mav;
@@ -601,25 +599,24 @@ public class surveyController {
                 }
 
                 if (questionFound == false) {
-                    
 
                     if ((question.getAnswerTypeId() == 1 || question.getAnswerTypeId() == 2) && !"".equals(question.getQuestionValue())) {
-                        
-                        if(question.getQuestionValue().contains(",")) {
+
+                        if (question.getQuestionValue().contains(",")) {
                             String[] lineVector = question.getQuestionValue().split(",");
-                            
-                            for(int i = 0; i < lineVector.length; i++) {
+
+                            for (int i = 0; i < lineVector.length; i++) {
                                 surveyQuestionAnswers questionAnswer = new surveyQuestionAnswers();
                                 Integer qAnsValue = Integer.parseInt(lineVector[i]);
-                                
+
                                 SurveyQuestionChoices choiceDetails = surveyManager.getSurveyQuestionChoice(qAnsValue);
-                                
+
                                 if (choiceDetails.getChoiceValue() > 0) {
                                     questionAnswer.setAnswerId(choiceDetails.getChoiceValue());
                                 } else {
                                     questionAnswer.setAnswerText(choiceDetails.getChoiceText());
                                 }
-                                
+
                                 if (choiceDetails.isSkipToEnd() == true) {
                                     skipToEnd = true;
                                 } else {
@@ -630,7 +627,7 @@ public class surveyController {
 
                                     goToQuestion = choiceDetails.getSkipToQuestionId();
                                 }
-                                
+
                                 questionAnswer.setQuestionId(question.getId());
                                 questionAnswer.setProgramPatientId(survey.getClientId());
                                 questionAnswer.setProgramEngagementId(survey.getEngagementId());
@@ -639,35 +636,50 @@ public class surveyController {
                                 questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
 
                                 questionAnswers.add(questionAnswer);
-                                
-                                if(i == 0) {
+
+                                if (i == 0) {
                                     questionAnswer.setAnswerOther(question.getQuestionOtherValue());
                                 }
-                                
+
                             }
-                            
-                        }
-                        else {
+
+                        } else {
+
                             surveyQuestionAnswers questionAnswer = new surveyQuestionAnswers();
-                            SurveyQuestionChoices choiceDetails = surveyManager.getSurveyQuestionChoice(Integer.parseInt(question.getQuestionValue()));
 
-                            if (choiceDetails.getChoiceValue() > 0) {
-                                questionAnswer.setAnswerId(choiceDetails.getChoiceValue());
-                            } else {
-                                questionAnswer.setAnswerText(choiceDetails.getChoiceText());
+                            boolean isInt = true;
+
+                            try {
+                                Integer.parseInt(question.getQuestionValue());
+                            } catch (NumberFormatException e) {
+                                isInt = false;
+                            } catch (NullPointerException e) {
+                                isInt = false;
                             }
 
-                            if (choiceDetails.isSkipToEnd() == true) {
-                                skipToEnd = true;
-                            } else {
-                                if (choiceDetails.getSkipToPageId() > 0) {
-                                    SurveyPages pageDetails = surveyManager.getSurveyPageDetails(choiceDetails.getSkipToPageId());
-                                    goToPage = pageDetails.getPageNum();
+                            if (isInt) {
+                                SurveyQuestionChoices choiceDetails = surveyManager.getSurveyQuestionChoice(Integer.parseInt(question.getQuestionValue()));
+                                if (choiceDetails.getChoiceValue() > 0) {
+                                    questionAnswer.setAnswerId(choiceDetails.getChoiceValue());
+                                } else {
+                                    questionAnswer.setAnswerText(choiceDetails.getChoiceText());
                                 }
 
-                                goToQuestion = choiceDetails.getSkipToQuestionId();
+                                if (choiceDetails.isSkipToEnd() == true) {
+                                    skipToEnd = true;
+                                } else {
+                                    if (choiceDetails.getSkipToPageId() > 0) {
+                                        SurveyPages pageDetails = surveyManager.getSurveyPageDetails(choiceDetails.getSkipToPageId());
+                                        goToPage = pageDetails.getPageNum();
+                                    }
+
+                                    goToQuestion = choiceDetails.getSkipToQuestionId();
+                                }
+
+                            } else {
+                                questionAnswer.setAnswerText(question.getQuestionValue());
                             }
-                            
+
                             questionAnswer.setAnswerOther(question.getQuestionOtherValue());
                             questionAnswer.setQuestionId(question.getId());
                             questionAnswer.setProgramPatientId(survey.getClientId());
@@ -682,7 +694,7 @@ public class surveyController {
                     } else {
                         surveyQuestionAnswers questionAnswer = new surveyQuestionAnswers();
                         questionAnswer.setAnswerText(question.getQuestionValue());
-                        
+
                         questionAnswer.setQuestionId(question.getId());
                         questionAnswer.setProgramPatientId(survey.getClientId());
                         questionAnswer.setProgramEngagementId(survey.getEngagementId());
@@ -855,7 +867,7 @@ public class surveyController {
                         }
                     }
                 }
-                
+
                 encryptObject encrypt = new encryptObject();
                 Map<String, String> map;
 
@@ -871,8 +883,8 @@ public class surveyController {
                 mav.addObject("surveyDetails", surveyDetails);
                 mav.addObject("selDistricts", districtList);
                 mav.addObject("surveys", surveys);
-                mav.addObject("i",encrypted[0]);
-                mav.addObject("v",encrypted[1]);
+                mav.addObject("i", encrypted[0]);
+                mav.addObject("v", encrypted[1]);
             } else {
 
             }
@@ -918,7 +930,8 @@ public class surveyController {
     }
 
     /**
-     *  The 'getEntityCodeSets' GET request will get all the code sets for the selected entities.
+     * The 'getEntityCodeSets' GET request will get all the code sets for the selected entities.
+     *
      * @param entityId
      * @return
      * @throws Exception
@@ -988,6 +1001,7 @@ public class surveyController {
 
     /**
      * The 'removeCodeSets' GET request will remove the selected code set from the entity.
+     *
      * @param entityId
      * @return
      * @throws Exception
