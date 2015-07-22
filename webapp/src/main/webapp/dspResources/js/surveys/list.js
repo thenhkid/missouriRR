@@ -19,6 +19,7 @@ jQuery(function ($) {
                 enableFiltering: true,
                 buttonClass: 'btn btn-white btn-primary',
                 enableClickableOptGroups: true,
+                enableCaseInsensitiveFiltering: true,
                 disableIfEmpty: true,
                 nonSelectedText: 'Select your districts',
                 numberDisplayed: 2,

@@ -536,7 +536,7 @@ public class surveyController {
         boolean skipToEnd = false;
         boolean submitted = false;
 
-        if (!"".equals(entityIds) && !entityIds.isEmpty()) {
+        if (entityIds != null && !"".equals(entityIds) && !entityIds.isEmpty()) {
             List<Integer> entityIdList = new ArrayList<Integer>();
 
             for (String entityId : entityIds) {
