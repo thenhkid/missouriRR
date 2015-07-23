@@ -31,14 +31,14 @@
         <div class="row">
             <div class="form-group" id="eventTitleDiv">
                 <label class="sr-only" for="eventName">Event Name</label>
-                <form:input path="eventTitle" class="form-control eventName" placeholder="Event Name" />
+                <form:input path="eventTitle" class="form-control eventName" placeholder="Event Name" maxlength="55" />
                 <span id="eventTitleMessage" class="control-label"></span>
             </div>
         </div>            
         <div class="row">
             <div class="form-group">
                 <label class="sr-only" for="eventLocation">Event Location</label>
-                <form:input path="eventLocation" class="form-control eventLocation" placeholder="Event Location"  />
+                <form:input path="eventLocation" class="form-control eventLocation" placeholder="Event Location" maxlength="255" />
             </div>
             <hr />
         </div>
@@ -78,7 +78,7 @@
         <div class="row">
             <div class="form-group">
                 <label for="eventNotes">Notes</label>
-                <form:textarea path="eventNotes" class="form-control eventNotes" placeholder="Notes" />
+                <form:textarea path="eventNotes" class="form-control eventNotes" placeholder="Notes" maxlength="255"/>
             </div>
             <hr />
         </div>
