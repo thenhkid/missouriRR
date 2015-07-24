@@ -103,9 +103,9 @@ jQuery(function ($) {
     $(document).on("click", ".eventSave", function () {
 
         var formData = $("#eventForm").serializefiles();
-        
+
         var errorFound = false;
-        
+
         if ($('#eventStartTime').val() === "") {
             $('#eventTimeDiv').addClass('has-error');
             $('#eventStartTimeMessage').addClass('has-error');
@@ -113,7 +113,7 @@ jQuery(function ($) {
             $('#eventStartTimeMessage').show();
             errorFound = true;
         }
-        
+
         if ($('#eventEndTime').val() === "") {
             $('#eventTimeDiv').addClass('has-error');
             $('#eventEndTimeMessage').addClass('has-error');
@@ -121,7 +121,7 @@ jQuery(function ($) {
             $('#eventEndTimeMessage').show();
             errorFound = true;
         }
-        
+
         if ($('#eventTitle').val() === "") {
             $('#eventTitleDiv').addClass('has-error');
             $('#eventTitleMessage').addClass('has-error');
@@ -129,20 +129,20 @@ jQuery(function ($) {
             $('#eventTitleMessage').show();
             errorFound = true;
         }
-        
+
         if (errorFound == false) {
             $('#eventTimeDiv').removeClass('has-error');
             $('#eventStartTimeMessage').removeClass('has-error');
             $('#eventStartTimeMessage').html('');
-            
+
             $('#eventTimeDiv').removeClass('has-error');
             $('#eventEndTimeMessage').removeClass('has-error');
             $('#eventEndTimeMessage').html('');
-            
+
             $('#eventTitleDiv').removeClass('has-error');
             $('#eventTitleMessage').removeClass('has-error');
             $('#eventTitleMessage').html('');
-            
+
             $.ajax({
                 url: '/calendar/saveEvent.do',
                 type: 'POST',
@@ -159,7 +159,7 @@ jQuery(function ($) {
                 }
             });
         }
-        
+
         return false;
     });
 
@@ -269,9 +269,9 @@ jQuery(function ($) {
                         });
 
                         data.find('.timeFrom').timepicker({'scrollDefault': 'now'});
-                        
+
                         data.find('.timeFrom').val($('.timeFrom option:first').val());
-                        
+
                         data.find('.timeFrom').on('changeTime', function () {
 
                             var date = new Date();
@@ -378,6 +378,65 @@ jQuery(function ($) {
                         }
                     });
 
+                    data.find('#sendAlert').on('click', function () {
+                        data.find('.notificationsOptions').toggle();
+
+                        if ($(this).is(":checked") == false) {
+                            $.ajax({
+                                url: '/calendar/deleteEventNotification.do',
+                                type: 'POST',
+                                data: {
+                                    'eventId': eventId
+                                },
+                                success: function (data) {
+
+                                },
+                                error: function (error) {
+                                    console.log(error);
+                                }
+                            });
+
+                        }
+                    });
+
+                    data.find('.emailAlertMin').on('change', function () {
+
+                        if ($(this).val() == "") {
+                            data.find('.notificationsOptions').toggle();
+                            data.find('#sendAlert').prop('checked', false);;
+                            $.ajax({
+                                url: '/calendar/deleteEventNotification.do',
+                                type: 'POST',
+                                data: {
+                                    'eventId': eventId
+                                },
+                                success: function (data) {
+
+                                },
+                                error: function (error) {
+                                    console.log(error);
+                                }
+                            });
+                        }
+                        else {
+                            $.ajax({
+                                url: '/calendar/saveEventNotification.do',
+                                type: 'POST',
+                                data: {
+                                    'eventId': eventId,
+                                    'alertMin': $(this).val()
+                                },
+                                success: function (data) {
+
+                                },
+                                error: function (error) {
+                                    console.log(error);
+                                }
+                            });
+                        }
+
+                    });
+
                     data.find('.timeFrom').timepicker({'scrollDefault': 'now'});
                     data.find('.timeFrom').on('changeTime', function () {
 
@@ -482,7 +541,7 @@ jQuery(function ($) {
             }
         });
     });
-    
+
     $(document).on("click", "a#eventNotificationManagerModel", function () {
         $('.popover').popover('destroy');
         $.ajax({
@@ -534,7 +593,7 @@ jQuery(function ($) {
         $('#eventTypeHeading').html("Create Event Type");
         $('#newEventTypeForm').show();
     });
-    
+
     $(document).on("click", ".editEventTypeButton", function () {
         var eventTypeId = $(this).attr("rel");
         $('#newEventTypeForm').show();
@@ -569,7 +628,7 @@ jQuery(function ($) {
     });
 
     $(document).on("click", "#newEventSaveButton", function () {
-        
+
         $('div').removeClass("has-error");
         $('.help-block').html("");
         $('.help-block').hide();
@@ -602,7 +661,7 @@ jQuery(function ($) {
             else {
                 var adminOnly = "false";
             }
-            
+
             $.ajax({
                 url: '/calendar/saveEventType.do',
                 type: 'POST',
@@ -664,7 +723,7 @@ jQuery(function ($) {
         return false;
     });
 
-    
+
 
     $(document).on("click", "#categoriesToShow", function () {
         $('.popover').popover('destroy');
@@ -767,19 +826,19 @@ jQuery(function ($) {
     });
 
     $(document).on('click', '#saveNotificationPreferences', function () {
-        
+
         var formData = $("#notificationPreferencesForm").serialize();
         var errorFound = false;
-        
+
         if ($('#alwaysCreateAlert1').is(":checked")) {
-            if ($('#notificationEmail').val() == ''){
+            if ($('#notificationEmail').val() == '') {
                 $('#notificationEmailGroup').addClass("has-error");
                 $('#notificationEmailMessage').addClass("has-error");
                 $('#notificationEmailMessage').html('The notification email address is required.');
                 errorFound = true;
             }
         }
-        
+
         if (errorFound == false) {
             $('#notificationEmailGroup').removeClass("has-error");
             $('#notificationEmailMessage').removeClass("has-error");
@@ -791,7 +850,7 @@ jQuery(function ($) {
                 data: formData,
                 success: function (data) {
                     $('.successAlert').show();
-                    setTimeout(function(){
+                    setTimeout(function () {
                         bootbox.hideAll();
                     }, 2000);
                 },
@@ -800,10 +859,10 @@ jQuery(function ($) {
                 }
             });
         }
-        
+
         return false;
     });
-    
+
     $(document).on('click', '#alwaysCreateAlert', function () {
         if ($('#alwaysCreateAlert').is(":checked")) {
             $('#notificationFrequencyDiv').show();
@@ -812,23 +871,14 @@ jQuery(function ($) {
             $('#notificationFrequencyDiv').hide();
         }
     });
-    
-    $(document).on('click', '#newEventNotifications1', function () {
-        if($('#newEventNotifications1').is(':checked') == true){
-            $('.notificationsOptions').hide();
-        }
-        else{
-            $('.notificationsOptions').show();
-        }
-    });
-    
+
     $(document).on('click', '#alwaysCreateAlert1', function () {
         $('#alertFrequency').toggle();
     });
 
 });
 
-function refreshEventTypesColumn(){
+function refreshEventTypesColumn() {
     $.ajax({
         url: '/calendar/getEventTypesColumn.do',
         type: 'GET',
@@ -841,7 +891,7 @@ function refreshEventTypesColumn(){
     });
 }
 
-function refreshEventTypesModal(){
+function refreshEventTypesModal() {
     bootbox.hideAll();
     $.ajax({
         url: '/calendar/getEventTypes.do',

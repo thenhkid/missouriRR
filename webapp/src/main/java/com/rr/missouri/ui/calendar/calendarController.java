@@ -6,6 +6,7 @@
 package com.rr.missouri.ui.calendar;
 
 import com.registryKit.calendar.calendarEventDocuments;
+import com.registryKit.calendar.calendarEventNotifications;
 import com.registryKit.calendar.calendarEventTypeColors;
 import com.registryKit.calendar.calendarEventTypes;
 import com.registryKit.calendar.calendarEvents;
@@ -261,8 +262,7 @@ public class calendarController {
         }
 
         ModelAndView mav = new ModelAndView();
-        mav.addObject("calendarEvent", eventDetails);
-
+        
         User userDetails = (User) session.getAttribute("userDetails");
 
         if (eventDetails.getSystemUserId() == userDetails.getId()) {
@@ -281,11 +281,68 @@ public class calendarController {
             }
             
         } else {
+            
+            /* Get the event notification for the user */
+            calendarEventNotifications eventNotification = calendarManager.getEventNotification(eventDetails.getId(), userDetails.getId());
+            
+            if(eventNotification != null) {
+                eventDetails.setSendAlert(true);
+                eventDetails.setEmailAlertMin(eventNotification.getEmailAlertMin());
+            }
+            
             mav.setViewName("/calendar/eventDetailsModal");
             mav.addObject("selectedEventTypeColor","");
         }
+        
+        mav.addObject("calendarEvent", eventDetails);
+
 
         return mav;
+    }
+    
+    /**
+     * The 'saveEventNotification' POST request will save the notification alert for the selected event and
+     * logged in user.
+     * 
+     * @param session
+     * @param request
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/saveEventNotification.do", method = RequestMethod.POST)
+    public @ResponseBody Integer saveEventNotification(HttpSession session, HttpServletRequest request) throws Exception {
+        String eventId = request.getParameter("eventId");
+        String alertMin = request.getParameter("alertMin");
+        
+        User userDetails = (User) session.getAttribute("userDetails");
+        
+        calendarEventNotifications eventNotification = new calendarEventNotifications();
+        eventNotification.setEmailAlertMin(Integer.parseInt(alertMin));
+        eventNotification.setSystemUserId(userDetails.getId());
+        eventNotification.setEventId(Integer.parseInt(eventId));
+        
+        calendarManager.saveEventNotification(eventNotification);
+        return 1;
+    }
+    
+    /**
+     * 
+     * @param session
+     * @param request
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/deleteEventNotification.do", method = RequestMethod.POST)
+    public @ResponseBody
+    Integer deleteEventNotification(HttpSession session, HttpServletRequest request) throws Exception {
+
+        String eventId = request.getParameter("eventId");
+        
+        User userDetails = (User) session.getAttribute("userDetails");
+
+        calendarManager.deleteEventNotification(Integer.parseInt(eventId), userDetails.getId());
+
+        return 1;
     }
 
     /**
@@ -473,7 +530,7 @@ public class calendarController {
         else{
             calendarNotificationPreferences newNotificationPreferences = new calendarNotificationPreferences();
             newNotificationPreferences.setNewEventNotifications(false);
-            newNotificationPreferences.setAlwaysCreateAlert(false);
+            newNotificationPreferences.setModifyEventNotifications(false);
             newNotificationPreferences.setNotificationEmail(userDetails.getEmail());
             mav.addObject("notificationPreferences", newNotificationPreferences);
         }
