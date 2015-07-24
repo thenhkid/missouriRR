@@ -20,6 +20,7 @@
 
     <form:form id="notificationPreferencesForm" modelAttribute="notificationPreferences" role="form" class="form" method="post">
         <form:hidden path="id" />
+        <form:hidden path="programId" />
 
         <div class="row">
             <div class="form-group">

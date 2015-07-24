@@ -12,6 +12,10 @@ import com.registryKit.calendar.calendarEventTypes;
 import com.registryKit.calendar.calendarEvents;
 import com.registryKit.calendar.calendarManager;
 import com.registryKit.calendar.calendarNotificationPreferences;
+import com.registryKit.messenger.emailManager;
+import com.registryKit.messenger.emailMessage;
+import com.registryKit.program.program;
+import com.registryKit.program.programManager;
 import com.registryKit.user.User;
 import com.registryKit.user.userManager;
 import com.registryKit.user.userProgramModules;
@@ -43,21 +47,27 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping("/calendar")
 public class calendarController {
-    
+
     private static Integer moduleId = 7;
 
     @Autowired
     calendarManager calendarManager;
-    
+
     @Autowired
     private userManager usermanager;
+
+    @Autowired
+    private programManager programManager;
+
+    @Autowired
+    private emailManager emailManager;
 
     @Value("${programId}")
     private Integer programId;
 
     @Value("${topSecret}")
     private String topSecret;
-    
+
     private static boolean allowCreate = false;
     private static boolean allowEdit = false;
 
@@ -70,56 +80,56 @@ public class calendarController {
         List<calendarEventTypes> eventTypes = calendarManager.getEventCategories(programId);
 
         mav.addObject("eventTypes", eventTypes);
-        
+
         /* Get a list of completed surveys the logged in user has access to */
         User userDetails = (User) session.getAttribute("userDetails");
-        
+
         /* Get user permissions */
         userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
-        
-        
-        if(userDetails.getRoleId() == 2) {
+
+        if (userDetails.getRoleId() == 2) {
             allowCreate = true;
-        }
-        else {
+        } else {
             allowCreate = modulePermissions.isAllowCreate();
         }
-         
+
         mav.addObject("allowCreate", allowCreate);
 
         return mav;
     }
-    
+
     /**
-     * The 'searchEvents' POST request will search the events table for logged events.
-     * 
+     * The 'searchEvents' POST request will search the events table for logged
+     * events.
+     *
      * @param session
      * @param searchTerm The term to match events to.
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     @RequestMapping(value = "searchEvents.do", method = RequestMethod.GET)
-    public @ResponseBody ModelAndView searchEvents(HttpSession session, @RequestParam(value = "searchTerm", required = true) String searchTerm) throws Exception {
-        
+    public @ResponseBody
+    ModelAndView searchEvents(HttpSession session, @RequestParam(value = "searchTerm", required = true) String searchTerm) throws Exception {
+
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/calendar/searchResults");
-        
+
         User userDetails = (User) session.getAttribute("userDetails");
-        
+
         List<calendarEvents> events = calendarManager.searchEvents(userDetails, programId, searchTerm);
-        
-        if(events != null && events.size() > 0) {
-            for(calendarEvents event : events) {
+
+        if (events != null && events.size() > 0) {
+            for (calendarEvents event : events) {
                 calendarEventTypes eventTypeObject = calendarManager.getEventType(event.getEventTypeId());
 
                 event.setEventColor(eventTypeObject.getEventTypeColor());
             }
         }
-        
+
         mav.addObject("foundEvents", events);
-        
+
         return mav;
-        
+
     }
 
     @RequestMapping(value = "/saveEventType.do", method = RequestMethod.POST)
@@ -182,9 +192,9 @@ public class calendarController {
     JSONArray getEventsJSON(HttpSession session, HttpServletRequest request) throws Exception {
 
         JSONObject data = new JSONObject();
-        
+
         User userDetails = (User) session.getAttribute("userDetails");
-        
+
         String from = request.getParameter("start");
         String to = request.getParameter("end");
         String eventTypeId = request.getParameter("eventTypeId");
@@ -200,48 +210,136 @@ public class calendarController {
 
     @RequestMapping(value = "/saveEvent.do", method = RequestMethod.POST)
     public @ResponseBody
-    Integer saveEvent(@ModelAttribute(value = "calendarEvent") calendarEvents calendarEvent, BindingResult errors, @RequestParam(value = "alertAllUsers", required = false, defaultValue = "false") boolean alertUsers, 
+    Integer saveEvent(@ModelAttribute(value = "calendarEvent") calendarEvents calendarEvent, BindingResult errors, @RequestParam(value = "alertAllUsers", required = false, defaultValue = "0") Integer alertUsers,
             @RequestParam(value = "eventDocuments", required = false) List<MultipartFile> eventDocuments,
             HttpSession session, HttpServletRequest request) throws Exception {
 
         if (errors.hasErrors()) {
-           for(ObjectError error : errors.getAllErrors()) {
-               System.out.println(error.getDefaultMessage());
-           }
-         }
-        
+            for (ObjectError error : errors.getAllErrors()) {
+                System.out.println(error.getDefaultMessage());
+            }
+        }
+
         User userDetails = (User) session.getAttribute("userDetails");
 
         boolean alertAllUsers = false;
-
-        if ("true".equals(alertUsers)) {
+        
+        if (alertUsers == 1) {
             alertAllUsers = true;
         }
-        
+
         /* Need to transfer String start and end date to real date */
         DateFormat format = new SimpleDateFormat("MM/dd/yyyy");
         Date realStartDate = format.parse(calendarEvent.getStartDate());
         Date realEndDate = format.parse(calendarEvent.getEndDate());
-        
+
         calendarEvent.setEventStartDate(realStartDate);
         calendarEvent.setEventEndDate(realEndDate);
-        
-        if(eventDocuments != null) {
+
+        if (eventDocuments != null) {
             calendarEvent.setUploadedDocuments(eventDocuments);
         }
 
         calendarManager.saveEvent(calendarEvent);
+
+        program programDetails = programManager.getProgramById(programId);
+
+        calendarEventTypes eventType = calendarManager.getEventType(calendarEvent.getEventTypeId());
+        
+        //Modifed Event Notification
+        if (calendarEvent.getId() > 0 && alertAllUsers == true) {
+            
+            System.out.println("IN 1");
+
+            /* Get a list of users who want to be notified of event changes */
+            List<calendarNotificationPreferences> notifyUserList = calendarManager.getModifiedEventUserNotifications(programId);
+            
+            if (notifyUserList != null && notifyUserList.size() > 0) {
+                
+                for (calendarNotificationPreferences notification : notifyUserList) {
+                    StringBuilder sb = new StringBuilder();
+
+                    User userdetails = usermanager.getUserById(notification.getSystemUserId());
+                    
+                    if (calendarEvent.getSystemUserId() != userdetails.getId() && (eventType.getAdminOnly() == false || (eventType.getAdminOnly() == true && userdetails.getRoleId() == 2))) {
+                        emailMessage messageDetails = new emailMessage();
+
+                        messageDetails.settoEmailAddress(notification.getNotificationEmail());
+                        messageDetails.setfromEmailAddress(programDetails.getEmailAddress());
+                        messageDetails.setmessageSubject(programDetails.getProgramName() + " Calendar Event Modification");
+
+                        sb.append("Below are the new details for the <strong>").append(calendarEvent.getEventTitle()).append("</strong> event.");
+                        sb.append("<br /><br />");
+                        sb.append("<strong>Start Date/Time: </strong>").append(calendarEvent.getEventStartDate().toString().substring(0, 10)).append(" ").append(calendarEvent.getEventStartTime());
+                        sb.append("<br /><br />");
+                        sb.append("<strong>End Date/Time: </strong>").append(calendarEvent.getEventEndDate().toString().substring(0, 10)).append(" ").append(calendarEvent.getEventEndTime());
+                        if (!"".equals(calendarEvent.getEventLocation())) {
+                            sb.append("<br /><br />").append("<strong>Where: </strong>").append(calendarEvent.getEventLocation());
+                        }
+                        if (!"".equals(calendarEvent.getEventNotes())) {
+                            sb.append("<br /><br />").append("<strong>Notes: </strong>").append("<br />").append(calendarEvent.getEventNotes());
+                        }
+
+                        messageDetails.setmessageBody(sb.toString());
+
+                        emailManager.sendEmail(messageDetails);
+                    }
+
+                }
+            }
+
+        } //New Event Notification
+        else if (alertAllUsers == true) {
+
+            /* Get a list of users who want to be notified of event changes */
+            List<calendarNotificationPreferences> notifyUserList = calendarManager.getNewEventUserNotifications(programId);
+
+            if (notifyUserList != null && notifyUserList.size() > 0) {
+
+                for (calendarNotificationPreferences notification : notifyUserList) {
+                    StringBuilder sb = new StringBuilder();
+
+                    User userdetails = usermanager.getUserById(notification.getSystemUserId());
+
+                    if (calendarEvent.getSystemUserId() != userdetails.getId() && (eventType.getAdminOnly() == false || (eventType.getAdminOnly() == true && userdetails.getRoleId() == 2))) {
+                        emailMessage messageDetails = new emailMessage();
+
+                        messageDetails.settoEmailAddress(notification.getNotificationEmail());
+                        messageDetails.setfromEmailAddress(programDetails.getEmailAddress());
+                        messageDetails.setmessageSubject(programDetails.getProgramName() + " New Calendar Event");
+
+                        sb.append("<strong>").append(calendarEvent.getEventTitle()).append("</strong>");
+                        sb.append("<br /><br />");
+                        sb.append("<strong>Start Date/Time: </strong>").append(calendarEvent.getEventStartDate().toString().substring(0, 10)).append(" ").append(calendarEvent.getEventStartTime());
+                        sb.append("<br /><br />");
+                        sb.append("<strong>End Date/Time: </strong>").append(calendarEvent.getEventEndDate().toString().substring(0, 10)).append(" ").append(calendarEvent.getEventEndTime());
+                        if (!"".equals(calendarEvent.getEventLocation())) {
+                            sb.append("<br /><br />").append("<strong>Where: </strong>").append(calendarEvent.getEventLocation());
+                        }
+                        if (!"".equals(calendarEvent.getEventNotes())) {
+                            sb.append("<br /><br />").append("<strong>Notes: </strong>").append("<br />").append(calendarEvent.getEventNotes());
+                        }
+
+                        messageDetails.setmessageBody(sb.toString());
+
+                        emailManager.sendEmail(messageDetails);
+                    }
+                }
+
+            }
+
+        }
 
         return 1;
 
     }
 
     /**
-     * 
+     *
      * @param session
      * @param request
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     @RequestMapping(value = "/getEventDetails.do", method = RequestMethod.GET)
     public ModelAndView getEventDetails(HttpSession session, HttpServletRequest request) throws Exception {
@@ -253,16 +351,16 @@ public class calendarController {
         calendarEventTypes eventTypeObject = calendarManager.getEventType(eventDetails.getEventTypeId());
 
         eventDetails.setEventColor(eventTypeObject.getEventTypeColor());
-        
+
         /* See if there are any existing documents */
         List<calendarEventDocuments> existingDocuments = calendarManager.getEventDocuments(eventDetails.getId());
-        
-        if(existingDocuments != null) {
+
+        if (existingDocuments != null) {
             eventDetails.setExistingDocuments(existingDocuments);
         }
 
         ModelAndView mav = new ModelAndView();
-        
+
         User userDetails = (User) session.getAttribute("userDetails");
 
         if (eventDetails.getSystemUserId() == userDetails.getId()) {
@@ -273,71 +371,71 @@ public class calendarController {
             mav.addObject("eventTypes", eventTypes);
 
             List<calendarEventTypes> selectedEventTypes = calendarManager.getEventTypeColors(eventId);
-            
-            for(calendarEventTypes selectedEventType : selectedEventTypes) {
-                if("selected".equals(selectedEventType.getSelectedColor())) {
+
+            for (calendarEventTypes selectedEventType : selectedEventTypes) {
+                if ("selected".equals(selectedEventType.getSelectedColor())) {
                     mav.addObject("selectedEventTypeColor", selectedEventType.getEventTypeColor());
                 }
             }
-            
+
         } else {
-            
+
             /* Get the event notification for the user */
             calendarEventNotifications eventNotification = calendarManager.getEventNotification(eventDetails.getId(), userDetails.getId());
-            
-            if(eventNotification != null) {
+
+            if (eventNotification != null) {
                 eventDetails.setSendAlert(true);
                 eventDetails.setEmailAlertMin(eventNotification.getEmailAlertMin());
             }
-            
-            mav.setViewName("/calendar/eventDetailsModal");
-            mav.addObject("selectedEventTypeColor","");
-        }
-        
-        mav.addObject("calendarEvent", eventDetails);
 
+            mav.setViewName("/calendar/eventDetailsModal");
+            mav.addObject("selectedEventTypeColor", "");
+        }
+
+        mav.addObject("calendarEvent", eventDetails);
 
         return mav;
     }
-    
+
     /**
-     * The 'saveEventNotification' POST request will save the notification alert for the selected event and
-     * logged in user.
-     * 
+     * The 'saveEventNotification' POST request will save the notification alert
+     * for the selected event and logged in user.
+     *
      * @param session
      * @param request
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     @RequestMapping(value = "/saveEventNotification.do", method = RequestMethod.POST)
-    public @ResponseBody Integer saveEventNotification(HttpSession session, HttpServletRequest request) throws Exception {
+    public @ResponseBody
+    Integer saveEventNotification(HttpSession session, HttpServletRequest request) throws Exception {
         String eventId = request.getParameter("eventId");
         String alertMin = request.getParameter("alertMin");
-        
+
         User userDetails = (User) session.getAttribute("userDetails");
-        
+
         calendarEventNotifications eventNotification = new calendarEventNotifications();
         eventNotification.setEmailAlertMin(Integer.parseInt(alertMin));
         eventNotification.setSystemUserId(userDetails.getId());
         eventNotification.setEventId(Integer.parseInt(eventId));
-        
+
         calendarManager.saveEventNotification(eventNotification);
         return 1;
     }
-    
+
     /**
-     * 
+     *
      * @param session
      * @param request
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     @RequestMapping(value = "/deleteEventNotification.do", method = RequestMethod.POST)
     public @ResponseBody
     Integer deleteEventNotification(HttpSession session, HttpServletRequest request) throws Exception {
 
         String eventId = request.getParameter("eventId");
-        
+
         User userDetails = (User) session.getAttribute("userDetails");
 
         calendarManager.deleteEventNotification(Integer.parseInt(eventId), userDetails.getId());
@@ -346,11 +444,11 @@ public class calendarController {
     }
 
     /**
-     * 
+     *
      * @param session
      * @param request
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     @RequestMapping(value = "/deleteEvent.do", method = RequestMethod.POST)
     public @ResponseBody
@@ -362,68 +460,69 @@ public class calendarController {
 
         return 1;
     }
-    
+
     /**
-     * The 'deleteEventDocument' POST request will remove the clicked uploaded document.
-     * 
+     * The 'deleteEventDocument' POST request will remove the clicked uploaded
+     * document.
+     *
      * @param documentId The id of the clicked document.
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
-    @RequestMapping(value = "/deleteEventDocument.do", method = RequestMethod.POST) 
-    public @ResponseBody Integer deleteEventDocument(@RequestParam(value = "documentId", required = true) Integer documentId) throws Exception {
-        
+    @RequestMapping(value = "/deleteEventDocument.do", method = RequestMethod.POST)
+    public @ResponseBody
+    Integer deleteEventDocument(@RequestParam(value = "documentId", required = true) Integer documentId) throws Exception {
+
         calendarManager.deleteEventDocument(documentId);
-        
+
         return 1;
     }
 
     /**
-     * 
+     *
      * @param session
      * @param request
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     @RequestMapping(value = "/getNewEventForm.do", method = RequestMethod.GET)
     public ModelAndView getNewEventForm(HttpSession session, HttpServletRequest request) throws Exception {
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/calendar/newEventModal");
-        
+
         //List<calendarEventTypes> eventTypes = calendarManager.getEventTypeColors(0);
         List<calendarEventTypes> eventTypes = calendarManager.getEventCategories(programId);
-         
+
         mav.addObject("eventTypes", eventTypes);
-        
+
         User userDetails = (User) session.getAttribute("userDetails");
-        
+
         /* Create an empty calender event */
         calendarEvents newCalendarEvent = new calendarEvents();
         newCalendarEvent.setProgramId(programId);
         newCalendarEvent.setSystemUserId(userDetails.getId());
-        
+
         /* Set the event type by default to the first one in the system */
         newCalendarEvent.setEventTypeId(eventTypes.get(0).getId());
         mav.addObject("calendarEvent", newCalendarEvent);
-        
 
         return mav;
     }
-    
+
     /**
-     * 
+     *
      * @param session
      * @param request
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     @RequestMapping(value = "/getEventTypes.do", method = RequestMethod.GET)
     public ModelAndView getEventTypes(HttpSession session, HttpServletRequest request) throws Exception {
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/calendar/eventTypes");
-        
+
         List<calendarEventTypes> eventTypes = calendarManager.getCalendarEventTypes(programId);
         mav.addObject("eventTypes", eventTypes);
 
@@ -433,20 +532,20 @@ public class calendarController {
 
         return mav;
     }
-    
+
     @RequestMapping(value = "/isColorAvailable.do", method = RequestMethod.GET)
-    public @ResponseBody Integer isColorAvailable(HttpSession session, @RequestParam(value = "hexColor", required = true) String hexColor, @RequestParam(value = "eventId", required = true) Integer eventId) throws Exception {
+    public @ResponseBody
+    Integer isColorAvailable(HttpSession session, @RequestParam(value = "hexColor", required = true) String hexColor, @RequestParam(value = "eventId", required = true) Integer eventId) throws Exception {
         Integer isAvailable = 0;
-        
+
         boolean isAvailableBool = calendarManager.isColorAvailable(programId, hexColor, eventId);
-        
-        if(isAvailableBool) {
+
+        if (isAvailableBool) {
             isAvailable = 1;
-        }
-        else {
+        } else {
             isAvailable = 0;
         }
-        
+
         return isAvailable;
     }
 
@@ -492,58 +591,61 @@ public class calendarController {
 
         return mav;
     }
-    
+
     /**
-     * The 'getEventTypesColumn' GET request will return the html for the event types column on the calendar homepage.
-     * 
+     * The 'getEventTypesColumn' GET request will return the html for the event
+     * types column on the calendar homepage.
+     *
      * @param session
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     @RequestMapping(value = "getEventTypesColumn.do", method = RequestMethod.GET)
-    public @ResponseBody ModelAndView getEventTypesColumn(HttpSession session) throws Exception {
-        
+    public @ResponseBody
+    ModelAndView getEventTypesColumn(HttpSession session) throws Exception {
+
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/calendar/eventTypesColumn");
-        
+
         List<calendarEventTypes> eventTypes = calendarManager.getEventCategories(programId);
 
         mav.addObject("eventTypes", eventTypes);
-        
+
         return mav;
-        
+
     }
-    
+
     @RequestMapping(value = "/getEventNotificationModel.do", method = RequestMethod.GET)
     public ModelAndView getEventNotificationModel(HttpSession session, HttpServletRequest request) throws Exception {
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/calendar/eventNotificationPreferences");
-        
+
         User userDetails = (User) session.getAttribute("userDetails");
-        
+
         calendarNotificationPreferences notificationPreferences = calendarManager.getNotificationPreferences(userDetails.getId());
-        
-        if(notificationPreferences != null){
+
+        if (notificationPreferences != null) {
             mav.addObject("notificationPreferences", notificationPreferences);
-        }
-        else{
+        } else {
             calendarNotificationPreferences newNotificationPreferences = new calendarNotificationPreferences();
             newNotificationPreferences.setNewEventNotifications(false);
             newNotificationPreferences.setModifyEventNotifications(false);
             newNotificationPreferences.setNotificationEmail(userDetails.getEmail());
+            newNotificationPreferences.setProgramId(programId);
             mav.addObject("notificationPreferences", newNotificationPreferences);
         }
 
         return mav;
     }
-    
+
     @RequestMapping(value = "/saveNotificationPreferences.do", method = RequestMethod.POST)
-    public @ResponseBody Integer saveNotificationPreferences(@ModelAttribute(value = "notificationPreferences") calendarNotificationPreferences notificationPreferences, BindingResult errors, 
+    public @ResponseBody
+    Integer saveNotificationPreferences(@ModelAttribute(value = "notificationPreferences") calendarNotificationPreferences notificationPreferences, BindingResult errors,
             HttpSession session, HttpServletRequest request) throws Exception {
-        
+
         User userDetails = (User) session.getAttribute("userDetails");
-        
+
         notificationPreferences.setSystemUserId(userDetails.getId());
 
         calendarManager.saveNotificationPreferences(notificationPreferences);
