@@ -112,11 +112,18 @@
             </div>
         </div>
         <div class="row">
-             <hr />
+            <hr />
             <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox" name="alertAllUsers" value="0"> Alert all users of this new event?
+                        <c:choose>
+                            <c:when test="${calendarEvent.id > 0}">
+                                <input type="checkbox" name="alertAllUsers" value="1"> Send email notification to users regarding this change?
+                            </c:when>
+                            <c:otherwise>
+                                <input type="checkbox" name="alertAllUsers" value="1"> Send email notification to users regarding this new event?
+                            </c:otherwise>
+                        </c:choose>
                     </label>
                 </div>
             </div>    
