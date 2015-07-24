@@ -248,7 +248,7 @@ jQuery(function ($) {
                     success: function (data) {
 
                         data = $(data);
-
+                        
                         data.find('#simple-colorpicker-1').ace_colorpicker()
                                 .on('change', function () {
                                     queryEventType(this.value);
@@ -320,7 +320,7 @@ jQuery(function ($) {
                             title: 'Create Event  <button type="button" id="closePopover" class="close pull-right">&times;</button>',
                             container: 'body',
                             callback: function () {
-
+                                
                             }
                         });
                         $(tempThis).popover('toggle');
@@ -329,8 +329,10 @@ jQuery(function ($) {
                             $(".eventEndDate").val($(this).val());
                             $(".eventEndDate").datepicker("setDate", $(this).val());
                         });
-
-
+                        
+                        // on initial load get id of first color is selector from the db
+                        var firstValueDefaulted = $("#simple-colorpicker-1 option:first").val();
+                        queryEventType(firstValueDefaulted);
                     },
                     error: function (error) {
                         console.log(error);
