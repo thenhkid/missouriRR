@@ -7,6 +7,8 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<jsp:useBean id="today" class="java.util.Date" />
+<fmt:formatDate value="${today}" var="today" type="date" pattern="yyyy-MM-dd h:mma" />
 
 <style>
     .ellipsis {
@@ -59,35 +61,41 @@
                 </c:forEach>
         </div>
     </c:if>
-    <form:form id="eventNotificationForm" modelAttribute="calendarEvent" role="form" class="form" method="post">
-        <div class="space-4"></div>
-        <div class="hr hr-dotted"></div>
-        <div class="row">
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <form:checkbox path="sendAlert" id="sendAlert" />  Send email notification prior to the start of this event
-                    </label>
+        
+    <fmt:formatDate value="${calendarEvent.eventStartDate}" var="eventStartDate" type="date" pattern="yyyy-MM-dd" />
+    <fmt:parseDate value="${eventStartDate} ${calendarEvent.eventStartTime}" var="eventStartDateWTime" type="both" pattern="yyyy-MM-dd h:mma" />
+    <fmt:formatDate value="${eventStartDateWTime}" var="eventStartDateWTimeFormatted" type="date" pattern="yyyy-MM-dd h:mma" />
+      <c:if test="${today le eventStartDateWTimeFormatted}">
+        <form:form id="eventNotificationForm" modelAttribute="calendarEvent" role="form" class="form" method="post">
+            <div class="space-4"></div>
+            <div class="hr hr-dotted"></div>
+            <div class="row">
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            <form:checkbox path="sendAlert" id="sendAlert" />  Send email notification prior to the start of this event
+                        </label>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row notificationsOptions" id="alertFrequency" <c:if test="${calendarEvent.sendAlert == false}">style="display: none;"</c:if>>
-                <div class="form-group">
-                <form:select path="emailAlertMin" class="form-control emailAlertMin">
-                    <option value="">-</option>
-                    <option value="0" <c:if test="${calendarEvent.emailAlertMin == 0}"> selected </c:if>>Email: At time of event</option>
-                    <option value="5" <c:if test="${calendarEvent.emailAlertMin == 5}"> selected </c:if>>Email: 5 Min before event</option>
-                    <option value="10" <c:if test="${calendarEvent.emailAlertMin == 10}"> selected </c:if>>Email: 10 Min before event</option>
-                    <option value="15" <c:if test="${calendarEvent.emailAlertMin == 15}"> selected </c:if>>Email: 15 Min before event</option>
-                    <option value="30" <c:if test="${calendarEvent.emailAlertMin == 30}"> selected </c:if>>Email: 30 Min before event</option>
-                    <option value="60" <c:if test="${calendarEvent.emailAlertMin == 60}"> selected </c:if>>Email: 1 hour before event</option>
-                    <option value="120" <c:if test="${calendarEvent.emailAlertMin == 120}"> selected </c:if>>Email: 2 hour before event</option>
-                    <option value="1440" <c:if test="${calendarEvent.emailAlertMin == 1440}"> selected </c:if>>Email: 1 day before event</option>
-                    <option value="2880" <c:if test="${calendarEvent.emailAlertMin == 2880}"> selected </c:if>>Email: 2 days before event</option>
-                </form:select>
+            <div class="row notificationsOptions" id="alertFrequency" <c:if test="${calendarEvent.sendAlert == false}">style="display: none;"</c:if>>
+                    <div class="form-group">
+                    <form:select path="emailAlertMin" class="form-control emailAlertMin">
+                        <option value="">-</option>
+                        <option value="0" <c:if test="${calendarEvent.emailAlertMin == 0}"> selected </c:if>>Email: At time of event</option>
+                        <option value="5" <c:if test="${calendarEvent.emailAlertMin == 5}"> selected </c:if>>Email: 5 Min before event</option>
+                        <option value="10" <c:if test="${calendarEvent.emailAlertMin == 10}"> selected </c:if>>Email: 10 Min before event</option>
+                        <option value="15" <c:if test="${calendarEvent.emailAlertMin == 15}"> selected </c:if>>Email: 15 Min before event</option>
+                        <option value="30" <c:if test="${calendarEvent.emailAlertMin == 30}"> selected </c:if>>Email: 30 Min before event</option>
+                        <option value="60" <c:if test="${calendarEvent.emailAlertMin == 60}"> selected </c:if>>Email: 1 hour before event</option>
+                        <option value="120" <c:if test="${calendarEvent.emailAlertMin == 120}"> selected </c:if>>Email: 2 hour before event</option>
+                        <option value="1440" <c:if test="${calendarEvent.emailAlertMin == 1440}"> selected </c:if>>Email: 1 day before event</option>
+                        <option value="2880" <c:if test="${calendarEvent.emailAlertMin == 2880}"> selected </c:if>>Email: 2 days before event</option>
+                    </form:select>
+                </div>
             </div>
-        </div>
-    </form:form>
+        </form:form>
+    </c:if>
 </div>
 
 
