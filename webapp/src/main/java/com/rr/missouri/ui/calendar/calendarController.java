@@ -249,8 +249,6 @@ public class calendarController {
         //Modifed Event Notification
         if (calendarEvent.getId() > 0 && alertAllUsers == true) {
             
-            System.out.println("IN 1");
-
             /* Get a list of users who want to be notified of event changes */
             List<calendarNotificationPreferences> notifyUserList = calendarManager.getModifiedEventUserNotifications(programId);
             
