@@ -8,7 +8,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <jsp:useBean id="today" class="java.util.Date" />
-<fmt:formatDate value="${today}" var="today" type="date" pattern="yyyy-MM-dd h:mma" />
+<fmt:formatDate value="${today}" var="today" type="both" pattern="yyyy-MM-dd HH:mm" />
 
 <style>
     .ellipsis {
@@ -61,10 +61,11 @@
                 </c:forEach>
         </div>
     </c:if>
-        
+    
     <fmt:formatDate value="${calendarEvent.eventStartDate}" var="eventStartDate" type="date" pattern="yyyy-MM-dd" />
-    <fmt:parseDate value="${eventStartDate} ${calendarEvent.eventStartTime}" var="eventStartDateWTime" type="both" pattern="yyyy-MM-dd h:mma" />
-    <fmt:formatDate value="${eventStartDateWTime}" var="eventStartDateWTimeFormatted" type="date" pattern="yyyy-MM-dd h:mma" />
+    <fmt:parseDate value="${eventStartDate} ${calendarEvent.eventStartTime}" var="eventStartDateWTime" type="date" pattern="yyyy-MM-dd hh:mma" />
+    <fmt:formatDate value="${eventStartDateWTime}" var="eventStartDateWTimeFormatted" type="both" pattern="yyyy-MM-dd HH:mm" />
+    
       <c:if test="${today le eventStartDateWTimeFormatted}">
         <form:form id="eventNotificationForm" modelAttribute="calendarEvent" role="form" class="form" method="post">
             <div class="space-4"></div>

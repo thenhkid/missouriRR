@@ -377,6 +377,14 @@ public class calendarController {
                     mav.addObject("selectedEventTypeColor", selectedEventType.getEventTypeColor());
                 }
             }
+            
+             /* Get the event notification for the user */
+            calendarEventNotifications eventNotification = calendarManager.getEventNotification(eventDetails.getId(), userDetails.getId());
+
+            if (eventNotification != null) {
+                eventDetails.setSendAlert(true);
+                eventDetails.setEmailAlertMin(eventNotification.getEmailAlertMin());
+            }
 
         } else {
 
