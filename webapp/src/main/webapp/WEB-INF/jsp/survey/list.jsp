@@ -13,24 +13,25 @@
 <div class="row">
     <div class="col-xs-12">
 
-        <h3 class="header smaller lighter blue">Activity Logs</h3>
-
-        <div class="clearfix">
-            <div class="pull-right">
-                <form:form id="districtSelectForm" method="POST" action="/surveys/startSurvey" role="form">
-                    <input type="hidden" name="s" id="surveyId" value="${selSurvey}" />
-                    <ul class="list-unstyled spaced2">
-                        <li>
-                            <span id="districtList"></span>
-                            <a href="javascript:void(0);" id="createNewEntry" role="button" rel="${selSurvey}" class="btn btn-success">
-                                <i class="ace-icon fa fa-plus-square align-top bigger-150"></i>
-                                <strong>Start Activity Log</strong>
-                            </a>
-                        </li>
-                    </ul>
-                </form:form>  
+        <%--<h3 class="header smaller lighter blue">Activity Logs</h3>--%>
+        <c:if test="${allowCreate == true}">
+            <div class="clearfix">
+                <div class="pull-right">
+                    <form:form id="districtSelectForm" method="POST" action="/surveys/startSurvey" role="form">
+                        <input type="hidden" name="s" id="surveyId" value="${selSurvey}" />
+                        <ul class="list-unstyled spaced2">
+                            <li>
+                                <span id="districtList"></span>
+                                <a href="javascript:void(0);" id="createNewEntry" role="button" rel="${selSurvey}" class="btn btn-success">
+                                    <i class="ace-icon fa fa-plus-square align-top bigger-150"></i>
+                                    <strong>Start Activity Log</strong>
+                                </a>
+                            </li>
+                        </ul>
+                    </form:form>  
+                </div>
             </div>
-        </div>
+        </c:if>
         <div class="clearfix">
             <div class="pull-left tableTools-container"></div>
         </div>                
@@ -75,7 +76,7 @@
                                     </td>
                                     <td>
                                         <c:if test="${not empty submittedSurvey.selectedEntities}">
-                                           <ul class="list-unstyled spaced">
+                                            <ul class="list-unstyled spaced">
                                                 <c:forEach var="entity" items="${submittedSurvey.selectedEntities}">
                                                     <li>
                                                         <i class="ace-icon fa fa-building bigger-110 purple"></i>

@@ -22,8 +22,8 @@
                 </c:when>
                 <c:otherwise>
                     <span class="label label-primary arrowed-in-right label-lg"><b><fmt:formatDate value="${message.messageDate}" type="both" pattern="MMM dd" /></b></span>
-                </c:otherwise>
-            </c:choose>
+                        </c:otherwise>
+                    </c:choose>
         </div>
 
         <div class="timeline-items">
@@ -46,11 +46,13 @@
                                 <fmt:formatDate value="${messageData.dateCreated}" type="time" pattern="h:mm" />
                             </span>
 
-                            <span class="widget-toolbar">
-                                <a href="#" class="reply" title="Reply to this post" rel="${messageData.id}">
-                                    <i class="ace-icon fa fa-reply"></i>
-                                </a>
-                            </span>
+                            <c:if test="${allowCreate == true}">
+                                <span class="widget-toolbar">
+                                    <a href="#" class="reply" title="Reply to this post" rel="${messageData.id}">
+                                        <i class="ace-icon fa fa-reply"></i>
+                                    </a>
+                                </span>
+                            </c:if>
                         </div>
 
                         <div class="widget-body">
@@ -75,7 +77,7 @@
                                     </div>
 
                                 </c:if>
-                                    
+
                                 <c:if test="${not empty messageData.forumDocuments}">
                                     <div class="space-8"></div>
                                     <div style="padding-left:30px;">
@@ -85,7 +87,7 @@
                                                 <i class="fa fa-file bigger-110 orange"></i> <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.documentTitle}&foldername=forumUploadedFiles"/>" title="${document.documentTitle}">${document.documentTitle}</a>
                                             </div>
                                         </c:forEach>
-                                   </div>
+                                    </div>
                                 </c:if>      
 
                                 <c:if test="${not empty messageData.replies}">
@@ -117,7 +119,7 @@
                                         </div>
                                     </c:forEach> 
                                 </c:if>
-                                     
+
                             </div>
                         </div>
                     </div>

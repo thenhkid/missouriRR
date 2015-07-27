@@ -28,7 +28,7 @@
             <input type="hidden" name="action" value="" id="action" />
             <input type="hidden" name="goToPage" value="0" id="goToPage" />
             <input type="hidden" name="selectedEntities" value="${selectedEntities}" />
-            <input type="hidden" name="disabled" value="${disabled}" />
+            <input type="hidden" id="disabled" name="disabled" value="${disabled}" />
             <input type="hidden" name="pageId" value="${survey.pageId}" />
 
             <div class="row">
@@ -56,7 +56,7 @@
                                             </optgroup>
                                         </c:forEach>
                                     </select>--%>
-                                    <select multiple="" name="entityIds" class="chosen-select form-control <c:if test="${disabled == true}">disabled</c:if>" id="schoolSelect" data-placeholder="Select Schools...">
+                                    <select multiple="" name="entityIds" class="chosen-select form-control" <c:if test="${disabled == true}">disabled</c:if> id="schoolSelect" data-placeholder="Select Schools...">
                                         <c:forEach items="${selDistricts}" var="district">
                                             <optgroup label="${district.districtName}">
                                                 <c:forEach items="${district.schoolList}" var="school">

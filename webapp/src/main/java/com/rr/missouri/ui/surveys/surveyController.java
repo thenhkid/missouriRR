@@ -950,7 +950,10 @@ public class surveyController {
      */
     @RequestMapping(value = "/getEntityCodeSets", method = RequestMethod.GET)
     public @ResponseBody
-    ModelAndView getEntityCodeSets(@RequestParam(value = "entityId", required = true) List<Integer> entityIdList, @RequestParam(value = "surveyId", required = true) Integer surveyId) throws Exception {
+    ModelAndView getEntityCodeSets(
+            @RequestParam(value = "entityId", required = true) List<Integer> entityIdList, 
+            @RequestParam(value = "surveyId", required = true) Integer surveyId,
+            @RequestParam(value = "disabled", required = true) Boolean disabled) throws Exception {
 
         for (Integer entityId : entityIdList) {
             programHierarchyDetails entityDetails = hierarchymanager.getProgramHierarchyItemDetails(entityId);
@@ -1006,6 +1009,7 @@ public class surveyController {
 
         /* Sort surveyContentCriterias */
         mav.addObject("contentCriteria", surveyContentCriterias);
+        mav.addObject("disabled", disabled);
 
         return mav;
 
@@ -1020,7 +1024,8 @@ public class surveyController {
      */
     @RequestMapping(value = "/removeCodeSets", method = RequestMethod.GET)
     public @ResponseBody
-    ModelAndView removeCodeSets(@RequestParam(value = "entityId", required = true) Integer entityId) throws Exception {
+    ModelAndView removeCodeSets(@RequestParam(value = "entityId", required = true) Integer entityId,
+            @RequestParam(value = "disabled", required = true) Boolean disabled) throws Exception {
 
         Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
 
@@ -1042,6 +1047,7 @@ public class surveyController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/survey/contentCriteriaTable");
         mav.addObject("contentCriteria", surveyContentCriterias);
+        mav.addObject("disabled", disabled);
 
         return mav;
 
