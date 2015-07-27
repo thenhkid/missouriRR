@@ -311,7 +311,7 @@ jQuery(function ($) {
                             showOtherMonths: true,
                             selectOtherMonths: true
                         });
-
+                        
                         $(tempThis).popover({
                             trigger: 'focus',
                             content: data,

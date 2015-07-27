@@ -22,7 +22,6 @@
         <link href="<%=request.getContextPath()%>/dspResources/css/jquery.simplecolorpicker.css" rel="stylesheet" />
         <link href="<%=request.getContextPath()%>/dspResources/css/jquery.timepicker.css" rel="stylesheet" />
         <link href="<%=request.getContextPath()%>/dspResources/css/jquery.dataTables.css" rel="stylesheet" />
-        <link href="<%=request.getContextPath()%>/dspResources/css/jquery.dataTables.css" rel="stylesheet" />
         
         <tiles:useAttribute id="cssList" name="customCSS" classname="java.util.List" ignore="true" />
         <c:forEach var="cssFile" items="${cssList}">

@@ -42,7 +42,6 @@
                 <label class="sr-only" for="eventLocation">Event Location</label>
                 <form:input path="eventLocation" class="form-control eventLocation" placeholder="Event Location" maxlength="255" />
             </div>
-            <hr />
         </div>
         <div class="row">
             <div class="form-group">
@@ -75,14 +74,13 @@
                     </div>
                 </div>
             </div>
-            <hr />
         </div>
         <div class="row">
             <div class="form-group">
                 <label for="eventNotes">Notes</label>
                 <form:textarea path="eventNotes" class="form-control eventNotes" placeholder="Notes" maxlength="255"/>
             </div>
-            <hr />
+            
         </div>
 
         <c:if test="${not empty calendarEvent.existingDocuments}">
@@ -114,7 +112,7 @@
             </div>
         </div>
         <div class="row">
-            <hr />
+            
             <div class="form-group">
                 <div class="checkbox">
                     <label>
@@ -129,8 +127,8 @@
                     </label>
                 </div>
             </div>    
-            <div class="space-4"></div>
-            <div class="hr hr-dotted"></div>
+            <%--<div class="space-4"></div>
+            <div class="hr hr-dotted"></div>--%>
         </div>
         <c:if test="${calendarEvent.id > 0}">
             <fmt:formatDate value="${calendarEvent.eventStartDate}" var="eventStartDate" type="date" pattern="yyyy-MM-dd" />
