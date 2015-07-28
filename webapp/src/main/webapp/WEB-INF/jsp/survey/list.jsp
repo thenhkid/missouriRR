@@ -46,7 +46,7 @@
                             <th scope="col" class="center"><i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i> Date Submitted</th>
                             <th scope="col" >Submitted By</th>
                             <th scope="col" class="center  hidden-480">Submitted</th>
-                            <th scope="col">School(s)</th>
+                            <th scope="col">School(s) / ECC</th>
                             <%--<th scope="col">Content Area - Criteria</th>--%>
                         <th scope="col" class="center"></th>
                     </tr>
@@ -60,17 +60,13 @@
                                     <td>
                                         ${submittedSurvey.staffMember}
                                     </td>
-                                    <td class="center hidden-480">
+                                    <td class="center hidden-400">
                                         <c:choose>
                                             <c:when test="${submittedSurvey.submitted == true}">
-                                                <span class="btn btn-success btn-xs">
-                                                    <i class="ace-icon fa fa-check bigger-110 icon-only"></i>
-                                                </span>
+                                                <i class="ace-icon fa fa-check bigger-110 green icon-only"></i>
                                             </c:when>
                                             <c:otherwise>
-                                                <span class="btn btn-danger btn-xs">
-                                                    <i class="ace-icon fa fa-close bigger-110 icon-only"></i>
-                                                </span>
+                                                <i class="ace-icon fa fa-close bigger-110 red icon-only"></i>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
@@ -90,28 +86,22 @@
                                     <td class="center">
                                         <div class="hidden-sm hidden-xs action-buttons">
                                             <c:choose>
-                                                <c:when test="${submittedSurvey.submitted == true}">
-                                                    <c:choose>
-                                                        <c:when test="${allowEdit == true}">
-                                                            <a href="surveys/editSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Survey" role="button">
-                                                                <button class="btn btn-xs btn-success">
-                                                                    <i class="ace-icon fa fa-pencil bigger-120"></i>
-                                                                </button>
-                                                            </a>
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                            <a href="surveys/viewSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Survey" role="button">
-                                                                <button class="btn btn-xs btn-info">
-                                                                    <i class="ace-icon fa fa-search-plus bigger-120"></i>
-                                                                </button>
-                                                            </a>
-                                                        </c:otherwise>
-                                                    </c:choose>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <a href="surveys/editSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="" role="button">
+                                                <c:when test="${sessionScope.userDetails.id == submittedSurvey.systemUserId || sessionScope.userDetails.roleId == 2}">
+                                                    <a href="surveys/editSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Survey" role="button">
                                                         <button class="btn btn-xs btn-success">
                                                             <i class="ace-icon fa fa-pencil bigger-120"></i>
+                                                        </button>
+                                                    </a>
+                                                    <a href="javascript:void(0);" class="deleteSurvey" rel="${submittedSurvey.id}"  title="Dekete This Survey" role="button">
+                                                        <button class="btn btn-xs btn-danger">
+                                                            <i class="ace-icon fa fa-close bigger-120"></i>
+                                                        </button>
+                                                    </a>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <a href="surveys/viewSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Survey" role="button">
+                                                        <button class="btn btn-xs btn-info">
+                                                            <i class="ace-icon fa fa-search-plus bigger-120"></i>
                                                         </button>
                                                     </a>
                                                 </c:otherwise>

@@ -21,7 +21,7 @@ jQuery(function ($) {
                 enableClickableOptGroups: true,
                 enableCaseInsensitiveFiltering: true,
                 disableIfEmpty: true,
-                nonSelectedText: 'Select your districts',
+                nonSelectedText: 'Select your Districts / CBO',
                 numberDisplayed: 2,
                 templates: {
                     button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown"></button>',
@@ -188,6 +188,23 @@ jQuery(function ($) {
     if ($('.alert').length > 0) {
         $('.alert').delay(2000).fadeOut(1000);
     }
+    
+    //Delete Survey
+    $(document).on('click', '.deleteSurvey', function() {
+        
+        var confirmed = confirm("Are you sure you want to remove this activity log?");
+
+        if (confirmed) {
+            $.ajax({
+                type: 'POST',
+                url: '/surveys/removeEntry.do',
+                data: {'i': $(this).attr('rel')},
+                success: function (data) {
+                   location.reload();
+                }
+            });
+        }
+    });
 
     
 });

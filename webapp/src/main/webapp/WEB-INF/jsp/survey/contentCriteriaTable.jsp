@@ -12,7 +12,7 @@
             <th></th>
             <th>
                 <i class="ace-icon fa fa-building"></i>
-                School
+                School / ECC
             </th>
             <th>Content Area</th>
             <th>Criteria</th>

@@ -1102,4 +1102,29 @@ public class surveyController {
 
         return (Integer) 1;
     }
+    
+    /**
+     * The 'removeEntry' POST request will mark the survey submission as deleted.
+     * 
+     * @param i
+     * @param v
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/removeEntry", method = RequestMethod.POST)
+    public @ResponseBody
+    Integer removeEntry(@RequestParam(value = "i", required = true) Integer surveyId) throws Exception {
+
+        /* Get the submitted surveys for the selected survey type */
+        if (!"".equals(surveyId) && surveyId != null) {
+           
+            submittedSurveys survey = surveyManager.getSubmittedSurvey(surveyId);
+            
+            survey.setDeleted(true);
+            
+            surveyManager.deleteSurveyEntry(survey);
+        }
+
+        return (Integer) 1;
+    }
 }
