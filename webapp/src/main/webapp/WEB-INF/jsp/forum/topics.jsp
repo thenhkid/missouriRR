@@ -10,17 +10,19 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 
-<div class="col-xs-12">
+<div class="col-sm-12">
     <div class="row">
         <div class="clearfix">
-            <div class="pull-left no-margin">
-                <button class="btn btn-success btn-xs" type="button" id="newTopic">
-                    <i class="ace-icon fa fa-plus-square bigger-110"></i>
-                    New Topic
-                </button>
-            </div>
-            <div class="pull-right">
-                <div class="widget-box transparent no-margin">
+            <c:if test="${allowCreate == true}">
+                <div class="pull-left no-margin col-md-10">
+                    <button class="btn btn-success btn-xs" type="button" id="newTopic">
+                        <i class="ace-icon fa fa-plus-square bigger-110"></i>
+                        New Topic
+                    </button>
+                </div>
+            </c:if>
+            <div class="pull-right no-margin col-md-2">
+                <div class="widget-box transparent">
                     <form class="form-search">
                         <div class="input-group">
                             <span class="input-group-addon"><i class="ace-icon fa fa-search grey"></i></span>

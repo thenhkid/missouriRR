@@ -12,7 +12,7 @@
             <th></th>
             <th>
                 <i class="ace-icon fa fa-building"></i>
-                School
+                School / ECC
             </th>
             <th>Content Area</th>
             <th>Criteria</th>
@@ -24,7 +24,7 @@
                 <c:forEach var="content" items="${contentCriteria}">
                     <tr>
                         <td class="center">
-                            <input type="checkbox" class="contentSel" rel="${content.schoolId}" value="${content.codeId}" <c:if test="${content.checked == true}">checked="checked"</c:if> />
+                            <input type="checkbox" <c:if test="${disabled == true}">disabled</c:if> class="contentSel" rel="${content.schoolId}" value="${content.codeId}" <c:if test="${content.checked == true}">checked="checked"</c:if> />
                         </td>
                         <td>
                             ${content.schoolName}

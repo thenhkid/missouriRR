@@ -8,15 +8,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
-<div class="page-header">
-    <h1>
-        FAQ
-        <small>
-            <i class="ace-icon fa fa-angle-double-right"></i>
-            frequently asked questions
-        </small>
-    </h1>
-</div><!-- /.page-header -->
+
 
 <div class="row">
     <div id="resultBox" class="hidden">
@@ -37,7 +29,7 @@
                 </c:forEach>
 
                 <%-- settings --%>
-                <sec:authorize access="hasAnyRole('ROLE_PROGRAMADMIN', 'ROLE_SYSTEMADMIN')">
+                <c:if test="${allowCreate == true}">
                     <li class="dropdown center">
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                             <span class="badge badge-info">S</span><br />
@@ -45,9 +37,11 @@
                             <i class="ace-icon fa fa-caret-down"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-lighter dropdown-125">
-                            <li>
-                                <a data-toggle="tab" href="#faq-tab-s" id="addCategory">Add Category</a>
-                            </li>
+                            <c:if test="${sessionScope.userDetails.roleId == 2}">
+                                <li>
+                                    <a data-toggle="tab" href="#faq-tab-s" id="addCategory">Add Category</a>
+                                </li>
+                            </c:if>
                             <c:if test="${fn:length(categoryList) > 0}">
                                 <li>
                                     <a data-toggle="tab" href="#faq-tab-s" id="addQuestion"> Add Question </a>
@@ -55,7 +49,7 @@
                             </c:if>
                         </ul>
                     </li><!-- /.dropdown -->
-                </sec:authorize>
+                </c:if>
                 <%-- /settings --%>
             </ul>
 
@@ -66,12 +60,12 @@
                             <h4 class="blue">
                                 <i class="ace-icon fa fa-check bigger-110"></i>
                             ${category.categoryName}
-                            <sec:authorize access="hasAnyRole('ROLE_PROGRAMADMIN', 'ROLE_SYSTEMADMIN')">
+                            <c:if test="${allowEdit == true}">
                                 <a href="#" class="btn-sm btn-app btn-primary editCategory" rel="${category.id}">
                                     <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
                                     Edit
                                 </a>
-                            </sec:authorize>
+                            </c:if>
                         </h4>
 
                         <div class="space-8"></div>
@@ -89,18 +83,18 @@
                                             <div class="panel-heading clearfix">
                                                 <a href="#faq-${category.id}-${question.id}" data-parent="#faq-list-${category.id}" data-toggle="collapse" class="accordion-toggle collapsed">
                                                     <i class="ace-icon fa smaller-80 
-                                                    <c:if test='${question.id != activeQuestion}'>fa-chevron-right</c:if>
-                                                    <c:if test='${question.id == activeQuestion}'>fa-chevron-down</c:if>" 
-                                                    data-icon-hide="ace-icon fa fa-chevron-down align-top " 
-                                                    data-icon-show="ace-icon fa fa-chevron-right">
-                                                    </i>
-                                                    
+                                                       <c:if test='${question.id != activeQuestion}'>fa-chevron-right</c:if>
+                                                       <c:if test='${question.id == activeQuestion}'>fa-chevron-down</c:if>" 
+                                                           data-icon-hide="ace-icon fa fa-chevron-down align-top " 
+                                                           data-icon-show="ace-icon fa fa-chevron-right">
+                                                       </i>
+
                                                     ${question.question}
                                                 </a>
                                             </div>
 
                                             <div class="panel-collapse collapse <c:if test='${question.id == activeQuestion}'>in </c:if>" id="faq-${category.id}-${question.id}">
-                                                <div class="panel-body">
+                                                    <div class="panel-body">
                                                     ${question.answer}
                                                     <c:if test="${not empty question.faqQuestionDocuments}">
                                                         <div><hr></div>
@@ -114,7 +108,7 @@
                                                         </div>
                                                     </c:if>
 
-                                                    <sec:authorize access="hasAnyRole('ROLE_PROGRAMADMIN', 'ROLE_SYSTEMADMIN')">
+                                                    <c:if test="${allowEdit == true}">
                                                         <div class="space-8"></div>
                                                         <div>
                                                             <a href="#" class="btn-sm btn-app btn-primary editQuestion" rel="${question.id}">
@@ -122,7 +116,7 @@
                                                                 Edit
                                                             </a>
                                                         </div>
-                                                    </sec:authorize>
+                                                    </c:if>
                                                 </div>
                                             </div>  
                                         </div>

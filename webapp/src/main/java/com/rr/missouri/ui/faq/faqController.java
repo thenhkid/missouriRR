@@ -14,6 +14,7 @@ import com.registryKit.faq.faqQuestions;
 import com.registryKit.user.User;
 import com.registryKit.user.userActivity;
 import com.registryKit.user.userManager;
+import com.registryKit.user.userProgramModules;
 import java.util.List;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,11 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping("/faq")
 public class faqController {
     
+   private static Integer moduleId = 8;
+   
+   @Autowired
+   private userManager usermanager;
+    
    @Autowired
    faqManager faqManager;
    
@@ -50,14 +56,35 @@ public class faqController {
    
    private Integer statusId = 1;
    
+   private static boolean allowCreate = false;
+   private static boolean allowEdit = false;
+   
    @RequestMapping(value = "", method = RequestMethod.GET)
-    public ModelAndView faq(RedirectAttributes redirectAttr) throws Exception {
+    public ModelAndView faq(RedirectAttributes redirectAttr, HttpSession session) throws Exception {
+        
+        /* Get a list of completed surveys the logged in user has access to */
+        User userDetails = (User) session.getAttribute("userDetails");
         
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/faq");
         
         List <faqCategories> categoryList = faqManager.getFAQForProgram(programId, statusId);
         mav.addObject("categoryList", categoryList);
+        
+        /* Get user permissions */
+        userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
+
+        if (userDetails.getRoleId() == 2) {
+            allowCreate = true;
+            allowEdit = true;
+        } else {
+            allowCreate = modulePermissions.isAllowCreate();
+            allowEdit = modulePermissions.isAllowEdit();
+        }
+
+        mav.addObject("allowCreate", allowCreate);
+        mav.addObject("allowEdit", allowEdit);
+        
         return mav;
     }
     

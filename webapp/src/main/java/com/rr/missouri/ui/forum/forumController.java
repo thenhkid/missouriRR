@@ -12,6 +12,8 @@ import com.registryKit.forum.forumManager;
 import com.registryKit.forum.forumMessages;
 import com.registryKit.forum.forumTopics;
 import com.registryKit.user.User;
+import com.registryKit.user.userManager;
+import com.registryKit.user.userProgramModules;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,18 +39,28 @@ import org.springframework.web.servlet.view.RedirectView;
 @Controller
 @RequestMapping("/forum")
 public class forumController {
+    
+    private static Integer moduleId = 9;
 
     @Autowired
     forumManager forumManager;
+    
+    @Autowired
+    private userManager usermanager;
 
     @Value("${programId}")
     private Integer programId;
 
     @Value("${topSecret}")
     private String topSecret;
+    
+    private static boolean allowCreate = false;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ModelAndView forum() throws Exception {
+    public ModelAndView forum(HttpSession session) throws Exception {
+        
+        /* Get a list of completed surveys the logged in user has access to */
+        User userDetails = (User) session.getAttribute("userDetails");
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/forum");
@@ -60,6 +72,17 @@ public class forumController {
         /* Get a list of regular topics */
         List<forumTopics> regularTopics = forumManager.getTopics(programId, 2);
         mav.addObject("regularTopics", regularTopics);
+        
+        /* Get user permissions */
+        userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
+
+        if (userDetails.getRoleId() == 2) {
+            allowCreate = true;
+        } else {
+            allowCreate = modulePermissions.isAllowCreate();
+        }
+
+        mav.addObject("allowCreate", allowCreate);
 
         return mav;
     }
@@ -95,6 +118,8 @@ public class forumController {
             mav.addObject("topicTitle", topicDetails.getTitle());
             mav.addObject("topicId", topicDetails.getId());
         }
+        
+        mav.addObject("allowCreate", allowCreate);
 
         return mav;
 
@@ -187,6 +212,7 @@ public class forumController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/forum/messages");
         mav.addObject("topicMessages", topicMessages);
+        mav.addObject("allowCreate", allowCreate);
 
         return mav;
 

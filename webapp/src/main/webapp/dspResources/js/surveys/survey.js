@@ -92,6 +92,8 @@ jQuery(function ($) {
         var surveyId = $('#submittedSurveyId').val();
 
         var selectedSchools = $('#schoolSelect').val();
+        
+        var disabled = $('#disabled').val();
 
         if (selectedSchools != null) {
             var schools = [];
@@ -102,7 +104,7 @@ jQuery(function ($) {
 
             $.ajax({
                 url: 'getEntityCodeSets',
-                data: {'entityId': schoolList, 'surveyId': surveyId},
+                data: {'entityId': schoolList, 'surveyId': surveyId, 'disabled': disabled},
                 type: "GET",
                 success: function (data) {
                     $('#contentAndCriteriaDiv').html(data);
@@ -116,10 +118,11 @@ jQuery(function ($) {
 
     /* Get the content area and criteria for the clicked school */
     $('#schoolSelect').on('change', function (evt, params) {
+        
         if (params.selected > 0) {
             $.ajax({
                 url: 'getEntityCodeSets',
-                data: {'entityId': params.selected, 'surveyId': 0},
+                data: {'entityId': params.selected, 'surveyId': 0, 'disabled': $('#disabled').val()},
                 type: "GET",
                 success: function (data) {
                     $('#contentAndCriteriaDiv').html(data);
@@ -129,7 +132,7 @@ jQuery(function ($) {
         else if (params.deselected > 0) {
             $.ajax({
                 url: 'removeCodeSets',
-                data: {'entityId': params.deselected},
+                data: {'entityId': params.deselected, 'disabled': $('#disabled').val()},
                 type: "GET",
                 success: function (data) {
                     $('#contentAndCriteriaDiv').html(data);

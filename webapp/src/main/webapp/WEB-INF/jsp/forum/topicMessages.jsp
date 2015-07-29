@@ -3,7 +3,7 @@
     Created on : Jun 1, 2015, 10:42:48 AM
     Author     : chadmccue
 --%>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <div class="col-xs-12 topicMessageContainer" rel="${topicId}">
     <div class="row">
         <div class="clearfix">
@@ -14,10 +14,12 @@
                 </h4>
             </div>
             <div class="pull-right">
-                <button class="btn btn-success btn-xs" type="button" rel="${topicId}" id="newPost">
-                    <i class="ace-icon fa fa-plus-square bigger-110"></i>
-                    New Post
-                </button>
+                <c:if test="${allowCreate == true}">
+                    <button class="btn btn-success btn-xs" type="button" rel="${topicId}" id="newPost">
+                        <i class="ace-icon fa fa-plus-square bigger-110"></i>
+                        New Post
+                    </button>
+                </c:if>
             </div>
         </div>
     </div>
