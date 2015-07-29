@@ -26,7 +26,7 @@
             <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        <form:checkbox path="newEventNotifications" />  Send email notification for any new event added to the calendar.
+                        <form:checkbox path="newEventNotifications" />  Receive email notifications when new events are added to the calendar.
                     </label>
                 </div>
             </div>
@@ -37,7 +37,7 @@
             <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        <form:checkbox path="modifyEventNotifications" />  Send email notification when an event is modified.
+                        <form:checkbox path="modifyEventNotifications" />  Receive email notifications when calendar events are modified.
                     </label>
                 </div>
             </div>

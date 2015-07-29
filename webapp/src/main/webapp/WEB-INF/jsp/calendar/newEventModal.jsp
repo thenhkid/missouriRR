@@ -31,56 +31,61 @@
             </div>
         </div>
         <div class="row">
-            <div class="form-group" id="eventTitleDiv">
-                <label class="sr-only" for="eventName">Event Name</label>
-                <form:input path="eventTitle" class="form-control eventName" placeholder="Event Name" maxlength="55" />
-                <span id="eventTitleMessage" class="control-label"></span>
+            <div class="col-md-6">
+                <div class="form-group" id="eventTitleDiv">
+                    <label for="eventName">Event Name</label>
+                    <form:input path="eventTitle" class="form-control eventName" placeholder="Event Name" maxlength="55" />
+                    <span id="eventTitleMessage" class="control-label"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="row clearfix">
+                        <div class="col-md-6">
+                            <label for="eventDate">Start Date</label>
+                            <fmt:formatDate value="${calendarEvent.eventStartDate}" var="dateStartString" pattern="MM/dd/yyyy" />
+                            <form:input path="startDate" class="form-control eventStartDate" placeholder="Start Date" value="${dateStartString}" />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="eventDate">End Date</label>
+                            <fmt:formatDate value="${calendarEvent.eventEndDate}" var="dateEndString" pattern="MM/dd/yyyy" />
+                            <form:input path="endDate" class="form-control eventEndDate" placeholder="End Date" value="${dateEndString}" />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>            
         <div class="row">
-            <div class="form-group">
-                <label class="sr-only" for="eventLocation">Event Location</label>
-                <form:input path="eventLocation" class="form-control eventLocation" placeholder="Event Location" maxlength="255" />
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="eventLocation">Event Location</label>
+                    <form:input path="eventLocation" class="form-control eventLocation" placeholder="Event Location" maxlength="255" />
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="form-group">
-                <div class="row clearfix">
-                    <div class="col-md-6">
-                        <label for="eventDate">Start Date</label>
-                        <fmt:formatDate value="${calendarEvent.eventStartDate}" var="dateStartString" pattern="MM/dd/yyyy" />
-                        <form:input path="startDate" class="form-control eventStartDate" placeholder="Start Date" value="${dateStartString}" />
-                    </div>
-                    <div class="col-md-6">
-                        <label for="eventDate">End Date</label>
-                        <fmt:formatDate value="${calendarEvent.eventEndDate}" var="dateEndString" pattern="MM/dd/yyyy" />
-                        <form:input path="endDate" class="form-control eventEndDate" placeholder="End Date" value="${dateEndString}" />
+            <div class="col-md-6">
+                <div class="form-group" id="eventTimeDiv">
+                    <div class="row clearfix">
+                        <div class="col-md-6">
+                            <label for="timeFrom">Start Time</label>
+                            <form:input path="eventStartTime" class="form-control timeFrom" placeholder="Start Time"  />
+                            <span id="eventStartTimeMessage" class="control-label"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="timeFrom">End Time</label>
+                            <form:input path="eventEndTime" class="form-control timeTo" name="timeTo" placeholder="End Time" />
+                            <span id="eventEndTimeMessage" class="control-label"></span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="form-group" id="eventTimeDiv">
-                <div class="row clearfix">
-                    <div class="col-md-6">
-                        <label for="timeFrom">Start Time</label>
-                        <form:input path="eventStartTime" class="form-control timeFrom" placeholder="Start Time"  />
-                        <span id="eventStartTimeMessage" class="control-label"></span>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="timeFrom">End Time</label>
-                        <form:input path="eventEndTime" class="form-control timeTo" name="timeTo" placeholder="End Time" />
-                        <span id="eventEndTimeMessage" class="control-label"></span>
-                    </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="eventNotes">Notes</label>
+                    <form:textarea path="eventNotes" class="form-control eventNotes" placeholder="Notes" maxlength="255"/>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="form-group">
-                <label for="eventNotes">Notes</label>
-                <form:textarea path="eventNotes" class="form-control eventNotes" placeholder="Notes" maxlength="255"/>
-            </div>
-            
         </div>
 
         <c:if test="${not empty calendarEvent.existingDocuments}">
@@ -102,29 +107,32 @@
             </div>
         </c:if>
         <div class="row">
-            <div class="form-group">         
-                <label for="document1">Documents</label>
-                <div class="form-group">
-                    <div class="col-lg-12">
-                        <input  multiple="" name="eventDocuments" type="file" id="id-input-file-2" />
+            <div class="col-md-12">
+                <div class="form-group">         
+                    <label for="document1">Documents</label>
+                    <div class="form-group">
+                        
+                            <input  multiple="" name="eventDocuments" type="file" id="id-input-file-2" />
+                        
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
-            
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <c:choose>
-                            <c:when test="${calendarEvent.id > 0}">
-                                <input type="checkbox" name="alertAllUsers" value="1"> Send email notification to users regarding this change?
-                            </c:when>
-                            <c:otherwise>
-                                <input type="checkbox" name="alertAllUsers" value="1"> Send email notification to users regarding this new event?
-                            </c:otherwise>
-                        </c:choose>
-                    </label>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            <c:choose>
+                                <c:when test="${calendarEvent.id > 0}">
+                                    <input type="checkbox" name="alertAllUsers" value="1"> Send email notification to users regarding this change?
+                                </c:when>
+                                <c:otherwise>
+                                    <input type="checkbox" name="alertAllUsers" value="1"> Send email notification to users regarding this new event?
+                                </c:otherwise>
+                            </c:choose>
+                        </label>
+                    </div>
                 </div>
             </div>    
             <%--<div class="space-4"></div>
@@ -166,6 +174,7 @@
             </c:if>
         </c:if>
         <div class="row">
+            <div class="col-md-12">
             <button type="submit" class="btn btn-mini btn-primary eventSave">
                 <i class="ace-icon fa fa-save bigger-120 white"></i>
                 Save
@@ -176,6 +185,7 @@
                     Delete
                 </button>
             </c:if>
+            </div>
         </div>
 
     </form:form>
