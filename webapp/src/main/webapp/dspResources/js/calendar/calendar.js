@@ -877,7 +877,18 @@ jQuery(function ($) {
     $(document).on('click', '#alwaysCreateAlert1', function () {
         $('#alertFrequency').toggle();
     });
-
+    
+    $(document).on('click', '.fc-next-button', function () {
+        $('.popover').popover('destroy');
+    });
+    
+    $(document).on('click', '.fc-prev-button', function () {
+        $('.popover').popover('destroy');
+    });
+    
+    $(document).on('click', '.fc-today-button', function () {
+        $('.popover').popover('destroy');
+    });
 });
 
 function refreshEventTypesColumn() {
