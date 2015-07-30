@@ -6,9 +6,9 @@
 
 
 jQuery(function ($) {
-    
+
     $("input:text,form").attr("autocomplete", "off");
-    
+
     var typewatch = (function () {
         var timer = 0;
         return function (callback, ms) {
@@ -16,7 +16,7 @@ jQuery(function ($) {
             timer = setTimeout(callback, ms);
         };
     })();
-    
+
     $(document).ready(function () {
 
         $(document).on("keyup", "#nav-search-input", function () {
@@ -66,18 +66,18 @@ jQuery(function ($) {
             $('#clearSearch').hide();
             $('#nav-search-input').val("");
         });
-        
+
     });
-    
-    
+
+
     $('#newTopic').on('click', function () {
         showTopicForm(0);
     });
-    
+
     $('.editTopic').on('click', function () {
         showTopicForm($(this).attr('rel'));
     });
-    
+
     $(document).on("click", ".deleteTopic", function () {
 
         var topicId = $(this).attr('rel');
@@ -90,20 +90,43 @@ jQuery(function ($) {
                 url: '/forum/removeForumTopic.do',
                 data: {'topicId': topicId},
                 success: function (data) {
-                     window.location.reload();
+                    window.location.reload();
                 }
             });
         }
 
     });
-    
+
     function showTopicForm(topicId) {
-       
+
         $.ajax({
             type: 'GET',
             url: '/forum/getTopicForm.do',
             data: {'topicId': topicId},
             success: function (data, event) {
+
+                data = $(data);
+
+                data.find('.multiselect').multiselect({
+                    enableFiltering: false,
+                    includeSelectAllOption: true,
+                    buttonClass: 'btn btn-white btn-primary',
+                    enableClickableOptGroups: false,
+                    enableCaseInsensitiveFiltering: false,
+                    disableIfEmpty: true,
+                    nonSelectedText: 'Select your Counties',
+                    numberDisplayed: 10,
+                    templates: {
+                        button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown"></button>',
+                        ul: '<ul class="multiselect-container dropdown-menu"></ul>',
+                        filter: '<li class="multiselect-item filter"><div class="input-group"><span class="input-group-addon"><i class="fa fa-search"></i></span><input class="form-control multiselect-search" type="text"></div></li>',
+                        filterClearBtn: '<span class="input-group-btn"><button class="btn btn-default btn-white btn-grey multiselect-clear-filter" type="button"><i class="fa fa-times-circle red2"></i></button></span>',
+                        li: '<li><a href="javascript:void(0);"><label></label></a></li>',
+                        divider: '<li class="multiselect-item divider"></li>',
+                        liGroup: '<li class="multiselect-item group"><label class="multiselect-group" style="padding-left:5px; font-weight:bold;"></label></li>'
+                    }
+                });
+
                 bootbox.dialog({
                     message: data,
                     title: "New Topic",
@@ -136,9 +159,13 @@ jQuery(function ($) {
             }
         });
     }
-    
-    function topicFn(event) {
 
+    function topicFn(event) {
+        $('div').removeClass("has-error");
+        $('span').removeClass("has-error");
+        $('#titleMsg').html("");
+        $('#messageMsg').html("");
+        $('#entityMsg').html("");
         var formData = $("#topicForm").serialize();
 
         var topicId = 0;
@@ -158,6 +185,15 @@ jQuery(function ($) {
                 $('#messageMsg').html('The initial message is required.');
                 errorFound = true;
             }
+        }
+
+        //Make sure at least one school is selcted
+        if ($('.whichEntity:checked').val() == 2 && ($('#entityIds').val() == "" || $('#entityIds').val() == null)) {
+            $('#entityDiv').addClass("has-error");
+            $('#entityMsg').addClass("has-error");
+            $('#entitySelectList').addClass("has-error");
+            $('#entityMsg').html("At least one county must be selected.");
+            errorFound = true;
         }
 
         if (errorFound == false) {
@@ -180,6 +216,16 @@ jQuery(function ($) {
 
     }
 
-    
-    
+    $(document).on('click', '.whichEntity', function () {
+
+        if ($(this).val() == 1) {
+            $('#entityIds').val("");
+            $('#entitySelectList').hide();
+        }
+        else {
+            $('#entitySelectList').show();
+        }
+
+    });
+
 });
