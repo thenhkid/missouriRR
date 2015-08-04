@@ -248,7 +248,38 @@ jQuery(function ($) {
                     success: function (data) {
 
                         data = $(data);
-                        
+
+                        data.find('.whichEntity').on('click', function () {
+                            if ($(this).val() == 1) {
+                                data.find('#entityIds').val("");
+                                data.find('#entitySelectList').hide();
+                            }
+                            else {
+                                data.find('#entitySelectList').show();
+                            }
+                        });
+
+                        data.find('.multiselect').multiselect({
+                            enableFiltering: false,
+                            includeSelectAllOption: true,
+                            buttonClass: 'btn btn-white btn-primary',
+                            enableClickableOptGroups: false,
+                            enableCaseInsensitiveFiltering: false,
+                            disableIfEmpty: true,
+                            nonSelectedText: 'Select your Counties',
+                            numberDisplayed: 10,
+                            templates: {
+                                button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown"></button>',
+                                ul: '<ul class="multiselect-container dropdown-menu"></ul>',
+                                filter: '<li class="multiselect-item filter"><div class="input-group"><span class="input-group-addon"><i class="fa fa-search"></i></span><input class="form-control multiselect-search" type="text"></div></li>',
+                                filterClearBtn: '<span class="input-group-btn"><button class="btn btn-default btn-white btn-grey multiselect-clear-filter" type="button"><i class="fa fa-times-circle red2"></i></button></span>',
+                                li: '<li><a href="javascript:void(0);"><label></label></a></li>',
+                                divider: '<li class="multiselect-item divider"></li>',
+                                liGroup: '<li class="multiselect-item group"><label class="multiselect-group" style="padding-left:5px; font-weight:bold;"></label></li>'
+                            }
+                        });
+
+
                         data.find('#simple-colorpicker-1').ace_colorpicker()
                                 .on('change', function () {
                                     queryEventType(this.value);
@@ -311,7 +342,7 @@ jQuery(function ($) {
                             showOtherMonths: true,
                             selectOtherMonths: true
                         });
-                        
+
                         $(tempThis).popover({
                             trigger: 'focus',
                             content: data,
@@ -320,7 +351,7 @@ jQuery(function ($) {
                             title: 'Create Event  <button type="button" id="closePopover" class="close pull-right">&times;</button>',
                             container: 'body',
                             callback: function () {
-                                
+
                             }
                         });
                         $(tempThis).popover('toggle');
@@ -329,7 +360,7 @@ jQuery(function ($) {
                             $(".eventEndDate").val($(this).val());
                             $(".eventEndDate").datepicker("setDate", $(this).val());
                         });
-                        
+
                         // on initial load get id of first color is selector from the db
                         var firstValueDefaulted = $("#simple-colorpicker-1 option:first").val();
                         queryEventType(firstValueDefaulted);
@@ -360,6 +391,36 @@ jQuery(function ($) {
                 success: function (data) {
 
                     data = $(data);
+
+                    data.find('.whichEntity').on('click', function () {
+                        if ($(this).val() == 1) {
+                            data.find('#entityIds').val("");
+                            data.find('#entitySelectList').hide();
+                        }
+                        else {
+                            data.find('#entitySelectList').show();
+                        }
+                    });
+
+                    data.find('.multiselect').multiselect({
+                        enableFiltering: false,
+                        includeSelectAllOption: true,
+                        buttonClass: 'btn btn-white btn-primary',
+                        enableClickableOptGroups: false,
+                        enableCaseInsensitiveFiltering: false,
+                        disableIfEmpty: true,
+                        nonSelectedText: 'Select your Counties',
+                        numberDisplayed: 10,
+                        templates: {
+                            button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown"></button>',
+                            ul: '<ul class="multiselect-container dropdown-menu"></ul>',
+                            filter: '<li class="multiselect-item filter"><div class="input-group"><span class="input-group-addon"><i class="fa fa-search"></i></span><input class="form-control multiselect-search" type="text"></div></li>',
+                            filterClearBtn: '<span class="input-group-btn"><button class="btn btn-default btn-white btn-grey multiselect-clear-filter" type="button"><i class="fa fa-times-circle red2"></i></button></span>',
+                            li: '<li><a href="javascript:void(0);"><label></label></a></li>',
+                            divider: '<li class="multiselect-item divider"></li>',
+                            liGroup: '<li class="multiselect-item group"><label class="multiselect-group" style="padding-left:5px; font-weight:bold;"></label></li>'
+                        }
+                    });
 
                     data.find('#simple-colorpicker-1').ace_colorpicker('pick', $('#simple-colorpicker-1').attr('rel'))
                             .on('change', function () {
@@ -405,7 +466,8 @@ jQuery(function ($) {
 
                         if ($(this).val() == "") {
                             data.find('.notificationsOptions').toggle();
-                            data.find('#sendAlert').prop('checked', false);;
+                            data.find('#sendAlert').prop('checked', false);
+                            ;
                             $.ajax({
                                 url: '/calendar/deleteEventNotification.do',
                                 type: 'POST',
@@ -877,15 +939,15 @@ jQuery(function ($) {
     $(document).on('click', '#alwaysCreateAlert1', function () {
         $('#alertFrequency').toggle();
     });
-    
+
     $(document).on('click', '.fc-next-button', function () {
         $('.popover').popover('destroy');
     });
-    
+
     $(document).on('click', '.fc-prev-button', function () {
         $('.popover').popover('destroy');
     });
-    
+
     $(document).on('click', '.fc-today-button', function () {
         $('.popover').popover('destroy');
     });

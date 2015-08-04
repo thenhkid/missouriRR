@@ -7,6 +7,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
 <jsp:useBean id="today" class="java.util.Date" />
 <fmt:formatDate value="${today}" var="today" type="both" pattern="yyyy-MM-dd HH:mm" />
 
@@ -29,7 +31,36 @@
                     </c:forEach>
                 </select>
             </div>
-        </div>
+        </div>        
+        <div class="hr hr-dotted"></div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="eventNotes">Select the ${topLevelName} this event will be posted to</label>
+                    <div>
+                        <label class="radio-inline">
+                            <form:radiobutton path="whichEntity"  value="1" class="whichEntity" />All Counties
+                        </label>
+                        <label class="radio-inline">
+                            <form:radiobutton path="whichEntity" value="2" class="whichEntity" />Select County
+                        </label>
+                    </div>
+                    <span id="entityMsg" class="control-label"></span>
+                </div>
+            </div>
+        </div>   
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group" id="entitySelectList" <c:if test="${calendarEvent.whichEntity == 1}">style="display:none;"</c:if>>
+                        <select name="selectedEntities" class="multiselect form-control" id="entityIds" multiple="">
+                        <c:forEach items="${countyList}" var="county">
+                            <option value="${county.id}" <c:if test="${fn:contains(calendarEvent.eventEntities, county.id)}">selected</c:if>>${county.name}</option>
+                        </c:forEach>
+                    </select>
+                </div>    
+            </div>
+        </div>                 
+        <div class="hr hr-dotted"></div>
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group" id="eventTitleDiv">
@@ -111,9 +142,9 @@
                 <div class="form-group">         
                     <label for="document1">Documents</label>
                     <div class="form-group">
-                        
-                            <input  multiple="" name="eventDocuments" type="file" id="id-input-file-2" />
-                        
+
+                        <input  multiple="" name="eventDocuments" type="file" id="id-input-file-2" />
+
                     </div>
                 </div>
             </div>
@@ -135,8 +166,6 @@
                     </div>
                 </div>
             </div>    
-            <%--<div class="space-4"></div>
-            <div class="hr hr-dotted"></div>--%>
         </div>
         <c:if test="${calendarEvent.id > 0}">
             <fmt:formatDate value="${calendarEvent.eventStartDate}" var="eventStartDate" type="date" pattern="yyyy-MM-dd" />
@@ -145,28 +174,32 @@
 
             <c:if test="${today le eventStartDateWTimeFormatted}">
                 <div class="row">
-                    <div class="form-group">
-                        <div class="checkbox">
-                            <label>
-                                <form:checkbox path="sendAlert" id="sendAlert" />  Send email notification prior to the start of this event
-                            </label>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                    <form:checkbox path="sendAlert" id="sendAlert" />  Receive an email notification prior to the start of this event
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="row notificationsOptions" id="alertFrequency" <c:if test="${calendarEvent.sendAlert == false}">style="display: none;"</c:if>>
+                    <div class="col-md-12">
                         <div class="form-group">
-                        <form:select path="emailAlertMin" class="form-control emailAlertMin">
-                            <option value="">-</option>
-                            <option value="0" <c:if test="${calendarEvent.emailAlertMin == 0}"> selected </c:if>>Email: At time of event</option>
-                            <option value="5" <c:if test="${calendarEvent.emailAlertMin == 5}"> selected </c:if>>Email: 5 Min before event</option>
-                            <option value="10" <c:if test="${calendarEvent.emailAlertMin == 10}"> selected </c:if>>Email: 10 Min before event</option>
-                            <option value="15" <c:if test="${calendarEvent.emailAlertMin == 15}"> selected </c:if>>Email: 15 Min before event</option>
-                            <option value="30" <c:if test="${calendarEvent.emailAlertMin == 30}"> selected </c:if>>Email: 30 Min before event</option>
-                            <option value="60" <c:if test="${calendarEvent.emailAlertMin == 60}"> selected </c:if>>Email: 1 hour before event</option>
-                            <option value="120" <c:if test="${calendarEvent.emailAlertMin == 120}"> selected </c:if>>Email: 2 hour before event</option>
-                            <option value="1440" <c:if test="${calendarEvent.emailAlertMin == 1440}"> selected </c:if>>Email: 1 day before event</option>
-                            <option value="2880" <c:if test="${calendarEvent.emailAlertMin == 2880}"> selected </c:if>>Email: 2 days before event</option>
-                        </form:select>
+                            <form:select path="emailAlertMin" class="form-control emailAlertMin">
+                                <option value="">-</option>
+                                <option value="0" <c:if test="${calendarEvent.emailAlertMin == 0}"> selected </c:if>>Email: At time of event</option>
+                                <option value="5" <c:if test="${calendarEvent.emailAlertMin == 5}"> selected </c:if>>Email: 5 Min before event</option>
+                                <option value="10" <c:if test="${calendarEvent.emailAlertMin == 10}"> selected </c:if>>Email: 10 Min before event</option>
+                                <option value="15" <c:if test="${calendarEvent.emailAlertMin == 15}"> selected </c:if>>Email: 15 Min before event</option>
+                                <option value="30" <c:if test="${calendarEvent.emailAlertMin == 30}"> selected </c:if>>Email: 30 Min before event</option>
+                                <option value="60" <c:if test="${calendarEvent.emailAlertMin == 60}"> selected </c:if>>Email: 1 hour before event</option>
+                                <option value="120" <c:if test="${calendarEvent.emailAlertMin == 120}"> selected </c:if>>Email: 2 hour before event</option>
+                                <option value="1440" <c:if test="${calendarEvent.emailAlertMin == 1440}"> selected </c:if>>Email: 1 day before event</option>
+                                <option value="2880" <c:if test="${calendarEvent.emailAlertMin == 2880}"> selected </c:if>>Email: 2 days before event</option>
+                            </form:select>
+                        </div>
                     </div>
                 </div>
                 <div class="space-4"></div>
@@ -175,16 +208,16 @@
         </c:if>
         <div class="row">
             <div class="col-md-12">
-            <button type="submit" class="btn btn-mini btn-primary eventSave">
-                <i class="ace-icon fa fa-save bigger-120 white"></i>
-                Save
-            </button>
-            <c:if test="${calendarEvent.id > 0}">
-                <button type="submit" class="btn btn-mini btn-danger deleteEvent" rel="${calendarEvent.id}">
-                    <i class="ace-icon fa fa-trash bigger-120 white"></i>
-                    Delete
+                <button type="submit" class="btn btn-mini btn-primary eventSave">
+                    <i class="ace-icon fa fa-save bigger-120 white"></i>
+                    Save
                 </button>
-            </c:if>
+                <c:if test="${calendarEvent.id > 0}">
+                    <button type="submit" class="btn btn-mini btn-danger deleteEvent" rel="${calendarEvent.id}">
+                        <i class="ace-icon fa fa-trash bigger-120 white"></i>
+                        Delete
+                    </button>
+                </c:if>
             </div>
         </div>
 

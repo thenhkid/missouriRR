@@ -71,13 +71,19 @@ public class forumController {
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/forum");
+        
+        /* Get a list of top level entities */
+        Integer userId = 0;
+        if (userDetails.getRoleId() == 3) {
+            userId = userDetails.getId();
+        }
 
         /* Get a list of announcment topics */
-        List<forumTopics> announcementTopics = forumManager.getTopics(programId, 1);
+        List<forumTopics> announcementTopics = forumManager.getTopics(programId, 1, userId);
         mav.addObject("announcementTopics", announcementTopics);
 
         /* Get a list of regular topics */
-        List<forumTopics> regularTopics = forumManager.getTopics(programId, 2);
+        List<forumTopics> regularTopics = forumManager.getTopics(programId, 2, userId);
         mav.addObject("regularTopics", regularTopics);
 
         /* Get user permissions */
@@ -270,7 +276,7 @@ public class forumController {
         if (userDetails.getRoleId() == 3) {
             userId = userDetails.getId();
         }
-        List<programHierarchyDetails> counties = hierarchymanager.getProgramHierarchyItems(topLevel.getId(), userId);
+        List<programHierarchyDetails> counties = hierarchymanager.getProgramHierarchyItems(topLevel.getId(), 0);
 
         mav.addObject("countyList", counties);
         mav.addObject("topLevelName", topLevel.getName());
