@@ -289,7 +289,7 @@ public class calendarController {
         if (calendarEvent.getId() > 0 && alertAllUsers == true) {
             
             /* Get a list of users who want to be notified of event changes */
-            List<calendarNotificationPreferences> notifyUserList = calendarManager.getModifiedEventUserNotifications(programId);
+            List<calendarNotificationPreferences> notifyUserList = calendarManager.getModifiedEventUserNotifications(programId, eventId);
             
             if (notifyUserList != null && notifyUserList.size() > 0) {
                 
@@ -304,7 +304,7 @@ public class calendarController {
                         messageDetails.settoEmailAddress(notification.getNotificationEmail());
                         messageDetails.setfromEmailAddress(programDetails.getEmailAddress());
                         messageDetails.setmessageSubject(programDetails.getProgramName() + " Calendar Event Modification");
-
+                        
                         sb.append("Below are the new details for the <strong>").append(calendarEvent.getEventTitle()).append("</strong> event.");
                         sb.append("<br /><br />");
                         sb.append("<strong>Start Date/Time: </strong>").append(calendarEvent.getEventStartDate().toString().substring(0, 10)).append(" ").append(calendarEvent.getEventStartTime());
@@ -329,7 +329,7 @@ public class calendarController {
         else if (alertAllUsers == true) {
 
             /* Get a list of users who want to be notified of event changes */
-            List<calendarNotificationPreferences> notifyUserList = calendarManager.getNewEventUserNotifications(programId);
+            List<calendarNotificationPreferences> notifyUserList = calendarManager.getNewEventUserNotifications(programId, eventId);
 
             if (notifyUserList != null && notifyUserList.size() > 0) {
 
@@ -344,7 +344,7 @@ public class calendarController {
                         messageDetails.settoEmailAddress(notification.getNotificationEmail());
                         messageDetails.setfromEmailAddress(programDetails.getEmailAddress());
                         messageDetails.setmessageSubject(programDetails.getProgramName() + " New Calendar Event");
-
+                        
                         sb.append("<strong>").append(calendarEvent.getEventTitle()).append("</strong>");
                         sb.append("<br /><br />");
                         sb.append("<strong>Start Date/Time: </strong>").append(calendarEvent.getEventStartDate().toString().substring(0, 10)).append(" ").append(calendarEvent.getEventStartTime());
