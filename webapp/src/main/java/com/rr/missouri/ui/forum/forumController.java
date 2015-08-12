@@ -333,15 +333,13 @@ public class forumController {
 
         /* Submit the initial message */
         boolean newTopic = true;
+        forumMessages messageDetails = new forumMessages();
         if (forumTopic.getId() == 0) {
             topicId = forumManager.saveTopic(forumTopic);
-
-            forumMessages messageDetails = new forumMessages();
             messageDetails.setTopicId(topicId);
             messageDetails.setMessage(forumTopic.getInitialMessage());
             messageDetails.setSystemUserId(userDetails.getId());
             messageDetails.setProgramId(programId);
-
             forumManager.saveTopicMessage(messageDetails);
         } else {
             forumManager.updateTopic(forumTopic);
@@ -379,7 +377,9 @@ public class forumController {
             }
         }
 
-        
+        if (newTopic) {
+            forumManager.sendNewTopicNotificatoins(messageDetails, forumTopic);
+        }
         
         /* Return the topic Id */
         return topicId;
@@ -591,6 +591,9 @@ public class forumController {
             newNotificationPreferences.setProgramId(programId);
             mav.addObject("notificationPreferences", newNotificationPreferences);
         }
+        
+        programOrgHierarchy topLevel = hierarchymanager.getProgramOrgHierarchyBydspPos(1, programId);
+        mav.addObject("topLevelName", topLevel.getName());
 
         return mav;
     }
