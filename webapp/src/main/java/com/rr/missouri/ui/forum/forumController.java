@@ -447,15 +447,22 @@ public class forumController {
 
         forumMessage.setSystemUserId(userDetails.getId());
         forumMessage.setProgramId(programId);
-
+        
         forumManager.saveTopicMessage(forumMessage);
-
+        
         if (postDocuments != null) {
             forumManager.saveDocuments(forumMessage, postDocuments);
         }
 
         forumTopics topicDetails = forumManager.getTopicById(forumMessage.getTopicId());
 
+        /**post comments to my topics email**/
+        forumManager.sendMyPostsNotifications(forumMessage, topicDetails);
+        
+        /** post/comments made to topics I have posted to **/
+        forumManager.sendRepliesTopicsNotifications(forumMessage, topicDetails);
+        
+        
         ModelAndView mav = new ModelAndView(new RedirectView("/forum/" + topicDetails.getTopicURL()));
         return mav;
 
