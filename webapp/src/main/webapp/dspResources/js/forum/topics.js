@@ -36,7 +36,6 @@ jQuery(function ($) {
                 typewatch(function () {
                     $('#clearSearch').hide();
                     $('#searchSpinner').show();
-
                     $.ajax({
                         url: '/forum/searchMessages.do',
                         data: {
@@ -227,5 +226,64 @@ jQuery(function ($) {
         }
 
     });
+    
+    
+    $(document).on("click", "a#forumNotificationManagerModel", function () {
+        $('.popover').popover('destroy');
+        $.ajax({
+            url: '/forum/getForumNotificationModel.do',
+            type: 'GET',
+            success: function (data) {
+                data = $(data);
+
+                bootbox.dialog({
+                    title: "Forum Notification Preferences",
+                    message: data
+                });
+
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    });
+    
+    $(document).on('click', '#saveNotificationPreferences', function () {
+
+        var formData = $("#notificationPreferencesForm").serialize();
+        var errorFound = false;
+
+        if ($('#notificationEmail').val() == '') {
+                $('#notificationEmailGroup').addClass("has-error");
+                $('#notificationEmailMessage').addClass("has-error");
+                $('#notificationEmailMessage').html('The notification email address is required.');
+                errorFound = true;
+            }
+        
+
+        if (errorFound == false) {
+            $('#notificationEmailGroup').removeClass("has-error");
+            $('#notificationEmailMessage').removeClass("has-error");
+            $('#notificationEmailMessage').html('');
+
+            $.ajax({
+                url: '/forum/saveNotificationPreferences.do',
+                type: 'POST',
+                data: formData,
+                success: function (data) {
+                    $('.successAlert').show();
+                    setTimeout(function () {
+                        bootbox.hideAll();
+                    }, 2000);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+
+        return false;
+    });
+    
 
 });

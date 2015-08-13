@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.registryKit.forum.forumManager;
 import com.registryKit.forum.forumMessages;
+import com.registryKit.forum.forumNotificationPreferences;
 import com.registryKit.forum.forumTopicEntities;
 import com.registryKit.forum.forumTopics;
 import com.registryKit.hierarchy.hierarchyManager;
@@ -23,9 +24,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -329,19 +332,19 @@ public class forumController {
         Integer topicId = 0;
 
         /* Submit the initial message */
+        boolean newTopic = true;
+        forumMessages messageDetails = new forumMessages();
         if (forumTopic.getId() == 0) {
             topicId = forumManager.saveTopic(forumTopic);
-
-            forumMessages messageDetails = new forumMessages();
             messageDetails.setTopicId(topicId);
             messageDetails.setMessage(forumTopic.getInitialMessage());
             messageDetails.setSystemUserId(userDetails.getId());
             messageDetails.setProgramId(programId);
-
             forumManager.saveTopicMessage(messageDetails);
         } else {
             forumManager.updateTopic(forumTopic);
             topicId = forumTopic.getId();
+            newTopic = false;
         }
         
         /* Remove existing entities */
@@ -374,6 +377,10 @@ public class forumController {
             }
         }
 
+        if (newTopic) {
+            forumManager.sendNewTopicNotificatoins(messageDetails, forumTopic);
+        }
+        
         /* Return the topic Id */
         return topicId;
     }
@@ -440,15 +447,22 @@ public class forumController {
 
         forumMessage.setSystemUserId(userDetails.getId());
         forumMessage.setProgramId(programId);
-
+        
         forumManager.saveTopicMessage(forumMessage);
-
+        
         if (postDocuments != null) {
             forumManager.saveDocuments(forumMessage, postDocuments);
         }
 
         forumTopics topicDetails = forumManager.getTopicById(forumMessage.getTopicId());
 
+        /**post comments to my topics email**/
+        forumManager.sendMyPostsNotifications(forumMessage, topicDetails);
+        
+        /** post/comments made to topics I have posted to **/
+        forumManager.sendRepliesTopicsNotifications(forumMessage, topicDetails);
+        
+        
         ModelAndView mav = new ModelAndView(new RedirectView("/forum/" + topicDetails.getTopicURL()));
         return mav;
 
@@ -514,7 +528,6 @@ public class forumController {
     @RequestMapping(value = "searchMessages.do", method = RequestMethod.GET)
     public @ResponseBody
     ModelAndView searchMessages(HttpSession session, @RequestParam(value = "searchTerm", required = true) String searchTerm) throws Exception {
-
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/forum/searchResults");
 
@@ -545,20 +558,19 @@ public class forumController {
                 if (counter > 6) {
                     counter = 0;
                 }
-
+                
                 String color = colors[counter];
 
                 for (forumMessages message : messages) {
                     forumTopics topicDetails = forumManager.getTopicById(message.getTopicId());
-
+                    
                     message.setTopicTitle(topicDetails.getTitle().toLowerCase().replaceAll(word, "<span class='" + color + "'>" + word + "</span>"));
                     message.setTopicURL(topicDetails.getTopicURL());
 
                     message.setMessage(message.getMessage().toLowerCase().replaceAll(word, "<span class='" + color + "'>" + word + "</span>"));
-
                 }
-
                 counter++;
+                
             }
         }
 
@@ -567,4 +579,46 @@ public class forumController {
         return mav;
 
     }
+    
+    @RequestMapping(value = "/getForumNotificationModel.do", method = RequestMethod.GET)
+    public ModelAndView getForumNotificationModel(HttpSession session, HttpServletRequest request) throws Exception {
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/forum/forumNotificationPreferences");
+
+        User userDetails = (User) session.getAttribute("userDetails");
+
+        forumNotificationPreferences notificationPreferences = forumManager.getNotificationPreferences(userDetails.getId());
+
+        if (notificationPreferences != null) {
+            mav.addObject("notificationPreferences", notificationPreferences);
+        } else {
+            forumNotificationPreferences newNotificationPreferences = new forumNotificationPreferences();
+            newNotificationPreferences.setNotificationEmail(userDetails.getEmail());
+            newNotificationPreferences.setProgramId(programId);
+            mav.addObject("notificationPreferences", newNotificationPreferences);
+        }
+        
+        programOrgHierarchy topLevel = hierarchymanager.getProgramOrgHierarchyBydspPos(1, programId);
+        mav.addObject("topLevelName", topLevel.getName());
+
+        return mav;
+    }
+    
+    
+    @RequestMapping(value = "/saveNotificationPreferences.do", method = RequestMethod.POST)
+    public @ResponseBody
+    Integer saveNotificationPreferences(@ModelAttribute(value = "notificationPreferences") forumNotificationPreferences notificationPreferences, BindingResult errors,
+            HttpSession session, HttpServletRequest request) throws Exception {
+        
+        User userDetails = (User) session.getAttribute("userDetails");
+
+        notificationPreferences.setSystemUserId(userDetails.getId());
+
+        forumManager.saveNotificationPreferences(notificationPreferences);
+
+        return 1;
+
+    }
+
 }

@@ -894,14 +894,13 @@ jQuery(function ($) {
         var formData = $("#notificationPreferencesForm").serialize();
         var errorFound = false;
 
-        if ($('#alwaysCreateAlert1').is(":checked")) {
-            if ($('#notificationEmail').val() == '') {
+        if ($('#notificationEmail').val() == '') {
                 $('#notificationEmailGroup').addClass("has-error");
                 $('#notificationEmailMessage').addClass("has-error");
                 $('#notificationEmailMessage').html('The notification email address is required.');
                 errorFound = true;
-            }
         }
+        
 
         if (errorFound == false) {
             $('#notificationEmailGroup').removeClass("has-error");
