@@ -6,12 +6,16 @@
 package com.rr.missouri.ui.calendar;
 
 import com.registryKit.calendar.calendarEventDocuments;
+import com.registryKit.calendar.calendarEventEntities;
 import com.registryKit.calendar.calendarEventNotifications;
 import com.registryKit.calendar.calendarEventTypeColors;
 import com.registryKit.calendar.calendarEventTypes;
 import com.registryKit.calendar.calendarEvents;
 import com.registryKit.calendar.calendarManager;
 import com.registryKit.calendar.calendarNotificationPreferences;
+import com.registryKit.hierarchy.hierarchyManager;
+import com.registryKit.hierarchy.programHierarchyDetails;
+import com.registryKit.hierarchy.programOrgHierarchy;
 import com.registryKit.messenger.emailManager;
 import com.registryKit.messenger.emailMessage;
 import com.registryKit.program.program;
@@ -21,6 +25,7 @@ import com.registryKit.user.userManager;
 import com.registryKit.user.userProgramModules;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -58,6 +63,9 @@ public class calendarController {
 
     @Autowired
     private programManager programManager;
+    
+    @Autowired
+    private hierarchyManager hierarchymanager;
 
     @Autowired
     private emailManager emailManager;
@@ -212,7 +220,8 @@ public class calendarController {
     public @ResponseBody
     Integer saveEvent(@ModelAttribute(value = "calendarEvent") calendarEvents calendarEvent, BindingResult errors, @RequestParam(value = "alertAllUsers", required = false, defaultValue = "0") Integer alertUsers,
             @RequestParam(value = "eventDocuments", required = false) List<MultipartFile> eventDocuments,
-            HttpSession session, HttpServletRequest request) throws Exception {
+            HttpSession session, HttpServletRequest request,
+            @RequestParam(value = "selectedEntities", required = false) List<Integer> selectedEntities) throws Exception {
 
         if (errors.hasErrors()) {
             for (ObjectError error : errors.getAllErrors()) {
@@ -240,17 +249,47 @@ public class calendarController {
             calendarEvent.setUploadedDocuments(eventDocuments);
         }
 
-        calendarManager.saveEvent(calendarEvent);
+        Integer eventId = calendarManager.saveEvent(calendarEvent);
 
         program programDetails = programManager.getProgramById(programId);
 
         calendarEventTypes eventType = calendarManager.getEventType(calendarEvent.getEventTypeId());
         
+        /* Remove existing entities */
+        calendarManager.removeEventEntities(programId, eventId);
+        
+        /* Enter the selected counties */
+        if (calendarEvent.getWhichEntity() == 1) {
+            /* Need to get all top entities for the program */
+            programOrgHierarchy topLevel = hierarchymanager.getProgramOrgHierarchyBydspPos(1, programId);
+            List<programHierarchyDetails> entities = hierarchymanager.getProgramHierarchyItems(topLevel.getId(), 0);
+
+            if (entities != null && entities.size() > 0) {
+                for (programHierarchyDetails entity : entities) {
+                    calendarEventEntities eventEntity = new calendarEventEntities();
+                    eventEntity.setEntityId(entity.getId());
+                    eventEntity.setProgramId(programId);
+                    eventEntity.setEventId(eventId);
+                    
+                    calendarManager.saveEventEntities(eventEntity);
+                }
+            }
+        } else if (calendarEvent.getWhichEntity() == 2 && selectedEntities != null && !"".equals(selectedEntities)) {
+            for (Integer entity : selectedEntities) {
+                calendarEventEntities eventEntity = new calendarEventEntities();
+                eventEntity.setEntityId(entity);
+                eventEntity.setProgramId(programId);
+                eventEntity.setEventId(eventId);
+                
+                calendarManager.saveEventEntities(eventEntity);
+            }
+        }
+        
         //Modifed Event Notification
         if (calendarEvent.getId() > 0 && alertAllUsers == true) {
             
             /* Get a list of users who want to be notified of event changes */
-            List<calendarNotificationPreferences> notifyUserList = calendarManager.getModifiedEventUserNotifications(programId);
+            List<calendarNotificationPreferences> notifyUserList = calendarManager.getModifiedEventUserNotifications(programId, eventId);
             
             if (notifyUserList != null && notifyUserList.size() > 0) {
                 
@@ -265,7 +304,7 @@ public class calendarController {
                         messageDetails.settoEmailAddress(notification.getNotificationEmail());
                         messageDetails.setfromEmailAddress(programDetails.getEmailAddress());
                         messageDetails.setmessageSubject(programDetails.getProgramName() + " Calendar Event Modification");
-
+                        
                         sb.append("Below are the new details for the <strong>").append(calendarEvent.getEventTitle()).append("</strong> event.");
                         sb.append("<br /><br />");
                         sb.append("<strong>Start Date/Time: </strong>").append(calendarEvent.getEventStartDate().toString().substring(0, 10)).append(" ").append(calendarEvent.getEventStartTime());
@@ -290,7 +329,7 @@ public class calendarController {
         else if (alertAllUsers == true) {
 
             /* Get a list of users who want to be notified of event changes */
-            List<calendarNotificationPreferences> notifyUserList = calendarManager.getNewEventUserNotifications(programId);
+            List<calendarNotificationPreferences> notifyUserList = calendarManager.getNewEventUserNotifications(programId, eventId);
 
             if (notifyUserList != null && notifyUserList.size() > 0) {
 
@@ -305,7 +344,7 @@ public class calendarController {
                         messageDetails.settoEmailAddress(notification.getNotificationEmail());
                         messageDetails.setfromEmailAddress(programDetails.getEmailAddress());
                         messageDetails.setmessageSubject(programDetails.getProgramName() + " New Calendar Event");
-
+                        
                         sb.append("<strong>").append(calendarEvent.getEventTitle()).append("</strong>");
                         sb.append("<br /><br />");
                         sb.append("<strong>Start Date/Time: </strong>").append(calendarEvent.getEventStartDate().toString().substring(0, 10)).append(" ").append(calendarEvent.getEventStartTime());
@@ -383,6 +422,28 @@ public class calendarController {
                 eventDetails.setSendAlert(true);
                 eventDetails.setEmailAlertMin(eventNotification.getEmailAlertMin());
             }
+            
+            List<calendarEventEntities> entities = calendarManager.getEventEntities(programId, eventDetails.getId());
+            
+            if(entities != null && entities.size() > 0) {
+                List<Integer> entityList = new ArrayList<Integer>();
+                for(calendarEventEntities entity : entities) {
+                    entityList.add(entity.getEntityId());
+                }
+                eventDetails.setEventEntities(entityList);
+            }
+            
+            programOrgHierarchy topLevel = hierarchymanager.getProgramOrgHierarchyBydspPos(1, programId);
+
+            /* Get a list of top level entities */
+            Integer userId = 0;
+            if (userDetails.getRoleId() == 3) {
+                userId = userDetails.getId();
+            }
+            List<programHierarchyDetails> counties = hierarchymanager.getProgramHierarchyItems(topLevel.getId(), 0);
+
+            mav.addObject("countyList", counties);
+            mav.addObject("topLevelName", topLevel.getName());
 
         } else {
 
@@ -512,6 +573,18 @@ public class calendarController {
         /* Set the event type by default to the first one in the system */
         newCalendarEvent.setEventTypeId(eventTypes.get(0).getId());
         mav.addObject("calendarEvent", newCalendarEvent);
+        
+        programOrgHierarchy topLevel = hierarchymanager.getProgramOrgHierarchyBydspPos(1, programId);
+
+        /* Get a list of top level entities */
+        Integer userId = 0;
+        if (userDetails.getRoleId() == 3) {
+            userId = userDetails.getId();
+        }
+        List<programHierarchyDetails> counties = hierarchymanager.getProgramHierarchyItems(topLevel.getId(), 0);
+
+        mav.addObject("countyList", counties);
+        mav.addObject("topLevelName", topLevel.getName());
 
         return mav;
     }

@@ -10,7 +10,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.registryKit.forum.forumManager;
 import com.registryKit.forum.forumMessages;
+import com.registryKit.forum.forumNotificationPreferences;
+import com.registryKit.forum.forumTopicEntities;
 import com.registryKit.forum.forumTopics;
+import com.registryKit.hierarchy.hierarchyManager;
+import com.registryKit.hierarchy.programHierarchyDetails;
+import com.registryKit.hierarchy.programOrgHierarchy;
 import com.registryKit.user.User;
 import com.registryKit.user.userManager;
 import com.registryKit.user.userProgramModules;
@@ -19,9 +24,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,40 +46,49 @@ import org.springframework.web.servlet.view.RedirectView;
 @Controller
 @RequestMapping("/forum")
 public class forumController {
-    
+
     private static Integer moduleId = 9;
 
     @Autowired
     forumManager forumManager;
-    
+
     @Autowired
     private userManager usermanager;
+
+    @Autowired
+    private hierarchyManager hierarchymanager;
 
     @Value("${programId}")
     private Integer programId;
 
     @Value("${topSecret}")
     private String topSecret;
-    
+
     private static boolean allowCreate = false;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ModelAndView forum(HttpSession session) throws Exception {
-        
+
         /* Get a list of completed surveys the logged in user has access to */
         User userDetails = (User) session.getAttribute("userDetails");
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/forum");
+        
+        /* Get a list of top level entities */
+        Integer userId = 0;
+        if (userDetails.getRoleId() == 3) {
+            userId = userDetails.getId();
+        }
 
         /* Get a list of announcment topics */
-        List<forumTopics> announcementTopics = forumManager.getTopics(programId, 1);
+        List<forumTopics> announcementTopics = forumManager.getTopics(programId, 1, userId);
         mav.addObject("announcementTopics", announcementTopics);
 
         /* Get a list of regular topics */
-        List<forumTopics> regularTopics = forumManager.getTopics(programId, 2);
+        List<forumTopics> regularTopics = forumManager.getTopics(programId, 2, userId);
         mav.addObject("regularTopics", regularTopics);
-        
+
         /* Get user permissions */
         userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
 
@@ -88,7 +104,8 @@ public class forumController {
     }
 
     /**
-     * The '/forum/${pathVariable}' GET request will return the message for the clicked topic.
+     * The '/forum/${pathVariable}' GET request will return the message for the
+     * clicked topic.
      *
      * @param pathVariable Will hold the url for the clicked variable
      * @return
@@ -118,7 +135,7 @@ public class forumController {
             mav.addObject("topicTitle", topicDetails.getTitle());
             mav.addObject("topicId", topicDetails.getId());
         }
-        
+
         mav.addObject("allowCreate", allowCreate);
 
         return mav;
@@ -153,13 +170,13 @@ public class forumController {
                     if (!messageReplies.isEmpty()) {
                         message.setReplies(messageReplies);
                     }
-                    
-                    List <forumDocuments> documentList = forumManager.getMessageDocuments(message.getId());
-            
+
+                    List<forumDocuments> documentList = forumManager.getMessageDocuments(message.getId());
+
                     if (!documentList.isEmpty()) {
                         message.setForumDocuments(documentList);
                     }
-                    
+
                     topicDateMessages.add(message);
 
                 } else if (date2.before(date1)) {
@@ -175,9 +192,9 @@ public class forumController {
                     if (!messageReplies.isEmpty()) {
                         message.setReplies(messageReplies);
                     }
-                    
-                    List <forumDocuments> documentList = forumManager.getMessageDocuments(message.getId());
-            
+
+                    List<forumDocuments> documentList = forumManager.getMessageDocuments(message.getId());
+
                     if (!documentList.isEmpty()) {
                         message.setForumDocuments(documentList);
                     }
@@ -187,13 +204,13 @@ public class forumController {
                     date1 = date2;
                 } else {
                     List<forumMessages> messageReplies = forumManager.getTopicMessageReplies(message.getId());
-                    
+
                     if (!messageReplies.isEmpty()) {
                         message.setReplies(messageReplies);
                     }
-                    
-                    List <forumDocuments> documentList = forumManager.getMessageDocuments(message.getId());
-            
+
+                    List<forumDocuments> documentList = forumManager.getMessageDocuments(message.getId());
+
                     if (!documentList.isEmpty()) {
                         message.setForumDocuments(documentList);
                     }
@@ -219,7 +236,8 @@ public class forumController {
     }
 
     /**
-     * The '/form/getTopicForm.do' GET request will return the topic message form.
+     * The '/form/getTopicForm.do' GET request will return the topic message
+     * form.
      *
      * @param topicId (required) The id of the selected topic
      * @return
@@ -227,8 +245,7 @@ public class forumController {
      */
     @RequestMapping(value = "/getTopicForm.do", method = RequestMethod.GET)
     public @ResponseBody
-    ModelAndView getTopicForm(
-            @RequestParam(value = "topicId", required = true) Integer topicId) throws Exception {
+    ModelAndView getTopicForm(HttpSession session, @RequestParam(value = "topicId", required = true) Integer topicId) throws Exception {
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/forum/topicFormModal");
@@ -239,66 +256,129 @@ public class forumController {
             topicDetails = new forumTopics();
         } else {
             topicDetails = forumManager.getTopicById(topicId);
+            
+            List<forumTopicEntities> entities = forumManager.getTopicEntities(programId, topicId);
+            
+            if(entities != null && entities.size() > 0) {
+                List<Integer> entityList = new ArrayList<Integer>();
+                for(forumTopicEntities entity : entities) {
+                    entityList.add(entity.getEntityId());
+                }
+                topicDetails.setForumTopicEntities(entityList);
+            }
+            
         }
         mav.addObject("forumTopic", topicDetails);
+
+        User userDetails = (User) session.getAttribute("userDetails");
+
+        programOrgHierarchy topLevel = hierarchymanager.getProgramOrgHierarchyBydspPos(1, programId);
+
+        /* Get a list of top level entities */
+        Integer userId = 0;
+        if (userDetails.getRoleId() == 3) {
+            userId = userDetails.getId();
+        }
+        List<programHierarchyDetails> counties = hierarchymanager.getProgramHierarchyItems(topLevel.getId(), 0);
+
+        mav.addObject("countyList", counties);
+        mav.addObject("topLevelName", topLevel.getName());
 
         return mav;
     }
 
-    
     /**
-     * The 'saveTopicForm' POST request will handle saving the new/updated post message.
-     * @param forumMessage
-     * @param errors
-     * @param redirectAttr
+     * The 'saveTopicForm' POST request will handle saving the new/updated post
+     * message.
+     *
+     * @param forumTopic
+     * @param whichEntity
+     * @param selectedEntities
      * @param session
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     @RequestMapping(value = "/saveTopicForm.do", method = RequestMethod.POST)
-    public @ResponseBody Integer saveTopicForm(@ModelAttribute(value = "forumTopic") forumTopics forumTopic, HttpSession session) throws Exception {
+    public @ResponseBody
+    Integer saveTopicForm(@ModelAttribute(value = "forumTopic") forumTopics forumTopic,
+            @RequestParam(value = "whichEntity", required = true) Integer whichEntity,
+            @RequestParam(value = "selectedEntities", required = false) List<Integer> selectedEntities,
+            HttpSession session) throws Exception {
 
         /* Get a list of completed surveys the logged in user has access to */
         User userDetails = (User) session.getAttribute("userDetails");
 
         forumTopic.setProgramId(programId);
-        
+
         /* Set the topic URL */
         String topicURL = forumTopic.getTitle().replaceAll("\\W", "-");
-        
+
         /* Check to see it topic URL exists */
-        forumTopics topicDetails = forumManager.getTopicByURL(topicURL); 
-        
+        forumTopics topicDetails = forumManager.getTopicByURL(topicURL);
+
         Integer topicNum = 0;
         String checktopicURL = topicURL;
-        
+
         while (topicDetails != null) {
             topicNum++;
-            
-            checktopicURL = topicURL.concat("-"+topicNum);
-            
-            topicDetails = forumManager.getTopicByURL(checktopicURL); 
+
+            checktopicURL = topicURL.concat("-" + topicNum);
+
+            topicDetails = forumManager.getTopicByURL(checktopicURL);
         }
-        
+
         forumTopic.setTopicURL(checktopicURL);
-        
+
         Integer topicId = 0;
 
         /* Submit the initial message */
-        if(forumTopic.getId() == 0) {
+        boolean newTopic = true;
+        forumMessages messageDetails = new forumMessages();
+        if (forumTopic.getId() == 0) {
             topicId = forumManager.saveTopic(forumTopic);
-            
-            forumMessages messageDetails = new forumMessages();
             messageDetails.setTopicId(topicId);
             messageDetails.setMessage(forumTopic.getInitialMessage());
             messageDetails.setSystemUserId(userDetails.getId());
             messageDetails.setProgramId(programId);
-
             forumManager.saveTopicMessage(messageDetails);
-        }
-        else {
+        } else {
             forumManager.updateTopic(forumTopic);
             topicId = forumTopic.getId();
+            newTopic = false;
+        }
+        
+        /* Remove existing entities */
+        forumManager.removeTopicEntities(programId, topicId);
+        
+        /* Enter the selected counties */
+        if (whichEntity == 1) {
+            /* Need to get all top entities for the program */
+            programOrgHierarchy topLevel = hierarchymanager.getProgramOrgHierarchyBydspPos(1, programId);
+            List<programHierarchyDetails> entities = hierarchymanager.getProgramHierarchyItems(topLevel.getId(), 0);
+
+            if (entities != null && entities.size() > 0) {
+                for (programHierarchyDetails entity : entities) {
+                    forumTopicEntities topicEntity = new forumTopicEntities();
+                    topicEntity.setEntityId(entity.getId());
+                    topicEntity.setProgramId(programId);
+                    topicEntity.setTopicId(topicId);
+                    
+                    forumManager.saveTopicEntities(topicEntity);
+                }
+            }
+        } else if (whichEntity == 2 && selectedEntities != null && !"".equals(selectedEntities)) {
+            for (Integer entity : selectedEntities) {
+                forumTopicEntities topicEntity = new forumTopicEntities();
+                topicEntity.setEntityId(entity);
+                topicEntity.setProgramId(programId);
+                topicEntity.setTopicId(topicId);
+                
+                forumManager.saveTopicEntities(topicEntity);
+            }
+        }
+
+        if (newTopic) {
+            forumManager.sendNewTopicNotificatoins(messageDetails, forumTopic);
         }
         
         /* Return the topic Id */
@@ -306,11 +386,14 @@ public class forumController {
     }
 
     /**
-     * The '/form/getPostForm.do' GET request will return the topic message form.
+     * The '/form/getPostForm.do' GET request will return the topic message
+     * form.
      *
      * @param topicId (required) The id of the selected topic
-     * @param postId (Optional) If passed in will hold the id of the selected topic message, if 0 then new message
-     * @param parentMessageId (Optional) If passed in will hold the id of the message that the reply is for.
+     * @param postId (Optional) If passed in will hold the id of the selected
+     * topic message, if 0 then new message
+     * @param parentMessageId (Optional) If passed in will hold the id of the
+     * message that the reply is for.
      * @return
      * @throws Exception
      */
@@ -332,10 +415,10 @@ public class forumController {
             messageDetails.setParentMessageId(parentMessageId);
         } else {
             messageDetails = forumManager.getTopicMessageDetails(postId);
-            
-            List <forumDocuments> documentList = forumManager.getMessageDocuments(postId);
+
+            List<forumDocuments> documentList = forumManager.getMessageDocuments(postId);
             mav.addObject("documentList", documentList);
-            
+
         }
         mav.addObject("forumMessage", messageDetails);
 
@@ -343,7 +426,8 @@ public class forumController {
     }
 
     /**
-     * The 'savePostForm' POST request will handle saving the new/updated post message.
+     * The 'savePostForm' POST request will handle saving the new/updated post
+     * message.
      *
      * @param forumMessage
      * @param errors
@@ -363,16 +447,23 @@ public class forumController {
 
         forumMessage.setSystemUserId(userDetails.getId());
         forumMessage.setProgramId(programId);
-
+        
         forumManager.saveTopicMessage(forumMessage);
         
         if (postDocuments != null) {
             forumManager.saveDocuments(forumMessage, postDocuments);
         }
-        
+
         forumTopics topicDetails = forumManager.getTopicById(forumMessage.getTopicId());
+
+        /**post comments to my topics email**/
+        forumManager.sendMyPostsNotifications(forumMessage, topicDetails);
         
-        ModelAndView mav = new ModelAndView(new RedirectView("/forum/"+topicDetails.getTopicURL()));
+        /** post/comments made to topics I have posted to **/
+        forumManager.sendRepliesTopicsNotifications(forumMessage, topicDetails);
+        
+        
+        ModelAndView mav = new ModelAndView(new RedirectView("/forum/" + topicDetails.getTopicURL()));
         return mav;
 
     }
@@ -392,7 +483,7 @@ public class forumController {
 
         return 1;
     }
-    
+
     /**
      * The 'removeForumTopic' POST request will remove the clicked post.
      *
@@ -408,41 +499,42 @@ public class forumController {
 
         return 1;
     }
-    
+
     /**
-     * The 'deleteDocument' POST request will remove the clicked uploaded document.
-     * 
+     * The 'deleteDocument' POST request will remove the clicked uploaded
+     * document.
+     *
      * @param documentId The id of the clicked document.
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
-    @RequestMapping(value = "/deleteDocument.do", method = RequestMethod.POST) 
-    public @ResponseBody Integer deleteDocument(@RequestParam(value = "documentId", required = true) Integer documentId) throws Exception {
-        
+    @RequestMapping(value = "/deleteDocument.do", method = RequestMethod.POST)
+    public @ResponseBody
+    Integer deleteDocument(@RequestParam(value = "documentId", required = true) Integer documentId) throws Exception {
+
         forumManager.deleteDocumentById(documentId);
-        
+
         return 1;
     }
-    
-    
+
     /**
      * The 'searchMessages' GET request will search the forum messages table.
-     * 
+     *
      * @param session
      * @param searchTerm The term to search on messages.
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     @RequestMapping(value = "searchMessages.do", method = RequestMethod.GET)
-    public @ResponseBody ModelAndView searchMessages(HttpSession session, @RequestParam(value = "searchTerm", required = true) String searchTerm) throws Exception {
-        
+    public @ResponseBody
+    ModelAndView searchMessages(HttpSession session, @RequestParam(value = "searchTerm", required = true) String searchTerm) throws Exception {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/forum/searchResults");
-        
+
         List<forumMessages> messages = forumManager.searchMessages(programId, searchTerm);
-        
-        if(messages != null && messages.size() > 0) {
-          
+
+        if (messages != null && messages.size() > 0) {
+
             /* Highlight words */
             String[] colors = new String[7];
             colors[0] = "red";
@@ -452,40 +544,81 @@ public class forumController {
             colors[4] = "purple";
             colors[5] = "pink";
             colors[6] = "blue";
-            
+
             /* Limit returned text */
-            for(forumMessages message : messages) {
-                if(message.getMessage().length() > 200) {
+            for (forumMessages message : messages) {
+                if (message.getMessage().length() > 200) {
                     message.setMessage(message.getMessage().substring(0, 200));
                 }
             }
-            
+
             Integer counter = 0;
-            for(String word : searchTerm.split(" ")) {
-                
-                if(counter > 6) {
+            for (String word : searchTerm.split(" ")) {
+
+                if (counter > 6) {
                     counter = 0;
                 }
                 
                 String color = colors[counter];
-                
-                for(forumMessages message : messages) {
+
+                for (forumMessages message : messages) {
                     forumTopics topicDetails = forumManager.getTopicById(message.getTopicId());
                     
-                    message.setTopicTitle(topicDetails.getTitle().toLowerCase().replaceAll(word, "<span class='"+color+"'>"+word+"</span>"));
+                    message.setTopicTitle(topicDetails.getTitle().toLowerCase().replaceAll(word, "<span class='" + color + "'>" + word + "</span>"));
                     message.setTopicURL(topicDetails.getTopicURL());
-                    
-                    message.setMessage(message.getMessage().toLowerCase().replaceAll(word, "<span class='"+color+"'>"+word+"</span>"));
-                    
+
+                    message.setMessage(message.getMessage().toLowerCase().replaceAll(word, "<span class='" + color + "'>" + word + "</span>"));
                 }
-                
                 counter++;
+                
             }
         }
-        
+
         mav.addObject("foundMessages", messages);
-        
+
         return mav;
-        
+
     }
+    
+    @RequestMapping(value = "/getForumNotificationModel.do", method = RequestMethod.GET)
+    public ModelAndView getForumNotificationModel(HttpSession session, HttpServletRequest request) throws Exception {
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/forum/forumNotificationPreferences");
+
+        User userDetails = (User) session.getAttribute("userDetails");
+
+        forumNotificationPreferences notificationPreferences = forumManager.getNotificationPreferences(userDetails.getId());
+
+        if (notificationPreferences != null) {
+            mav.addObject("notificationPreferences", notificationPreferences);
+        } else {
+            forumNotificationPreferences newNotificationPreferences = new forumNotificationPreferences();
+            newNotificationPreferences.setNotificationEmail(userDetails.getEmail());
+            newNotificationPreferences.setProgramId(programId);
+            mav.addObject("notificationPreferences", newNotificationPreferences);
+        }
+        
+        programOrgHierarchy topLevel = hierarchymanager.getProgramOrgHierarchyBydspPos(1, programId);
+        mav.addObject("topLevelName", topLevel.getName());
+
+        return mav;
+    }
+    
+    
+    @RequestMapping(value = "/saveNotificationPreferences.do", method = RequestMethod.POST)
+    public @ResponseBody
+    Integer saveNotificationPreferences(@ModelAttribute(value = "notificationPreferences") forumNotificationPreferences notificationPreferences, BindingResult errors,
+            HttpSession session, HttpServletRequest request) throws Exception {
+        
+        User userDetails = (User) session.getAttribute("userDetails");
+
+        notificationPreferences.setSystemUserId(userDetails.getId());
+
+        forumManager.saveNotificationPreferences(notificationPreferences);
+
+        return 1;
+
+    }
+
 }

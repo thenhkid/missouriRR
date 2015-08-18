@@ -13,6 +13,20 @@
 <div class="col-sm-12">
     <div class="row">
         <div class="clearfix">
+            <div class="dropdown pull-left no-margin">
+                    <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                        Preferences
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="preferences">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#" id="forumNotificationManagerModel">Forum Notification Preferences</a></li>
+                        </ul>
+                    </div>
+        </div>
+    </div>
+    <div class="hr dotted"></div>
+    <div class="row">
+        <div class="clearfix">
             <c:if test="${allowCreate == true}">
                 <div class="pull-left no-margin col-md-10">
                     <button class="btn btn-success btn-xs" type="button" id="newTopic">

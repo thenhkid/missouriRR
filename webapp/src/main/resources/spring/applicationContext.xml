@@ -35,6 +35,7 @@
                 <value>/WEB-INF/tileDefs/faq.xml</value>
                 <value>/WEB-INF/tileDefs/forum.xml</value>
                 <value>/WEB-INF/tileDefs/importExport.xml</value>
+                <value>/WEB-INF/tileDefs/document.xml</value>
             </list>
         </property>
     </bean>
