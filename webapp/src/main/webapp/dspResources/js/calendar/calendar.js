@@ -578,7 +578,6 @@ jQuery(function ($) {
         $('.popover').popover('destroy');
     });
 
-
     $(document).on("click", "a#eventTypeManagerModel", function () {
         $('.popover').popover('destroy');
         $.ajax({
