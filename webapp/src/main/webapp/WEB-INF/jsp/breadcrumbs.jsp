@@ -3,11 +3,6 @@
 <ul class="breadcrumb">
     <li>
         <i class="ace-icon fa fa-home home-icon"></i>
-        <a href="/home">Home</a>
+        <a href="#">Home</a>
     </li>
-
-    <li class="active">
-        Calendar
-    </li>
-   
 </ul>

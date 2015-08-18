@@ -99,7 +99,7 @@ public class CustomAuthenticationHandler extends SimpleUrlAuthenticationSuccessH
             
             session.setAttribute("availModules", programModules);
             
-            getRedirectStrategy().sendRedirect(request, response, "/surveys");
+            getRedirectStrategy().sendRedirect(request, response, "/home");
         }
         else {
             super.onAuthenticationSuccess(request, response, authentication);

@@ -60,7 +60,7 @@
             <div class="navbar-container" id="navbar-container">
 
                 <div class="navbar-header pull-left">
-                    <a href="#" class="navbar-brand">
+                    <a href="/home" class="navbar-brand">
                         <small>
                             <i class="fa fa-building"></i>
                             MO Healthy Schools Monitoring System
@@ -82,13 +82,6 @@
                             </a>
 
                             <ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
-                                <li>
-                                    <a href="#">
-                                        <i class="ace-icon fa fa-cog"></i>
-                                        Settings
-                                    </a>
-                                </li>
-
                                 <li>
                                     <a href="#">
                                         <i class="ace-icon fa fa-user"></i>

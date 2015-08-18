@@ -126,6 +126,24 @@ public class mainController {
     }
     
     /**
+     * The '/home' request will serve up the home page.
+     *
+     * @param request
+     * @param response
+     * @return	the login page view
+     * @throws Exception
+     */
+    @RequestMapping(value = "/home", method = RequestMethod.GET)
+    public ModelAndView home() throws Exception {
+        
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/home");
+       
+        return mav;
+
+    }
+    
+    /**
      * The '/forgotPassword.do' POST request will be used to find the account information for the user and send an email.
      *
      *

@@ -3,7 +3,7 @@
 <ul class="breadcrumb">
     <li>
         <i class="ace-icon fa fa-home home-icon"></i>
-        <a href="#">Home</a>
+        <a href="/home">Home</a>
     </li>
 
     <c:choose>
