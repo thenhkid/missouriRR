@@ -28,11 +28,13 @@
             <add-attribute value="/dspResources/js/jquery.simplecolorpicker.js" />
             <add-attribute value="/dspResources/js/bootstrap-colorpicker.min.js" />
             <add-attribute value="/dspResources/js/ace-elements.min.js" />
+            <add-attribute value="/dspResources/js/calendar/select2.min.js" />
         </put-list-attribute>
         <put-list-attribute name="customCSS">
             <add-attribute value="/dspResources/css/jquery-ui.custom.min.css" />
             <add-attribute value="/dspResources/css/fullcalendar.min.css" />
             <add-attribute value="/dspResources/css/colorpicker.min.css" />
+            <add-attribute value="/dspResources/css/select2.min.css" />
         </put-list-attribute>
     </definition>
     

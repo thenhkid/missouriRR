@@ -249,11 +249,27 @@ jQuery(function ($) {
 
                         data = $(data);
                         
-                        data.find('#simple-colorpicker-1').ace_colorpicker()
+                        /*data.find('#simple-colorpicker-1').ace_colorpicker()
                                 .on('change', function () {
                                     queryEventType(this.value);
-                                });
+                                });*/
+                        
+                        function formatState (state) {
+                            if (!state.id) { 
+                                return state.text; 
+                            }
+                            var $state = $(
+                                '<span><img src="vendor/images/flags/' + state.element.value.toLowerCase() + '.png" class="img-flag" /> ' + state.text + '</span>'
+                            );
+                            return $state;
+                        };
 
+                        $('#simple-colorpicker-1').select2({
+                            templateResult: formatState
+                        });
+                        
+                        
+                        
                         /* File input */
                         data.find('#id-input-file-2').ace_file_input({
                             style: 'well',
@@ -331,8 +347,8 @@ jQuery(function ($) {
                         });
                         
                         // on initial load get id of first color is selector from the db
-                        var firstValueDefaulted = $("#simple-colorpicker-1 option:first").val();
-                        queryEventType(firstValueDefaulted);
+                        //var firstValueDefaulted = $("#simple-colorpicker-1 option:first").val();
+                        //queryEventType(firstValueDefaulted);
                     },
                     error: function (error) {
                         console.log(error);
