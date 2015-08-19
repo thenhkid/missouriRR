@@ -44,6 +44,7 @@
                     <thead>
                         <tr>
                             <th scope="col" class="center"><i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i> Date Submitted</th>
+                            <th scope="col" class="center"><i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i> Date Modified</th>
                             <th scope="col" >Submitted By</th>
                             <th scope="col" class="center  hidden-480">Submitted</th>
                             <th scope="col">School(s) / ECC</th>
@@ -57,6 +58,7 @@
                             <c:forEach var="submittedSurvey" items="${submittedSurveys}">
                                 <tr>
                                     <td class="center"><fmt:formatDate value="${submittedSurvey.dateCreated}" type="date" pattern="M/dd/yyyy h:mm a" /></td>
+                                    <td class="center"><fmt:formatDate value="${submittedSurvey.dateModified}" type="date" pattern="M/dd/yyyy h:mm a" /></td>
                                     <td>
                                         ${submittedSurvey.staffMember}
                                     </td>
@@ -85,8 +87,8 @@
                                     <%--<td></td>--%>
                                     <td class="center">
                                         <div class="hidden-sm hidden-xs action-buttons">
-                                            <c:choose>
-                                                <c:when test="${sessionScope.userDetails.id == submittedSurvey.systemUserId || sessionScope.userDetails.roleId == 2}">
+                                            <%--<c:choose>
+                                                <c:when test="${sessionScope.userDetails.id == submittedSurvey.systemUserId || sessionScope.userDetails.roleId == 2}">--%>
                                                     <a href="surveys/editSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Survey" role="button">
                                                         <button class="btn btn-xs btn-success">
                                                             <i class="ace-icon fa fa-pencil bigger-120"></i>
@@ -97,7 +99,7 @@
                                                             <i class="ace-icon fa fa-close bigger-120"></i>
                                                         </button>
                                                     </a>
-                                                </c:when>
+                                                <%--</c:when>
                                                 <c:otherwise>
                                                     <a href="surveys/viewSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Survey" role="button">
                                                         <button class="btn btn-xs btn-info">
@@ -105,7 +107,7 @@
                                                         </button>
                                                     </a>
                                                 </c:otherwise>
-                                            </c:choose>
+                                            </c:choose>--%>
                                         </div>
                                     </td>
                                 </tr>

@@ -59,7 +59,7 @@
                             <div class="widget-main">
                                 ${messageData.message}
 
-                                <c:if test="${sessionScope.userDetails.id == messageData.systemUserId}">
+                                <c:if test="${(sessionScope.userDetails.id == messageData.systemUserId) || sessionScope.userDetails.roleId == 2}">
                                     <div class="space-6"></div>
 
                                     <div class="widget-toolbox clearfix">
@@ -103,7 +103,7 @@
                                                 <div class="pull-left">
                                                     <h6>by <strong>${reply.postedBy}</strong> <i class="ace-icon fa fa-angle-double-right"></i> <fmt:formatDate value="${reply.dateCreated}" type="both" pattern="E MMM dd, yyyy h:mm a" /></h6>
                                                 </div>
-                                                <c:if test="${sessionScope.userDetails.id == reply.systemUserId}">
+                                                <c:if test="${(sessionScope.userDetails.id == reply.systemUserId) || sessionScope.userDetails.roleId == 2}">
                                                     <div class="pull-right action-buttons">
 
                                                         <a href="#" class="editPost" rel="${reply.id}">

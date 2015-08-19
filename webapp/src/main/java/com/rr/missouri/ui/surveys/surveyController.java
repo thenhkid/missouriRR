@@ -518,9 +518,14 @@ public class surveyController {
     /**
      * The '/takeSurvey' POST request will submit the survey page.
      *
-     * @param client The object containing all the client detail form fields
-     * @param i The encrypted url value containing the selected user id
-     * @param v The encrypted url value containing the secret decode key
+     * @param survey
+     * @param session
+     * @param redirectAttr
+     * @param action
+     * @param goToPage
+     * @param disabled
+     * @param selectedEntities
+     * @param entityIds
      * @return
      * @throws Exception
      */
