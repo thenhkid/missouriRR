@@ -32,9 +32,7 @@
                 </div>
             </div>
         </c:if>
-        <div class="clearfix">
-            <div class="pull-left tableTools-container"></div>
-        </div>                
+                     
         <div class="table-header">
             Submissions for "Latest ${surveyName} Activity Logs"
         </div>
