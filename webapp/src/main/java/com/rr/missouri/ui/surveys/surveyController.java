@@ -229,7 +229,9 @@ public class surveyController {
      * @throws Exception
      */
     @RequestMapping(value = "/startSurvey", method = RequestMethod.POST)
-    public ModelAndView startSurvey(@RequestParam String s, @RequestParam(value = "selectedEntities", required = false) List<Integer> selectedEntities, HttpSession session) throws Exception {
+    public ModelAndView startSurvey(@RequestParam(value = "s", required = false) String s, 
+            @RequestParam(value = "i", required = false) String i, @RequestParam(value = "v", required = false) String v,
+            @RequestParam(value = "selectedEntities", required = false) List<Integer> selectedEntities, HttpSession session) throws Exception {
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/takeSurvey");
@@ -241,8 +243,23 @@ public class surveyController {
         seenPages = new ArrayList<Integer>();
 
         int clientId = 0;
+        int surveyId = 0;
+        
+         /* Get the submitted surveys for the selected survey type */
+        if (!"".equals(i) && i != null && !"".equals(v) && v != null) {
+            /* Decrypt the url */
+            decryptObject decrypt = new decryptObject();
 
-        Integer surveyId = Integer.parseInt(s);
+            Object obj = decrypt.decryptObject(i, v);
+
+            String[] result = obj.toString().split((","));
+
+            surveyId = Integer.parseInt(result[0].substring(4));
+
+        } else {
+            surveyId = Integer.parseInt(s);
+        }
+
 
         if (surveyId > 0) {
 
@@ -295,6 +312,7 @@ public class surveyController {
 
         /* Get a list of available schools for the selected districts */
         if (selectedEntities != null && !selectedEntities.isEmpty() && !"".equals(selectedEntities)) {
+            
 
             encryptObject encrypt = new encryptObject();
             Map<String, String> map;
@@ -518,9 +536,14 @@ public class surveyController {
     /**
      * The '/takeSurvey' POST request will submit the survey page.
      *
-     * @param client The object containing all the client detail form fields
-     * @param i The encrypted url value containing the selected user id
-     * @param v The encrypted url value containing the secret decode key
+     * @param survey
+     * @param session
+     * @param redirectAttr
+     * @param action
+     * @param goToPage
+     * @param disabled
+     * @param selectedEntities
+     * @param entityIds
      * @return
      * @throws Exception
      */
@@ -895,6 +918,7 @@ public class surveyController {
                 mav.addObject("surveyDetails", surveyDetails);
                 mav.addObject("selDistricts", districtList);
                 mav.addObject("surveys", surveys);
+                mav.addObject("selectedEntities", selectedEntities.toString().replace("[", "").replace("]", ""));
                 mav.addObject("i", encrypted[0]);
                 mav.addObject("v", encrypted[1]);
             } else {

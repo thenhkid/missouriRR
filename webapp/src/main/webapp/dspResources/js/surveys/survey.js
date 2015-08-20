@@ -10,48 +10,48 @@ jQuery(function ($) {
 
     $(document).ready(function () {
 
-       /* $('.multiselect').multiselect({
-            maxHeight: 300,
-            buttonWidth: '500px',
-            enableFiltering: true,
-            buttonClass: 'btn btn-white btn-primary',
-            enableClickableOptGroups: true,
-            disableIfEmpty: true,
-            nonSelectedText: 'Select Schools...',
-            numberDisplayed: 5,
-            templates: {
-                button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown"></button>',
-                ul: '<ul class="multiselect-container dropdown-menu"></ul>',
-                filter: '',
-                filterClearBtn: '<span class="input-group-btn"><button class="btn btn-default btn-white btn-grey multiselect-clear-filter" type="button"><i class="fa fa-times-circle red2"></i></button></span>',
-                li: '<li><a href="javascript:void(0);" ><label></label></a></li>',
-                divider: '<li class="multiselect-item divider"></li>',
-                liGroup: '<li class="multiselect-item group"><label class="multiselect-group" style="padding-left:5px; font-weight:bold;"></label></li>'
-            },
-            onChange: function (option, checked, select) {
-
-                if (checked == true) {
-                    $.ajax({
-                        url: 'getEntityCodeSets',
-                        data: {'entityId': option.val(), 'surveyId': 0},
-                        type: "GET",
-                        success: function (data) {
-                            $('#contentAndCriteriaDiv').html(data);
-                        }
-                    });
-                }
-                else {
-                    $.ajax({
-                        url: 'removeCodeSets',
-                        data: {'entityId': option.val()},
-                        type: "GET",
-                        success: function (data) {
-                            $('#contentAndCriteriaDiv').html(data);
-                        }
-                    });
-                }
-            }
-        });*/
+        /* $('.multiselect').multiselect({
+         maxHeight: 300,
+         buttonWidth: '500px',
+         enableFiltering: true,
+         buttonClass: 'btn btn-white btn-primary',
+         enableClickableOptGroups: true,
+         disableIfEmpty: true,
+         nonSelectedText: 'Select Schools...',
+         numberDisplayed: 5,
+         templates: {
+         button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown"></button>',
+         ul: '<ul class="multiselect-container dropdown-menu"></ul>',
+         filter: '',
+         filterClearBtn: '<span class="input-group-btn"><button class="btn btn-default btn-white btn-grey multiselect-clear-filter" type="button"><i class="fa fa-times-circle red2"></i></button></span>',
+         li: '<li><a href="javascript:void(0);" ><label></label></a></li>',
+         divider: '<li class="multiselect-item divider"></li>',
+         liGroup: '<li class="multiselect-item group"><label class="multiselect-group" style="padding-left:5px; font-weight:bold;"></label></li>'
+         },
+         onChange: function (option, checked, select) {
+         
+         if (checked == true) {
+         $.ajax({
+         url: 'getEntityCodeSets',
+         data: {'entityId': option.val(), 'surveyId': 0},
+         type: "GET",
+         success: function (data) {
+         $('#contentAndCriteriaDiv').html(data);
+         }
+         });
+         }
+         else {
+         $.ajax({
+         url: 'removeCodeSets',
+         data: {'entityId': option.val()},
+         type: "GET",
+         success: function (data) {
+         $('#contentAndCriteriaDiv').html(data);
+         }
+         });
+         }
+         }
+         });*/
 
         if (!ace.vars['touch']) {
             $('.chosen-select').chosen({allow_single_deselect: true});
@@ -92,7 +92,7 @@ jQuery(function ($) {
         var surveyId = $('#submittedSurveyId').val();
 
         var selectedSchools = $('#schoolSelect').val();
-        
+
         var disabled = $('#disabled').val();
 
         if (selectedSchools != null) {
@@ -118,7 +118,7 @@ jQuery(function ($) {
 
     /* Get the content area and criteria for the clicked school */
     $('#schoolSelect').on('change', function (evt, params) {
-        
+
         if (params.selected > 0) {
             $.ajax({
                 url: 'getEntityCodeSets',
@@ -290,6 +290,7 @@ jQuery(function ($) {
 
 function checkSurveyFields() {
     var errorFound = 0;
+    var missingQuestions = "";
 
     $('div').removeClass("has-error");
     $('.help-block').html("");
@@ -299,6 +300,7 @@ function checkSurveyFields() {
     if ($('#schoolSelect').val() == "" || $('#schoolSelect').val() == null) {
         $('#errorMsg_schools').html("At least one school must be selected.");
         $('#errorMsg_schools').show();
+        missingQuestions+="- Involved School(s) / ECC,";
         errorFound = 1;
     }
 
@@ -307,6 +309,7 @@ function checkSurveyFields() {
         var qId = $(this).attr('rel');
         var qName = $(this).attr('rel2');
         var qType = $(this).attr('rel3');
+        var qNum = $(this).attr('qnum');
         var requiredMsg = $('#requiredMsg' + qId).val();
         if (requiredMsg === '') {
             requiredMsg = "This is a required question.";
@@ -319,6 +322,7 @@ function checkSurveyFields() {
                 $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html(requiredMsg);
                 $('#errorMsg_' + qId).show();
+                missingQuestions+="- Question "+qNum+",";
                 errorFound = 1;
             }
         }
@@ -328,9 +332,11 @@ function checkSurveyFields() {
                 $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html(requiredMsg);
                 $('#errorMsg_' + qId).show();
+                missingQuestions+="- Question "+qNum+",";
                 errorFound = 1;
             }
         }
+        
 
     });
 
@@ -338,6 +344,7 @@ function checkSurveyFields() {
     $('.Email').each(function () {
         var qId = $(this).attr('rel');
         var emailVal = $(this).val();
+        var qNum = $(this).attr('qnum');
 
         if (emailVal != '') {
             var emailValidated = validateEmail(emailVal);
@@ -346,15 +353,18 @@ function checkSurveyFields() {
                 $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid email address.');
                 $('#errorMsg_' + qId).show();
+                missingQuestions+="- Question "+qNum+",";
                 errorFound = 1;
             }
         }
+        
     });
 
     //Look at all Phone Number validation types
     $('.Phone-Number').each(function () {
         var qId = $(this).attr('rel');
         var phoneVal = $(this).val();
+        var qNum = $(this).attr('qnum');
 
         if (phoneVal != '') {
             var phoneValidated = validatePhone(phoneVal);
@@ -363,6 +373,7 @@ function checkSurveyFields() {
                 $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid phone number.');
                 $('#errorMsg_' + qId).show();
+                missingQuestions+="- Question "+qNum+",";
                 errorFound = 1;
             }
         }
@@ -372,6 +383,7 @@ function checkSurveyFields() {
     $('.Numeric').each(function () {
         var qId = $(this).attr('rel');
         var fieldVal = $(this).val();
+        var qNum = $(this).attr('qnum');
 
         if (fieldVal != '') {
             var fieldValidated = validateNumericValue(fieldVal);
@@ -380,6 +392,7 @@ function checkSurveyFields() {
                 $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('The value must be numeric.');
                 $('#errorMsg_' + qId).show();
+                missingQuestions+="- Question "+qNum+",";
                 errorFound = 1;
             }
         }
@@ -389,6 +402,7 @@ function checkSurveyFields() {
     $('.URL').each(function () {
         var qId = $(this).attr('rel');
         var URLVal = $(this).val();
+        var qNum = $(this).attr('qnum');
 
         if (URLVal != '') {
             var URLValidated = validateURL(URLVal);
@@ -397,6 +411,7 @@ function checkSurveyFields() {
                 $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid URL.');
                 $('#errorMsg_' + qId).show();
+                missingQuestions+="- Question "+qNum+",";
                 errorFound = 1;
             }
         }
@@ -406,6 +421,7 @@ function checkSurveyFields() {
     $('.Date').each(function () {
         var qId = $(this).attr('rel');
         var dateVal = $(this).val();
+        var qNum = $(this).attr('qnum');
 
         if (dateVal != '') {
             var DateValidated = validateDate(dateVal);
@@ -414,10 +430,19 @@ function checkSurveyFields() {
                 $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid Date, format should be mm/dd/yyyy.');
                 $('#errorMsg_' + qId).show();
+                missingQuestions+="- Question "+qNum+",";
                 errorFound = 1;
             }
         }
     });
+
+    if (errorFound === 1) {
+        $.gritter.add({
+            title: 'Missing / Invalid Value!',
+            text: 'The following question(s) were not answered or have an invalid value.<br />  '+missingQuestions.replace(/,/g,"<br />"),
+            class_name: 'gritter-error gritter-light'
+        });
+    }
 
     return errorFound;
 }

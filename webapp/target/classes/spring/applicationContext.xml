@@ -14,7 +14,8 @@
    
     <mvc:annotation-driven />
     
-    <mvc:resources mapping="/dspResources/**" location="/dspResources/" /> 
+    <mvc:resources mapping="/dspResources/**" location="/dspResources/" />
+    
     
     <bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <property name="viewClass">
@@ -74,5 +75,7 @@
     </bean>
     
     <context:property-placeholder location="file:${catalina.home}/properties/RR.properties"/>
-   
+    
+    <mvc:resources mapping="/profilePhotos/**" location="file:${directory.path}missouri/profilePhotos/" /> 
+    
 </beans>

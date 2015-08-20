@@ -72,7 +72,14 @@
                     <ul class="nav ace-nav">
                         <li class="light-blue">
                             <a data-toggle="dropdown" href="#" class="dropdown-toggle">
-                                <img class="nav-user-photo" src="<%=request.getContextPath()%>/dspResources/img/avatars/avatar2.png" alt="Profile Photo" />
+                                <c:choose>
+                                    <c:when test="${not empty sessionScope.userDetails.profilePhoto}">
+                                        <img class="nav-user-photo" src="/profilePhotos/${sessionScope.userDetails.profilePhoto}" alt="Profile Photo" />
+                                    </c:when>
+                                    <c:otherwise>
+                                        <img class="nav-user-photo" src="<%=request.getContextPath()%>/dspResources/img/avatars/avatar2.png" alt="Profile Photo" />
+                                    </c:otherwise>
+                                </c:choose>
                                 <span class="user-info">
                                     <small>Welcome,</small>
                                     <c:out value="${sessionScope.userDetails.firstName}" />
@@ -83,7 +90,7 @@
 
                             <ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
                                 <li>
-                                    <a href="#">
+                                    <a href="/profile">
                                         <i class="ace-icon fa fa-user"></i>
                                         Profile
                                     </a>

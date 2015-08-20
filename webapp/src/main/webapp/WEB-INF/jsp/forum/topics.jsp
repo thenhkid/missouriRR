@@ -14,14 +14,14 @@
     <div class="row">
         <div class="clearfix">
             <div class="dropdown pull-left no-margin">
-                    <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-                        Preferences
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="preferences">
-                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#" id="forumNotificationManagerModel">Forum Notification Preferences</a></li>
-                        </ul>
-                    </div>
+                <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                    Preferences
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="preferences">
+                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#" id="forumNotificationManagerModel">Forum Notification Preferences</a></li>
+                </ul>
+            </div>
         </div>
     </div>
     <div class="hr dotted"></div>
@@ -75,7 +75,7 @@
                                         <a href="/forum/${topic.topicURL}">${topic.title}</a>
                                         <br />
                                         by ${topic.postedByName} <i class="ace-icon fa fa-angle-double-right"></i> <fmt:formatDate value="${topic.postedOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
-                                        <c:if test="${sessionScope.userDetails.id == topic.postedBy}">
+                                        <c:if test="${(sessionScope.userDetails.id == topic.postedBy) || sessionScope.userDetails.roleId == 2}">
                                             <div class="pull-right action-buttons">
 
                                                 <a href="#" class="editTopic" rel="${topic.id}">
@@ -130,7 +130,7 @@
                                         <a href="/forum/${topic.topicURL}">${topic.title}</a>
                                         <br />
                                         by ${topic.postedByName} &Gt; <fmt:formatDate value="${topic.postedOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
-                                        <c:if test="${sessionScope.userDetails.id == topic.postedBy}">
+                                        <c:if test="${(sessionScope.userDetails.id == topic.postedBy) || sessionScope.userDetails.roleId == 2}">
                                             <div class="pull-right action-buttons">
 
                                                 <a href="#" class="editTopic" rel="${topic.id}">
