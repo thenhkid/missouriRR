@@ -12,7 +12,7 @@
 <jsp:useBean id="today" class="java.util.Date" />
 <fmt:formatDate value="${today}" var="today" type="both" pattern="yyyy-MM-dd HH:mm" />
 
-<div class="page-content" id="createEventForm">
+<div class="page-content" id="createEventForm" style="width:500px;padding:0;">
     <form:form id="eventForm" modelAttribute="calendarEvent" role="form" class="form" method="post" enctype="multipart/form-data">
         <form:hidden path="eventTypeId" id="hiddenEventTypeId" value="${calendarEvent.eventTypeId}" />
         <form:hidden path="id" />
