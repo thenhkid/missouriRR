@@ -22,14 +22,16 @@
         <form:hidden path="eventEndDate" />
 
         <div class="row">
-            <div class="form-group pull-right">
-                <select name="newEventColor" id="simple-colorpicker-1" class="hide" rel="${selectedEventTypeColor}">
-                    <c:forEach var="eventType" items="${eventTypes}">
-                        <c:if test="${eventType.adminOnly == false || (eventType.adminOnly == true && sessionScope.userDetails.roleId == 2)}">
-                            <option value="${eventType.eventTypeColor}" <c:if test="${eventType.eventTypeColor == selectedEventTypeColor}">selected</c:if>>${eventType.eventType}</option>
-                        </c:if>
-                    </c:forEach>
-                </select>
+            <div class="col-md-12">
+                <div class="pull-right">
+                    <select name="newEventColor" id="simple-colorpicker-1"  rel="${selectedEventTypeColor}" style="width:200px;">
+                        <c:forEach var="eventType" items="${eventTypes}">
+                            <c:if test="${eventType.adminOnly == false || (eventType.adminOnly == true && sessionScope.userDetails.roleId == 2)}">
+                                <option value="${eventType.eventTypeColor}" <c:if test="${eventType.eventTypeColor == selectedEventTypeColor}">selected</c:if>>${eventType.eventType}</option>
+                            </c:if>
+                        </c:forEach>
+                    </select>
+                </div>
             </div>
         </div>        
         <div class="hr hr-dotted"></div>

@@ -280,26 +280,38 @@ jQuery(function ($) {
                         });
 
                         
-                        data.find('#simple-colorpicker-1').ace_colorpicker()
+                        /*data.find('#simple-colorpicker-1').ace_colorpicker()
                                 .on('change', function () {
                                     queryEventType(this.value);
-                                });
+                                });*/
                         
-                        /*function formatState (state) {
-                            if (!state.id) { 
-                                return state.text; 
-                            }
+                        function formatState (state) {
+                            console.log(state);
+                            if (!state.id) { return state.text; }
                             var $state = $(
-                                '<span><img src="vendor/images/flags/' + state.element.value.toLowerCase() + '.png" class="img-flag" /> ' + state.text + '</span>'
+                                '<span><div style=float:left;height:20px;width:20px;background-color:' + state.element.value.toLowerCase() + '></div><div>&nbsp;&nbsp;'+state.text+'</div> ' + '</span>'
+                            );
+                            return $state;
+                        };
+                        
+                        function formatStateSelected (state) {
+                            console.log(state);
+                            if (!state.id) { return state.text; }
+                            var $state = $(
+                                '<span><div style=margin-top:3px;float:left;height:20px;width:20px;background-color:' + state.element.value.toLowerCase() + '></div><div>&nbsp;&nbsp;'+state.text+'</div> ' + '</span>'
                             );
                             return $state;
                         };
 
-                        $('#simple-colorpicker-1').select2({
-                            templateResult: formatState
+                        data.find('#simple-colorpicker-1').select2({
+                            templateResult:formatState,
+                            templateSelection:formatStateSelected,
+                            width:'element',
+                            dropdownParent:'body',
+                            minimumResultsForSearch: Infinity
+                        }).on('change', function () {
+                            queryEventType(this.value);
                         });
-                        */
-                        
                         
                         /* File input */
                         data.find('#id-input-file-2').ace_file_input({
@@ -378,8 +390,9 @@ jQuery(function ($) {
                         });
                         
                         // on initial load get id of first color is selector from the db
-                        //var firstValueDefaulted = $("#simple-colorpicker-1 option:first").val();
-                        //queryEventType(firstValueDefaulted);
+                        $("#simple-colorpicker-1 option:first").attr('selected','selected');
+                        var firstValueDefaulted = $("#simple-colorpicker-1 option:first").val();
+                        queryEventType(firstValueDefaulted);
                     },
                     error: function (error) {
                         console.log(error);
@@ -439,10 +452,36 @@ jQuery(function ($) {
                     });
 
 
-                    data.find('#simple-colorpicker-1').ace_colorpicker('pick', $('#simple-colorpicker-1').attr('rel'))
-                            .on('change', function () {
-                                queryEventType(this.value);
-                            });
+                    /*data.find('#simple-colorpicker-1').ace_colorpicker('pick', $('#simple-colorpicker-1').attr('rel'))
+                    .on('change', function () {
+                        queryEventType(this.value);
+                    });*/
+                    
+                    function formatState (state) {
+                        if (!state.id) { return state.text; }
+                        var $state = $(
+                            '<span><div style=float:left;height:20px;width:20px;background-color:' + state.element.value.toLowerCase() + '></div><div>&nbsp;&nbsp;'+state.text+'</div> ' + '</span>'
+                        );
+                        return $state;
+                    };
+
+                    function formatStateSelected (state) {
+                        if (!state.id) { return state.text; }
+                        var $state = $(
+                            '<span><div style=margin-top:3px;float:left;height:20px;width:20px;background-color:' + state.element.value.toLowerCase() + '></div><div>&nbsp;&nbsp;'+state.text+'</div> ' + '</span>'
+                        );
+                        return $state;
+                    };
+
+                    data.find('#simple-colorpicker-1').select2({
+                        templateResult:formatState,
+                        templateSelection:formatStateSelected,
+                        width:'element',
+                        dropdownParent:'body',
+                        minimumResultsForSearch: Infinity
+                    }).on('change', function () {
+                        queryEventType(this.value);
+                    });
 
                     /* File input */
                     data.find('#id-input-file-2').ace_file_input({

@@ -388,6 +388,7 @@ public class calendarController {
         calendarEventTypes eventTypeObject = calendarManager.getEventType(eventDetails.getEventTypeId());
 
         eventDetails.setEventColor(eventTypeObject.getEventTypeColor());
+        eventDetails.setEventType(eventTypeObject.getEventType());
 
         /* See if there are any existing documents */
         List<calendarEventDocuments> existingDocuments = calendarManager.getEventDocuments(eventDetails.getId());
