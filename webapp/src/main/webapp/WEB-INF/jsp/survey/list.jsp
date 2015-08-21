@@ -41,13 +41,14 @@
             <table <c:if test="${not empty submittedSurveys}">id="dynamic-table"</c:if> class="table table-striped table-bordered table-hover">
                     <thead>
                         <tr>
+                            <th scope="col" class="center">Entry Id</th>
                             <th scope="col" class="center"><i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i> Date Submitted</th>
                             <th scope="col" class="center"><i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i> Date Modified</th>
                             <th scope="col" >Submitted By</th>
                             <th scope="col" class="center  hidden-480">Submitted</th>
                             <th scope="col">School(s) / ECC</th>
                             <%--<th scope="col">Content Area - Criteria</th>--%>
-                        <th scope="col" class="center"></th>
+                            <th scope="col" class="center"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,6 +56,7 @@
                         <c:when test="${not empty submittedSurveys}">
                             <c:forEach var="submittedSurvey" items="${submittedSurveys}">
                                 <tr>
+                                    <td class="center">${submittedSurvey.id}</td>
                                     <td class="center"><fmt:formatDate value="${submittedSurvey.dateCreated}" type="date" pattern="M/dd/yyyy h:mm a" /></td>
                                     <td class="center"><fmt:formatDate value="${submittedSurvey.dateModified}" type="date" pattern="M/dd/yyyy h:mm a" /></td>
                                     <td>
