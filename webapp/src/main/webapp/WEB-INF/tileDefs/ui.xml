@@ -47,6 +47,7 @@
     </definition>
     
     <definition name="/profile" extends="base.definition.main-ui">
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/profile/breadcrumbs.jsp" />
         <put-attribute name="body" value="/WEB-INF/jsp/profile/profile.jsp" />
         <put-attribute name="jscript" value="/dspResources/js/profile/profile.js" />
          <put-list-attribute name="headScripts">
