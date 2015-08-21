@@ -119,7 +119,7 @@
                         <li <c:if test="${fn:contains(requestScope['javax.servlet.forward.request_uri'],module[0])}">class="active open"</c:if>>
                             <a href="<c:url value='/${module[0]}' />" title="<c:choose><c:when test="${module[3] == '11'}">Activity Logs</c:when><c:otherwise>${module[1]}</c:otherwise></c:choose>">
                                 <i class="menu-icon fa ${module[2]}"></i>
-                                <span class="menu-text"><c:choose><c:when test="${module[3] == '11'}">Activity Logs</c:when><c:otherwise>${module[1]}</c:otherwise></c:choose></span>
+                                <span class="menu-text"><c:choose><c:when test="${module[3] == '11'}">Activity Logs</c:when><c:when test="${module[3] == '8'}">Announcements</c:when><c:otherwise>${module[1]}</c:otherwise></c:choose></span>
 
                                 <c:if test="${not empty menu && fn:contains(requestScope['javax.servlet.forward.request_uri'],module[0])}"> <b class="arrow fa fa-angle-down"></b></c:if>
                                 </a>
