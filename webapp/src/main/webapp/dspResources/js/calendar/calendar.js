@@ -949,13 +949,18 @@ jQuery(function ($) {
         var formData = $("#notificationPreferencesForm").serialize();
         var errorFound = false;
 
-        if ($('#alwaysCreateAlert1').is(":checked")) {
-            if ($('#notificationEmail').val() == '') {
+        if ($('#notificationEmail').val() == '') {
                 $('#notificationEmailGroup').addClass("has-error");
                 $('#notificationEmailMessage').addClass("has-error");
                 $('#notificationEmailMessage').html('The notification email address is required.');
                 errorFound = true;
-            }
+        }
+        
+        if( !isEmail($('#notificationEmail').val())) {
+                $('#notificationEmailGroup').addClass("has-error");
+                $('#notificationEmailMessage').addClass("has-error");
+                $('#notificationEmailMessage').html('The notification email address is invalid.');
+                errorFound = true;
         }
 
         if (errorFound == false) {
@@ -1045,5 +1050,10 @@ function refreshEventTypesModal() {
         error: function (error) {
             console.log(error);
         }
-    });
+    }); 
+}
+
+function isEmail(email) {
+        var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        return regex.test(email);
 }

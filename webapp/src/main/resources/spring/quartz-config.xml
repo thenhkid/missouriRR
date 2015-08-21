@@ -40,7 +40,7 @@
                 <job-name>checkForumNewNotifications</job-name>
                 <job-group>processGroup</job-group>
                 <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
-                <!-- Runs every 45 seconds, starting at 3 seconds on the clcok-->
+                <!-- Runs every 45 seconds, starting at 3 seconds on the clock-->
                 <cron-expression>45/3 * * * * ?</cron-expression>
             </cron>
         </trigger>
@@ -60,8 +60,8 @@
                 <job-name>checkForumReplyNotifications</job-name>
                 <job-group>processGroup</job-group>
                 <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
-                <!-- Runs every 45 seconds, starting on the 18 to avoid overlaps-->
-                <cron-expression>45/18 * * * * ?</cron-expression>
+                <!-- Runs every 45 seconds, starting on the 17 to avoid overlaps-->
+                <cron-expression>45/17 * * * * ?</cron-expression>
             </cron>
         </trigger>
     </schedule>
