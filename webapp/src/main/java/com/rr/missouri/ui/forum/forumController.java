@@ -477,7 +477,7 @@ public class forumController {
         forumManager.saveForumEmailNotification(fen);
         
         /** post/comments made to topics I have posted to - this is only one email we send right away**/
-        forumManager.sendRepliesTopicsNotifications(forumMessage, topicDetails);
+        forumManager.sendMyPostsNotifications(forumMessage, topicDetails);
         
         
         ModelAndView mav = new ModelAndView(new RedirectView("/forum/" + topicDetails.getTopicURL()));

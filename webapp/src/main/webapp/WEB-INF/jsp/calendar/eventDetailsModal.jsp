@@ -25,7 +25,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="pull-right">
-                <div id="selectedEventColor" rel="${calendarEvent.eventColor}" style="display:inline;float:left; width:20px; height:20px; background-color:${calendarEvent.eventColor}"></div><div style="display:inline;">&nbsp;&nbsp;${calendarEvent.eventType}</div>
+                <div id="selectedEventColor" rel="${calendarEvent.eventColor}" style="display:inline;float:left; width:20px; height:20px; margin-bottom:20px; background-color:${calendarEvent.eventColor}"></div><div style="display:inline;">&nbsp;&nbsp;${calendarEvent.eventType}</div>
             </div>
         </div>
     </div>

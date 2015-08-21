@@ -401,7 +401,7 @@ public class calendarController {
 
         User userDetails = (User) session.getAttribute("userDetails");
 
-        if (eventDetails.getSystemUserId() == userDetails.getId()) {
+        if (eventDetails.getSystemUserId() == userDetails.getId() || userDetails.getRoleId() == 2) {
             mav.setViewName("/calendar/newEventModal");
 
             //List<calendarEventTypes> eventTypes = calendarManager.getEventTypeColors(0);
