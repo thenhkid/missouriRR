@@ -35,7 +35,7 @@ public class checkCalendarNotifications implements Job {
             calendarManager.checkCalendarNotifications(programId);          
         } catch (Exception ex) {
             try {
-                throw new Exception("Error occurred trying to move Rhapsody files from schedule task",ex);
+                throw new Exception("Error occurred checkCalendarNotifications from schedule task",ex);
             } catch (Exception ex1) {
                 Logger.getLogger(checkCalendarNotifications.class.getName()).log(Level.SEVERE, null, ex1);
             }

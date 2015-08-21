@@ -35,7 +35,7 @@ public class checkForumNewNotifications implements Job {
             forumManager.sendNotificationsJob(programId, 1);          
         } catch (Exception ex) {
             try {
-                throw new Exception("Error occurred trying to move Rhapsody files from schedule task",ex);
+                throw new Exception("Error occurredfor sendNotificationsJob  - new type schedule task",ex);
             } catch (Exception ex1) {
                 Logger.getLogger(checkForumNewNotifications.class.getName()).log(Level.SEVERE, null, ex1);
             }

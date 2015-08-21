@@ -35,7 +35,7 @@ public class checkForumReplyNotifications implements Job {
             forumManager.sendNotificationsJob(programId, 2);          
         } catch (Exception ex) {
             try {
-                throw new Exception("Error occurred trying to move Rhapsody files from schedule task",ex);
+                throw new Exception("Error occurred sendNotificationsJob, reply type from schedule task",ex);
             } catch (Exception ex1) {
                 Logger.getLogger(checkForumReplyNotifications.class.getName()).log(Level.SEVERE, null, ex1);
             }
