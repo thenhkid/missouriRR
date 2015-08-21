@@ -228,6 +228,12 @@ jQuery(function ($) {
     });
     
     function documentFn(event) {
+        
+        $('span').removeClass("has-error");
+        $('div').removeClass("has-error");
+        $('#titleMsg').html("");
+        $('#docMsg').html("");
+        $('#webLinkMsg').html("");
 
         var errorFound = false;
 
@@ -237,6 +243,31 @@ jQuery(function ($) {
             $('#titleMsg').addClass("has-error");
             $('#titleMsg').html('The document title is required.');
             errorFound = true;
+        }
+        
+        /** Make sure either a document is uploaded or an external link is provided **/
+        if($('#webLink').val().trim() == "" && $('#id-input-file-2').val().trim() == "") {
+            $('#docDiv').addClass("has-error");
+            $('#webLinkDiv').addClass("has-error");
+            $('#docMsg').addClass("has-error");
+            $('#docMsg').html('Either a document must be uploaded or an external link must be entered.');
+            errorFound = true;
+        }
+        
+        if($('#webLink').val().trim() != "") {
+            var val = $('#webLink').val().trim();
+            if (val && !val.match(/^http([s]?):\/\/.*/)) {
+              $('#webLink').val('http://' + val);
+            }
+            
+            if(/^(http|https|ftp):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i.test($("#webLink").val())){
+                
+            } else {
+                $('#webLinkDiv').addClass("has-error");
+                $('#webLinkMsg').addClass("has-error");
+                $('#webLinkMsg').html('The external web link must be a valid url.');
+            }
+    
         }
         
         if(errorFound == true) {

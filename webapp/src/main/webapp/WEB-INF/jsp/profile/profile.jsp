@@ -3,11 +3,11 @@
 <div class="row">
     <div class="col-xs-12">
         <!-- PAGE CONTENT BEGINS -->
-        
+
         <div >
             <div id="user-profile-3" class="user-profile row">
                 <div class="col-sm-offset-1 col-sm-10">
-                  
+
                     <div class="space"></div>
 
                     <form id="profileForm" class="form-horizontal" method="post"  enctype="multipart/form-data">
@@ -39,7 +39,7 @@
                             <div class="tab-content profile-edit-tab-content">
                                 <div id="edit-basic" class="tab-pane in active">
                                     <h4 class="header blue bolder smaller">General</h4>
-                                    
+
                                     <div class="row">
                                         <div class="col-xs-12 col-sm-4">
                                             <input name="profilePhoto" type="file" value="${userDetails.profilePhoto}" />
@@ -54,7 +54,7 @@
                                                 <div class="col-sm-8">
                                                     <input class="col-xs-12 col-sm-10" name="email" type="text" id="email" placeholder="Email" value="${userDetails.email}" />
                                                 </div>
-                                                
+
                                             </div>
 
                                             <div class="space-4"></div>
@@ -66,7 +66,7 @@
                                                     <input class="input-small" name="firstName" type="text" id="firstName" placeholder="First Name" value="${userDetails.firstName}" />
                                                     <input class="input-small" name="lastName" type="text" id="lastName" placeholder="Last Name" value="${userDetails.lastName}" />
                                                 </div>
-                                                
+
                                             </div>
                                         </div>
                                     </div>
@@ -145,32 +145,31 @@
                                         <div class="col-sm-9">
                                             <input type="password" id="newPassword2" />
                                         </div>
-                                         
+
                                     </div>
-                                    
+
                                     <div class="space-4"></div>
 
                                     <div class="form-group">
                                         <label class="col-sm-3 control-label no-padding-right">&nbsp;</label>
 
                                         <div class="col-sm-9">
-                                           <span id="newPasswordMsg" class="control-label"></span>
+                                            <span id="newPasswordMsg" class="control-label"></span>
                                         </div>
-                                        
+
                                     </div>
-                                    
+
                                 </div>
                             </div>
                         </div>
 
-                        <div class="clearfix form-actions">
-                            <div class="col-md-offset-3 col-md-9">
-                                <button class="btn btn-info" type="button">
-                                    <i class="ace-icon fa fa-check bigger-110"></i>
-                                    Save
-                                </button>
+                        <div class="space-10"></div>
 
-                            </div>
+                        <div class="clearfix wizard-actions">
+                            <button class="btn" type="button">
+                                <i class="ace-icon fa fa-save "></i>
+                                Save
+                            </button>
                         </div>
                     </form>
                 </div><!-- /.span -->
