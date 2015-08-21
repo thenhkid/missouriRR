@@ -6,6 +6,7 @@
 package com.rr.missouri.ui.forum;
 
 import com.registryKit.forum.forumDocuments;
+import com.registryKit.forum.forumEmailNotification;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.registryKit.forum.forumManager;
@@ -330,17 +331,18 @@ public class forumController {
         forumTopic.setTopicURL(checktopicURL);
 
         Integer topicId = 0;
-
+        
         /* Submit the initial message */
         boolean newTopic = true;
         forumMessages messageDetails = new forumMessages();
+        Integer messageId = messageDetails.getId();
         if (forumTopic.getId() == 0) {
             topicId = forumManager.saveTopic(forumTopic);
             messageDetails.setTopicId(topicId);
             messageDetails.setMessage(forumTopic.getInitialMessage());
             messageDetails.setSystemUserId(userDetails.getId());
             messageDetails.setProgramId(programId);
-            forumManager.saveTopicMessage(messageDetails);
+            messageId = forumManager.saveTopicMessage(messageDetails);
         } else {
             forumManager.updateTopic(forumTopic);
             topicId = forumTopic.getId();
@@ -378,7 +380,12 @@ public class forumController {
         }
 
         if (newTopic) {
-            forumManager.sendNewTopicNotificatoins(messageDetails, forumTopic);
+            forumEmailNotification fen  = new forumEmailNotification ();
+            fen.setMessageId(messageDetails.getId());
+            fen.setNotificationType(1);
+            fen.setProgramId(programId);
+            //insert so scheduler will pick it up and sent
+            forumManager.saveForumEmailNotification(fen);
         }
         
         /* Return the topic Id */
@@ -447,8 +454,12 @@ public class forumController {
 
         forumMessage.setSystemUserId(userDetails.getId());
         forumMessage.setProgramId(programId);
-        
-        forumManager.saveTopicMessage(forumMessage);
+        Integer messageId = forumMessage.getId();
+        if (forumMessage.getId() == 0) {
+            messageId = forumManager.saveTopicMessage(forumMessage);
+        } else {
+            forumManager.updateTopicMessage(forumMessage);
+        }
         
         if (postDocuments != null) {
             forumManager.saveDocuments(forumMessage, postDocuments);
@@ -457,9 +468,15 @@ public class forumController {
         forumTopics topicDetails = forumManager.getTopicById(forumMessage.getTopicId());
 
         /**post comments to my topics email**/
-        forumManager.sendMyPostsNotifications(forumMessage, topicDetails);
         
-        /** post/comments made to topics I have posted to **/
+        forumEmailNotification fen  = new forumEmailNotification ();
+        fen.setMessageId(forumMessage.getId());
+        fen.setNotificationType(2);
+        fen.setProgramId(programId);
+        //insert so scheduler will pick it up and sent
+        forumManager.saveForumEmailNotification(fen);
+        
+        /** post/comments made to topics I have posted to - this is only one email we send right away**/
         forumManager.sendRepliesTopicsNotifications(forumMessage, topicDetails);
         
         
