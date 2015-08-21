@@ -53,7 +53,7 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/calendar")
 public class calendarController {
 
-    private static Integer moduleId = 7;
+    private static final Integer moduleId = 7;
 
     @Autowired
     calendarManager calendarManager;

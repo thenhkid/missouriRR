@@ -38,7 +38,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping("/documents")
 public class documentController {
 
-    private static Integer moduleId = 10;
+    private static final Integer moduleId = 10;
 
     @Autowired
     private userManager usermanager;
@@ -62,8 +62,7 @@ public class documentController {
     /**
      * The '' request will display the list of taken surveys.
      *
-     * @param request
-     * @param response
+     * @param session
      * @return	the administrator dashboard view
      * @throws Exception
      */
@@ -144,13 +143,16 @@ public class documentController {
          if (userDetails.getRoleId() == 2) {
             allowCreate = true;
             allowEdit = true;
+            allowDelete = true;
          } else {
             allowCreate = modulePermissions.isAllowCreate();
             allowEdit = modulePermissions.isAllowEdit();
+            allowDelete = modulePermissions.isAllowDelete();
          }
 
          mav.addObject("allowCreate", allowCreate);
          mav.addObject("allowEdit", allowEdit);
+         mav.addObject("allowDelete", allowDelete);
         return mav;
     }
 
@@ -158,7 +160,9 @@ public class documentController {
      * The '/folder' GET request will return the list of
      * subfolders and documents for the clicked folder.
      *
-     * @param pathVariable Will hold the url for the clicked folder
+     * @param i
+     * @param v
+     * @param session
      * @return
      * @throws Exception
      */
@@ -240,6 +244,7 @@ public class documentController {
         
         mav.addObject("allowCreate", allowCreate);
         mav.addObject("allowEdit", allowEdit);
+        mav.addObject("allowDelete", allowDelete);
         
         return mav;
 
@@ -249,6 +254,8 @@ public class documentController {
      * The '/document/getFolderForm.do' GET request will return the details for the selected/new folder 
      * form.
      *
+     * @param session
+     * @param subfolder
      * @return
      * @throws Exception
      */
@@ -280,8 +287,7 @@ public class documentController {
      * The 'saveFolderForm' POST request will handle saving the new/updated document
      * message.
      *
-     * @param documentDetails
-     * @param errors
+     * @param folderDetails
      * @param redirectAttr
      * @param session
      * @return
@@ -338,6 +344,7 @@ public class documentController {
      * The '/document/getDocumentForm.do' GET request will return the details for the selected/new document 
      * form.
      *
+     * @param session
      * @param documentId (required) The id of the selected document
      * @return
      * @throws Exception
@@ -393,9 +400,10 @@ public class documentController {
      * message.
      *
      * @param documentDetails
-     * @param errors
+     * @param postDocuments
      * @param redirectAttr
      * @param session
+     * @param alertUsers
      * @return
      * @throws Exception
      */
@@ -442,6 +450,15 @@ public class documentController {
         
         /* Alert Users */
         if(alertUsers > 0) {
+            
+            /* County Users */
+            if(alertUsers == 1) {
+                
+            }
+            /* All Users */
+            else {
+                
+            }
             
         }
 

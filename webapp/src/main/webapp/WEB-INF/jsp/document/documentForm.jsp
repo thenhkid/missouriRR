@@ -47,7 +47,18 @@
             </c:when>
             <c:otherwise><form:hidden path="folderId" /><form:hidden path="adminOnly" /></c:otherwise>
         </c:choose>
-
+        
+        <div class="form-group">
+            <label for="privateDoc" class="control-label">Is this document private to you? *</label>
+            <div>
+                <label class="radio-inline">
+                    <form:radiobutton path="privateDoc"  value="1"/> Yes
+                </label>
+                <label class="radio-inline">
+                    <form:radiobutton path="privateDoc" value="0"/> No
+                </label>
+            </div>
+        </div>
         <div class="form-group" id="titleDiv">
             <label  class="control-label" for="title">Document Title *</label>
             <form:input path="title" class="form-control" id="title" maxlength="255" />
@@ -83,10 +94,11 @@
                 </div>
             </div>
         </c:if>
-        <div class="form-group">
+        <div class="form-group" id="docDiv">
             <hr/>
             <label class="control-label" for="question">Associated Document</label>
             <input name="postDocuments" type="file" id="id-input-file-2" />
+            <span id="docMsg" class="control-label"></span>
         </div>     
         <c:if test="${documentDetails.id == 0}">
             <hr/>
@@ -97,9 +109,9 @@
                         <div class="checkbox">
                             <label>
                                 <c:if test="${documentDetails.countyFolder == true}">
-                                    <input type="radio" name="alertUsers" value="1"> Send email notification regarding this new document to only users of this county?<br />
+                                    <input type="radio" name="alertUsers" value="1"> Send email regarding this new document to users of the selected county?<br />
                                 </c:if>
-                                <input type="radio" name="alertUsers" value="2"> Send email notification regarding this new document to all users?
+                                <input type="radio" name="alertUsers" value="2"> Send email regarding this new document to all users?
                             </label>
                         </div>
                     </div>
