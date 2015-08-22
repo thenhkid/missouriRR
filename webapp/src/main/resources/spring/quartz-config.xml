@@ -28,20 +28,41 @@
     
     <schedule>
         <job>
-            <name>checkForumNewNotifications</name>
+            <name>checkForumNotifications</name>
             <group>processGroup</group>
-            <description>This process will run every 30 seconds to check for new new post notifications to be sent out.</description>
+            <description>This process will run every 45 seconds to check for post notifications to be sent out.</description>
             <job-class>com.rr.missouri.ui.jobs.checkForumNotifications</job-class>
         </job>
  
         <trigger>
             <cron>
                 <name>newForumEmails</name>
-                <job-name>checkForumNewNotifications</job-name>
+                <job-name>checkForumNotifications</job-name>
                 <job-group>processGroup</job-group>
                 <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
                 <!-- Runs every 45 seconds, starting at 3 seconds on the clock-->
                 <cron-expression>45/3 * * * * ?</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+    
+    
+    <schedule>
+        <job>
+            <name>checkEmailNotifications</name>
+            <group>processGroup</group>
+            <description>This process will run every 45 seconds to check for email notifications to be sent out.</description>
+            <job-class>com.rr.missouri.ui.jobs.sendCalendarEmailNotifications</job-class>
+        </job>
+ 
+        <trigger>
+            <cron>
+                <name>newCalendarEmails</name>
+                <job-name>checkEmailNotifications</job-name>
+                <job-group>processGroup</job-group>
+                <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
+                <!-- Runs every 45 seconds, starting at 17 seconds on the clock-->
+                <cron-expression>45/17 * * * * ?</cron-expression>
             </cron>
         </trigger>
     </schedule>

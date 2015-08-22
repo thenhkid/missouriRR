@@ -5,6 +5,7 @@
  */
 package com.rr.missouri.ui.calendar;
 
+import com.registryKit.calendar.calendarEmailNotifications;
 import com.registryKit.calendar.calendarEventDocuments;
 import com.registryKit.calendar.calendarEventEntities;
 import com.registryKit.calendar.calendarEventNotifications;
@@ -248,7 +249,7 @@ public class calendarController {
         if (eventDocuments != null) {
             calendarEvent.setUploadedDocuments(eventDocuments);
         }
-
+        Integer originalEventId = calendarEvent.getId();
         Integer eventId = calendarManager.saveEvent(calendarEvent);
 
         program programDetails = programManager.getProgramById(programId);
@@ -286,85 +287,24 @@ public class calendarController {
         }
         
         //Modifed Event Notification
-        if (calendarEvent.getId() > 0 && alertAllUsers == true) {
-            
-            /* Get a list of users who want to be notified of event changes */
-            List<calendarNotificationPreferences> notifyUserList = calendarManager.getModifiedEventUserNotifications(programId, eventId);
-            
-            if (notifyUserList != null && notifyUserList.size() > 0) {
-                
-                for (calendarNotificationPreferences notification : notifyUserList) {
-                    StringBuilder sb = new StringBuilder();
-
-                    User userdetails = usermanager.getUserById(notification.getSystemUserId());
-                    
-                    if (calendarEvent.getSystemUserId() != userdetails.getId() && (eventType.getAdminOnly() == false || (eventType.getAdminOnly() == true && userdetails.getRoleId() == 2))) {
-                        emailMessage messageDetails = new emailMessage();
-
-                        messageDetails.settoEmailAddress(notification.getNotificationEmail());
-                        messageDetails.setfromEmailAddress(programDetails.getEmailAddress());
-                        messageDetails.setmessageSubject(programDetails.getProgramName() + " Calendar Event Modification");
-                        
-                        sb.append("Below are the new details for the <strong>").append(calendarEvent.getEventTitle()).append("</strong> event.");
-                        sb.append("<br /><br />");
-                        sb.append("<strong>Start Date/Time: </strong>").append(calendarEvent.getEventStartDate().toString().substring(0, 10)).append(" ").append(calendarEvent.getEventStartTime());
-                        sb.append("<br /><br />");
-                        sb.append("<strong>End Date/Time: </strong>").append(calendarEvent.getEventEndDate().toString().substring(0, 10)).append(" ").append(calendarEvent.getEventEndTime());
-                        if (!"".equals(calendarEvent.getEventLocation())) {
-                            sb.append("<br /><br />").append("<strong>Where: </strong>").append(calendarEvent.getEventLocation());
-                        }
-                        if (!"".equals(calendarEvent.getEventNotes())) {
-                            sb.append("<br /><br />").append("<strong>Notes: </strong>").append("<br />").append(calendarEvent.getEventNotes());
-                        }
-
-                        messageDetails.setmessageBody(sb.toString());
-
-                        emailManager.sendEmail(messageDetails);
-                    }
-
-                }
-            }
-
+        //calendarEvent's id will be populated after save or update, must track some other way
+        if (originalEventId > 0 && alertAllUsers == true) {
+            // inserting into db an entry so notifications can go out later 
+            //insert event email notification
+            calendarEmailNotifications calendarEmailNotification = new calendarEmailNotifications();
+            calendarEmailNotification.setNotificationType(2);
+            calendarEmailNotification.setProgramId(programId);
+            calendarEmailNotification.setCalendarEventId(eventId);
+            calendarManager.saveCalendarEmailNotification(calendarEmailNotification);
+        
         } //New Event Notification
         else if (alertAllUsers == true) {
-
-            /* Get a list of users who want to be notified of event changes */
-            List<calendarNotificationPreferences> notifyUserList = calendarManager.getNewEventUserNotifications(programId, eventId);
-
-            if (notifyUserList != null && notifyUserList.size() > 0) {
-
-                for (calendarNotificationPreferences notification : notifyUserList) {
-                    StringBuilder sb = new StringBuilder();
-
-                    User userdetails = usermanager.getUserById(notification.getSystemUserId());
-
-                    if (calendarEvent.getSystemUserId() != userdetails.getId() && (eventType.getAdminOnly() == false || (eventType.getAdminOnly() == true && userdetails.getRoleId() == 2))) {
-                        emailMessage messageDetails = new emailMessage();
-
-                        messageDetails.settoEmailAddress(notification.getNotificationEmail());
-                        messageDetails.setfromEmailAddress(programDetails.getEmailAddress());
-                        messageDetails.setmessageSubject(programDetails.getProgramName() + " New Calendar Event");
-                        
-                        sb.append("<strong>").append(calendarEvent.getEventTitle()).append("</strong>");
-                        sb.append("<br /><br />");
-                        sb.append("<strong>Start Date/Time: </strong>").append(calendarEvent.getEventStartDate().toString().substring(0, 10)).append(" ").append(calendarEvent.getEventStartTime());
-                        sb.append("<br /><br />");
-                        sb.append("<strong>End Date/Time: </strong>").append(calendarEvent.getEventEndDate().toString().substring(0, 10)).append(" ").append(calendarEvent.getEventEndTime());
-                        if (!"".equals(calendarEvent.getEventLocation())) {
-                            sb.append("<br /><br />").append("<strong>Where: </strong>").append(calendarEvent.getEventLocation());
-                        }
-                        if (!"".equals(calendarEvent.getEventNotes())) {
-                            sb.append("<br /><br />").append("<strong>Notes: </strong>").append("<br />").append(calendarEvent.getEventNotes());
-                        }
-
-                        messageDetails.setmessageBody(sb.toString());
-
-                        emailManager.sendEmail(messageDetails);
-                    }
-                }
-
-            }
-
+            //insert event email notification
+            calendarEmailNotifications calendarEmailNotification = new calendarEmailNotifications();
+            calendarEmailNotification.setNotificationType(1);
+            calendarEmailNotification.setProgramId(programId);
+            calendarEmailNotification.setCalendarEventId(eventId);
+            calendarManager.saveCalendarEmailNotification(calendarEmailNotification);
         }
 
         return 1;
