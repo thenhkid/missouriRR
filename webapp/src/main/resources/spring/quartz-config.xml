@@ -31,7 +31,7 @@
             <name>checkForumNewNotifications</name>
             <group>processGroup</group>
             <description>This process will run every 30 seconds to check for new new post notifications to be sent out.</description>
-            <job-class>com.rr.missouri.ui.jobs.checkForumNewNotifications</job-class>
+            <job-class>com.rr.missouri.ui.jobs.checkForumNotifications</job-class>
         </job>
  
         <trigger>
@@ -42,26 +42,6 @@
                 <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
                 <!-- Runs every 45 seconds, starting at 3 seconds on the clock-->
                 <cron-expression>45/3 * * * * ?</cron-expression>
-            </cron>
-        </trigger>
-    </schedule>
-    
-    <schedule>
-        <job>
-            <name>checkForumReplyNotifications</name>
-            <group>processGroup</group>
-            <description>This process will run every 5 minutes to check for reply forum notifications to be sent out.</description>
-            <job-class>com.rr.missouri.ui.jobs.checkForumReplyNotifications</job-class>
-        </job>
- 
-        <trigger>
-            <cron>
-                <name>replyForumEmails</name>
-                <job-name>checkForumReplyNotifications</job-name>
-                <job-group>processGroup</job-group>
-                <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
-                <!-- Runs every 45 seconds, starting on the 17 to avoid overlaps-->
-                <cron-expression>45/17 * * * * ?</cron-expression>
             </cron>
         </trigger>
     </schedule>
