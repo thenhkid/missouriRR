@@ -10,6 +10,9 @@ import com.registryKit.document.documentEmailNotifications;
 import com.registryKit.document.documentFolder;
 import com.registryKit.document.documentManager;
 import com.registryKit.document.documentNotificationPreferences;
+import com.registryKit.hierarchy.hierarchyManager;
+import com.registryKit.hierarchy.programHierarchyDetails;
+import com.registryKit.hierarchy.programOrgHierarchy;
 import com.registryKit.user.User;
 import com.registryKit.user.userManager;
 import com.rr.missouri.ui.security.decryptObject;
@@ -49,6 +52,9 @@ public class documentController {
 
     @Autowired
     private documentManager documentmanager;
+
+    @Autowired
+    private hierarchyManager hierarchymanager;
 
     @Value("${programId}")
     private Integer programId;
@@ -280,6 +286,14 @@ public class documentController {
             documentFolder parentFolderDetails = documentmanager.getFolderById(selFolder);
             newFolder.setParentFolderId(selFolder);
             newFolder.setCountyFolder(parentFolderDetails.getCountyFolder());
+            newFolder.setEntityId(parentFolderDetails.getEntityId());
+        }
+        
+        if (userDetails.getRoleId() == 2) {
+            programOrgHierarchy topLevel = hierarchymanager.getProgramOrgHierarchyBydspPos(1, programId);
+            List<programHierarchyDetails> counties = hierarchymanager.getProgramHierarchyItems(topLevel.getId(), 0);
+           mav.addObject("countyList", counties);
+        
         }
         
         mav.addObject("folderDetails", newFolder);

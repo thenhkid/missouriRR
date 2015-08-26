@@ -98,7 +98,7 @@
                                                     </div>
                                                 </div>
                                             </c:when>
-                                            <c:when test="${document.fileExt == 'jpg' || document.fileExt == 'gif' || document.fileExt == 'jpeg'}">
+                                            <c:when test="${document.fileExt == 'jpg' || document.fileExt == 'gif' || document.fileExt == 'jpeg' || document.fileExt == 'png'}">
                                                 <div class="infobox infobox-orange" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
                                                     <div class="infobox-icon">
                                                         <i class="ace-icon fa fa-file-image-o"></i>

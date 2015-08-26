@@ -67,4 +67,25 @@
         </trigger>
     </schedule>
     
+    <!-- document emails -->
+    <schedule>
+        <job>
+            <name>checkDocumentEmailNotifications</name>
+            <group>processGroup</group>
+            <description>This process will run every 45 seconds to check for document notifications to be sent out.</description>
+            <job-class>com.rr.missouri.ui.jobs.sendDocumentEmailNotifications</job-class>
+        </job>
+ 
+        <trigger>
+            <cron>
+                <name>newDocumentEmails</name>
+                <job-name>checkDocumentEmailNotifications</job-name>
+                <job-group>processGroup</job-group>
+                <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
+                <!-- Runs every 45 seconds, starting at 32 seconds on the clock-->
+                <cron-expression>45/32 * * * * ?</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+    
 </job-scheduling-data>

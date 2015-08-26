@@ -127,6 +127,9 @@ jQuery(function ($) {
             event.preventDefault();
             return false;
         }
+        if ($("#isNotCountyFolder").is(':checked')) {
+            $('#entityId').val(0);
+        }
         
         $("#folderForm").submit();
     }
