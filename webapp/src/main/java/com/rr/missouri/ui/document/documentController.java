@@ -202,6 +202,18 @@ public class documentController {
             mainFolderId = folderDetails.getParentFolderId();
             String parentFolderName = documentmanager.getFolderById(folderDetails.getParentFolderId()).getFolderName();
             mav.addObject("selParentFolderName", parentFolderName);
+            
+            documentFolder parent = documentmanager.getFolderById(folderDetails.getParentFolderId());
+            //need to encrypt parent folder here
+            encryptObject encryptParent = new encryptObject();
+            Map<String, String> mapParent;
+            mapParent = new HashMap<String, String>();
+            mapParent.put("id", String.valueOf(parent.getId()));
+            mapParent.put("topSecret", topSecret);
+            String[] encryptedParent = encryptParent.encryptObject(mapParent);
+            parent.setEncryptedId(encryptedParent[0]);
+            parent.setEncryptedSecret(encryptedParent[1]);
+            mav.addObject("parentFolder", parent);   
         } else {
             mainFolderId = folderDetails.getId();
         }
