@@ -27,6 +27,11 @@ public class checkCalendarNotifications implements Job {
     @Value("${programId}")
     private Integer programId;
     
+    
+    /*
+    * this sends reminders
+    */
+    
     @Override
     public void execute(JobExecutionContext context)  throws JobExecutionException {
         
