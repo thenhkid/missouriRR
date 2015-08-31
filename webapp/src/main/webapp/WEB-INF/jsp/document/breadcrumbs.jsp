@@ -11,9 +11,9 @@
                 <a href="/documents">Documents</a>
             </li>
             
-            <c:if test="${not empty selParentFolderName}">
+            <c:if test="${not empty parentFolder}">
                 <li>
-                    <a href="/documents/${selParentFolderName}">${selParentFolderName}</a>
+                    <a href="/documents/folder<c:url value="?i=${parentFolder.encryptedId}&v=${parentFolder.encryptedSecret}"/>">${parentFolder.folderName}</a>
                 </li>
             </c:if>
 

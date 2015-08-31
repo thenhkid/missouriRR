@@ -13,6 +13,20 @@
 <div class="col-sm-12">
     <div class="row">
         <div class="clearfix">
+            <div class="dropdown pull-left no-margin">
+                <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                    Preferences
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="preferences">
+                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#" id="documentNotificationManagerModel">Document Notification Preferences</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="hr dotted"></div>
+    <div class="row">
+        <div class="clearfix">
             <c:if test="${sessionScope.userDetails.roleId == 2 && selParentFolder == 0}">
                 <div class="pull-left no-margin col-md-6">
                     <button class="btn btn-info btn-xs" type="button" id="newSubfolder">
@@ -84,7 +98,7 @@
                                                     </div>
                                                 </div>
                                             </c:when>
-                                            <c:when test="${document.fileExt == 'jpg' || document.fileExt == 'gif' || document.fileExt == 'jpeg'}">
+                                            <c:when test="${document.fileExt == 'jpg' || document.fileExt == 'gif' || document.fileExt == 'jpeg' || document.fileExt == 'png'}">
                                                 <div class="infobox infobox-orange" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
                                                     <div class="infobox-icon">
                                                         <i class="ace-icon fa fa-file-image-o"></i>

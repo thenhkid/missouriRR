@@ -28,40 +28,62 @@
     
     <schedule>
         <job>
-            <name>checkForumNewNotifications</name>
+            <name>checkForumNotifications</name>
             <group>processGroup</group>
-            <description>This process will run every 30 seconds to check for new new post notifications to be sent out.</description>
-            <job-class>com.rr.missouri.ui.jobs.checkForumNewNotifications</job-class>
+            <description>This process will run every 45 seconds to check for post notifications to be sent out.</description>
+            <job-class>com.rr.missouri.ui.jobs.checkForumNotifications</job-class>
         </job>
  
         <trigger>
             <cron>
                 <name>newForumEmails</name>
-                <job-name>checkForumNewNotifications</job-name>
+                <job-name>checkForumNotifications</job-name>
                 <job-group>processGroup</job-group>
                 <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
-                <!-- Runs every 45 seconds, starting at 3 seconds on the clcok-->
+                <!-- Runs every 45 seconds, starting at 3 seconds on the clock-->
                 <cron-expression>45/3 * * * * ?</cron-expression>
             </cron>
         </trigger>
     </schedule>
     
+    
     <schedule>
         <job>
-            <name>checkForumReplyNotifications</name>
+            <name>checkEmailNotifications</name>
             <group>processGroup</group>
-            <description>This process will run every 5 minutes to check for reply forum notifications to be sent out.</description>
-            <job-class>com.rr.missouri.ui.jobs.checkForumReplyNotifications</job-class>
+            <description>This process will run every 45 seconds to check for email notifications to be sent out.</description>
+            <job-class>com.rr.missouri.ui.jobs.sendCalendarEmailNotifications</job-class>
         </job>
  
         <trigger>
             <cron>
-                <name>replyForumEmails</name>
-                <job-name>checkForumReplyNotifications</job-name>
+                <name>newCalendarEmails</name>
+                <job-name>checkEmailNotifications</job-name>
                 <job-group>processGroup</job-group>
                 <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
-                <!-- Runs every 45 seconds, starting on the 18 to avoid overlaps-->
-                <cron-expression>45/18 * * * * ?</cron-expression>
+                <!-- Runs every 45 seconds, starting at 17 seconds on the clock-->
+                <cron-expression>45/17 * * * * ?</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+    
+    <!-- document emails -->
+    <schedule>
+        <job>
+            <name>checkDocumentEmailNotifications</name>
+            <group>processGroup</group>
+            <description>This process will run every 45 seconds to check for document notifications to be sent out.</description>
+            <job-class>com.rr.missouri.ui.jobs.sendDocumentEmailNotifications</job-class>
+        </job>
+ 
+        <trigger>
+            <cron>
+                <name>newDocumentEmails</name>
+                <job-name>checkDocumentEmailNotifications</job-name>
+                <job-group>processGroup</job-group>
+                <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
+                <!-- Runs every 45 seconds, starting at 32 seconds on the clock-->
+                <cron-expression>45/32 * * * * ?</cron-expression>
             </cron>
         </trigger>
     </schedule>

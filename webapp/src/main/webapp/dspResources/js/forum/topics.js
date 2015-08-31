@@ -258,8 +258,15 @@ jQuery(function ($) {
                 $('#notificationEmailMessage').addClass("has-error");
                 $('#notificationEmailMessage').html('The notification email address is required.');
                 errorFound = true;
-            }
+        }
         
+        if( !isEmail($('#notificationEmail').val())) {
+            $('#notificationEmailGroup').addClass("has-error");
+                $('#notificationEmailMessage').addClass("has-error");
+                $('#notificationEmailMessage').html('Please enter a valid email address.');
+                errorFound = true;
+        }
+
 
         if (errorFound == false) {
             $('#notificationEmailGroup').removeClass("has-error");
@@ -283,7 +290,10 @@ jQuery(function ($) {
         }
 
         return false;
-    });
-    
-
+    }); 
 });
+
+function isEmail(email) {
+      var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+      return regex.test(email);
+}

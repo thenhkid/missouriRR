@@ -5,7 +5,8 @@
  */
 package com.rr.missouri.ui.jobs;
 
-import com.registryKit.forum.forumManager;
+
+import com.registryKit.document.documentManager;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.quartz.Job;
@@ -17,12 +18,12 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 /**
  *
- * @author chadmccue
+ * @author gchan
  */
-public class checkForumNewNotifications implements Job {
+public class sendDocumentEmailNotifications implements Job {
     
     @Autowired
-    private forumManager forumManager;
+    private documentManager documentManager;
     
     @Value("${programId}")
     private Integer programId;
@@ -32,12 +33,12 @@ public class checkForumNewNotifications implements Job {
         
         try {
             SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-            forumManager.sendNotificationsJob(programId, 1);          
+            documentManager.sendNotificationsJob(programId);  
         } catch (Exception ex) {
             try {
-                throw new Exception("Error occurred trying to move Rhapsody files from schedule task",ex);
+                throw new Exception("Error occurred send document notifications job from schedule task",ex);
             } catch (Exception ex1) {
-                Logger.getLogger(checkForumNewNotifications.class.getName()).log(Level.SEVERE, null, ex1);
+                Logger.getLogger(sendDocumentEmailNotifications.class.getName()).log(Level.SEVERE, null, ex1);
             }
         }
         

@@ -6,8 +6,13 @@
 package com.rr.missouri.ui.document;
 
 import com.registryKit.document.document;
+import com.registryKit.document.documentEmailNotifications;
 import com.registryKit.document.documentFolder;
 import com.registryKit.document.documentManager;
+import com.registryKit.document.documentNotificationPreferences;
+import com.registryKit.hierarchy.hierarchyManager;
+import com.registryKit.hierarchy.programHierarchyDetails;
+import com.registryKit.hierarchy.programOrgHierarchy;
 import com.registryKit.user.User;
 import com.registryKit.user.userManager;
 import com.rr.missouri.ui.security.decryptObject;
@@ -24,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import com.registryKit.user.userProgramModules;
+import javax.servlet.http.HttpServletRequest;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,6 +52,9 @@ public class documentController {
 
     @Autowired
     private documentManager documentmanager;
+
+    @Autowired
+    private hierarchyManager hierarchymanager;
 
     @Value("${programId}")
     private Integer programId;
@@ -190,8 +200,20 @@ public class documentController {
         Integer mainFolderId = 0;
         if (folderDetails.getParentFolderId() > 0) {
             mainFolderId = folderDetails.getParentFolderId();
-            String parentFolderName = documentmanager.getFolderById(folderDetails.getParentFolderId()).getFolderName();
-            mav.addObject("selParentFolderName", parentFolderName);
+            
+            documentFolder parent = documentmanager.getFolderById(folderDetails.getParentFolderId());
+            mav.addObject("selParentFolderName", parent.getFolderName());
+                        
+            //need to encrypt parent folder here
+            encryptObject encryptParent = new encryptObject();
+            Map<String, String> mapParent;
+            mapParent = new HashMap<String, String>();
+            mapParent.put("id", String.valueOf(parent.getId()));
+            mapParent.put("topSecret", topSecret);
+            String[] encryptedParent = encryptParent.encryptObject(mapParent);
+            parent.setEncryptedId(encryptedParent[0]);
+            parent.setEncryptedSecret(encryptedParent[1]);
+            mav.addObject("parentFolder", parent);   
         } else {
             mainFolderId = folderDetails.getId();
         }
@@ -276,6 +298,14 @@ public class documentController {
             documentFolder parentFolderDetails = documentmanager.getFolderById(selFolder);
             newFolder.setParentFolderId(selFolder);
             newFolder.setCountyFolder(parentFolderDetails.getCountyFolder());
+            newFolder.setEntityId(parentFolderDetails.getEntityId());
+        }
+        
+        if (userDetails.getRoleId() == 2) {
+            programOrgHierarchy topLevel = hierarchymanager.getProgramOrgHierarchyBydspPos(1, programId);
+            List<programHierarchyDetails> counties = hierarchymanager.getProgramHierarchyItems(topLevel.getId(), 0);
+           mav.addObject("countyList", counties);
+        
         }
         
         mav.addObject("folderDetails", newFolder);
@@ -418,6 +448,8 @@ public class documentController {
 
         documentDetails.setProgramId(programId);
         
+        Integer documentId = documentDetails.getId();
+        
         /* Check to see if the file has moved folders */
         document currDocDetails = documentmanager.getDocumentById(documentDetails.getId());
         
@@ -448,18 +480,25 @@ public class documentController {
 
         String[] encrypted = encrypt.encryptObject(map);
         
-        /* Alert Users */
-        if(alertUsers > 0) {
+        /* Alert Users, we only alert if new document and not private doc  */
+        if(alertUsers > 0 && documentId == 0 && !documentDetails.getPrivateDoc()) {
             
             /* County Users */
-            if(alertUsers == 1) {
-                
+            if(alertUsers == 1 ) { //new document
+                documentEmailNotifications emailNotification = new documentEmailNotifications();
+                emailNotification.setProgramId(programId);
+                emailNotification.setNotificationType(1); //docs for user in hierarchy
+                emailNotification.setDocumentId(documentDetails.getId());
+                documentmanager.saveEmailNotification(emailNotification);
             }
-            /* All Users */
-            else {
-                
-            }
-            
+            /* All Users, new document, not private */
+            else if (alertUsers == 2){
+                documentEmailNotifications emailNotification = new documentEmailNotifications();
+                emailNotification.setProgramId(programId);
+                emailNotification.setNotificationType(2); //docs for user in hierarchy
+                emailNotification.setDocumentId(documentDetails.getId());
+                documentmanager.saveEmailNotification(emailNotification);   
+            }  
         }
 
         ModelAndView mav = new ModelAndView(new RedirectView("/documents/folder?i=" + encrypted[0] + "&v=" + encrypted[1]));
@@ -481,9 +520,46 @@ public class documentController {
         
         document documentDetails = documentmanager.getDocumentById(documentId);
         documentDetails.setStatus(false);
-        
         documentmanager.saveDocument(documentDetails);
-        
+        documentmanager.updateEmailNotificationByDocumentId(documentDetails.getId(), 0);
         return 1;
+    }
+    
+    @RequestMapping(value = "/getDocumentNotificationModel.do", method = RequestMethod.GET)
+    public ModelAndView getDocumentNotificationModel(HttpSession session, HttpServletRequest request) throws Exception {
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/document/documentNotificationPreferences");
+
+        User userDetails = (User) session.getAttribute("userDetails");
+
+        documentNotificationPreferences notificationPreferences = documentmanager.getNotificationPreferences(userDetails.getId());
+
+        if (notificationPreferences != null) {
+            mav.addObject("notificationPreferences", notificationPreferences);
+        } else {
+            documentNotificationPreferences newNotificationPreferences = new documentNotificationPreferences();
+            newNotificationPreferences.setNotificationEmail(userDetails.getEmail());
+            newNotificationPreferences.setProgramId(programId);
+            mav.addObject("notificationPreferences", newNotificationPreferences);
+        }
+        
+        return mav;
+    }
+    
+    
+    @RequestMapping(value = "/saveNotificationPreferences.do", method = RequestMethod.POST)
+    public @ResponseBody
+    Integer saveNotificationPreferences(@ModelAttribute(value = "notificationPreferences") documentNotificationPreferences notificationPreferences, BindingResult errors,
+            HttpSession session, HttpServletRequest request) throws Exception {
+        
+        User userDetails = (User) session.getAttribute("userDetails");
+
+        notificationPreferences.setSystemUserId(userDetails.getId());
+
+        documentmanager.saveNotificationPreferences(notificationPreferences);
+
+        return 1;
+
     }
 }

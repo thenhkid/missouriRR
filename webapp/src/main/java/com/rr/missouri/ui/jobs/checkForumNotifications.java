@@ -19,7 +19,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
  *
  * @author chadmccue
  */
-public class checkForumReplyNotifications implements Job {
+public class checkForumNotifications implements Job {
     
     @Autowired
     private forumManager forumManager;
@@ -32,12 +32,12 @@ public class checkForumReplyNotifications implements Job {
         
         try {
             SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-            forumManager.sendNotificationsJob(programId, 2);          
+            forumManager.sendNotificationsJob(programId);          
         } catch (Exception ex) {
             try {
-                throw new Exception("Error occurred trying to move Rhapsody files from schedule task",ex);
+                throw new Exception("Error occurredfor sendNotificationsJob  - new type schedule task",ex);
             } catch (Exception ex1) {
-                Logger.getLogger(checkForumReplyNotifications.class.getName()).log(Level.SEVERE, null, ex1);
+                Logger.getLogger(checkForumNotifications.class.getName()).log(Level.SEVERE, null, ex1);
             }
         }
         

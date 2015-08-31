@@ -17,9 +17,9 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 /**
  *
- * @author chadmccue
+ * @author gchan
  */
-public class checkCalendarNotifications implements Job {
+public class sendCalendarEmailNotifications implements Job {
     
     @Autowired
     private calendarManager calendarManager;
@@ -27,22 +27,17 @@ public class checkCalendarNotifications implements Job {
     @Value("${programId}")
     private Integer programId;
     
-    
-    /*
-    * this sends reminders
-    */
-    
     @Override
     public void execute(JobExecutionContext context)  throws JobExecutionException {
         
         try {
             SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-            calendarManager.checkCalendarNotifications(programId);          
+            calendarManager.sendEventNotificationsJob(programId);  
         } catch (Exception ex) {
             try {
-                throw new Exception("Error occurred checkCalendarNotifications from schedule task",ex);
+                throw new Exception("Error occurred sendEventNotificationsJob from schedule task",ex);
             } catch (Exception ex1) {
-                Logger.getLogger(checkCalendarNotifications.class.getName()).log(Level.SEVERE, null, ex1);
+                Logger.getLogger(sendCalendarEmailNotifications.class.getName()).log(Level.SEVERE, null, ex1);
             }
         }
         
