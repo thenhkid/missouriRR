@@ -3,16 +3,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 
-<div class="login-container">
-
-    <div class="space-6"></div>
-    <div class="center">
-        <h4 class="blue" id="id-company-text">MO Healthy Schools Monitoring System</h4>
-    </div>
+<div class="login-container" style="height:100%">
 
     <div class="space-6"></div>
 
-    <div class="position-relative">
+    <div class="position-relative"  >
         <div id="login-box" class="login-box visible widget-box no-border">
             <div class="widget-body">
                 <div class="widget-main">

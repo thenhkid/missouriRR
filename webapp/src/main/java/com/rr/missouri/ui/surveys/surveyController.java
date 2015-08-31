@@ -1151,4 +1151,22 @@ public class surveyController {
 
         return (Integer) 1;
     }
+    
+    /**
+     * The 'removeCodeSets' GET request will remove the selected code set from the entity.
+     *
+     * @param entityId
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getSurveyDocuments.do", method = RequestMethod.GET)
+    public @ResponseBody
+    ModelAndView getSurveyDocuments(@RequestParam(value = "surveyId", required = true) Integer surveyId) throws Exception {
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/survey/uploadedDocs");
+
+        return mav;
+
+    }
 }

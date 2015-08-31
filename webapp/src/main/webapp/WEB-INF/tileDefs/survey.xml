@@ -26,6 +26,7 @@
             <add-attribute value="/dspResources/js/bootbox.min.js" />
             <add-attribute value="/dspResources/js/bootstrap-multiselect.min.js" />
             <add-attribute value="/dspResources/js/jquery.gritter.min.js" />
+            <add-attribute value="/dspResources/js/ace-elements.min.js" />
         </put-list-attribute>
         <put-list-attribute name="customCSS">
             <add-attribute value="/dspResources/css/bootstrap-multiselect.min.css" />
@@ -61,11 +62,15 @@
         
     </definition>
     
-     <definition name="/completedSurvey" extends="base.definition.survey-ui">
+    <definition name="/completedSurvey" extends="base.definition.survey-ui">
         <put-attribute name="title" value="" />
         <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/survey/breadcrumbs.jsp?page=complete" />
         <put-attribute name="body" value="/WEB-INF/jsp/survey/completedSurvey.jsp" />
         <put-attribute name="submenu" value="/WEB-INF/jsp/survey/submenu.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/surveys/completedSurvey.js" />
+        <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/ace-elements.min.js" />
+        </put-list-attribute>
     </definition>
     
     <!-- Exception handling -->

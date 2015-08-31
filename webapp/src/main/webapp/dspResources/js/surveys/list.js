@@ -6,7 +6,7 @@
 
 
 jQuery(function ($) {
-    
+
     /* Populate the district drop down */
     $.ajax({
         url: '/districts/getDistrictList.do',
@@ -14,8 +14,8 @@ jQuery(function ($) {
         type: "GET",
         success: function (data) {
             $('#districtList').html(data);
-            
-             $('.multiselect').multiselect({
+
+            $('.multiselect').multiselect({
                 enableFiltering: true,
                 buttonClass: 'btn btn-white btn-primary',
                 enableClickableOptGroups: true,
@@ -35,18 +35,66 @@ jQuery(function ($) {
             });
         }
     });
-    
+
+    $(document).on('click', '.surveyDocuments', function () {
+        $.ajax({
+            url: '/surveys/getSurveyDocuments.do',
+            data:{'surveyId':$(this).attr('rel')},
+            type: 'GET',
+            success: function (data) {
+
+                data = $(data);
+
+                /* File input */
+                data.find('#id-input-file-2').ace_file_input({
+                    style: 'well',
+                    btn_choose: 'click to upload files',
+                    btn_change: null,
+                    no_icon: 'ace-icon fa fa-cloud-upload',
+                    droppable: false,
+                    thumbnail: 'small',
+                    allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
+                    before_remove: function () {
+                        return true;
+                    }
+                });
+                
+                bootbox.dialog({
+                    message: data,
+                    title: "Survey Documents",
+                    buttons: {
+                        cancel: {
+                            label: "Cancel",
+                            className: "btn-default",
+                            callback: function () {
+
+                            }
+                        },
+                        success: {
+                            label: "Create",
+                            className: "btn-primary",
+                            callback: function () {
+                                return folderFn(event);
+                            }
+                        },
+                    }
+                });
+            }
+        });
+
+    });
+
     /* Submit the district selection */
     $(document).on('click', '#createNewEntry', function () {
-        
-        if($('.multiselect').val() != null) {
+
+        if ($('.multiselect').val() != null) {
             $('#districtSelectForm').submit();
         }
         else {
             $.gritter.add({
-                    title: 'Missing District!',
-                    text: 'Please select at least one district to start a survey.',
-                    class_name: 'gritter-error gritter-light'
+                title: 'Missing District!',
+                text: 'Please select at least one district to start a survey.',
+                class_name: 'gritter-error gritter-light'
             });
         }
 
@@ -65,17 +113,17 @@ jQuery(function ($) {
                 ],
                 "aaSorting": []
             });
- 
+
 
 
     //Fade out the updated/created message after being displayed.
     if ($('.alert').length > 0) {
         $('.alert').delay(2000).fadeOut(1000);
     }
-    
+
     //Delete Survey
-    $(document).on('click', '.deleteSurvey', function() {
-        
+    $(document).on('click', '.deleteSurvey', function () {
+
         var confirmed = confirm("Are you sure you want to remove this activity log?");
 
         if (confirmed) {
@@ -84,11 +132,11 @@ jQuery(function ($) {
                 url: '/surveys/removeEntry.do',
                 data: {'i': $(this).attr('rel')},
                 success: function (data) {
-                   location.reload();
+                    location.reload();
                 }
             });
         }
     });
 
-    
+
 });

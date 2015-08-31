@@ -286,7 +286,6 @@ jQuery(function ($) {
                                 });*/
                         
                         function formatState (state) {
-                            console.log(state);
                             if (!state.id) { return state.text; }
                             var $state = $(
                                 '<span><div style=float:left;height:20px;width:20px;background-color:' + state.element.value.toLowerCase() + '></div><div>&nbsp;&nbsp;'+state.text+'</div> ' + '</span>'
@@ -295,7 +294,6 @@ jQuery(function ($) {
                         };
                         
                         function formatStateSelected (state) {
-                            console.log(state);
                             if (!state.id) { return state.text; }
                             var $state = $(
                                 '<span><div style=margin-top:3px;float:left;height:20px;width:20px;background-color:' + state.element.value.toLowerCase() + '></div><div>&nbsp;&nbsp;'+state.text+'</div> ' + '</span>'
