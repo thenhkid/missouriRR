@@ -14,6 +14,7 @@ import com.registryKit.hierarchy.programHierarchyDetails;
 import com.registryKit.survey.SurveyPages;
 import com.registryKit.survey.SurveyQuestionChoices;
 import com.registryKit.survey.SurveyQuestions;
+import com.registryKit.survey.submittedSurveyDocuments;
 import com.registryKit.survey.submittedSurveys;
 import com.registryKit.survey.submittedsurveycontentcriteria;
 import com.registryKit.survey.survey;
@@ -44,6 +45,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
@@ -921,6 +923,23 @@ public class surveyController {
                 mav.addObject("selectedEntities", selectedEntities.toString().replace("[", "").replace("]", ""));
                 mav.addObject("i", encrypted[0]);
                 mav.addObject("v", encrypted[1]);
+                mav.addObject("submittedSurveyId", submittedSurveyId);
+                
+                /* Get a list of survey documents */
+                List<submittedSurveyDocuments> surveyDocuments = surveyManager.getSubmittedSurveyDocuments(submittedSurveyId);
+
+                if(surveyDocuments != null && surveyDocuments.size() > 0) {
+                    for(submittedSurveyDocuments document : surveyDocuments) {
+                        if(document.getUploadedFile() != null && !"".equals(document.getUploadedFile())) {
+                            int index = document.getUploadedFile().lastIndexOf('.');
+                            document.setFileExt(document.getUploadedFile().substring(index+1));
+                        }
+                    }
+                }
+
+                mav.addObject("surveyDocuments", surveyDocuments);
+
+                
             } else {
 
             }
@@ -1130,8 +1149,7 @@ public class surveyController {
     /**
      * The 'removeEntry' POST request will mark the survey submission as deleted.
      * 
-     * @param i
-     * @param v
+     * @param surveyId
      * @return
      * @throws Exception
      */
@@ -1153,9 +1171,9 @@ public class surveyController {
     }
     
     /**
-     * The 'removeCodeSets' GET request will remove the selected code set from the entity.
+     * The 'getSurveyDocuments' GET request will return a list of submitted survey documents.
      *
-     * @param entityId
+     * @param surveyId
      * @return
      * @throws Exception
      */
@@ -1165,8 +1183,134 @@ public class surveyController {
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/survey/uploadedDocs");
+        mav.addObject("surveyId", surveyId);
+        
+        /* Get a list of survey documents */
+        List<submittedSurveyDocuments> surveyDocuments = surveyManager.getSubmittedSurveyDocuments(surveyId);
+        
+        if(surveyDocuments != null && surveyDocuments.size() > 0) {
+            for(submittedSurveyDocuments document : surveyDocuments) {
+                if(document.getUploadedFile() != null && !"".equals(document.getUploadedFile())) {
+                    int index = document.getUploadedFile().lastIndexOf('.');
+                    document.setFileExt(document.getUploadedFile().substring(index+1));
+                }
+            }
+        }
+        
+        mav.addObject("surveyDocuments", surveyDocuments);
 
         return mav;
 
+    }
+    
+    /**
+     * The 'saveDocumentForm' POST request will handle saving the new/updated document
+     * message.
+     *
+     * @param surveyDocuments
+     * @param redirectAttr
+     * @param session
+     * @param surveyId
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/saveDocumentForm.do", method = RequestMethod.POST)
+    public @ResponseBody
+    ModelAndView saveDocumentForm(@RequestParam(value = "surveyDocuments", required = false) List<MultipartFile> surveyDocuments, RedirectAttributes redirectAttr,
+            HttpSession session, @RequestParam(value = "surveyId", required = true) Integer surveyId,
+            @RequestParam(value = "completed", required = true) Integer completed,
+            @RequestParam(value = "selectedEntities", required = false) List<String> selectedEntities) throws Exception {
+
+        /* Get a list of completed surveys the logged in user has access to */
+        User userDetails = (User) session.getAttribute("userDetails");
+
+        if (surveyDocuments != null) {
+            for(MultipartFile uploadedFile : surveyDocuments) {
+                
+                submittedSurveyDocuments surveyDocument = new submittedSurveyDocuments();
+                surveyDocument.setSystemUserId(userDetails.getId());
+                surveyDocument.setSubmittedSurveyId(surveyId);
+                
+                surveyManager.saveSurveyDocument(surveyDocument, uploadedFile, programId);
+            }
+        }
+        
+        if("1".equals(completed.toString())) {
+            submittedSurveys submittedSurveyDetails = surveyManager.getSubmittedSurvey(surveyId);
+            
+            encryptObject encrypt = new encryptObject();
+            Map<String, String> map;
+
+            //Encrypt the use id to pass in the url
+            map = new HashMap<String, String>();
+            map.put("id", Integer.toString(submittedSurveyDetails.getSurveyId()));
+            map.put("topSecret", topSecret);
+
+            String[] encrypted = encrypt.encryptObject(map);
+            
+            surveys surveyDetails = surveyManager.getSurveyDetails(submittedSurveyDetails.getSurveyId());
+            redirectAttr.addFlashAttribute("surveyDetails", surveyDetails);
+            redirectAttr.addFlashAttribute("selDistricts", districtList);
+            redirectAttr.addFlashAttribute("surveys", surveys);
+            redirectAttr.addFlashAttribute("selectedEntities", selectedEntities.toString().replace("[", "").replace("]", ""));
+            redirectAttr.addFlashAttribute("i", encrypted[0]);
+            redirectAttr.addFlashAttribute("v", encrypted[1]);
+            redirectAttr.addFlashAttribute("submittedSurveyId", surveyId);
+
+            /* Get a list of survey documents */
+            List<submittedSurveyDocuments> uploadedsurveyDocuments = surveyManager.getSubmittedSurveyDocuments(surveyId);
+
+            if(uploadedsurveyDocuments != null && uploadedsurveyDocuments.size() > 0) {
+                for(submittedSurveyDocuments document : uploadedsurveyDocuments) {
+                    if(document.getUploadedFile() != null && !"".equals(document.getUploadedFile())) {
+                        int index = document.getUploadedFile().lastIndexOf('.');
+                        document.setFileExt(document.getUploadedFile().substring(index+1));
+                    }
+                }
+            }
+            
+            redirectAttr.addFlashAttribute("surveyDocuments", uploadedsurveyDocuments);
+            
+            ModelAndView mav = new ModelAndView(new RedirectView("/surveys/completedSurvey"));
+            return mav;
+
+        }
+        else {
+            redirectAttr.addFlashAttribute("message", "fileUploaded");
+            ModelAndView mav = new ModelAndView(new RedirectView("/surveys"));
+            return mav;
+        }
+
+    }
+    
+    /**
+     * The 'deleteDocument' POST request will remove the clicked uploaded
+     * document.
+     *
+     * @param documentId The id of the clicked document.
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/deleteDocument.do", method = RequestMethod.POST)
+    public @ResponseBody
+    Integer deleteDocument(@RequestParam(value = "documentId", required = true) Integer documentId) throws Exception {
+        
+        submittedSurveyDocuments documentDetails = surveyManager.getDocumentById(documentId);
+        documentDetails.setStatus(false);
+        surveyManager.saveSurveyDocument(documentDetails, null, programId);
+        return 1;
+    }
+    
+    /**
+     * 
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/completedSurvey", method = RequestMethod.GET)
+    public ModelAndView completedSurvey() throws Exception {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/completedSurvey");
+        
+        return mav;
     }
 }

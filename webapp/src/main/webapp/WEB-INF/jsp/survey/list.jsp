@@ -14,24 +14,35 @@
     <div class="col-xs-12">
 
         <%--<h3 class="header smaller lighter blue">Activity Logs</h3>--%>
-        <c:if test="${allowCreate == true}">
-            <div class="clearfix">
-                <div class="pull-right">
-                    <form:form id="districtSelectForm" method="POST" action="/surveys/startSurvey" role="form">
-                        <input type="hidden" name="s" id="surveyId" value="${selSurvey}" />
-                        <ul class="list-unstyled spaced2">
-                            <li>
-                                <span id="districtList"></span>
-                                <a href="javascript:void(0);" id="createNewEntry" role="button" rel="${selSurvey}" class="btn btn-success">
-                                    <i class="ace-icon fa fa-plus-square align-top bigger-150"></i>
-                                    <strong>Start Activity Log</strong>
-                                </a>
-                            </li>
-                        </ul>
-                    </form:form>  
+        
+        <div class="clearfix">
+            <c:if test="${not empty message}" >
+                <div class="pull-left">
+                    <div class="alert alert-success">
+                        <strong>Success!</strong> 
+                        <c:choose>
+                            <c:when test="${message == 'fileUploaded'}">The file has been successfully uploaded!</c:when>
+                        </c:choose>
+                    </div>
                 </div>
+            </c:if>
+            <c:if test="${allowCreate == true}">
+            <div class="pull-right">
+                <form:form id="districtSelectForm" method="POST" action="/surveys/startSurvey" role="form">
+                    <input type="hidden" name="s" id="surveyId" value="${selSurvey}" />
+                    <ul class="list-unstyled spaced2">
+                        <li>
+                            <span id="districtList"></span>
+                            <a href="javascript:void(0);" id="createNewEntry" role="button" rel="${selSurvey}" class="btn btn-success">
+                                <i class="ace-icon fa fa-plus-square align-top bigger-150"></i>
+                                <strong>Start Activity Log</strong>
+                            </a>
+                        </li>
+                    </ul>
+                </form:form>  
             </div>
-        </c:if>
+            </c:if>
+        </div>
 
         <div class="table-header">
             Submissions for "Latest ${surveyName} Activity Logs"

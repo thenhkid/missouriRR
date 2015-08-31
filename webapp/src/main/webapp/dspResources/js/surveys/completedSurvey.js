@@ -9,7 +9,7 @@ jQuery(function ($) {
     /* File input */
     $('.pageQuestionsPanel').find('#id-input-file-2').ace_file_input({
         style: 'well',
-        btn_choose: 'click to upload the document',
+        btn_choose: 'click to upload files',
         btn_change: null,
         no_icon: 'ace-icon fa fa-cloud-upload',
         droppable: false,
@@ -18,6 +18,34 @@ jQuery(function ($) {
         before_remove: function () {
             return true;
         }
+    });
+    
+    $(document).on('change', '#id-input-file-2', function() {
+        $('span').removeClass("has-error");
+        $('div').removeClass("has-error");
+        $('#titleMsg').html("");
+        $('#docMsg').html("");
+        $('#webLinkMsg').html("");
+
+        var errorFound = false;
+        
+        /** Make sure either a document is uploaded or an external link is provided **/
+        if($('#id-input-file-2').val().trim() == "") {
+            $('#docDiv').addClass("has-error");
+            $('#webLinkDiv').addClass("has-error");
+            $('#docMsg').addClass("has-error");
+            $('#docMsg').html('At least one file must be uploaded.');
+            errorFound = true;
+        }
+        
+        if(errorFound == true) {
+            event.preventDefault();
+            return false;
+        }
+        
+        var submitURL = "/surveys/saveDocumentForm.do";
+        $("#surveyDocForm").attr("action", submitURL);
+        $("#surveyDocForm").submit();
     });
 
 });

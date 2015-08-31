@@ -36,7 +36,7 @@ jQuery(function ($) {
         }
     });
 
-    $(document).on('click', '.surveyDocuments', function () {
+    $(document).on('click', '.surveyDocuments', function (event) {
         $.ajax({
             url: '/surveys/getSurveyDocuments.do',
             data:{'surveyId':$(this).attr('rel')},
@@ -61,7 +61,7 @@ jQuery(function ($) {
                 
                 bootbox.dialog({
                     message: data,
-                    title: "Survey Documents",
+                    title: "Uploaded Survey Files",
                     buttons: {
                         cancel: {
                             label: "Cancel",
@@ -71,10 +71,10 @@ jQuery(function ($) {
                             }
                         },
                         success: {
-                            label: "Create",
+                            label: "Upload",
                             className: "btn-primary",
                             callback: function () {
-                                return folderFn(event);
+                                return documentFn(event);
                             }
                         },
                     }
@@ -138,5 +138,57 @@ jQuery(function ($) {
         }
     });
 
+    function documentFn(event) {
+        
+        $('span').removeClass("has-error");
+        $('div').removeClass("has-error");
+        $('#titleMsg').html("");
+        $('#docMsg').html("");
+        $('#webLinkMsg').html("");
 
+        var errorFound = false;
+        
+        /** Make sure either a document is uploaded or an external link is provided **/
+        if($('#id-input-file-2').val().trim() == "") {
+            $('#docDiv').addClass("has-error");
+            $('#webLinkDiv').addClass("has-error");
+            $('#docMsg').addClass("has-error");
+            $('#docMsg').html('At least one file must be uploaded.');
+            errorFound = true;
+        }
+        
+        if(errorFound == true) {
+            event.preventDefault();
+            return false;
+        }
+        
+        var submitURL = "/surveys/saveDocumentForm.do";
+        $("#surveyDocForm").attr("action", submitURL);
+        $("#surveyDocForm").submit();
+
+    }
+    
+    /* Remove existing document */
+    $(document).on('click', '.deleteDocument', function () {
+
+        var confirmed = confirm("Are you sure you want to remove this file?");
+
+        if (confirmed) {
+            var docId = $(this).attr('rel');
+            $.ajax({
+                url: '/surveys/deleteDocument.do',
+                type: 'POST',
+                data: {
+                    'documentId': docId
+                },
+                success: function (data) {
+                    $('#docDiv_' + docId).remove();
+                },
+                error: function (error) {
+
+                }
+            });
+        }
+
+    });
 });
