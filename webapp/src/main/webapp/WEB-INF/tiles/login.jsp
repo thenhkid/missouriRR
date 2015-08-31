@@ -35,7 +35,7 @@
         <![endif]-->
         <script type="text/javascript" src="<%=request.getContextPath()%>/dspResources/js/ace.min.js"></script>
     </head>
-    <body class="login-layout" style="background: transparent url('../../dspResources/images/Health-e-link_CoverPage.jpg') no-repeat; -webkit-background-size: contain; -moz-background-size: contain;    
+    <body class="login-layout" style="background: transparent url('../dspResources/images/Health-e-link_Coverpage.jpg') no-repeat; -webkit-background-size: contain; -moz-background-size: contain;    
     -o-background-size: contain;   
     background-size: contain;">
 
