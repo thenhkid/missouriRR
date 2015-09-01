@@ -40,7 +40,7 @@ jQuery(function ($) {
 
    // $('#user-profile-3').find('input[type=file]').ace_file_input('show_file_list', [{type: 'image', name: $('#avatar').attr('src')}]);
 
-    $(document).on('click', '.btn-info', function() {
+    $(document).on('click', '.btn', function() {
         
          var errorFound = false;
 
