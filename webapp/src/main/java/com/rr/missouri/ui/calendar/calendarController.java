@@ -18,7 +18,6 @@ import com.registryKit.hierarchy.hierarchyManager;
 import com.registryKit.hierarchy.programHierarchyDetails;
 import com.registryKit.hierarchy.programOrgHierarchy;
 import com.registryKit.messenger.emailManager;
-import com.registryKit.messenger.emailMessage;
 import com.registryKit.program.program;
 import com.registryKit.program.programManager;
 import com.registryKit.user.User;
