@@ -27,6 +27,8 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/reports")
 public class reportController {
     
+   private static Integer moduleId = 3;
+   
    @Autowired
    private hierarchyManager hierarchymanager;
     
@@ -34,7 +36,7 @@ public class reportController {
    private Integer programId;
    
    /**
-     * The '' request will display the list of client.
+     * The '' request will display a list of requested reports, if none are found, it will display new report form page
      *
      * @param request
      * @param response

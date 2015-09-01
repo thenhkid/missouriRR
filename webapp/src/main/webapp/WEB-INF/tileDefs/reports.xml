@@ -1,53 +1,43 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE tiles-definitions PUBLIC
        "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
-       "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
 <tiles-definitions>
     
-    <!-- sysAdmin Definitions -->
-    <definition name="base.definition.client-ui" template="/WEB-INF/tiles/layout.jsp">
+    <!-- Main Definitions -->
+    <definition name="base.definition.reports-ui" template="/WEB-INF/tiles/layout.jsp">
         <put-attribute name="title" value="" />
-        <put-attribute name="header" value="" />
-        <put-attribute name="actions" value="" />
-        <put-attribute name="menu" value="" />
+        <put-attribute name="breadcrumbs" value="" />
         <put-attribute name="body" value="" />
-        <put-attribute name="footer" value="/WEB-INF/jsp/common/footer.jsp" />
+        <put-attribute name="submenu" value="" />
     </definition>
     
-    <definition name="/adHoc" extends="base.definition.client-ui">
-        <put-attribute name="page-id" value="dashboard-details" />
-        <put-attribute name="page-section" value="section-dashboard" />
-        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=reports" />
-        <put-attribute name="actions" value="/WEB-INF/jsp/reports/actionBar.jsp?page=adHoc" />
-        <put-attribute name="menu" value="/WEB-INF/jsp/reports/menu.jsp?page=adHoc" />
+    <definition name="/adHoc" extends="base.definition.reports-ui">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/reports/breadcrumbs.jsp?page=start" />
         <put-attribute name="body" value="/WEB-INF/jsp/reports/adhoc.jsp" />
-        <put-attribute name="jscript" value="/dspResources/js/reports/adhoc.js" />
+        <put-attribute name="jscript" value="/dspResources/js/surveys/adhoc" />
+        <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/chosen.jquery.min.js" />
+            <add-attribute value="/dspResources/js/date-time/bootstrap-datepicker.min.js" />
+            <add-attribute value="/dspResources/js/date-time/bootstrap-timepicker.min.js" />
+            <add-attribute value="/dspResources/js/date-time/moment.min.js" />
+            <add-attribute value="/dspResources/js/date-time/daterangepicker.min.js" />
+            <add-attribute value="/dspResources/js/date-time/bootstrap-datetimepicker.min.js" />
+            <add-attribute value="/dspResources/js/bootstrap-multiselect.min.js" />
+            <add-attribute value="/dspResources/js/jquery.gritter.min.js" />
+        </put-list-attribute>
+        <put-list-attribute name="customCSS">
+            <add-attribute value="/dspResources/css/bootstrap-multiselect.min.css" />
+            <add-attribute value="/dspResources/css/chosen.min.css" />
+            <add-attribute value="/dspResources/css/datepicker.min.css" />
+            <add-attribute value="/dspResources/css/bootstrap-timepicker.min.css" />
+            <add-attribute value="/dspResources/css/daterangepicker.min.css" />
+            <add-attribute value="/dspResources/css/bootstrap-datetimepicker.min.css" />
+            <add-attribute value="/dspResources/css/jquery.gritter.min.css" />
+        </put-list-attribute>
+        
     </definition>
     
-    <definition name="/custom" extends="base.definition.client-ui">
-        <put-attribute name="page-id" value="dashboard-details" />
-        <put-attribute name="page-section" value="section-dashboard" />
-        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=custom" />
-        <put-attribute name="actions" value="/WEB-INF/jsp/reports/actionBar.jsp?page=custom" />
-        <put-attribute name="menu" value="/WEB-INF/jsp/reports/menu.jsp?page=custom" />
-        <put-attribute name="body" value="/WEB-INF/jsp/reports/custom.jsp" />
-        <put-attribute name="jscript" value="/dspResources/js/reports/custom.js" />
-    </definition>
-    
-    <definition name="/customReport" extends="base.definition.client-ui">
-        <put-attribute name="page-id" value="dashboard-details" />
-        <put-attribute name="page-section" value="section-dashboard" />
-        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp?sect=custom" />
-        <put-attribute name="actions" value="/WEB-INF/jsp/reports/actionBar.jsp?page=custom" />
-        <put-attribute name="menu" value="/WEB-INF/jsp/reports/menu.jsp?page=custom" />
-        <put-attribute name="body" value="/WEB-INF/jsp/reports/customReport.jsp" />
-        <put-attribute name="jscript" value="/dspResources/js/reports/customReport.js" />
-    </definition>
-    
-    <!-- Exception handling -->
-    <definition name="/exception" extends="base.definition.ui">
-        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp" />
-        <put-attribute name="body" value="/WEB-INF/jsp/exception.jsp" />
-    </definition>
 
 </tiles-definitions>
