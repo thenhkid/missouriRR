@@ -450,6 +450,7 @@ public class documentController {
         
         Integer documentId = documentDetails.getId();
         
+        
         /* Check to see if the file has moved folders */
         document currDocDetails = documentmanager.getDocumentById(documentDetails.getId());
         
@@ -463,14 +464,18 @@ public class documentController {
             documentDetails.setUploadedFile(newFileNameFromMove);
         }
         
+        documentFolder folderDetails  = documentmanager.getFolderById(documentDetails.getFolderId());
+        if (folderDetails.getAdminOnly()) {
+            documentDetails.setAdminOnly(true);
+        }
+        
         documentmanager.saveDocument(documentDetails);
-
+        
+        
         if (postDocuments != null) {
             documentmanager.saveUploadedDocument(documentDetails, postDocuments);
         }
 
-        documentFolder folderDetails = documentmanager.getFolderById(documentDetails.getFolderId());
-        
         encryptObject encrypt = new encryptObject();
         Map<String, String> map;
         
