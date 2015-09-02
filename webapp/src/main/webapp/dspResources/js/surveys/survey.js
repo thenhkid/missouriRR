@@ -322,7 +322,9 @@ function checkSurveyFields() {
                 $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html(requiredMsg);
                 $('#errorMsg_' + qId).show();
-                missingQuestions+="- Question "+qNum+",";
+                if(missingQuestions.indexOf("- Question " + qNum) == -1) {
+                    missingQuestions+="- Question "+qNum+",";
+                }
                 errorFound = 1;
             }
         }
@@ -332,7 +334,9 @@ function checkSurveyFields() {
                 $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html(requiredMsg);
                 $('#errorMsg_' + qId).show();
-                missingQuestions+="- Question "+qNum+",";
+                if(missingQuestions.indexOf("- Question " + qNum) == -1) {
+                    missingQuestions+="- Question "+qNum+",";
+                }
                 errorFound = 1;
             }
         }
@@ -353,7 +357,9 @@ function checkSurveyFields() {
                 $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid email address.');
                 $('#errorMsg_' + qId).show();
-                missingQuestions+="- Question "+qNum+",";
+                if(missingQuestions.indexOf("- Question " + qNum) == -1) {
+                    missingQuestions+="- Question "+qNum+",";
+                }
                 errorFound = 1;
             }
         }
@@ -373,7 +379,9 @@ function checkSurveyFields() {
                 $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid phone number.');
                 $('#errorMsg_' + qId).show();
-                missingQuestions+="- Question "+qNum+",";
+                if(missingQuestions.indexOf("- Question " + qNum) == -1) {
+                    missingQuestions+="- Question "+qNum+",";
+                }
                 errorFound = 1;
             }
         }
@@ -392,7 +400,9 @@ function checkSurveyFields() {
                 $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('The value must be numeric.');
                 $('#errorMsg_' + qId).show();
-                missingQuestions+="- Question "+qNum+",";
+                if(missingQuestions.indexOf("- Question " + qNum) == -1) {
+                    missingQuestions+="- Question "+qNum+",";
+                }
                 errorFound = 1;
             }
         }
@@ -411,7 +421,9 @@ function checkSurveyFields() {
                 $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid URL.');
                 $('#errorMsg_' + qId).show();
-                missingQuestions+="- Question "+qNum+",";
+                if(missingQuestions.indexOf("- Question " + qNum) == -1) {
+                    missingQuestions+="- Question "+qNum+",";
+                }
                 errorFound = 1;
             }
         }
@@ -430,7 +442,9 @@ function checkSurveyFields() {
                 $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid Date, format should be mm/dd/yyyy.');
                 $('#errorMsg_' + qId).show();
-                missingQuestions+="- Question "+qNum+",";
+                if(missingQuestions.indexOf("- Question " + qNum) == -1) {
+                    missingQuestions+="- Question "+qNum+",";
+                }
                 errorFound = 1;
             }
         }
