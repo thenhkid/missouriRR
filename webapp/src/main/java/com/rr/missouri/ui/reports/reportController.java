@@ -47,7 +47,7 @@ public class reportController {
     public ModelAndView adHocReports(HttpSession session) throws Exception {
        
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("/adHoc");
+        mav.setViewName("/request");
         
         User userDetails = (User) session.getAttribute("userDetails");
         
@@ -64,6 +64,16 @@ public class reportController {
         
         return mav;
     }
+    
+    
+    @RequestMapping(value = "list", method = {RequestMethod.POST, RequestMethod.GET})
+    public ModelAndView listReports(HttpSession session) throws Exception {
+       
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/list");
+        return mav;
+    }
+    
     
     /**
      * The 'custom' request will display the list of custom generated reports.
@@ -83,6 +93,7 @@ public class reportController {
         
         return mav;
     }
+    
     
     /**
      * The 'customReport' request will display the selected custom Report

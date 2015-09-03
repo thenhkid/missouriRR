@@ -4,4 +4,12 @@
  * and open the template in the editor.
  */
 
+jQuery(function ($) {
 
+
+    $(document).ready(function () {
+        
+        $("input:text,form").attr("autocomplete", "off");
+        
+    });
+});

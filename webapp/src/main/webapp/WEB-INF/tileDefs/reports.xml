@@ -12,11 +12,12 @@
         <put-attribute name="submenu" value="" />
     </definition>
     
-    <definition name="/adHoc" extends="base.definition.reports-ui">
+    <definition name="/request" extends="base.definition.reports-ui">
         <put-attribute name="title" value="" />
-        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/reports/breadcrumbs.jsp?page=start" />
-        <put-attribute name="body" value="/WEB-INF/jsp/reports/adhoc.jsp" />
-        <put-attribute name="jscript" value="/dspResources/js/surveys/adhoc" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/reports/breadcrumbs.jsp?page=request" />
+        <put-attribute name="body" value="/WEB-INF/jsp/reports/request.jsp" />
+        <put-attribute name="submenu" value="/WEB-INF/jsp/reports/submenu.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/reports/request.js" />
         <put-list-attribute name="headScripts">
             <add-attribute value="/dspResources/js/chosen.jquery.min.js" />
             <add-attribute value="/dspResources/js/date-time/bootstrap-datepicker.min.js" />
@@ -39,5 +40,18 @@
         
     </definition>
     
+    <definition name="/list" extends="base.definition.reports-ui">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/reports/breadcrumbs.jsp?page=list" />
+        <put-attribute name="body" value="/WEB-INF/jsp/reports/reportList.jsp" />
+        <put-attribute name="submenu" value="/WEB-INF/jsp/reports/submenu.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/reports/reportList.js" />
+        <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/dataTables/jquery.dataTables.min.js" />
+            <add-attribute value="/dspResources/js/dataTables/jquery.dataTables.bootstrap.min.js" />
+            <add-attribute value="/dspResources/js/bootbox.min.js" />
+            <add-attribute value="/dspResources/js/ace-elements.min.js" />
+        </put-list-attribute>
+    </definition>
 
 </tiles-definitions>
