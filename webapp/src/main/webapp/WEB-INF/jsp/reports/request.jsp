@@ -19,7 +19,7 @@
     <hr/>
      </div>
 </div>
-        <form class="form-horizontal" id="newReport" method="post" action="reports/list" role="form">
+        <form class="form-horizontal" id="newReport" method="post" action="/reports" role="form">
             <%-- row for start /end dates --%>
             <div class="row">
                 <div class="col-sm-6">

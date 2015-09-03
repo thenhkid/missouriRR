@@ -35,15 +35,16 @@ public class reportController {
    @Value("${programId}")
    private Integer programId;
    
-   /**
-     * The '' request will display a list of requested reports, if none are found, it will display new report form page
-     *
-     * @param request
-     * @param response
-     * @return	the administrator dashboard view
-     * @throws Exception
-     */
-    @RequestMapping(value = "", method = RequestMethod.GET)
+   
+    @RequestMapping(value = "", method = {RequestMethod.POST, RequestMethod.GET})
+    public ModelAndView listReports(HttpSession session) throws Exception {
+       
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/list");
+        return mav;
+    }
+   
+    @RequestMapping(value = "/request", method = RequestMethod.GET)
     public ModelAndView adHocReports(HttpSession session) throws Exception {
        
         ModelAndView mav = new ModelAndView();
@@ -64,25 +65,8 @@ public class reportController {
         
         return mav;
     }
+
     
-    
-    @RequestMapping(value = "list", method = {RequestMethod.POST, RequestMethod.GET})
-    public ModelAndView listReports(HttpSession session) throws Exception {
-       
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("/list");
-        return mav;
-    }
-    
-    
-    /**
-     * The 'custom' request will display the list of custom generated reports.
-     *
-     * @param request
-     * @param response
-     * @return	the administrator dashboard view
-     * @throws Exception
-     */
     @RequestMapping(value = "/custom", method = RequestMethod.GET)
     public ModelAndView customReports(HttpSession session) throws Exception {
        

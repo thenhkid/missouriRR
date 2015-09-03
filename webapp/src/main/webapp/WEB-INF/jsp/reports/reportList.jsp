@@ -11,6 +11,7 @@
 
 
 <div class="col-sm-12">
+    <%--
     <div class="row">
         <div class="clearfix">
             <div class="dropdown pull-left no-margin">
@@ -25,14 +26,19 @@
         </div>
     </div>
     <div class="hr dotted"></div>
+    --%>
     <div class="row">
         <div class="clearfix">
-            <c:if test="${allowCreate == true}">
+            <%--<c:if test="${allowCreate == true}">--%>
+            <c:if test="${1 == 1}">    
                 <div class="pull-right no-margin col-md-6">
+                    <a href="/reports/request">
                     <button class="btn btn-success btn-xs pull-right" type="button" id="newDocument" >
                         <i class="ace-icon fa fa-plus-square bigger-110"></i>
                         Request a new report
                     </button>
+                    </a>
+
                 </div>
             </c:if>
         </div>
@@ -94,13 +100,9 @@
                                     <td  class="center">
                                         <div class="hidden-sm hidden-xs btn-group">
                                             
-                                                <a class="btn btn-xs btn-success" href="/FileDownload/downloadFile.do?filename=Test PDF_(2).pdf&foldername=documents/County 1" title="Test PDF">
+                                                <a class="btn btn-xs btn-success" href="/FileDownload/downloadFile.do?filename=sampleMeeting.pdf&foldername=reports" title="Test PDF">
                                                 <i class="ace-icon fa fa-download bigger-120"></i>
                                                 </a>
-                                            
-                                            
-                                                
-                                            
                                                 <button class="btn btn-xs btn-danger deleteDocument" rel="1"><i class="ace-icon fa fa-trash-o bigger-120"></i></button>
                                             
                                         </div>

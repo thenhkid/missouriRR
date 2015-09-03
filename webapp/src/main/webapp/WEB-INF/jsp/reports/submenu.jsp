@@ -5,7 +5,7 @@
 <ul class="submenu">
     <c:if test="${1==1}">
         <li ${selSurvey == survey.id ? 'class="active"' : ''}>
-        <a href="/reports/">
+        <a href="/reports/request">
             <i class="menu-icon fa fa-caret-right"></i>
             Request Report
         </a>
@@ -15,7 +15,7 @@
     </c:if>
     <c:if test="${2 == 2}">
         <li ${selSurvey == survey.id ? 'class="active"' : ''}>
-            <a href="/reports/list">
+            <a href="/reports">
             <i class="menu-icon fa fa-caret-right"></i>
             Requested Reports
         </a>
