@@ -1,41 +1,7 @@
-CREATE TABLE `rapidregistry`.`documents` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `programId` INT NOT NULL,
-  `title` VARCHAR(255) NOT NULL,
-  `docDesc` VARCHAR(500) NULL,
-  `externalWebLink` VARCHAR(255) NULL,
-  `uploadedFile` VARCHAR(255) NULL,
-  `dateCreated` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC));
+/** changes on dev but not stage **/
 
-ALTER TABLE `rapidregistry`.`documents` 
-ADD COLUMN `systemUserId` INT NOT NULL AFTER `dateCreated`;
 
-CREATE TABLE `rapidregistry`.`documentFolders` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `programId` INT NOT NULL,
-  `systemUserId` INT NOT NULL,
-  `folderName` VARCHAR(45) NOT NULL,
-  `adminOnly` BIT(1) NOT NULL DEFAULT b'0',
-  `parentFolderId` INT NOT NULL DEFAULT '0',
-  `dateCreated` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC));
-
-ALTER TABLE `rapidregistry`.`documentFolders` 
-ADD COLUMN `countyFolder` BIT(1) NOT NULL AFTER `folderName`;
-
-ALTER TABLE `rapidregistry`.`documentFolders` 
-CHANGE COLUMN `countyFolder` `countyFolder` BIT(1) NOT NULL DEFAULT b'0' ;
-
-UPDATE `rapidregistry`.`lu_programmodules` SET `moduleName`='documents' WHERE `id`='10';
-
-ALTER TABLE `rapidregistry`.`documents` 
-ADD COLUMN `folderId` VARCHAR(45) NOT NULL AFTER `programId`;
-
-ALTER TABLE `rapidregistry`.`documents` 
-ADD COLUMN `adminOnly` BIT(1) NOT NULL DEFAULT b'0' AFTER `systemUserId`;
-
-ALTER TABLE `rapidregistry`.`documents` 
-ADD COLUMN `status` BIT(1) NOT NULL DEFAULT b'1' AFTER `adminOnly`;
+/** grace 09082015 11:36AM **/
+use rapidregistry;
+ALTER TABLE `programorghierarchy_details` 
+ADD COLUMN `displayId` VARCHAR(45) NULL COMMENT 'user’s program’s assigned id for their display / reporting purpose' AFTER `programHierarchyId`;
