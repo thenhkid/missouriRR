@@ -69,43 +69,47 @@
                             <c:forEach var="document" items="${documents}">
                                 <tr>
                                     <td class="center" style="vertical-align: middle; ">
-                                        <c:choose>
-                                            <c:when test="${document.fileExt == 'pdf'}">
-                                                <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
-                                                    <div class="infobox-icon">
-                                                        <i class="ace-icon fa fa-file-pdf-o"></i>
+                                        <c:if test="${not empty document.uploadedFile}">
+                                            <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.uploadedFile}&foldername=documents/${selFolderName}"/>" title="${document.title}">
+                                            <c:choose>
+                                                <c:when test="${document.fileExt == 'pdf'}">
+                                                    <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
+                                                        <div class="infobox-icon">
+                                                            <i class="ace-icon fa fa-file-pdf-o"></i>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </c:when>
-                                            <c:when test="${document.fileExt == 'doc' || document.fileExt == 'docx'}">
-                                                <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
-                                                    <div class="infobox-icon">
-                                                        <i class="ace-icon fa fa-file-word-o"></i>
+                                                </c:when>
+                                                <c:when test="${document.fileExt == 'doc' || document.fileExt == 'docx'}">
+                                                    <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
+                                                        <div class="infobox-icon">
+                                                            <i class="ace-icon fa fa-file-word-o"></i>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </c:when>
-                                            <c:when test="${document.fileExt == 'xls' || document.fileExt == 'xlsx'}">
-                                                <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
-                                                    <div class="infobox-icon">
-                                                        <i class="ace-icon fa fa-file-excel-o"></i>
+                                                </c:when>
+                                                <c:when test="${document.fileExt == 'xls' || document.fileExt == 'xlsx'}">
+                                                    <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
+                                                        <div class="infobox-icon">
+                                                            <i class="ace-icon fa fa-file-excel-o"></i>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </c:when>
-                                            <c:when test="${document.fileExt == 'txt'}">
-                                                <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
-                                                    <div class="infobox-icon">
-                                                        <i class="ace-icon fa fa-file-text-o"></i>
+                                                </c:when>
+                                                <c:when test="${document.fileExt == 'txt'}">
+                                                    <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
+                                                        <div class="infobox-icon">
+                                                            <i class="ace-icon fa fa-file-text-o"></i>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </c:when>
-                                            <c:when test="${document.fileExt == 'jpg' || document.fileExt == 'gif' || document.fileExt == 'jpeg' || document.fileExt == 'png'}">
-                                                <div class="infobox infobox-orange" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
-                                                    <div class="infobox-icon">
-                                                        <i class="ace-icon fa fa-file-image-o"></i>
+                                                </c:when>
+                                                <c:when test="${document.fileExt == 'jpg' || document.fileExt == 'gif' || document.fileExt == 'jpeg' || document.fileExt == 'png'}">
+                                                    <div class="infobox infobox-orange" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
+                                                        <div class="infobox-icon">
+                                                            <i class="ace-icon fa fa-file-image-o"></i>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </c:when>
-                                        </c:choose>
+                                                </c:when>
+                                            </c:choose>
+                                            </a> 
+                                        </c:if>
                                     </td>
                                     <td>
                                         <strong><c:choose><c:when test="${not empty document.title}">${document.title}</c:when><c:otherwise>${document.uploadedFile}</c:otherwise></c:choose></strong>
