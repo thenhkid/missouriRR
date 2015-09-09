@@ -53,7 +53,7 @@
         <div class="hr dotted"></div>
     </div>
     <div id="topicsDiv" class="col-sm-12">
-        <c:if test="${not empty announcementTopics}">
+        <c:if test="${not empty announcementTopics && sessionScope.userDetails.roleId != 2}">
             <div class="row">
                 <div class="table-header">
                     Announcements
