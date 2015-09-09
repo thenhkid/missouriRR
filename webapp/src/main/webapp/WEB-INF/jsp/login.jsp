@@ -27,12 +27,18 @@
                         </c:when>
                         <c:otherwise><div class="space-6"></div></c:otherwise>
                     </c:choose>
+                        
+                    <%
+                        if (request.getParameter("expired") != null) {
+                            out.println("<ul class=\"list-unstyled spaced2\"><li class=\"text-warning bigger-110 orange\"><i class=\"ace-icon fa fa-exclamation-triangle\"></i>Your session has expired.</li></ul>");
+                        } 
+                    %>    
                     
                     <form role="form" id="form-admin-login" name='f' action="<c:url value='j_spring_security_check' />" method='POST'>
                         <fieldset>
                             <label class="block clearfix">
                                 <span class="block input-icon input-icon-right">
-                                    <input type="text" class="form-control" placeholder="Username" name="j_username" value="" autofocus="true" autocomplete="off" />
+                                    <input type="text" class="form-control username" placeholder="Username" name="j_username" value="" autofocus="true" autocomplete="off" />
                                     <i class="ace-icon fa fa-user"></i>
                                 </span>
                             </label>

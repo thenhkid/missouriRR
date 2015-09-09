@@ -134,7 +134,9 @@
                                                 <div id="questionOuterDiv_${question.id}">
                                                     <c:if test="${question.answerTypeId != 7}">
                                                         <c:set var="qNum" value="${qNum + 1}" scope="page"/>
-                                                        <label for="surveyPageQuestions[${q.index}].questionValue" class="qNumber control-label" rel="${qNum}"><h5><c:if test="${question.required == true}">*&nbsp;</c:if>${qNum}.&nbsp; ${question.question}</h5></label>
+                                                        <label for="surveyPageQuestions[${q.index}].questionValue" class="qNumber control-label" rel="${qNum}">
+                                                            <h5><c:if test="${question.required == true}">*&nbsp;</c:if>${qNum}.&nbsp; ${question.question}<c:if test="${question.answerTypeId == 1 && question.allowMultipleAns == true}"> (Check all that apply)</c:if></h5>
+                                                        </label>
                                                     </c:if>
                                                     <c:choose>
                                                         <c:when test="${question.answerTypeId == 7}">

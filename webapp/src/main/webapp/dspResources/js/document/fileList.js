@@ -33,26 +33,32 @@ jQuery(function ($) {
                 
                 data = $(data);
                 
-                bootbox.dialog({
-                    message: data,
-                    title: "New Folder Form",
-                    buttons: {
-                        cancel: {
-                            label: "Cancel",
-                            className: "btn-default",
-                            callback: function () {
+                //Check if the session has expired.
+                if(data.find('.username').length > 0) {
+                   top.location.href = '/login?expired';
+                }
+                else {
+                   bootbox.dialog({
+                        message: data,
+                        title: "New Folder Form",
+                        buttons: {
+                            cancel: {
+                                label: "Cancel",
+                                className: "btn-default",
+                                callback: function () {
 
-                            }
-                        },
-                        success: {
-                            label: "Create",
-                            className: "btn-primary",
-                            callback: function () {
-                                return folderFn(event);
-                            }
-                        },
-                    }
-                });
+                                }
+                            },
+                            success: {
+                                label: "Create",
+                                className: "btn-primary",
+                                callback: function () {
+                                    return folderFn(event);
+                                }
+                            },
+                        }
+                    }); 
+                }
             }
         });
         
@@ -68,26 +74,33 @@ jQuery(function ($) {
                 
                 data = $(data);
                 
-                bootbox.dialog({
-                    message: data,
-                    title: "New Folder Form",
-                    buttons: {
-                        cancel: {
-                            label: "Cancel",
-                            className: "btn-default",
-                            callback: function () {
+                //Check if the session has expired.
+                if(data.find('.username').length > 0) {
+                   top.location.href = '/login?expired';
+                }
+                else {
+                    bootbox.dialog({
+                        message: data,
+                        title: "New Folder Form",
+                        buttons: {
+                            cancel: {
+                                label: "Cancel",
+                                className: "btn-default",
+                                callback: function () {
 
-                            }
-                        },
-                        success: {
-                            label: "Create",
-                            className: "btn-primary",
-                            callback: function () {
-                                return folderFn(event);
-                            }
-                        },
-                    }
-                });
+                                }
+                            },
+                            success: {
+                                label: "Create",
+                                className: "btn-primary",
+                                callback: function () {
+                                    return folderFn(event);
+                                }
+                            },
+                        }
+                    });  
+                    
+                }
             }
         });
         
@@ -143,41 +156,47 @@ jQuery(function ($) {
             success: function (data) {
                 
                 data = $(data);
-                    
-                /* File input */
-                data.find('#id-input-file-2').ace_file_input({
-                   style: 'well',
-                   btn_choose: 'click to upload the document',
-                   btn_change: null,
-                   no_icon: 'ace-icon fa fa-cloud-upload',
-                   droppable: false,
-                   thumbnail: 'small',
-                   allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
-                   before_remove: function () {
-                       return true;
-                   }
-                });
                 
-                bootbox.dialog({
-                    message: data,
-                    title: "Document Form",
-                    buttons: {
-                        cancel: {
-                            label: "Cancel",
-                            className: "btn-default",
-                            callback: function () {
+                //Check if the session has expired.
+                if(data.find('.username').length > 0) {
+                   top.location.href = '/login?expired';
+                }
+                else {
+                   /* File input */
+                    data.find('#id-input-file-2').ace_file_input({
+                       style: 'well',
+                       btn_choose: 'click to upload the document',
+                       btn_change: null,
+                       no_icon: 'ace-icon fa fa-cloud-upload',
+                       droppable: false,
+                       thumbnail: 'small',
+                       allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
+                       before_remove: function () {
+                           return true;
+                       }
+                    });
 
-                            }
-                        },
-                        success: {
-                            label: "Save",
-                            className: "btn-primary",
-                            callback: function () {
-                                return documentFn(event);
-                            }
-                        },
-                    }
-                });
+                    bootbox.dialog({
+                        message: data,
+                        title: "Document Form",
+                        buttons: {
+                            cancel: {
+                                label: "Cancel",
+                                className: "btn-default",
+                                callback: function () {
+
+                                }
+                            },
+                            success: {
+                                label: "Save",
+                                className: "btn-primary",
+                                callback: function () {
+                                    return documentFn(event);
+                                }
+                            },
+                        }
+                    }); 
+                }
             }
         });
     });
@@ -191,41 +210,47 @@ jQuery(function ($) {
             success: function (data) {
                 
                 data = $(data);
-                    
-                /* File input */
-                data.find('#id-input-file-2').ace_file_input({
-                   style: 'well',
-                   btn_choose: 'click to upload the document',
-                   btn_change: null,
-                   no_icon: 'ace-icon fa fa-cloud-upload',
-                   droppable: false,
-                   thumbnail: 'small',
-                   allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
-                   before_remove: function () {
-                       return true;
-                   }
-                });
                 
-                bootbox.dialog({
-                    message: data,
-                    title: "Document Form",
-                    buttons: {
-                        cancel: {
-                            label: "Cancel",
-                            className: "btn-default",
-                            callback: function () {
+                //Check if the session has expired.
+                if(data.find('.username').length > 0) {
+                   top.location.href = '/login?expired';
+                }
+                else {
+                    /* File input */
+                    data.find('#id-input-file-2').ace_file_input({
+                       style: 'well',
+                       btn_choose: 'click to upload the document',
+                       btn_change: null,
+                       no_icon: 'ace-icon fa fa-cloud-upload',
+                       droppable: false,
+                       thumbnail: 'small',
+                       allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
+                       before_remove: function () {
+                           return true;
+                       }
+                    });
 
-                            }
-                        },
-                        success: {
-                            label: "Save",
-                            className: "btn-primary",
-                            callback: function () {
-                                return documentFn(event);
-                            }
-                        },
-                    }
-                });
+                    bootbox.dialog({
+                        message: data,
+                        title: "Document Form",
+                        buttons: {
+                            cancel: {
+                                label: "Cancel",
+                                className: "btn-default",
+                                callback: function () {
+
+                                }
+                            },
+                            success: {
+                                label: "Save",
+                                className: "btn-primary",
+                                callback: function () {
+                                    return documentFn(event);
+                                }
+                            },
+                        }
+                    });
+                }
             }
         });
     });
@@ -316,12 +341,17 @@ jQuery(function ($) {
             type: 'GET',
             success: function (data) {
                 data = $(data);
-
-                bootbox.dialog({
-                    title: "Document Notification Preferences",
-                    message: data
-                });
-
+                
+                //Check if the session has expired.
+                if(data.find('.username').length > 0) {
+                   top.location.href = '/login?expired';
+                }
+                else {
+                    bootbox.dialog({
+                        title: "Document Notification Preferences",
+                        message: data
+                    });
+                }
             },
             error: function (error) {
                 console.log(error);

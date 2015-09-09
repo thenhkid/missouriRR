@@ -44,41 +44,47 @@ jQuery(function ($) {
             success: function (data) {
 
                 data = $(data);
-
-                /* File input */
-                data.find('#id-input-file-2').ace_file_input({
-                    style: 'well',
-                    btn_choose: 'click to upload files',
-                    btn_change: null,
-                    no_icon: 'ace-icon fa fa-cloud-upload',
-                    droppable: false,
-                    thumbnail: 'small',
-                    allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
-                    before_remove: function () {
-                        return true;
-                    }
-                });
                 
-                bootbox.dialog({
-                    message: data,
-                    title: "Uploaded Survey Files",
-                    buttons: {
-                        cancel: {
-                            label: "Cancel",
-                            className: "btn-default",
-                            callback: function () {
+                //Check if the session has expired.
+                if(data.find('.username').length > 0) {
+                   top.location.href = '/login?expired';
+                }
+                else {
+                    /* File input */
+                    data.find('#id-input-file-2').ace_file_input({
+                        style: 'well',
+                        btn_choose: 'click to upload files',
+                        btn_change: null,
+                        no_icon: 'ace-icon fa fa-cloud-upload',
+                        droppable: false,
+                        thumbnail: 'small',
+                        allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
+                        before_remove: function () {
+                            return true;
+                        }
+                    });
 
-                            }
-                        },
-                        success: {
-                            label: "Upload",
-                            className: "btn-primary",
-                            callback: function () {
-                                return documentFn(event);
-                            }
-                        },
-                    }
-                });
+                    bootbox.dialog({
+                        message: data,
+                        title: "Uploaded Survey Files",
+                        buttons: {
+                            cancel: {
+                                label: "Cancel",
+                                className: "btn-default",
+                                callback: function () {
+
+                                }
+                            },
+                            success: {
+                                label: "Upload",
+                                className: "btn-primary",
+                                callback: function () {
+                                    return documentFn(event);
+                                }
+                            },
+                        }
+                    });
+                }
             }
         });
 

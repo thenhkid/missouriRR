@@ -43,12 +43,21 @@ jQuery(function ($) {
                         },
                         type: "GET",
                         success: function (data) {
-                            $('#topicsDiv').removeClass("col-sm-12");
-                            $('#topicsDiv').addClass("col-sm-10");
-                            $('#searchResults').html(data);
-                            $('#searchResults').show();
-                            $('#searchSpinner').hide();
-                            $('#clearSearch').show();
+                            data = $(data);
+                
+                            //Check if the session has expired.
+                            if(data.find('.username').length > 0) {
+                               top.location.href = '/login?expired';
+                            }
+                            else {
+                               $('#topicsDiv').removeClass("col-sm-12");
+                                $('#topicsDiv').addClass("col-sm-10");
+                                $('#searchResults').html(data);
+                                $('#searchResults').show();
+                                $('#searchSpinner').hide();
+                                $('#clearSearch').show(); 
+                            }
+                            
                         }
                     });
 
@@ -105,56 +114,62 @@ jQuery(function ($) {
             success: function (data, event) {
 
                 data = $(data);
+                
+                //Check if the session has expired.
+                if(data.find('.username').length > 0) {
+                   top.location.href = '/login?expired';
+                }
+                else {
+                     data.find('.multiselect').multiselect({
+                         enableFiltering: false,
+                         includeSelectAllOption: true,
+                         buttonClass: 'btn btn-white btn-primary',
+                         enableClickableOptGroups: false,
+                         enableCaseInsensitiveFiltering: false,
+                         disableIfEmpty: true,
+                         nonSelectedText: 'Select your Counties',
+                         numberDisplayed: 10,
+                         templates: {
+                             button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown"></button>',
+                             ul: '<ul class="multiselect-container dropdown-menu"></ul>',
+                             filter: '<li class="multiselect-item filter"><div class="input-group"><span class="input-group-addon"><i class="fa fa-search"></i></span><input class="form-control multiselect-search" type="text"></div></li>',
+                             filterClearBtn: '<span class="input-group-btn"><button class="btn btn-default btn-white btn-grey multiselect-clear-filter" type="button"><i class="fa fa-times-circle red2"></i></button></span>',
+                             li: '<li><a href="javascript:void(0);"><label></label></a></li>',
+                             divider: '<li class="multiselect-item divider"></li>',
+                             liGroup: '<li class="multiselect-item group"><label class="multiselect-group" style="padding-left:5px; font-weight:bold;"></label></li>'
+                         }
+                     });
 
-                data.find('.multiselect').multiselect({
-                    enableFiltering: false,
-                    includeSelectAllOption: true,
-                    buttonClass: 'btn btn-white btn-primary',
-                    enableClickableOptGroups: false,
-                    enableCaseInsensitiveFiltering: false,
-                    disableIfEmpty: true,
-                    nonSelectedText: 'Select your Counties',
-                    numberDisplayed: 10,
-                    templates: {
-                        button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown"></button>',
-                        ul: '<ul class="multiselect-container dropdown-menu"></ul>',
-                        filter: '<li class="multiselect-item filter"><div class="input-group"><span class="input-group-addon"><i class="fa fa-search"></i></span><input class="form-control multiselect-search" type="text"></div></li>',
-                        filterClearBtn: '<span class="input-group-btn"><button class="btn btn-default btn-white btn-grey multiselect-clear-filter" type="button"><i class="fa fa-times-circle red2"></i></button></span>',
-                        li: '<li><a href="javascript:void(0);"><label></label></a></li>',
-                        divider: '<li class="multiselect-item divider"></li>',
-                        liGroup: '<li class="multiselect-item group"><label class="multiselect-group" style="padding-left:5px; font-weight:bold;"></label></li>'
-                    }
-                });
+                     bootbox.dialog({
+                         message: data,
+                         title: "New Topic",
+                         buttons: {
+                             cancel: {
+                                 label: "Cancel",
+                                 className: "btn-default",
+                                 callback: function () {
 
-                bootbox.dialog({
-                    message: data,
-                    title: "New Topic",
-                    buttons: {
-                        cancel: {
-                            label: "Cancel",
-                            className: "btn-default",
-                            callback: function () {
+                                 }
+                             },
+                             success: {
+                                 label: "Save",
+                                 className: "btn-primary",
+                                 callback: function () {
+                                     var topicId = topicFn(event);
 
-                            }
-                        },
-                        success: {
-                            label: "Save",
-                            className: "btn-primary",
-                            callback: function () {
-                                var topicId = topicFn(event);
+                                     if (topicId == 0) {
+                                         return false;
+                                     }
+                                     else {
+                                         //Reload the topics
+                                         window.location.reload();
+                                     }
 
-                                if (topicId == 0) {
-                                    return false;
-                                }
-                                else {
-                                    //Reload the topics
-                                    window.location.reload();
-                                }
-
-                            }
-                        },
-                    }
-                });
+                                 }
+                             },
+                         }
+                     });
+                }
             }
         });
     }
@@ -235,11 +250,17 @@ jQuery(function ($) {
             type: 'GET',
             success: function (data) {
                 data = $(data);
-
-                bootbox.dialog({
-                    title: "Forum Notification Preferences",
-                    message: data
-                });
+                
+                //Check if the session has expired.
+                if(data.find('.username').length > 0) {
+                   top.location.href = '/login?expired';
+                }
+                else {
+                    bootbox.dialog({
+                        title: "Forum Notification Preferences",
+                        message: data
+                    });
+                }
 
             },
             error: function (error) {

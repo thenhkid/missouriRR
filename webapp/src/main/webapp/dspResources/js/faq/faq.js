@@ -23,27 +23,37 @@ jQuery(function ($) {
             url: '/faq/getCategoryForm.do',
             data:{'categoryId':0, 'toDo':'Add'},
             success: function(data, event) {
-                bootbox.dialog({
-                    message: data,
-                    title: "Add A Category",
-                    buttons: {
-                        cancel: {
-                            label: "Cancel",
-                            className: "btn-default",
-                            callback: function() {
-                            
-                            } 
-                        },
-                        success: {
-                            label: "Save",
-                            className: "btn-primary",
-                            callback: function() {
-                              categoryFn("add", event);
-                            } 
-                        },
-                        
-                    }
-                });
+                
+                data = $(data);
+                
+                //Check if the session has expired.
+                if(data.find('.username').length > 0) {
+                   top.location.href = '/login?expired';
+                }
+                else {
+                    bootbox.dialog({
+                        message: data,
+                        title: "Add A Category",
+                        buttons: {
+                            cancel: {
+                                label: "Cancel",
+                                className: "btn-default",
+                                callback: function() {
+
+                                } 
+                            },
+                            success: {
+                                label: "Save",
+                                className: "btn-primary",
+                                callback: function() {
+                                  categoryFn("add", event);
+                                } 
+                            },
+
+                        }
+                    });
+                }
+                
             }
         });
     });
@@ -56,35 +66,44 @@ jQuery(function ($) {
             url: '/faq/getCategoryForm.do',
             data:{'categoryId':categoryId, 'toDo':'Edit'},
             success: function(data, event) {
-                bootbox.dialog({
-                    message: data,
-                    title: "Edit Category",
-                    buttons: {
-                        cancel: {
-                            label: "Cancel",
-                            className: "btn-default",
-                            callback: function() {
-                            
-                            } 
-                        },
-                        success: {
-                            label: "Save",
-                            className: "btn-primary",
-                            callback: function() {
-                              categoryFn("edit", event);
-                            } 
-                        },
-                        delete: {
-                            label: "Delete",
-                            className: "btn-danger",
-                            callback: function() {
-                              //add confirm box
-                              deleteCategory ($("#id").val());
-                            } 
-                        },
-                        
-                    }
-                });
+                
+                data = $(data);
+                
+                //Check if the session has expired.
+                if(data.find('.username').length > 0) {
+                   top.location.href = '/login?expired';
+                }
+                else {
+                    bootbox.dialog({
+                        message: data,
+                        title: "Edit Category",
+                        buttons: {
+                            cancel: {
+                                label: "Cancel",
+                                className: "btn-default",
+                                callback: function() {
+
+                                } 
+                            },
+                            success: {
+                                label: "Save",
+                                className: "btn-primary",
+                                callback: function() {
+                                  categoryFn("edit", event);
+                                } 
+                            },
+                            delete: {
+                                label: "Delete",
+                                className: "btn-danger",
+                                callback: function() {
+                                  //add confirm box
+                                  deleteCategory ($("#id").val());
+                                } 
+                            },
+
+                        }
+                    });
+                }
             }
         });
     });
@@ -136,43 +155,50 @@ jQuery(function ($) {
             success: function(data, event) {
                 
                 data = $(data);
+                
+                //Check if the session has expired.
+                if(data.find('.username').length > 0) {
+                   top.location.href = '/login?expired';
+                }
+                else {
+                    /* File input */
+                    data.find('#id-input-file-2').ace_file_input({
+                       style: 'well',
+                       btn_choose: 'click to upload files',
+                       btn_change: null,
+                       no_icon: 'ace-icon fa fa-cloud-upload',
+                       droppable: false,
+                       thumbnail: 'small',
+                       allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
+                       before_remove: function () {
+                           return true;
+                       }
+                    });
+
+
+                    bootbox.dialog({
+                        message: data,
+                        title: "Add A Question",
+                        buttons: {
+                            cancel: {
+                                label: "Cancel",
+                                className: "btn-default",
+                                callback: function() {
+
+                                } 
+                            },
+                            success: {
+                                label: "Save",
+                                className: "btn-primary",
+                                callback: function() {
+                                  questionFn("add", event);
+                                } 
+                            },
+
+                        }
+                    });
                     
-                /* File input */
-                data.find('#id-input-file-2').ace_file_input({
-                   style: 'well',
-                   btn_choose: 'click to upload files',
-                   btn_change: null,
-                   no_icon: 'ace-icon fa fa-cloud-upload',
-                   droppable: false,
-                   thumbnail: 'small',
-                   allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
-                   before_remove: function () {
-                       return true;
-                   }
-                });
-                
-                
-                bootbox.dialog({
-                    message: data,
-                    title: "Add A Question",
-                    buttons: {
-                        cancel: {
-                            label: "Cancel",
-                            className: "btn-default",
-                            callback: function() {
-                            
-                            } 
-                        },
-                        success: {
-                            label: "Save",
-                            className: "btn-primary",
-                            callback: function() {
-                              questionFn("add", event);
-                            } 
-                        },
-                        
-                    }
-                });
+                }
             }
         });
     });
@@ -187,52 +213,60 @@ jQuery(function ($) {
             success: function(data) {
                 
                 data = $(data);
-                    
-                /* File input */
-                data.find('#id-input-file-2').ace_file_input({
-                   style: 'well',
-                   btn_choose: 'click to upload files',
-                   btn_change: null,
-                   no_icon: 'ace-icon fa fa-cloud-upload',
-                   droppable: false,
-                   thumbnail: 'small',
-                   allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
-                   before_remove: function () {
-                       return true;
-                   }
-                });
                 
-                bootbox.dialog({
+                //Check if the session has expired.
+                if(data.find('.username').length > 0) {
+                   top.location.href = '/login?expired';
+                }
+                else {
+                   /* File input */
+                    data.find('#id-input-file-2').ace_file_input({
+                       style: 'well',
+                       btn_choose: 'click to upload files',
+                       btn_change: null,
+                       no_icon: 'ace-icon fa fa-cloud-upload',
+                       droppable: false,
+                       thumbnail: 'small',
+                       allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
+                       before_remove: function () {
+                           return true;
+                       }
+                    });
+
+                    bootbox.dialog({
+
+                        message: data,
+                        title: "Edit Question",
+                        buttons: {
+                            cancel: {
+                                label: "Cancel",
+                                className: "btn-default",
+                                callback: function() {
+
+                                } 
+                            },
+                            success: {
+                                label: "Save",
+                                className: "btn-primary",
+                                callback: function() {
+                                  questionFn("edit", event);
+                                } 
+                            },
+                            delete: {
+                                label: "Delete",
+                                className: "btn-danger",
+                                callback: function() {
+                                  //add confirm box
+                                  //questionFn("delete", event); 
+                                  deleteQuestion ($("#id").val());
+                                } 
+                            },
+
+                        }
+                    }); 
                     
-                    message: data,
-                    title: "Edit Question",
-                    buttons: {
-                        cancel: {
-                            label: "Cancel",
-                            className: "btn-default",
-                            callback: function() {
-                                
-                            } 
-                        },
-                        success: {
-                            label: "Save",
-                            className: "btn-primary",
-                            callback: function() {
-                              questionFn("edit", event);
-                            } 
-                        },
-                        delete: {
-                            label: "Delete",
-                            className: "btn-danger",
-                            callback: function() {
-                              //add confirm box
-                              //questionFn("delete", event); 
-                              deleteQuestion ($("#id").val());
-                            } 
-                        },
-                        
-                    }
-                });
+                }
+                  
             }
         });
     });

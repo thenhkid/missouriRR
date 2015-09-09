@@ -44,12 +44,21 @@ jQuery(function ($) {
                         },
                         type: "GET",
                         success: function (data) {
-                            $('#calendarDiv').removeClass("col-sm-10");
-                            $('#calendarDiv').addClass("col-sm-8");
-                            $('#searchResults').html(data);
-                            $('#searchResults').show();
-                            $('#searchSpinner').hide();
-                            $('#clearSearch').show();
+                            
+                            data = $(data);
+                
+                            //Check if the session has expired.
+                            if(data.find('.username').length > 0) {
+                               top.location.href = '/login?expired';
+                            }
+                            else {
+                                $('#calendarDiv').removeClass("col-sm-10");
+                                $('#calendarDiv').addClass("col-sm-8");
+                                $('#searchResults').html(data);
+                                $('#searchResults').show();
+                                $('#searchSpinner').hide();
+                                $('#clearSearch').show();
+                            }
                         }
                     });
 
@@ -249,7 +258,191 @@ jQuery(function ($) {
 
                         data = $(data);
                         
-                         data.find('.whichEntity').on('click', function () {
+                        //Check if the session has expired.
+                        if(data.find('.username').length > 0) {
+                           top.location.href = '/login?expired';
+                        }
+                        else {
+                            data.find('.whichEntity').on('click', function () {
+                                if ($(this).val() == 1) {
+                                    data.find('#entityIds').val("");
+                                    data.find('#entitySelectList').hide();
+                                }
+                                else {
+                                    data.find('#entitySelectList').show();
+                                }
+                            });
+
+                            data.find('.multiselect').multiselect({
+                                enableFiltering: false,
+                                includeSelectAllOption: true,
+                                buttonClass: 'btn btn-white btn-primary',
+                                enableClickableOptGroups: false,
+                                enableCaseInsensitiveFiltering: false,
+                                disableIfEmpty: true,
+                                nonSelectedText: 'Select your Counties',
+                                numberDisplayed: 10,
+                                templates: {
+                                    button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown"></button>',
+                                    ul: '<ul class="multiselect-container dropdown-menu"></ul>',
+                                    filter: '<li class="multiselect-item filter"><div class="input-group"><span class="input-group-addon"><i class="fa fa-search"></i></span><input class="form-control multiselect-search" type="text"></div></li>',
+                                    filterClearBtn: '<span class="input-group-btn"><button class="btn btn-default btn-white btn-grey multiselect-clear-filter" type="button"><i class="fa fa-times-circle red2"></i></button></span>',
+                                    li: '<li><a href="javascript:void(0);"><label></label></a></li>',
+                                    divider: '<li class="multiselect-item divider"></li>',
+                                    liGroup: '<li class="multiselect-item group"><label class="multiselect-group" style="padding-left:5px; font-weight:bold;"></label></li>'
+                                }
+                            });
+                            /*data.find('#simple-colorpicker-1').ace_colorpicker()
+                                .on('change', function () {
+                                    queryEventType(this.value);
+                                });*/
+                        
+                            function formatState (state) {
+                                if (!state.id) { return state.text; }
+                                var $state = $(
+                                    '<span><div style=float:left;height:20px;width:20px;background-color:' + state.element.value.toLowerCase() + '></div><div>&nbsp;&nbsp;'+state.text+'</div> ' + '</span>'
+                                );
+                                return $state;
+                            };
+
+                            function formatStateSelected (state) {
+                                if (!state.id) { return state.text; }
+                                var $state = $(
+                                    '<span><div style=margin-top:3px;float:left;height:20px;width:20px;background-color:' + state.element.value.toLowerCase() + '></div><div>&nbsp;&nbsp;'+state.text+'</div> ' + '</span>'
+                                );
+                                return $state;
+                            };
+
+                            data.find('#simple-colorpicker-1').select2({
+                                templateResult:formatState,
+                                templateSelection:formatStateSelected,
+                                width:'element',
+                                dropdownParent:'body',
+                                minimumResultsForSearch: Infinity
+                            }).on('change', function () {
+                                queryEventType(this.value);
+                            });
+
+                            /* File input */
+                            data.find('#id-input-file-2').ace_file_input({
+                                style: 'well',
+                                btn_choose: 'click to upload files',
+                                btn_change: null,
+                                no_icon: 'ace-icon fa fa-cloud-upload',
+                                droppable: false,
+                                thumbnail: 'small',
+                                allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
+                                before_remove: function () {
+                                    return true;
+                                }
+                            });
+
+                            data.find('.timeFrom').timepicker({'scrollDefault': 'now'});
+
+                            data.find('.timeFrom').val($('.timeFrom option:first').val());
+
+                            data.find('.timeFrom').on('changeTime', function () {
+
+                                var date = new Date();
+                                date.setHours(0);
+                                date.setMinutes(0);
+                                date.setSeconds(0);
+
+                                var timePicked = $(this).val().indexOf(':');
+                                timePicked = $(this).val().substring(0, timePicked);
+
+                                if ($(this).val().indexOf('am') > 0 && parseInt(timePicked) == 12) {
+                                    timePicked = parseInt(timePicked) - 12;
+                                }
+                                else if ($(this).val().indexOf('pm') > 0 && parseInt(timePicked) < 12) {
+                                    timePicked = parseInt(timePicked) + 12;
+                                }
+                                date.setHours(parseInt(timePicked) + 1);
+
+                                var minutesPicked = $(this).val().indexOf(':');
+                                minutesPicked = $(this).val().substring(minutesPicked + 1, minutesPicked + 3);
+                                date.setMinutes(minutesPicked);
+
+                                $('.timeTo').timepicker('setTime', date);
+
+                            });
+
+                            data.find(".timeTo").timepicker({'scrollDefault': 'now'});
+                            data.find(".eventStartDate").datepicker({
+                                showOtherMonths: true,
+                                selectOtherMonths: true
+                            });
+
+                            data.find(".eventStartDate").datepicker("setDate", date.format('MM/DD/YYYY'));
+                            data.find(".eventEndDate").datepicker("setDate", date.format('MM/DD/YYYY'));
+
+                            data.find(".eventEndDate").datepicker({
+                                showOtherMonths: true,
+                                selectOtherMonths: true
+                            });
+
+                            $(tempThis).popover({
+                                trigger: 'focus',
+                                content: data,
+                                placement: 'auto left',
+                                html: true,
+                                title: 'Create Event  <button type="button" id="closePopover" class="close pull-right">&times;</button>',
+                                container: 'body',
+                                viewport: 'body',
+                                callback: function () {
+
+                                }
+                            });
+                            $(tempThis).popover('toggle');
+
+                            $(document).on("change", ".eventStartDate", function () {
+                                $(".eventEndDate").val($(this).val());
+                                $(".eventEndDate").datepicker("setDate", $(this).val());
+                            });
+
+                            // on initial load get id of first color is selector from the db
+                            $("#simple-colorpicker-1 option:first").attr('selected','selected');
+                            var firstValueDefaulted = $("#simple-colorpicker-1 option:first").val();
+                            queryEventType(firstValueDefaulted);
+                        }
+                        
+                        
+                        
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            }
+
+        }
+        ,
+        eventClick: function (calEvent, jsEvent, view) {
+            $('.popover').popover('destroy');
+
+            var eventId = calEvent._id;
+
+            var tempThis = $(this);
+
+            eventContainer = tempThis;
+
+            $.ajax({
+                url: '/calendar/getEventDetails.do',
+                type: 'GET',
+                data: {
+                    'eventId': eventId
+                },
+                success: function (data) {
+
+                    data = $(data);
+                    
+                    //Check if the session has expired.
+                    if(data.find('.username').length > 0) {
+                       top.location.href = '/login?expired';
+                    }
+                    else {
+
+                        data.find('.whichEntity').on('click', function () {
                             if ($(this).val() == 1) {
                                 data.find('#entityIds').val("");
                                 data.find('#entitySelectList').hide();
@@ -279,12 +472,12 @@ jQuery(function ($) {
                             }
                         });
 
-                        
-                        /*data.find('#simple-colorpicker-1').ace_colorpicker()
-                                .on('change', function () {
-                                    queryEventType(this.value);
-                                });*/
-                        
+
+                        /*data.find('#simple-colorpicker-1').ace_colorpicker('pick', $('#simple-colorpicker-1').attr('rel'))
+                        .on('change', function () {
+                            queryEventType(this.value);
+                        });*/
+
                         function formatState (state) {
                             if (!state.id) { return state.text; }
                             var $state = $(
@@ -292,7 +485,7 @@ jQuery(function ($) {
                             );
                             return $state;
                         };
-                        
+
                         function formatStateSelected (state) {
                             if (!state.id) { return state.text; }
                             var $state = $(
@@ -310,7 +503,7 @@ jQuery(function ($) {
                         }).on('change', function () {
                             queryEventType(this.value);
                         });
-                        
+
                         /* File input */
                         data.find('#id-input-file-2').ace_file_input({
                             style: 'well',
@@ -325,10 +518,66 @@ jQuery(function ($) {
                             }
                         });
 
+                        data.find('#sendAlert').on('click', function () {
+                            data.find('.notificationsOptions').toggle();
+
+                            if ($(this).is(":checked") == false) {
+                                $.ajax({
+                                    url: '/calendar/deleteEventNotification.do',
+                                    type: 'POST',
+                                    data: {
+                                        'eventId': eventId
+                                    },
+                                    success: function (data) {
+
+                                    },
+                                    error: function (error) {
+                                        console.log(error);
+                                    }
+                                });
+
+                            }
+                        });
+
+                        data.find('.emailAlertMin').on('change', function () {
+
+                            if ($(this).val() == "") {
+                                data.find('.notificationsOptions').toggle();
+                                data.find('#sendAlert').prop('checked', false);;
+                                $.ajax({
+                                    url: '/calendar/deleteEventNotification.do',
+                                    type: 'POST',
+                                    data: {
+                                        'eventId': eventId
+                                    },
+                                    success: function (data) {
+
+                                    },
+                                    error: function (error) {
+                                        console.log(error);
+                                    }
+                                });
+                            }
+                            else {
+                                $.ajax({
+                                    url: '/calendar/saveEventNotification.do',
+                                    type: 'POST',
+                                    data: {
+                                        'eventId': eventId,
+                                        'alertMin': $(this).val()
+                                    },
+                                    success: function (data) {
+
+                                    },
+                                    error: function (error) {
+                                        console.log(error);
+                                    }
+                                });
+                            }
+
+                        });
+
                         data.find('.timeFrom').timepicker({'scrollDefault': 'now'});
-
-                        data.find('.timeFrom').val($('.timeFrom option:first').val());
-
                         data.find('.timeFrom').on('changeTime', function () {
 
                             var date = new Date();
@@ -354,255 +603,27 @@ jQuery(function ($) {
                             $('.timeTo').timepicker('setTime', date);
 
                         });
-
-                        data.find(".timeTo").timepicker({'scrollDefault': 'now'});
+                        data.find('.timeTo').timepicker({'scrollDefault': 'now'});
                         data.find(".eventStartDate").datepicker({
                             showOtherMonths: true,
                             selectOtherMonths: true
                         });
-
-                        data.find(".eventStartDate").datepicker("setDate", date.format('MM/DD/YYYY'));
-                        data.find(".eventEndDate").datepicker("setDate", date.format('MM/DD/YYYY'));
-
                         data.find(".eventEndDate").datepicker({
                             showOtherMonths: true,
                             selectOtherMonths: true
                         });
-                        
+
                         $(tempThis).popover({
                             trigger: 'focus',
                             content: data,
-                            placement: 'auto left',
+                            placement: 'auto right',
                             html: true,
-                            title: 'Create Event  <button type="button" id="closePopover" class="close pull-right">&times;</button>',
-                            container: 'body',
-                            viewport: 'body',
-                            callback: function () {
-                                
-                            }
+                            title: 'Event Details <button type="button" id="closePopover" class="close pull-right">&times;</button>',
+                            container: 'body'
                         });
+
                         $(tempThis).popover('toggle');
-
-                        $(document).on("change", ".eventStartDate", function () {
-                            $(".eventEndDate").val($(this).val());
-                            $(".eventEndDate").datepicker("setDate", $(this).val());
-                        });
-                        
-                        // on initial load get id of first color is selector from the db
-                        $("#simple-colorpicker-1 option:first").attr('selected','selected');
-                        var firstValueDefaulted = $("#simple-colorpicker-1 option:first").val();
-                        queryEventType(firstValueDefaulted);
-                    },
-                    error: function (error) {
-                        console.log(error);
                     }
-                });
-            }
-
-        }
-        ,
-        eventClick: function (calEvent, jsEvent, view) {
-            $('.popover').popover('destroy');
-
-            var eventId = calEvent._id;
-
-            var tempThis = $(this);
-
-            eventContainer = tempThis;
-
-            $.ajax({
-                url: '/calendar/getEventDetails.do',
-                type: 'GET',
-                data: {
-                    'eventId': eventId
-                },
-                success: function (data) {
-
-                    data = $(data);
-                    
-                    data.find('.whichEntity').on('click', function () {
-                        if ($(this).val() == 1) {
-                            data.find('#entityIds').val("");
-                            data.find('#entitySelectList').hide();
-                        }
-                        else {
-                            data.find('#entitySelectList').show();
-                        }
-                    });
-
-                    data.find('.multiselect').multiselect({
-                        enableFiltering: false,
-                        includeSelectAllOption: true,
-                        buttonClass: 'btn btn-white btn-primary',
-                        enableClickableOptGroups: false,
-                        enableCaseInsensitiveFiltering: false,
-                        disableIfEmpty: true,
-                        nonSelectedText: 'Select your Counties',
-                        numberDisplayed: 10,
-                        templates: {
-                            button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown"></button>',
-                            ul: '<ul class="multiselect-container dropdown-menu"></ul>',
-                            filter: '<li class="multiselect-item filter"><div class="input-group"><span class="input-group-addon"><i class="fa fa-search"></i></span><input class="form-control multiselect-search" type="text"></div></li>',
-                            filterClearBtn: '<span class="input-group-btn"><button class="btn btn-default btn-white btn-grey multiselect-clear-filter" type="button"><i class="fa fa-times-circle red2"></i></button></span>',
-                            li: '<li><a href="javascript:void(0);"><label></label></a></li>',
-                            divider: '<li class="multiselect-item divider"></li>',
-                            liGroup: '<li class="multiselect-item group"><label class="multiselect-group" style="padding-left:5px; font-weight:bold;"></label></li>'
-                        }
-                    });
-
-
-                    /*data.find('#simple-colorpicker-1').ace_colorpicker('pick', $('#simple-colorpicker-1').attr('rel'))
-                    .on('change', function () {
-                        queryEventType(this.value);
-                    });*/
-                    
-                    function formatState (state) {
-                        if (!state.id) { return state.text; }
-                        var $state = $(
-                            '<span><div style=float:left;height:20px;width:20px;background-color:' + state.element.value.toLowerCase() + '></div><div>&nbsp;&nbsp;'+state.text+'</div> ' + '</span>'
-                        );
-                        return $state;
-                    };
-
-                    function formatStateSelected (state) {
-                        if (!state.id) { return state.text; }
-                        var $state = $(
-                            '<span><div style=margin-top:3px;float:left;height:20px;width:20px;background-color:' + state.element.value.toLowerCase() + '></div><div>&nbsp;&nbsp;'+state.text+'</div> ' + '</span>'
-                        );
-                        return $state;
-                    };
-
-                    data.find('#simple-colorpicker-1').select2({
-                        templateResult:formatState,
-                        templateSelection:formatStateSelected,
-                        width:'element',
-                        dropdownParent:'body',
-                        minimumResultsForSearch: Infinity
-                    }).on('change', function () {
-                        queryEventType(this.value);
-                    });
-
-                    /* File input */
-                    data.find('#id-input-file-2').ace_file_input({
-                        style: 'well',
-                        btn_choose: 'click to upload files',
-                        btn_change: null,
-                        no_icon: 'ace-icon fa fa-cloud-upload',
-                        droppable: false,
-                        thumbnail: 'small',
-                        allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx'],
-                        before_remove: function () {
-                            return true;
-                        }
-                    });
-
-                    data.find('#sendAlert').on('click', function () {
-                        data.find('.notificationsOptions').toggle();
-
-                        if ($(this).is(":checked") == false) {
-                            $.ajax({
-                                url: '/calendar/deleteEventNotification.do',
-                                type: 'POST',
-                                data: {
-                                    'eventId': eventId
-                                },
-                                success: function (data) {
-
-                                },
-                                error: function (error) {
-                                    console.log(error);
-                                }
-                            });
-
-                        }
-                    });
-
-                    data.find('.emailAlertMin').on('change', function () {
-
-                        if ($(this).val() == "") {
-                            data.find('.notificationsOptions').toggle();
-                            data.find('#sendAlert').prop('checked', false);;
-                            $.ajax({
-                                url: '/calendar/deleteEventNotification.do',
-                                type: 'POST',
-                                data: {
-                                    'eventId': eventId
-                                },
-                                success: function (data) {
-
-                                },
-                                error: function (error) {
-                                    console.log(error);
-                                }
-                            });
-                        }
-                        else {
-                            $.ajax({
-                                url: '/calendar/saveEventNotification.do',
-                                type: 'POST',
-                                data: {
-                                    'eventId': eventId,
-                                    'alertMin': $(this).val()
-                                },
-                                success: function (data) {
-
-                                },
-                                error: function (error) {
-                                    console.log(error);
-                                }
-                            });
-                        }
-
-                    });
-
-                    data.find('.timeFrom').timepicker({'scrollDefault': 'now'});
-                    data.find('.timeFrom').on('changeTime', function () {
-
-                        var date = new Date();
-                        date.setHours(0);
-                        date.setMinutes(0);
-                        date.setSeconds(0);
-
-                        var timePicked = $(this).val().indexOf(':');
-                        timePicked = $(this).val().substring(0, timePicked);
-
-                        if ($(this).val().indexOf('am') > 0 && parseInt(timePicked) == 12) {
-                            timePicked = parseInt(timePicked) - 12;
-                        }
-                        else if ($(this).val().indexOf('pm') > 0 && parseInt(timePicked) < 12) {
-                            timePicked = parseInt(timePicked) + 12;
-                        }
-                        date.setHours(parseInt(timePicked) + 1);
-
-                        var minutesPicked = $(this).val().indexOf(':');
-                        minutesPicked = $(this).val().substring(minutesPicked + 1, minutesPicked + 3);
-                        date.setMinutes(minutesPicked);
-
-                        $('.timeTo').timepicker('setTime', date);
-
-                    });
-                    data.find('.timeTo').timepicker({'scrollDefault': 'now'});
-                    data.find(".eventStartDate").datepicker({
-                        showOtherMonths: true,
-                        selectOtherMonths: true
-                    });
-                    data.find(".eventEndDate").datepicker({
-                        showOtherMonths: true,
-                        selectOtherMonths: true
-                    });
-
-                    $(tempThis).popover({
-                        trigger: 'focus',
-                        content: data,
-                        placement: 'auto right',
-                        html: true,
-                        title: 'Event Details <button type="button" id="closePopover" class="close pull-right">&times;</button>',
-                        container: 'body'
-                    });
-
-                    $(tempThis).popover('toggle');
-
-
                 },
                 error: function (error) {
                     console.log(error);
@@ -639,18 +660,25 @@ jQuery(function ($) {
             type: 'GET',
             success: function (data) {
                 data = $(data);
+                
+                //Check if the session has expired.
+                if(data.find('.username').length > 0) {
+                   top.location.href = '/login?expired';
+                }
+                else {
 
-                data.find('#eventTypeColorField').colorpicker().on('changeColor', function (event) {
-                    $('#eventTypeColorFieldInput').val(event.color.toHex());
-                    $('#eventTypeColorField').attr('data-color', event.color.toHex());
-                    $('#eventTypeColorFieldAddon').css("background-color", event.color.toHex());
-                    $('#eventTypeColorField').colorpicker('hide');
-                });
+                    data.find('#eventTypeColorField').colorpicker().on('changeColor', function (event) {
+                        $('#eventTypeColorFieldInput').val(event.color.toHex());
+                        $('#eventTypeColorField').attr('data-color', event.color.toHex());
+                        $('#eventTypeColorFieldAddon').css("background-color", event.color.toHex());
+                        $('#eventTypeColorField').colorpicker('hide');
+                    });
 
-                bootbox.dialog({
-                    title: "Event Types",
-                    message: data
-                });
+                    bootbox.dialog({
+                        title: "Event Types",
+                        message: data
+                    });
+                }
 
             },
             error: function (error) {
@@ -666,11 +694,17 @@ jQuery(function ($) {
             type: 'GET',
             success: function (data) {
                 data = $(data);
-
-                bootbox.dialog({
-                    title: "Event Notification Preferences",
-                    message: data
-                });
+                
+                //Check if the session has expired.
+                if(data.find('.username').length > 0) {
+                   top.location.href = '/login?expired';
+                }
+                else {
+                    bootbox.dialog({
+                        title: "Event Notification Preferences",
+                        message: data
+                    });
+                }
 
             },
             error: function (error) {
