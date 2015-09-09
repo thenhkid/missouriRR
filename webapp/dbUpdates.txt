@@ -1,7 +1,0 @@
-/** changes on dev but not stage **/
-
-
-/** grace 09082015 11:36AM **/
-use rapidregistry;
-ALTER TABLE `programorghierarchy_details` 
-ADD COLUMN `displayId` VARCHAR(45) NULL COMMENT 'user’s program’s assigned id for their display / reporting purpose' AFTER `programHierarchyId`;
