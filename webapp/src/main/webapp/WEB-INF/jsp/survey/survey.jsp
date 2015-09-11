@@ -167,9 +167,9 @@
                                                                                     <c:when test="${question.dateType == 1}">
                                                                                         <div class="input-group">
                                                                                             <input qnum="${qNum}" <c:if test="${disabled == true}">readonly</c:if> class="form-control ${disabled == false ? ' date-picker' : '' } ${question.required == true ? ' required' : '' }" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="6" id="id-date-picker-1" type="text" name="surveyPageQuestions[${q.index}].questionValue" data-date-format="${question.dateFormatType == 2 ? 'dd/mm/yyyy' : 'mm/dd/yyyy' }" value="${question.questionValue}" />
-                                                                                                <span class="input-group-addon">
-                                                                                                    <i class="fa fa-calendar bigger-110"></i>
-                                                                                                </span>
+                                                                                            <span class="input-group-addon">
+                                                                                                <i class="fa fa-calendar bigger-110"></i>
+                                                                                            </span>
                                                                                         </div>
                                                                                     </c:when>
                                                                                     <%-- Date Range --%>
@@ -178,11 +178,10 @@
                                                                                         <c:set var="dateParts" value="${fn:split(question.questionValue,'^^^^^')}" />
                                                                                         <div class="input-daterange input-group">
                                                                                             <input qnum="${qNum}" type="text" <c:if test="${disabled == true}">readonly</c:if> class="multiAns input-sm form-control" rel="${question.id}" value="${dateParts[0]}" />
-                                                                                                <span class="input-group-addon">
-                                                                                                    <i class="fa fa-arrow-right"></i>
-                                                                                                </span>
-                                                                                                <input type="text" <c:if test="${disabled == true}">readonly</c:if> class="multiAns input-sm form-control" rel="${question.id}" value="${dateParts[1]}" />
-                                                                                            </div>
+                                                                                            <span class="input-group-addon">
+                                                                                                <i class="fa fa-arrow-right"></i>
+                                                                                            </span>
+                                                                                            <input type="text" <c:if test="${disabled == true}">readonly</c:if> class="multiAns input-sm form-control" rel="${question.id}" value="${dateParts[1]}" />
                                                                                         </div>
                                                                                     </c:when>     
                                                                                     <%-- Time Only --%>    
