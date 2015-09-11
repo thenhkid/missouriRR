@@ -316,7 +316,7 @@ function checkSurveyFields() {
         }
 
         //Text Box || Select box
-        if (qType == 3 || qType == 2 | qType == 6) {
+        if (qType == 3 || qType == 5 || qType == 2 || qType == 6) {
 
             if ($(this).val() === '') {
                 $('#questionOuterDiv_' + qId).addClass("has-error");

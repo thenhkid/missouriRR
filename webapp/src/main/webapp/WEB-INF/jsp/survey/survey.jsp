@@ -149,7 +149,7 @@
                                                                             </c:when>
                                                                             <%-- Comment Box --%>    
                                                                             <c:when test="${question.answerTypeId == 5}">
-                                                                                <textarea qnum="${qNum}" <c:if test="${disabled == true}">readonly</c:if> class="form-control ${question.validation.replace(' ','-')}  ${question.required == true ? ' required' : '' }" name="surveyPageQuestions[${q.index}].questionValue" rows="8" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="5" style="background-color:#ffffff; width: 750px;">${question.questionValue}</textarea>
+                                                                                <textarea qnum="${qNum}" <c:if test="${disabled == true}">readonly</c:if> class="form-control ${question.validation.replace(' ','-')} ${question.required == true ? ' required' : '' }" name="surveyPageQuestions[${q.index}].questionValue" rows="8" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="5" style="background-color:#ffffff; width: 750px;">${question.questionValue}</textarea>
                                                                             </c:when>  
                                                                             <%-- Select Box --%>    
                                                                             <c:when test="${question.answerTypeId == 2}">
