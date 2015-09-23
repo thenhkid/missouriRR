@@ -1007,6 +1007,7 @@ public class surveyController {
             mav.addObject("selDistricts", districtList);
             mav.addObject("surveys", surveys);
             mav.addObject("disabled", disabled);
+            mav.addObject("selSurvey", survey.getSurveyId());
         }
 
         return mav;

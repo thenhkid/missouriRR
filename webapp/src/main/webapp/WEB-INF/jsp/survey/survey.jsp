@@ -103,6 +103,7 @@
                             </div>
                         </div>
                     </div>
+                    <div id="errorMsg_content" style="display: none; color:#A94442" class="help-block col-xs-12 col-sm-reset inline"></div>
                 </div><!-- /.span -->
             </div><!-- /.row -->
 
@@ -156,7 +157,7 @@
                                                                                 <select qnum="${qNum}" <c:if test="${disabled == true}">disabled</c:if> rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="2" class="form-control ${question.required == true ? ' required' : '' }" name="surveyPageQuestions[${q.index}].questionValue" style="background-color:#ffffff; width: 750px;">
                                                                                     <option value="">- Select an Answer -</option>
                                                                                     <c:forEach items="${question.questionChoices}" var="choiceDetails">
-                                                                                        <option value="${choiceDetails.id}" <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">selected="selected"</c:if></c:otherwise></c:choose>>${choiceDetails.choiceText}</option>
+                                                                                        <option value="${choiceDetails.id}" <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">selected="selected"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">selected="selected"</c:if></c:otherwise></c:choose>>${choiceDetails.choiceText}</option>
                                                                                     </c:forEach>
                                                                                 </select>
                                                                             </c:when> 
@@ -194,9 +195,25 @@
                                                                                 <c:choose>
                                                                                     <c:when test="${not empty question.questionChoices}">
                                                                                         <c:choose>
-                                                                                            <c:when test="${question.choiceLayout == '1 Column'}">
+                                                                                            <c:when test="${question.choiceLayout == 'Horizontal'}">
+                                                                                                <div class="form-inline">
+                                                                                                    <c:forEach items="${question.questionChoices}" var="choiceDetails">
+                                                                                                        <label style="padding-right:10px;">
+                                                                                                            <c:choose>
+                                                                                                                <c:when test="${question.allowMultipleAns == true}">
+                                                                                                                    <input qnum="${qNum}" type="checkbox" <c:if test="${disabled == true}">disabled</c:if> value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${fn:contains(question.questionValue, choiceDetails.choiceValue)}">checked="true"</c:if></c:when><c:otherwise><c:if test="${fn:contains(question.questionValue, choiceDetails.choiceText)}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
+                                                                                                                </c:when>
+                                                                                                                <c:otherwise>
+                                                                                                                    <input qnum="${qNum}" type="radio" <c:if test="${disabled == true}">disabled</c:if> value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
+                                                                                                                </c:otherwise>
+                                                                                                            </c:choose>
+                                                                                                        </label>
+                                                                                                    </c:forEach>   
+                                                                                                </div>
+                                                                                            </c:when>
+                                                                                            <c:otherwise>
                                                                                                 <c:forEach items="${question.questionChoices}" var="choiceDetails">
-                                                                                                    <div class="col-md-12" style="margin-bottom:3px;">
+                                                                                                    <div class="col-xs-12 col-sm-6" style="margin-bottom:3px;">
                                                                                                         <div class="pull-left col-xs-pull-0">
                                                                                                             <c:choose>
                                                                                                                 <c:when test="${question.allowMultipleAns == true}">
@@ -212,87 +229,14 @@
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </c:forEach> 
-                                                                                            </c:when>
-                                                                                            <c:when test="${question.choiceLayout == '2 Columns'}">
-                                                                                                <c:forEach items="${question.questionChoices}" var="choiceDetails">
-                                                                                                    <div class="col-md-6" style="margin-bottom:3px;">
-                                                                                                        <div class="pull-left col-xs-pull-0">
-                                                                                                            <c:choose>
-                                                                                                                <c:when test="${question.allowMultipleAns == true}">
-                                                                                                                    <input qnum="${qNum}" type="checkbox" <c:if test="${disabled == true}">disabled</c:if> value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${fn:contains(question.questionValue, choiceDetails.choiceValue)}">checked="true"</c:if></c:when><c:otherwise><c:if test="${fn:contains(question.questionValue, choiceDetails.choiceText)}">checked="true"</c:if></c:otherwise></c:choose> />
-                                                                                                                </c:when>
-                                                                                                                <c:otherwise>
-                                                                                                                    <input qnum="${qNum}" type="radio" <c:if test="${disabled == true}">disabled</c:if> value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> />
-                                                                                                                </c:otherwise>
-                                                                                                            </c:choose>
-                                                                                                        </div>
-                                                                                                        <div class="pull-left col-xs-11">
-                                                                                                            ${choiceDetails.choiceText}
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </c:forEach>   
-                                                                                            </c:when>
-                                                                                            <c:when test="${question.choiceLayout == '3 Columns'}">
-                                                                                                    <c:forEach items="${question.questionChoices}" var="choiceDetails">
-                                                                                                        <div class="col-md-4" style="margin-bottom:3px;">
-                                                                                                            <div class="pull-left col-xs-pull-0">
-                                                                                                                <c:choose>
-                                                                                                                    <c:when test="${question.allowMultipleAns == true}">
-                                                                                                                        <input qnum="${qNum}" type="checkbox" <c:if test="${disabled == true}">disabled</c:if> value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${fn:contains(question.questionValue, choiceDetails.choiceValue)}">checked="true"</c:if></c:when><c:otherwise><c:if test="${fn:contains(question.questionValue, choiceDetails.choiceText)}">checked="true"</c:if></c:otherwise></c:choose> />
-                                                                                                                    </c:when>
-                                                                                                                    <c:otherwise>
-                                                                                                                        <input qnum="${qNum}" type="radio" <c:if test="${disabled == true}">disabled</c:if> value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> />
-                                                                                                                    </c:otherwise>
-                                                                                                                </c:choose>
-                                                                                                            </div>
-                                                                                                            <div class="pull-left col-xs-11">
-                                                                                                                ${choiceDetails.choiceText}
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    </c:forEach>
-                                                                                                </c:when>
-                                                                                                <c:when test="${question.choiceLayout == 'Horizontal'}">
-                                                                                                    <div class="form-inline">
-                                                                                                        <c:forEach items="${question.questionChoices}" var="choiceDetails">
-                                                                                                            <label style="padding-right:10px;">
-                                                                                                                <c:choose>
-                                                                                                                    <c:when test="${question.allowMultipleAns == true}">
-                                                                                                                        <input qnum="${qNum}" type="checkbox" <c:if test="${disabled == true}">disabled</c:if> value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${fn:contains(question.questionValue, choiceDetails.choiceValue)}">checked="true"</c:if></c:when><c:otherwise><c:if test="${fn:contains(question.questionValue, choiceDetails.choiceText)}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
-                                                                                                                    </c:when>
-                                                                                                                    <c:otherwise>
-                                                                                                                        <input qnum="${qNum}" type="radio" <c:if test="${disabled == true}">disabled</c:if> value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> /> ${choiceDetails.choiceText}
-                                                                                                                    </c:otherwise>
-                                                                                                                </c:choose>
-                                                                                                            </label>
-                                                                                                        </c:forEach>   
-                                                                                                    </div>
-                                                                                                </c:when>
-                                                                                                <c:otherwise>
-                                                                                                    <c:forEach items="${question.questionChoices}" var="choiceDetails">
-                                                                                                        <div class="col-md-6" style="margin-bottom:3px;">
-                                                                                                            <div class="pull-left col-xs-pull-0">
-                                                                                                                <c:choose>
-                                                                                                                    <c:when test="${question.allowMultipleAns == true}">
-                                                                                                                        <input qnum="${qNum}" type="checkbox" <c:if test="${disabled == true}">disabled</c:if> value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${fn:contains(question.questionValue, choiceDetails.choiceValue)}">checked="true"</c:if></c:when><c:otherwise><c:if test="${fn:contains(question.questionValue, choiceDetails.choiceText)}">checked="true"</c:if></c:otherwise></c:choose> />
-                                                                                                                    </c:when>
-                                                                                                                    <c:otherwise>
-                                                                                                                        <input qnum="${qNum}" type="radio" <c:if test="${disabled == true}">disabled</c:if> value="${choiceDetails.id}" rel="${question.id}" rel2="surveyPageQuestions[${q.index}].questionValue" rel3="1" name="surveyPageQuestions[${q.index}].questionValue" <c:if test="${question.required == true}">class="required"</c:if> <c:choose><c:when test="${choiceDetails.choiceValue > 0}"><c:if test="${choiceDetails.choiceValue == question.questionValue}">checked="true"</c:if></c:when><c:otherwise><c:if test="${choiceDetails.choiceText == question.questionValue}">checked="true"</c:if></c:otherwise></c:choose> />
-                                                                                                                    </c:otherwise>
-                                                                                                                </c:choose>
-                                                                                                            </div>
-                                                                                                            <div class="pull-left col-xs-11">
-                                                                                                                ${choiceDetails.choiceText}
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    </c:forEach>   
-                                                                                                </c:otherwise>
-                                                                                            </c:choose>
-                                                                                        </c:when>
-                                                                                        <c:otherwise>
-                                                                                            <span>No Question Choices have been set up.</span>
-                                                                                        </c:otherwise>
-                                                                                    </c:choose>
-                                                                                 </c:when>
+                                                                                            </c:otherwise>
+                                                                                        </c:choose>
+                                                                                    </c:when>
+                                                                                    <c:otherwise>
+                                                                                        <span>No Question Choices have been set up.</span>
+                                                                                    </c:otherwise>
+                                                                                </c:choose>
+                                                                             </c:when>
                                                                         </c:choose>
                                                                     </div>    
                                                                     <c:if test="${question.otherOption == true && question.otherDspChoice == 2}">

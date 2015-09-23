@@ -22,9 +22,9 @@ jQuery(function ($) {
                 enableCaseInsensitiveFiltering: true,
                 disableIfEmpty: true,
                 nonSelectedText: 'Select your Districts / CBO',
-                numberDisplayed: 2,
+                numberDisplayed: 0,
                 templates: {
-                    button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown"></button>',
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown" style="width:200px;"></button>',
                     ul: '<ul class="multiselect-container dropdown-menu"></ul>',
                     filter: '<li class="multiselect-item filter"><div class="input-group"><span class="input-group-addon"><i class="fa fa-search"></i></span><input class="form-control multiselect-search" type="text"></div></li>',
                     filterClearBtn: '<span class="input-group-btn"><button class="btn btn-default btn-white btn-grey multiselect-clear-filter" type="button"><i class="fa fa-times-circle red2"></i></button></span>',

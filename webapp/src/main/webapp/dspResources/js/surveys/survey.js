@@ -303,6 +303,14 @@ function checkSurveyFields() {
         missingQuestions+="- Involved School(s) / ECC,";
         errorFound = 1;
     }
+    
+    //Make sure at least one school is selcted
+    if ($('.contentSel').is(':checked') == false) {
+        $('#errorMsg_content').html("At least one content area & criteria must be selected.");
+        $('#errorMsg_content').show();
+        missingQuestions+="- Content Area & Criteria,";
+        errorFound = 1;
+    }
 
     //Look at all required fields.
     $('.required').each(function () {
