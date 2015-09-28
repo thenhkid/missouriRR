@@ -91,6 +91,9 @@ jQuery(function ($) {
         }
 
         if (noErrors == true) {
+            
+            $('.createSurveyExport').hide();
+            $('#creatingExport').show();
 
             var formData = $("#exportForm").serialize();
 

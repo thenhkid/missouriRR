@@ -9,6 +9,19 @@ jQuery(function ($) {
 
 
     $(document).ready(function () {
+        
+        $('.Date').each(function () {
+            var dateVal = $(this).val();
+            console.log(dateVal);
+            dateVal = dateVal.split("/");
+            
+            if(dateVal[2].length == 2) {
+                dateVal[2] = "20" + dateVal[2];
+                
+                $(this).val(dateVal.join('/'));
+            }
+            
+        });
 
         /* $('.multiselect').multiselect({
          maxHeight: 300,
@@ -84,9 +97,9 @@ jQuery(function ($) {
             autoclose: true,
             todayHighlight: true
         })
-                //show datepicker when clicking on the icon
-                .next().on(ace.click_event, function () {
-            $(this).prev().focus();
+        //show datepicker when clicking on the icon
+           .next().on(ace.click_event, function () {
+           $(this).prev().focus();
         });
 
         var surveyId = $('#submittedSurveyId').val();

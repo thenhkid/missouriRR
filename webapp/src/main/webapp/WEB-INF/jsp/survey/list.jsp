@@ -105,14 +105,16 @@
                                                     <i class="ace-icon fa fa-pencil bigger-120"></i>
                                                 </button>
                                             </a>
-                                            <a href="javascript:void(0);" class="deleteSurvey" rel="${submittedSurvey.id}"  title="Dekete This Survey" role="button">
+                                            <a href="javascript:void(0);" class="deleteSurvey" rel="${submittedSurvey.id}"  title="Delete This Survey" role="button">
                                                 <button class="btn btn-xs btn-danger">
                                                     <i class="ace-icon fa fa-close bigger-120"></i>
                                                 </button>
                                             </a>
-                                            <button class="btn btn-xs btn-info surveyDocuments" rel="${submittedSurvey.id}">
-                                                <i class="ace-icon fa fa-upload bigger-120"></i>
-                                            </button>
+                                            <a href="javascript:void(0);" class="surveyDocuments" rel="${submittedSurvey.id}"  title="Upload File" role="button">   
+                                                <button class="btn btn-xs btn-info">
+                                                    <i class="ace-icon fa fa-upload bigger-120"></i>
+                                                </button>
+                                            </a>     
                                             <%--</c:when>
                                             <c:otherwise>
                                                 <a href="surveys/viewSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Survey" role="button">

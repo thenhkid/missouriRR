@@ -53,6 +53,10 @@
                 <i class="ace-icon fa fa-download bigger-120 white"></i>
                 Create Export
             </button>
+            <button type="button" class="btn btn-mini btn-primary" style="display:none;" id="creatingExport">
+                <i class="ace-icon fa fa-spinner fa-spin bigger-120 white"></i>
+                Creating Export
+            </button>
         </div>
     </form:form>
 </div>
