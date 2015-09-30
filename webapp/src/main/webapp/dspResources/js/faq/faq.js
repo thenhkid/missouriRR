@@ -178,7 +178,7 @@ jQuery(function ($) {
 
                     bootbox.dialog({
                         message: data,
-                        title: "Add A Question",
+                        title: "Add an Announcement",
                         buttons: {
                             cancel: {
                                 label: "Cancel",
@@ -236,7 +236,7 @@ jQuery(function ($) {
                     bootbox.dialog({
 
                         message: data,
-                        title: "Edit Question",
+                        title: "Edit Announcement",
                         buttons: {
                             cancel: {
                                 label: "Cancel",
@@ -295,12 +295,12 @@ jQuery(function ($) {
             error ++;
         }
         
-        if ($('#answer').val().trim() == "") {
+        /*if ($('#answer').val().trim() == "") {
             $('#answerDiv').addClass("has-error");
       	    $('#answerMsg').addClass("has-error");
       	    $('#answerMsg').html('Answer is required field.');
             error ++;
-        }
+        }*/
         
         if (error > 0) {
             event.preventDefault();

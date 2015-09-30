@@ -14,6 +14,7 @@
         <form:hidden path="id" id="topicId" />
         <form:hidden path="totalViews" />
         <form:hidden path="topicURL" />
+        <form:hidden path="type" value="2" />
         <div class="form-group" id="entityDiv">
             <label for="whichEntity" class="control-label">Select the ${topLevelName} this topic will be posted to *</label>
             <div>
@@ -33,13 +34,13 @@
                 </c:forEach>
             </select>
         </div>
-        <div class="form-group">
+        <%--<div class="form-group">
             <label for="timeFrom" class="control-label">Topic Type *</label>
             <form:select path="type" class="form-control" >
                 <c:if test="${sessionScope.userDetails.roleId == 2}"><option value="1" <c:if test="${1 == forumTopic.type}"> selected </c:if>>Announcement</option></c:if>
                 <option value="2" <c:if test="${2 == forumTopic.type}"> selected </c:if>>Regular Topic</option>
             </form:select>
-        </div> 
+        </div> --%>
         <div class="form-group" id="titleDiv">
             <label  class="control-label" for="title">Topic Title *</label>
             <form:input path="title" class="form-control" id="title" maxlength="50" />

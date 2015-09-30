@@ -15,7 +15,8 @@
         <div>
             <form:form id="questionForm" modelAttribute="question" role="form" class="form" method="post"  enctype="multipart/form-data">
                 <form:hidden path="id"/>
-                <div class="form-group" id="cateogryIdDiv">
+                <form:hidden path="categoryId" value="${activeCat}" />
+                <%--<div class="form-group" id="cateogryIdDiv">
                     <label for="timeFrom">Select a Category</label>
                     <form:select path="categoryId" class="form-control" name="categoryId" id="categoryId" rel="${question.id}">
                         <c:forEach  var="category" items="${categories}">
@@ -23,15 +24,15 @@
                         </c:forEach>
                     </form:select>
                 </div>  
-
+--%>
                 <div class="form-group" id="questionDiv">
-                    <label  class="control-label" for="question">Question*</label>
-                    <form:input id="question" path="question" class="form-control" placeholder="Question" maxlength="255"/>
+                    <label  class="control-label" for="question">Announcement *</label>
+                    <form:input id="question" path="question" class="form-control" placeholder="Announcement" maxlength="255"/>
                     <span id="questionMsg" class="control-label"></span>  
                 </div>
                 <div class="form-group" id="answerDiv">
-                    <label  class="control-label" for="answer">Answer*</label>
-                    <form:textarea id="answer" path="answer" class="form-control" placeholder="Answer" />
+                    <label  class="control-label" for="answer">Announcement Detail</label>
+                    <form:textarea id="answer" path="answer" class="form-control" placeholder="Detail" />
                     <span id="answerMsg" class="control-label"></span>  
                 </div> 
                 <c:import url="qDisplayPos.jsp"></c:import> 

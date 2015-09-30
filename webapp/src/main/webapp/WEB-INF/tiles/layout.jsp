@@ -63,7 +63,7 @@
                     <a href="/home" class="navbar-brand">
                         <small>
                             <i class="fa fa-building"></i>
-                            MO Healthy Schools Monitoring System
+                            MOHSHC Healthy Link
                         </small>
                     </a>
                 </div>

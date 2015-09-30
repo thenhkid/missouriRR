@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+<tiles-definitions>
+    
+    <!-- sysAdmin Definitions -->
+    <definition name="base.definition.user-ui" template="/WEB-INF/tiles/layout.jsp">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="" />
+        <put-attribute name="body" value="" />
+        <put-attribute name="submenu" value="" />
+    </definition>
+    
+    <definition name="/users" extends="base.definition.user-ui">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/users/breadcrumbs.jsp" />
+        <put-attribute name="body" value="/WEB-INF/jsp/users/list.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/users/list.js" />
+        <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/dataTables/jquery.dataTables.min.js" />
+            <add-attribute value="/dspResources/js/dataTables/jquery.dataTables.bootstrap.min.js" />
+            <add-attribute value="/dspResources/js/dataTables/extensions/TableTools/js/dataTables.tableTools.min.js" />
+            <add-attribute value="/dspResources/js/dataTables/extensions/ColVis/js/dataTables.colVis.min.js" />
+            <add-attribute value="/dspResources/js/bootbox.min.js" />
+            <add-attribute value="/dspResources/js/ace-elements.min.js" />
+        </put-list-attribute>
+    </definition>
+    
+    <definition name="/userDetails" extends="base.definition.user-ui">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/users/breadcrumbs.jsp?page=edit" />
+        <put-attribute name="body" value="/WEB-INF/jsp/users/userDetails.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/users/userDetails.js" />
+        <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/bootbox.min.js" />
+            <add-attribute value="/dspResources/js/date-time/bootstrap-datepicker.min.js" />
+            <add-attribute value="/dspResources/js/date-time/bootstrap-timepicker.min.js" />
+            <add-attribute value="/dspResources/js/date-time/moment.min.js" />
+            <add-attribute value="/dspResources/js/date-time/daterangepicker.min.js" />
+            <add-attribute value="/dspResources/js/date-time/bootstrap-datetimepicker.min.js" />
+        </put-list-attribute>
+        <put-list-attribute name="customCSS">
+            <add-attribute value="/dspResources/css/datepicker.min.css" />
+            <add-attribute value="/dspResources/css/bootstrap-timepicker.min.css" />
+            <add-attribute value="/dspResources/css/daterangepicker.min.css" />
+            <add-attribute value="/dspResources/css/bootstrap-datetimepicker.min.css" />
+        </put-list-attribute>
+    </definition>
+    
+    
+    <!-- Exception handling -->
+    <definition name="/exception" extends="base.definition.ui">
+        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp" />
+        <put-attribute name="body" value="/WEB-INF/jsp/exception.jsp" />
+    </definition>
+
+</tiles-definitions>

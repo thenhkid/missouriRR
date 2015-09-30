@@ -12,15 +12,16 @@ jQuery(function ($) {
         
         $('.Date').each(function () {
             var dateVal = $(this).val();
-            console.log(dateVal);
-            dateVal = dateVal.split("/");
             
-            if(dateVal[2].length == 2) {
-                dateVal[2] = "20" + dateVal[2];
-                
-                $(this).val(dateVal.join('/'));
+            if(dateVal !== "") {
+                dateVal = dateVal.split("/");
+            
+                if(dateVal[2].length == 2) {
+                    dateVal[2] = "20" + dateVal[2];
+
+                    $(this).val(dateVal.join('/'));
+                }
             }
-            
         });
 
         /* $('.multiselect').multiselect({

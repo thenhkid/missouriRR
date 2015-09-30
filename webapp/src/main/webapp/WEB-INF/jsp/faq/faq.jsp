@@ -37,14 +37,14 @@
                             <i class="ace-icon fa fa-caret-down"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-lighter dropdown-125">
-                            <c:if test="${sessionScope.userDetails.roleId == 2}">
+                            <%--<c:if test="${sessionScope.userDetails.roleId == 2}">
                                 <li>
                                     <a data-toggle="tab" href="#faq-tab-s" id="addCategory">Add Category</a>
                                 </li>
-                            </c:if>
+                            </c:if>--%>
                             <c:if test="${fn:length(categoryList) > 0}">
                                 <li>
-                                    <a data-toggle="tab" href="#faq-tab-s" id="addQuestion"> Add Question </a>
+                                    <a data-toggle="tab" href="#faq-tab-s" id="addQuestion"> Add Announcement </a>
                                 </li>
                             </c:if>
                         </ul>
@@ -60,12 +60,12 @@
                             <h4 class="blue">
                                 <i class="ace-icon fa fa-check bigger-110"></i>
                             ${category.categoryName}
-                            <c:if test="${allowEdit == true}">
+                            <%--<c:if test="${allowEdit == true}">
                                 <a href="#" class="btn-sm btn-app btn-primary editCategory" rel="${category.id}">
                                     <i class="ace-icon fa fa-pencil-square-o bigger-110"></i>
                                     Edit
                                 </a>
-                            </c:if>
+                            </c:if>--%>
                         </h4>
 
                         <div class="space-8"></div>
