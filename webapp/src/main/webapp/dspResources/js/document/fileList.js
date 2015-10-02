@@ -262,10 +262,12 @@ jQuery(function ($) {
         $('#titleMsg').html("");
         $('#docMsg').html("");
         $('#webLinkMsg').html("");
-
+        
+        var documentId = $('#documentId').val();
+        
         var errorFound = false;
 
-        /** make sure there is a category **/
+        /** make sure there is a document title **/
         if ($('#title').val().trim() == "") {
             $('#titleDiv').addClass("has-error");
             $('#titleMsg').addClass("has-error");
@@ -273,8 +275,16 @@ jQuery(function ($) {
             errorFound = true;
         }
         
+        /** make sure there is a document description **/
+        if ($('#docDesc').val().trim() == "") {
+            $('#docDescDiv').addClass("has-error");
+            $('#docDescMsg').addClass("has-error");
+            $('#docDescMsg').html('The document description is required.');
+            errorFound = true;
+        }
+        
         /** Make sure either a document is uploaded or an external link is provided **/
-        if($('#webLink').val().trim() == "" && $('#id-input-file-2').val().trim() == "") {
+        if($('#webLink').val().trim() === "" && $('#id-input-file-2').val().trim() === "" && $('#uploadedFile').val() === "") {
             $('#docDiv').addClass("has-error");
             $('#webLinkDiv').addClass("has-error");
             $('#docMsg').addClass("has-error");

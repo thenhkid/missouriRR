@@ -5,6 +5,8 @@
  */
 package com.rr.missouri.ui.controller;
 
+import com.registryKit.faq.faqManager;
+import com.registryKit.faq.faqQuestions;
 import com.registryKit.program.program;
 import com.registryKit.program.programManager;
 import com.registryKit.user.User;
@@ -12,6 +14,7 @@ import com.registryKit.messenger.emailManager;
 import com.registryKit.messenger.emailMessage;
 import com.registryKit.user.userManager;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,6 +49,9 @@ public class mainController {
     
     @Autowired
     private programManager programmanager;
+   
+    @Autowired
+    faqManager faqManager;
     
     /**
      * The '/login' request will serve up the login page.
@@ -138,6 +144,9 @@ public class mainController {
         
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/home");
+        
+        List<faqQuestions> announcements = faqManager.getLatestQuestions(programId,5);
+        mav.addObject("announcements", announcements);
        
         return mav;
 

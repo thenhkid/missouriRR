@@ -131,7 +131,7 @@ public class faqController {
             if (category.getId() == 0) {
                 categoryToReplace.setDisplayPos(maxDisPos + 1);
             } else {
-                        //edit and replace
+                //edit and replace
                 //get old position
                 faqCategories categoryOld = faqManager.getCategoryById(category.getId());
                 categoryToReplace.setDisplayPos(categoryOld.getDisplayPos());
@@ -316,7 +316,7 @@ public class faqController {
                     activeQId = faqManager.saveQuestion(question);
 
                 } else {
-                            //if it is not in the same category
+                    //if it is not in the same category
                     //moving to same category means adding new question
                     questionToReplace.setDisplayPos(maxDisPos + 1);
                     faqManager.saveQuestion(questionToReplace);

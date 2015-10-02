@@ -10,10 +10,10 @@
 
 <div>
     <form:form id="documentForm" modelAttribute="documentDetails" action="/documents/saveDocuemntForm.do" role="form" class="form" method="post" enctype="multipart/form-data">
-        <form:hidden path="id" />
+        <form:hidden path="id" id="documentId" />
         <form:hidden path="dateCreated" />
         <form:hidden path="systemUserId" />
-        <form:hidden path="uploadedFile" />
+        <form:hidden path="uploadedFile" id="uploadedFile" />
         <c:choose>
             <c:when test="${sessionScope.userDetails.roleId == 2}">
 
