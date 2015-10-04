@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    
+    <!-- Main Definitions -->
+    <definition name="base.definition.survey-ui" template="/WEB-INF/tiles/layout.jsp">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="" />
+        <put-attribute name="body" value="" />
+        <put-attribute name="submenu" value="" />
+    </definition>
+    
+    <definition name="/export" extends="base.definition.survey-ui">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/importExport/breadcrumbs.jsp?page=export" />
+        <put-attribute name="body" value="/WEB-INF/jsp/importExport/export.jsp" />
+        <put-attribute name="submenu" value="/WEB-INF/jsp/importExport/submenu.jsp?page=export" />
+        <put-attribute name="jscript" value="/dspResources/js/importExport/export.js" />
+        <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/jquery-ui.custom.min.js" />
+            <add-attribute value="/dspResources/js/date-time/moment.min.js" />
+            <add-attribute value="/dspResources/js/bootbox.min.js" />
+            <add-attribute value="/dspResources/js/date-time/bootstrap-datepicker.min.js" />
+            <add-attribute value="/dspResources/js/date-time/jquery.timepicker.min.js" />
+            <add-attribute value="/dspResources/js/ace-elements.min.js" />
+        </put-list-attribute>
+        <put-list-attribute name="customCSS">
+            <add-attribute value="/dspResources/css/jquery-ui.custom.min.css" />
+        </put-list-attribute>
+    </definition>
+    
+    
+    <!-- Exception handling -->
+    <definition name="/exception" extends="base.definition.ui">
+        <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp" />
+        <put-attribute name="body" value="/WEB-INF/jsp/exception.jsp" />
+    </definition>
+
+</tiles-definitions>

@@ -18,8 +18,14 @@
         <put-attribute name="body" value="/WEB-INF/jsp/faq/faq.jsp" />
         <put-attribute name="jscript" value="/dspResources/js/faq/faq.js" />
         <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/jquery-ui.custom.min.js" />
+            <add-attribute value="/dspResources/js/jquery.ui.touch-punch.min.js" />
+            <add-attribute value="/dspResources/js/date-time/moment.min.js" />
             <add-attribute value="/dspResources/js/bootbox.min.js" />
             <add-attribute value="/dspResources/js/ace-elements.min.js" />
+        </put-list-attribute>
+        <put-list-attribute name="customCSS">
+            <add-attribute value="/dspResources/css/jquery-ui.custom.min.css" />
         </put-list-attribute>
     </definition>
     

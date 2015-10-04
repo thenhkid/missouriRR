@@ -26,6 +26,7 @@
             <add-attribute value="/dspResources/js/bootbox.min.js" />
             <add-attribute value="/dspResources/js/bootstrap-multiselect.min.js" />
             <add-attribute value="/dspResources/js/jquery.gritter.min.js" />
+            <add-attribute value="/dspResources/js/ace-elements.min.js" />
         </put-list-attribute>
         <put-list-attribute name="customCSS">
             <add-attribute value="/dspResources/css/bootstrap-multiselect.min.css" />
@@ -40,24 +41,36 @@
         <put-attribute name="submenu" value="/WEB-INF/jsp/survey/submenu.jsp" />
         <put-attribute name="jscript" value="/dspResources/js/surveys/survey.js" />
         <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/chosen.jquery.min.js" />
             <add-attribute value="/dspResources/js/date-time/bootstrap-datepicker.min.js" />
             <add-attribute value="/dspResources/js/date-time/bootstrap-timepicker.min.js" />
             <add-attribute value="/dspResources/js/date-time/moment.min.js" />
             <add-attribute value="/dspResources/js/date-time/daterangepicker.min.js" />
             <add-attribute value="/dspResources/js/date-time/bootstrap-datetimepicker.min.js" />
+            <add-attribute value="/dspResources/js/bootstrap-multiselect.min.js" />
+            <add-attribute value="/dspResources/js/jquery.gritter.min.js" />
         </put-list-attribute>
         <put-list-attribute name="customCSS">
+            <add-attribute value="/dspResources/css/bootstrap-multiselect.min.css" />
+            <add-attribute value="/dspResources/css/chosen.min.css" />
             <add-attribute value="/dspResources/css/datepicker.min.css" />
             <add-attribute value="/dspResources/css/bootstrap-timepicker.min.css" />
             <add-attribute value="/dspResources/css/daterangepicker.min.css" />
             <add-attribute value="/dspResources/css/bootstrap-datetimepicker.min.css" />
+            <add-attribute value="/dspResources/css/jquery.gritter.min.css" />
         </put-list-attribute>
         
     </definition>
     
-     <definition name="/completedSurvey" extends="base.definition.survey-ui">
+    <definition name="/completedSurvey" extends="base.definition.survey-ui">
         <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/survey/breadcrumbs.jsp?page=complete" />
         <put-attribute name="body" value="/WEB-INF/jsp/survey/completedSurvey.jsp" />
+        <put-attribute name="submenu" value="/WEB-INF/jsp/survey/submenu.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/surveys/completedSurvey.js" />
+        <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/ace-elements.min.js" />
+        </put-list-attribute>
     </definition>
     
     <!-- Exception handling -->

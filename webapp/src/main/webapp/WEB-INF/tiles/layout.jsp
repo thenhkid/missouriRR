@@ -12,11 +12,16 @@
 
         <title><tiles:insertAttribute name="title" /></title>
         <meta name="description" content="page description" />
-
+        
         <link href="<%=request.getContextPath()%>/dspResources/css/bootstrap.min.css" rel="stylesheet" />
         <link href="<%=request.getContextPath()%>/dspResources/css/font-awesome.min.css" rel="stylesheet" /><!-- only if needed -->
 
         <link href="<%=request.getContextPath()%>/dspResources/css/ace-fonts.min.css" rel="stylesheet" /><!-- you can also use google hosted fonts -->
+        
+        <link href="<%=request.getContextPath()%>/dspResources/css/datepicker.min.css" rel="stylesheet" />
+        <link href="<%=request.getContextPath()%>/dspResources/css/jquery.simplecolorpicker.css" rel="stylesheet" />
+        <link href="<%=request.getContextPath()%>/dspResources/css/jquery.timepicker.css" rel="stylesheet" />
+        <link href="<%=request.getContextPath()%>/dspResources/css/jquery.dataTables.css" rel="stylesheet" />
         
         <tiles:useAttribute id="cssList" name="customCSS" classname="java.util.List" ignore="true" />
         <c:forEach var="cssFile" items="${cssList}">
@@ -55,10 +60,10 @@
             <div class="navbar-container" id="navbar-container">
 
                 <div class="navbar-header pull-left">
-                    <a href="#" class="navbar-brand">
+                    <a href="/home" class="navbar-brand">
                         <small>
                             <i class="fa fa-building"></i>
-                            MO Healthy Schools Monitoring System
+                            MO HSHC Healthy Link
                         </small>
                     </a>
                 </div>
@@ -67,7 +72,14 @@
                     <ul class="nav ace-nav">
                         <li class="light-blue">
                             <a data-toggle="dropdown" href="#" class="dropdown-toggle">
-                                <img class="nav-user-photo" src="<%=request.getContextPath()%>/dspResources/img/avatars/avatar2.png" alt="Profile Photo" />
+                                <c:choose>
+                                    <c:when test="${not empty sessionScope.userDetails.profilePhoto}">
+                                        <img class="nav-user-photo" src="/profilePhotos/${sessionScope.userDetails.profilePhoto}" alt="Profile Photo" />
+                                    </c:when>
+                                    <c:otherwise>
+                                        <img class="nav-user-photo" src="<%=request.getContextPath()%>/dspResources/img/avatars/avatar2.png" alt="Profile Photo" />
+                                    </c:otherwise>
+                                </c:choose>
                                 <span class="user-info">
                                     <small>Welcome,</small>
                                     <c:out value="${sessionScope.userDetails.firstName}" />
@@ -78,14 +90,7 @@
 
                             <ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
                                 <li>
-                                    <a href="#">
-                                        <i class="ace-icon fa fa-cog"></i>
-                                        Settings
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a href="#">
+                                    <a href="/profile">
                                         <i class="ace-icon fa fa-user"></i>
                                         Profile
                                     </a>
@@ -112,9 +117,9 @@
                     <tiles:importAttribute name="submenu" toName="menu" ignore="true" />
                     <c:forEach var="module" items="${sessionScope.availModules}">
                         <li <c:if test="${fn:contains(requestScope['javax.servlet.forward.request_uri'],module[0])}">class="active open"</c:if>>
-                            <a href="<c:url value='/${module[0]}' />" title="${module[1]}">
+                            <a href="<c:url value='/${module[0]}' />" title="<c:choose><c:when test="${module[3] == '11'}">Activity Logs</c:when><c:otherwise>${module[1]}</c:otherwise></c:choose>">
                                 <i class="menu-icon fa ${module[2]}"></i>
-                                <span class="menu-text"> ${module[1]}</span>
+                                <span class="menu-text"><c:choose><c:when test="${module[3] == '11'}">Activity Logs</c:when><c:when test="${module[3] == '8'}">Announcements</c:when><c:otherwise>${module[1]}</c:otherwise></c:choose></span>
 
                                 <c:if test="${not empty menu && fn:contains(requestScope['javax.servlet.forward.request_uri'],module[0])}"> <b class="arrow fa fa-angle-down"></b></c:if>
                                 </a>

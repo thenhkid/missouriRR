@@ -6,231 +6,479 @@
 
 
 jQuery(function ($) {
+
+
+    $(document).ready(function () {
         
-        $("input:text,form").attr("autocomplete", "off");
-        
-        /* Function to control clicking a page number on the left pane */
-        $(document).on('click', '.goToPage', function() {
-           var clickedpageNum = $(this).attr('rel');
-           var curPageNum = $(this).attr('rel2');
-           
-           if((clickedpageNum*1) < (curPageNum*1)) {
-               $('#action').val("prev");
-               $('#goToPage').val((clickedpageNum*1));
-               $('#lastQNumAnswered').val($('.qNumber:first').attr('rel'));
-               $("#survey").submit();
-           }
-           else if((clickedpageNum*1) > (curPageNum*1)) {
-               $('#action').val("next");
-               $('#goToPage').val((clickedpageNum*1));
-               $('#lastQNumAnswered').val($('.qNumber:first').attr('rel'));
-               $("#survey").submit();
-           }
-           
-        });
-        
-        
-        /* Function to process the NEXT button */
-        $(document).on('click', '.nextPage', function() {
-            var errorsFound = 0;
-            errorsFound = checkSurveyFields();
+        $('.Date').each(function () {
+            var dateVal = $(this).val();
             
-            if (errorsFound == 0) {
-               $('#action').val("next");
-               $('#lastQNumAnswered').val($('.qNumber:last').attr('rel'));
-               $("#survey").submit();
+            if(dateVal !== "") {
+                dateVal = dateVal.split("/");
+            
+                if(dateVal[2].length == 2) {
+                    dateVal[2] = "20" + dateVal[2];
+
+                    $(this).val(dateVal.join('/'));
+                }
             }
-            
         });
-        
-        /* Function to process the PREVIOUS button */
-        $(document).on('click', '.prevPage', function() {
+
+        /* $('.multiselect').multiselect({
+         maxHeight: 300,
+         buttonWidth: '500px',
+         enableFiltering: true,
+         buttonClass: 'btn btn-white btn-primary',
+         enableClickableOptGroups: true,
+         disableIfEmpty: true,
+         nonSelectedText: 'Select Schools...',
+         numberDisplayed: 5,
+         templates: {
+         button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown"></button>',
+         ul: '<ul class="multiselect-container dropdown-menu"></ul>',
+         filter: '',
+         filterClearBtn: '<span class="input-group-btn"><button class="btn btn-default btn-white btn-grey multiselect-clear-filter" type="button"><i class="fa fa-times-circle red2"></i></button></span>',
+         li: '<li><a href="javascript:void(0);" ><label></label></a></li>',
+         divider: '<li class="multiselect-item divider"></li>',
+         liGroup: '<li class="multiselect-item group"><label class="multiselect-group" style="padding-left:5px; font-weight:bold;"></label></li>'
+         },
+         onChange: function (option, checked, select) {
+         
+         if (checked == true) {
+         $.ajax({
+         url: 'getEntityCodeSets',
+         data: {'entityId': option.val(), 'surveyId': 0},
+         type: "GET",
+         success: function (data) {
+         $('#contentAndCriteriaDiv').html(data);
+         }
+         });
+         }
+         else {
+         $.ajax({
+         url: 'removeCodeSets',
+         data: {'entityId': option.val()},
+         type: "GET",
+         success: function (data) {
+         $('#contentAndCriteriaDiv').html(data);
+         }
+         });
+         }
+         }
+         });*/
+
+        if (!ace.vars['touch']) {
+            $('.chosen-select').chosen({allow_single_deselect: true});
+            //resize the chosen on window resize
+
+            $(window)
+                    .off('resize.chosen')
+                    .on('resize.chosen', function () {
+                        $('.chosen-select').each(function () {
+                            var $this = $(this);
+                            $this.next().css({'width': $this.parent().width()});
+                        })
+                    }).trigger('resize.chosen');
+            //resize chosen on sidebar collapse/expand
+            $(document).on('settings.ace.chosen', function (e, event_name, event_val) {
+                if (event_name != 'sidebar_collapsed')
+                    return;
+                $('.chosen-select').each(function () {
+                    var $this = $(this);
+                    $this.next().css({'width': $this.parent().width()});
+                })
+            });
+
+        }
+
+        $("input:text,form").attr("autocomplete", "off");
+
+        $('.input-daterange').datepicker({autoclose: true});
+        $('.date-picker').datepicker({
+            autoclose: true,
+            todayHighlight: true
+        })
+        //show datepicker when clicking on the icon
+           .next().on(ace.click_event, function () {
+           $(this).prev().focus();
+        });
+
+        var surveyId = $('#submittedSurveyId').val();
+
+        var selectedSchools = $('#schoolSelect').val();
+
+        var disabled = $('#disabled').val();
+
+        if (selectedSchools != null) {
+            var schools = [];
+            $.each(selectedSchools, function (i, entityId) {
+                schools.push(entityId);
+            });
+            var schoolList = schools.join(',');
+
+            $.ajax({
+                url: 'getEntityCodeSets',
+                data: {'entityId': schoolList, 'surveyId': surveyId, 'disabled': disabled},
+                type: "GET",
+                success: function (data) {
+                    $('#contentAndCriteriaDiv').html(data);
+                }
+            });
+        }
+    });
+
+
+    /* If editing or viewing need to get the content area */
+
+    /* Get the content area and criteria for the clicked school */
+    $('#schoolSelect').on('change', function (evt, params) {
+
+        if (params.selected > 0) {
+            $.ajax({
+                url: 'getEntityCodeSets',
+                data: {'entityId': params.selected, 'surveyId': 0, 'disabled': $('#disabled').val()},
+                type: "GET",
+                success: function (data) {
+                    $('#contentAndCriteriaDiv').html(data);
+                }
+            });
+        }
+        else if (params.deselected > 0) {
+            $.ajax({
+                url: 'removeCodeSets',
+                data: {'entityId': params.deselected, 'disabled': $('#disabled').val()},
+                type: "GET",
+                success: function (data) {
+                    $('#contentAndCriteriaDiv').html(data);
+                }
+            });
+        }
+
+    });
+
+
+    /* Save the code set when selected */
+    $(document).on('click', '.contentSel', function () {
+        var entityId = $(this).attr('rel');
+        var codeId = $(this).val();
+
+        if ($(this).is(':checked')) {
+            $.ajax({
+                url: 'saveSelCodeSet',
+                data: {'entityId': entityId, 'codeId': codeId},
+                type: "POST",
+                success: function (data) {
+                }
+            });
+        }
+        else {
+            $.ajax({
+                url: 'removeSelCodeSet',
+                data: {'entityId': entityId, 'codeId': codeId},
+                type: "POST",
+                success: function (data) {
+                }
+            });
+        }
+
+
+    })
+
+    /* Handle multiple answer questions */
+    $(document).on('change', '.multiAns', function () {
+
+        var qId = 0;
+        var enterVals = false;
+        var answerValues = [];
+        $('.multiAns').each(function () {
+            var nextqId = $(this).attr('rel');
+
+            if (qId != nextqId) {
+                if (qId != 0) {
+                    enterVals = true
+                }
+                qId = nextqId;
+            }
+            answerValues.push($(this).val());
+
+            if (enterVals == true) {
+                var s = answerValues.join('^^^^^');
+                $('#multiAns_' + qId).val(s);
+                enterVals = false;
+                answerValues = [];
+            }
+
+        });
+
+        if (enterVals == false) {
+            var s = answerValues.join('^^^^^');
+            $('#multiAns_' + qId).val(s);
+        }
+
+    });
+
+    /* Function to control clicking a page number on the left pane */
+    $(document).on('click', '.goToPage', function () {
+        var clickedpageNum = $(this).attr('rel');
+        var curPageNum = $(this).attr('rel2');
+
+        if ((clickedpageNum * 1) < (curPageNum * 1)) {
             $('#action').val("prev");
+            $('#goToPage').val((clickedpageNum * 1));
             $('#lastQNumAnswered').val($('.qNumber:first').attr('rel'));
             $("#survey").submit();
-        });
-        
-        /* Function to process the COMPLETE button */
-        $(document).on('click', '.completeSurvey', function(event) {
-            var errorsFound = 0;
-            
-            /* Make sure at lease one school is checked */
-            var schools = [];
-            $('.selectedSchools').each(function() {
-                if($(this).is(":checked")) {
-                     schools.push($(this).val());
-                }
-            });
-            var s = schools.join(',');
-            
-            $('#entityList').val(s);
-            
-            errorsFound = checkSurveyFields();
-            
-            if (errorsFound == 0) {
-                $('#action').val("done");
-                $('#lastQNumAnswered').val(1);
-                $("#survey").submit();
-            }
-           
-            event.preventDefault();
-            return false;
+        }
+        else if ((clickedpageNum * 1) > (curPageNum * 1)) {
+            $('#action').val("next");
+            $('#goToPage').val((clickedpageNum * 1));
+            $('#lastQNumAnswered').val($('.qNumber:first').attr('rel'));
+            $("#survey").submit();
+        }
 
-        });
-        
-        /* Function to process the SAVE button */
-        $(document).on('click', '.saveSurvey', function() {
-            
-            /* Make sure at lease one school is checked */
-            var schools = [];
-            $('.selectedSchools').each(function() {
-                if($(this).is(":checked")) {
-                     schools.push($(this).val());
-                }
-            });
-            var s = schools.join(',');
-            
-            $('#entityList').val(s);
-            
-            $('#action').val("save");
+    });
+
+
+    /* Function to process the NEXT button */
+    $(document).on('click', '.nextPage', function (event) {
+        var errorsFound = 0;
+
+        errorsFound = checkSurveyFields();
+
+        if (errorsFound == 0) {
+            $('#action').val("next");
+            $('#lastQNumAnswered').val($('.qNumber:last').attr('rel'));
+
+            /* Remove any disabled options */
+            $('input, select').attr('disabled', false);
+            $('input, radio').attr('disabled', false);
+            $('input, checkbox').attr('disabled', false);
+
+            $("#survey").submit();
+        }
+
+        event.preventDefault();
+        return false;
+
+    });
+
+    /* Function to process the PREVIOUS button */
+    $(document).on('click', '.prevPage', function () {
+
+        $('#action').val("prev");
+        $('#lastQNumAnswered').val($('.qNumber:first').attr('rel'));
+
+        /* Remove any disabled options */
+        $('input, select').attr('disabled', false);
+        $('input, radio').attr('disabled', false);
+        $('input, checkbox').attr('disabled', false);
+
+        $("#survey").submit();
+    });
+
+    /* Function to process the COMPLETE button */
+    $(document).on('click', '.completeSurvey', function (event) {
+        var errorsFound = 0;
+
+        errorsFound = checkSurveyFields();
+
+        if (errorsFound == 0) {
+            $('#action').val("done");
             $('#lastQNumAnswered').val(1);
             $("#survey").submit();
-        });
-        
- });
- 
- function checkSurveyFields() {
+        }
+
+        event.preventDefault();
+        return false;
+
+    });
+
+    /* Function to process the SAVE button */
+    $(document).on('click', '.saveSurvey', function () {
+
+        $('#action').val("save");
+        $('#lastQNumAnswered').val(1);
+        $("#survey").submit();
+    });
+
+});
+
+function checkSurveyFields() {
     var errorFound = 0;
+    var missingQuestions = "";
 
     $('div').removeClass("has-error");
-    $('.alert-danger').html("");
-    $('.alert-danger').hide();
-    
+    $('.help-block').html("");
+    $('.help-block').hide();
+
     //Make sure at least one school is selcted
-    if($('#entityList').val() == "") {
+    if ($('#schoolSelect').val() == "" || $('#schoolSelect').val() == null) {
         $('#errorMsg_schools').html("At least one school must be selected.");
         $('#errorMsg_schools').show();
+        missingQuestions+="- Involved School(s) / ECC,";
+        errorFound = 1;
     }
     
+    //Make sure at least one school is selcted
+    if ($('.contentSel').is(':checked') == false) {
+        $('#errorMsg_content').html("At least one content area & criteria must be selected.");
+        $('#errorMsg_content').show();
+        missingQuestions+="- Content Area & Criteria,";
+        errorFound = 1;
+    }
+
     //Look at all required fields.
-    $('.required').each(function() {
+    $('.required').each(function () {
         var qId = $(this).attr('rel');
         var qName = $(this).attr('rel2');
         var qType = $(this).attr('rel3');
-        
-        //Text Box
-        if(qType == 3) {
-           
+        var qNum = $(this).attr('qnum');
+        var requiredMsg = $('#requiredMsg' + qId).val();
+        if (requiredMsg === '') {
+            requiredMsg = "This is a required question.";
+        }
+
+        //Text Box || Select box
+        if (qType == 3 || qType == 5 || qType == 2 || qType == 6) {
+
             if ($(this).val() === '') {
-                
-                var requiredMsg = $('#requiredMsg'+qId).val();
-                
-                if(requiredMsg === '') {
-                    requiredMsg = "This is a required question.";
-                }
-                
-                $('#qNum' + qId).addClass("has-error");
+                $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html(requiredMsg);
                 $('#errorMsg_' + qId).show();
+                if(missingQuestions.indexOf("- Question " + qNum) == -1) {
+                    missingQuestions+="- Question "+qNum+",";
+                }
                 errorFound = 1;
             }
         }
         // Multiple Choice
-        else if(qType == 1) {
-            if ($('input[name="'+ qName +'"]:checked').length == 0) {
-                $('#qNum' + qId).addClass("has-error");
-                $('#errorMsg_' + qId).html('This is a required question.');
+        else if (qType == 1) {
+            if ($('input[name="' + qName + '"]:checked').length == 0) {
+                $('#questionOuterDiv_' + qId).addClass("has-error");
+                $('#errorMsg_' + qId).html(requiredMsg);
                 $('#errorMsg_' + qId).show();
+                if(missingQuestions.indexOf("- Question " + qNum) == -1) {
+                    missingQuestions+="- Question "+qNum+",";
+                }
                 errorFound = 1;
             }
         }
         
+
     });
 
     //Look at all Email validation types
-    $('.Email').each(function() {
+    $('.Email').each(function () {
         var qId = $(this).attr('rel');
         var emailVal = $(this).val();
+        var qNum = $(this).attr('qnum');
 
         if (emailVal != '') {
             var emailValidated = validateEmail(emailVal);
 
             if (emailValidated === false) {
-                $('#qNum' + qId).addClass("has-error");
+                $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid email address.');
                 $('#errorMsg_' + qId).show();
+                if(missingQuestions.indexOf("- Question " + qNum) == -1) {
+                    missingQuestions+="- Question "+qNum+",";
+                }
                 errorFound = 1;
             }
         }
+        
     });
 
     //Look at all Phone Number validation types
-    $('.Phone-Number').each(function() {
+    $('.Phone-Number').each(function () {
         var qId = $(this).attr('rel');
         var phoneVal = $(this).val();
+        var qNum = $(this).attr('qnum');
 
         if (phoneVal != '') {
             var phoneValidated = validatePhone(phoneVal);
 
             if (phoneValidated === false) {
-                $('#qNum' + qId).addClass("has-error");
+                $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid phone number.');
                 $('#errorMsg_' + qId).show();
+                if(missingQuestions.indexOf("- Question " + qNum) == -1) {
+                    missingQuestions+="- Question "+qNum+",";
+                }
                 errorFound = 1;
             }
         }
     });
 
     //Look at all numeric validation types
-    $('.Numeric').each(function() {
+    $('.Numeric').each(function () {
         var qId = $(this).attr('rel');
         var fieldVal = $(this).val();
+        var qNum = $(this).attr('qnum');
 
         if (fieldVal != '') {
             var fieldValidated = validateNumericValue(fieldVal);
 
             if (fieldValidated === false) {
-                $('#qNum' + qId).addClass("has-error");
+                $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('The value must be numeric.');
                 $('#errorMsg_' + qId).show();
+                if(missingQuestions.indexOf("- Question " + qNum) == -1) {
+                    missingQuestions+="- Question "+qNum+",";
+                }
                 errorFound = 1;
             }
         }
     });
 
     //Look at all URL validation types
-    $('.URL').each(function() {
+    $('.URL').each(function () {
         var qId = $(this).attr('rel');
         var URLVal = $(this).val();
+        var qNum = $(this).attr('qnum');
 
         if (URLVal != '') {
             var URLValidated = validateURL(URLVal);
 
             if (URLValidated === false) {
-                $('#qNum' + qId).addClass("has-error");
+                $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid URL.');
                 $('#errorMsg_' + qId).show();
+                if(missingQuestions.indexOf("- Question " + qNum) == -1) {
+                    missingQuestions+="- Question "+qNum+",";
+                }
                 errorFound = 1;
             }
         }
     });
 
     //Look at all Date validation types
-    $('.Date').each(function() {
+    $('.Date').each(function () {
         var qId = $(this).attr('rel');
         var dateVal = $(this).val();
+        var qNum = $(this).attr('qnum');
 
         if (dateVal != '') {
             var DateValidated = validateDate(dateVal);
 
             if (DateValidated === false) {
-                $('#qNum' + qId).addClass("has-error");
+                $('#questionOuterDiv_' + qId).addClass("has-error");
                 $('#errorMsg_' + qId).html('This is not a valid Date, format should be mm/dd/yyyy.');
                 $('#errorMsg_' + qId).show();
+                if(missingQuestions.indexOf("- Question " + qNum) == -1) {
+                    missingQuestions+="- Question "+qNum+",";
+                }
                 errorFound = 1;
             }
         }
     });
+
+    if (errorFound === 1) {
+        $.gritter.add({
+            title: 'Missing / Invalid Value!',
+            text: 'The following question(s) were not answered or have an invalid value.<br />  '+missingQuestions.replace(/,/g,"<br />"),
+            class_name: 'gritter-error gritter-light'
+        });
+    }
 
     return errorFound;
 }
@@ -257,12 +505,12 @@ function validatePhone($phone) {
 }
 
 function validateNumericValue($fieldVal) {
-    
-    if($fieldVal.indexOf("/") != -1) {
+
+    if ($fieldVal.indexOf("/") != -1) {
         return false;
     }
     else {
-    
+
         var numericReg = /^\d*[0-9](|.\d*[0-9]|,\d*[0-9])?$/;
         if (!numericReg.test($fieldVal)) {
             return false;
@@ -318,13 +566,13 @@ function validateDate($date) {
 
 
     /*
-
-    var DateReg = /\b\d{1,2}[\/-]\d{1,2}[\/-]\d{4}\b/; // mm/dd/yyyy
-    var DateReg2 = /\b\d{4}[\-]\d{1,2}[\-]\d{1,2}\b/; // yyyy-mm-dd
-    if (!DateReg.test($date) && !DateReg2.test($date)) {
-        return false;
-    }
-    else {
-        return true;
-    } */
+     
+     var DateReg = /\b\d{1,2}[\/-]\d{1,2}[\/-]\d{4}\b/; // mm/dd/yyyy
+     var DateReg2 = /\b\d{4}[\-]\d{1,2}[\-]\d{1,2}\b/; // yyyy-mm-dd
+     if (!DateReg.test($date) && !DateReg2.test($date)) {
+     return false;
+     }
+     else {
+     return true;
+     } */
 }

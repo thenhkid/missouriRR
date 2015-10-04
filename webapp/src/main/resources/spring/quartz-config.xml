@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job-scheduling-data
+    xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData 
+        http://www.quartz-scheduler.org/xml/job_scheduling_data_1_8.xsd"
+    version="1.8">
+ 
+    <schedule>
+        <job>
+            <name>checkCalendarNotifications</name>
+            <group>processGroup</group>
+            <description>This process will run every 5 minutes to check for new calendar notifications to be sent out.</description>
+            <job-class>com.rr.missouri.ui.jobs.checkCalendarNotifications</job-class>
+        </job>
+ 
+        <trigger>
+            <cron>
+                <name>60SecTrigger</name>
+                <job-name>checkCalendarNotifications</job-name>
+                <job-group>processGroup</job-group>
+                <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
+                <!-- Runs every minute-->
+                <cron-expression>0 0/1 * * * ?</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+    
+    <schedule>
+        <job>
+            <name>checkForumNotifications</name>
+            <group>processGroup</group>
+            <description>This process will run every 45 seconds to check for post notifications to be sent out.</description>
+            <job-class>com.rr.missouri.ui.jobs.checkForumNotifications</job-class>
+        </job>
+ 
+        <trigger>
+            <cron>
+                <name>newForumEmails</name>
+                <job-name>checkForumNotifications</job-name>
+                <job-group>processGroup</job-group>
+                <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
+                <!-- Runs every 45 seconds, starting at 3 seconds on the clock-->
+                <cron-expression>45/3 * * * * ?</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+    
+    
+    <schedule>
+        <job>
+            <name>checkEmailNotifications</name>
+            <group>processGroup</group>
+            <description>This process will run every 45 seconds to check for email notifications to be sent out.</description>
+            <job-class>com.rr.missouri.ui.jobs.sendCalendarEmailNotifications</job-class>
+        </job>
+ 
+        <trigger>
+            <cron>
+                <name>newCalendarEmails</name>
+                <job-name>checkEmailNotifications</job-name>
+                <job-group>processGroup</job-group>
+                <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
+                <!-- Runs every 45 seconds, starting at 17 seconds on the clock-->
+                <cron-expression>45/17 * * * * ?</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+    
+    <!-- document emails -->
+    <schedule>
+        <job>
+            <name>checkDocumentEmailNotifications</name>
+            <group>processGroup</group>
+            <description>This process will run every 45 seconds to check for document notifications to be sent out.</description>
+            <job-class>com.rr.missouri.ui.jobs.sendDocumentEmailNotifications</job-class>
+        </job>
+ 
+        <trigger>
+            <cron>
+                <name>newDocumentEmails</name>
+                <job-name>checkDocumentEmailNotifications</job-name>
+                <job-group>processGroup</job-group>
+                <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
+                <!-- Runs every 45 seconds, starting at 32 seconds on the clock-->
+                <cron-expression>45/32 * * * * ?</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+    
+</job-scheduling-data>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    
+    <!-- Main Definitions -->
+    <definition name="base.definition.document-ui" template="/WEB-INF/tiles/layout.jsp">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="" />
+        <put-attribute name="body" value="" />
+        <put-attribute name="submenu" value="" />
+    </definition>
+    
+    <definition name="/documents" extends="base.definition.document-ui">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/document/breadcrumbs.jsp?page=list" />
+        <put-attribute name="body" value="/WEB-INF/jsp/document/fileList.jsp" />
+        <put-attribute name="submenu" value="/WEB-INF/jsp/document/submenu.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/document/fileList.js" />
+        <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/dataTables/jquery.dataTables.min.js" />
+            <add-attribute value="/dspResources/js/dataTables/jquery.dataTables.bootstrap.min.js" />
+            <add-attribute value="/dspResources/js/bootbox.min.js" />
+            <add-attribute value="/dspResources/js/ace-elements.min.js" />
+        </put-list-attribute>
+    </definition>
+    
+</tiles-definitions>

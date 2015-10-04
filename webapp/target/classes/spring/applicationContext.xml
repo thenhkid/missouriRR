@@ -2,19 +2,24 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/mvc
                            http://www.springframework.org/schema/mvc/spring-mvc.xsd
                            http://www.springframework.org/schema/context
-                           http://www.springframework.org/schema/context/spring-context.xsd">
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                            http://www.springframework.org/schema/util                            
+                            http://www.springframework.org/schema/util/spring-util-3.0.xsd
+">
 
     <context:component-scan base-package="com.rr.missouri.ui, com.registryKit"/>
    
     <mvc:annotation-driven />
     
-    <mvc:resources mapping="/dspResources/**" location="/dspResources/" /> 
+    <mvc:resources mapping="/dspResources/**" location="/dspResources/" />
+    
     
     <bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <property name="viewClass">
@@ -33,6 +38,10 @@
                 <value>/WEB-INF/tileDefs/reports.xml</value>
                 <value>/WEB-INF/tileDefs/calendar.xml</value>
                 <value>/WEB-INF/tileDefs/faq.xml</value>
+                <value>/WEB-INF/tileDefs/forum.xml</value>
+                <value>/WEB-INF/tileDefs/importExport.xml</value>
+                <value>/WEB-INF/tileDefs/document.xml</value>
+                <value>/WEB-INF/tileDefs/users.xml</value>
             </list>
         </property>
     </bean>
@@ -66,10 +75,42 @@
 		</property>
    </bean>
     
-    <!--<bean id="emailMessageManagerImpl" class="com.rr.ui.service.impl.emailMessageManagerImpl">
+    <bean id="emailManager" class="com.registryKit.messenger.emailManager">
 	<property name="mailSender" ref="mailSender" />
-    </bean>-->
+    </bean>
+    
+    <!-- adds system properties -->
+    <bean
+    class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property
+        name="targetObject">
+        <!-- System.getProperties() -->
+        <bean
+            class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+            <property name="targetClass" value="java.lang.System" />
+            <property name="targetMethod" value="getProperties" />
+        </bean>
+    </property>
+    <property
+        name="targetMethod"
+        value="putAll" />
+    <property
+        name="arguments">
+        <!-- The new Properties -->
+        <util:properties>
+            <prop
+                key="directory.path">${directory.path}</prop>
+       </util:properties>
+    </property>
+</bean>
+    
+    
     
     <context:property-placeholder location="file:${catalina.home}/properties/RR.properties"/>
-   
+    
+    <bean id="myProps" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+ 	 <property name="location" value="file:${catalina.home}/properties/RR.properties"/>
+    </bean>
+    <mvc:resources mapping="/profilePhotos/**" location="file:${directory.path}missouri/profilePhotos/" /> 
+    
 </beans>

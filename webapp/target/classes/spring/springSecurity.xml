@@ -15,11 +15,13 @@
         <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/calendar/**"></intercept-url>
         <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/faq/**"></intercept-url>
         <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/forum/**"></intercept-url>
+        <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/documents/**"></intercept-url>
         <intercept-url access="permitAll" pattern="/login/*"></intercept-url>
         <intercept-url access="permitAll" pattern="/logout"></intercept-url>
         <logout invalidate-session="true" delete-cookies="JSESSIONID" logout-success-url="/login" logout-url="/logout"></logout>
         <form-login authentication-success-handler-ref="authenticationSuccessRedirecthandler" authentication-failure-url="/loginfailed" login-page="/login"></form-login>
         <session-management invalid-session-url="/login"></session-management>
+        <session-management><concurrency-control expired-url="/login?expired" /></session-management>
         <headers>
             <cache-control />
             <content-type-options />

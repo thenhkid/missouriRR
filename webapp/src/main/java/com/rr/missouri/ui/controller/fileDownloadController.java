@@ -2,7 +2,7 @@ package com.rr.missouri.ui.controller;
 
 import com.registryKit.program.program;
 import com.registryKit.program.programManager;
-import com.rr.missouri.ui.reference.fileSystem;
+import com.registryKit.reference.fileSystem;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,10 +19,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import java.io.File;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 
 @Controller
 @RequestMapping("/FileDownload")
 public class fileDownloadController {
+
+    @Value("${programId}")
+    private Integer programId;
 
     @Autowired
     programManager programmanager;
@@ -34,9 +38,9 @@ public class fileDownloadController {
 
     @RequestMapping(value = "/downloadFile.do", method = RequestMethod.GET)
     public void downloadFile(HttpServletRequest request, Authentication authentication,
-            @RequestParam String filename, @RequestParam String foldername, @RequestParam(value = "programId", required = false) Integer programId, HttpServletResponse response) throws Exception {
+            @RequestParam String filename, @RequestParam String foldername, HttpServletResponse response) throws Exception {
         String desc = "";
-        
+
         OutputStream outputStream = null;
         InputStream in = null;
         ServletContext context = request.getServletContext();
@@ -49,7 +53,7 @@ public class fileDownloadController {
 
                 program programDetails = programmanager.getProgramById(programId);
 
-                dir.setDir(programDetails.getProgramName(), foldername);
+                dir.setDir(programDetails.getProgramName().replaceAll(" ", "-").toLowerCase(), foldername);
             } else {
                 dir.setDirByName(foldername + "/");
             }

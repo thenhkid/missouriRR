@@ -5,6 +5,8 @@
  */
 package com.rr.missouri.ui.surveys;
 
+import com.registryKit.activityCode.activityCodeManager;
+import com.registryKit.activityCode.activityCodes;
 import com.registryKit.client.clientManager;
 import com.registryKit.client.engagementManager;
 import com.registryKit.hierarchy.hierarchyManager;
@@ -12,7 +14,9 @@ import com.registryKit.hierarchy.programHierarchyDetails;
 import com.registryKit.survey.SurveyPages;
 import com.registryKit.survey.SurveyQuestionChoices;
 import com.registryKit.survey.SurveyQuestions;
+import com.registryKit.survey.submittedSurveyDocuments;
 import com.registryKit.survey.submittedSurveys;
+import com.registryKit.survey.submittedsurveycontentcriteria;
 import com.registryKit.survey.survey;
 import com.registryKit.survey.surveyManager;
 import com.registryKit.survey.surveyQuestionAnswers;
@@ -33,6 +37,7 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -40,6 +45,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
@@ -67,6 +74,9 @@ public class surveyController {
     private hierarchyManager hierarchymanager;
 
     @Autowired
+    private activityCodeManager activitycodemanager;
+
+    @Autowired
     private userManager usermanager;
 
     @Value("${programId}")
@@ -78,10 +88,15 @@ public class surveyController {
     /* Variable to hold answers while taking a survey */
     private static List<surveyQuestionAnswers> questionAnswers = null;
 
+    /* Variable to hold the content criteria while taking the survey */
+    private static List<surveyContentCriteria> surveyContentCriterias = null;
+
     /* Keep track of visited pages */
     private static List<Integer> seenPages;
 
     private static List<surveys> surveys;
+
+    private static List<district> districtList;
 
     private static boolean allowCreate = false;
     private static boolean allowEdit = false;
@@ -135,7 +150,12 @@ public class surveyController {
             surveyId = Integer.parseInt(result[0].substring(4));
 
         } else {
-            surveyId = surveyList.get(0).getId();
+            if (surveyList.size() > 0) {
+                surveyId = surveyList.get(0).getId();
+            } else {
+                surveyId = 0;
+            }
+
         }
         mav.addObject("selSurvey", surveyId);
 
@@ -145,7 +165,7 @@ public class surveyController {
         /* Get a list of completed surveys the logged in user has access to */
         User userDetails = (User) session.getAttribute("userDetails");
 
-        List<submittedSurveys> submittedSurveys = surveyManager.getEntitySurveys(userDetails.getId());
+        List<submittedSurveys> submittedSurveys = surveyManager.getEntitySurveys(userDetails, surveyId);
 
         /* Need to get the selected entities */
         if (submittedSurveys != null && !submittedSurveys.isEmpty()) {
@@ -162,7 +182,7 @@ public class surveyController {
                 survey.setEncryptedId(encrypted[0]);
                 survey.setEncryptedSecret(encrypted[1]);
 
-                List<Integer> selectedEntities = surveyManager.getSubmittedSurveyEntities(survey.getId(), userDetails.getId());
+                List<Integer> selectedEntities = surveyManager.getSubmittedSurveyEntities(survey.getId(), userDetails);
 
                 if (selectedEntities != null && !selectedEntities.isEmpty()) {
 
@@ -186,8 +206,13 @@ public class surveyController {
 
         /* Get user permissions */
         userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
-        allowCreate = modulePermissions.isAllowCreate();
-        allowEdit = modulePermissions.isAllowEdit();
+        if (userDetails.getRoleId() == 2) {
+            allowCreate = true;
+            allowEdit = true;
+        } else {
+            allowCreate = modulePermissions.isAllowCreate();
+            allowEdit = modulePermissions.isAllowEdit();
+        }
 
         mav.addObject("allowCreate", allowCreate);
         mav.addObject("allowEdit", allowEdit);
@@ -207,7 +232,9 @@ public class surveyController {
      * @throws Exception
      */
     @RequestMapping(value = "/startSurvey", method = RequestMethod.POST)
-    public ModelAndView startSurvey(@RequestParam String s, @RequestParam(value = "selectedEntities", required = false) List<Integer> selectedEntities, HttpSession session) throws Exception {
+    public ModelAndView startSurvey(@RequestParam(value = "s", required = false) String s, 
+            @RequestParam(value = "i", required = false) String i, @RequestParam(value = "v", required = false) String v,
+            @RequestParam(value = "selectedEntities", required = false) List<Integer> selectedEntities, HttpSession session) throws Exception {
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/takeSurvey");
@@ -215,11 +242,27 @@ public class surveyController {
 
         //Set the survey answer array to get ready to hold data
         questionAnswers = new CopyOnWriteArrayList<surveyQuestionAnswers>();
+        surveyContentCriterias = new CopyOnWriteArrayList<surveyContentCriteria>();
         seenPages = new ArrayList<Integer>();
 
         int clientId = 0;
+        int surveyId = 0;
+        
+         /* Get the submitted surveys for the selected survey type */
+        if (!"".equals(i) && i != null && !"".equals(v) && v != null) {
+            /* Decrypt the url */
+            decryptObject decrypt = new decryptObject();
 
-        Integer surveyId = Integer.parseInt(s);
+            Object obj = decrypt.decryptObject(i, v);
+
+            String[] result = obj.toString().split((","));
+
+            surveyId = Integer.parseInt(result[0].substring(4));
+
+        } else {
+            surveyId = Integer.parseInt(s);
+        }
+
 
         if (surveyId > 0) {
 
@@ -253,10 +296,12 @@ public class surveyController {
 
                 /* Get the pages */
                 List<SurveyPages> surveyPages = surveyManager.getSurveyPages(surveyId, false, 0, 0, 0);
-                SurveyPages currentPage = surveyManager.getSurveyPage(surveyId, true, 1, clientId, 0, 0, 0);
+                SurveyPages currentPage = surveyManager.getSurveyPage(surveyId, true, 1, clientId, 0, 0, 0, 0);
                 survey.setPageTitle(currentPage.getPageTitle());
                 survey.setSurveyPageQuestions(currentPage.getSurveyQuestions());
                 survey.setTotalPages(surveyPages.size());
+                survey.setPageId(currentPage.getId());
+                survey.setLastPageId(surveyPages.get(surveyPages.size() - 1).getId());
 
                 mav.addObject("survey", survey);
                 mav.addObject("surveyPages", surveyPages);
@@ -270,14 +315,16 @@ public class surveyController {
 
         /* Get a list of available schools for the selected districts */
         if (selectedEntities != null && !selectedEntities.isEmpty() && !"".equals(selectedEntities)) {
+            
 
             encryptObject encrypt = new encryptObject();
             Map<String, String> map;
 
-            List<school> schoolList = new ArrayList<school>();
-            List<district> districtList = new ArrayList<district>();
+            districtList = new ArrayList<district>();
 
             for (Integer entity : selectedEntities) {
+
+                List<school> schoolList = new ArrayList<school>();
 
                 district district = new district();
                 district.setDistrictId(entity);
@@ -285,7 +332,12 @@ public class surveyController {
                 programHierarchyDetails districtDetails = hierarchymanager.getProgramHierarchyItemDetails(entity);
                 district.setDistrictName(districtDetails.getName());
 
-                List schools = hierarchymanager.getProgramOrgHierarchyItems(programId, 3, entity, userDetails.getId());
+                Integer userId = 0;
+                if (userDetails.getRoleId() == 3) {
+                    userId = userDetails.getId();
+                }
+
+                List schools = hierarchymanager.getProgramOrgHierarchyItems(programId, 3, entity, userId);
 
                 if (!schools.isEmpty() && schools.size() > 0) {
 
@@ -329,6 +381,7 @@ public class surveyController {
         mav.addObject("currentPage", 1);
 
         mav.addObject("qNum", 0);
+        mav.addObject("disabled", false);
 
         return mav;
     }
@@ -343,7 +396,7 @@ public class surveyController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = {"/editSurvey","/viewSurvey"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/editSurvey", "/viewSurvey"}, method = RequestMethod.GET)
     public ModelAndView editSurvey(@RequestParam String i, @RequestParam String v, HttpSession session, HttpServletRequest request) throws Exception {
 
         ModelAndView mav = new ModelAndView();
@@ -352,6 +405,7 @@ public class surveyController {
 
         //Set the survey answer array to get ready to hold data
         questionAnswers = new CopyOnWriteArrayList<surveyQuestionAnswers>();
+        surveyContentCriterias = new CopyOnWriteArrayList<surveyContentCriteria>();
         seenPages = new ArrayList<Integer>();
 
         int clientId = 0;
@@ -380,7 +434,7 @@ public class surveyController {
         survey.setNextButton(surveyDetails.getNextButtonText());
         survey.setSaveButton(surveyDetails.getDoneButtonText());
         survey.setSubmittedSurveyId(submittedSurveyId);
-        survey.setEntityIds(surveyManager.getSubmittedSurveyEntities(submittedSurveyId, userDetails.getId()));
+        survey.setEntityIds(surveyManager.getSubmittedSurveyEntities(submittedSurveyId, userDetails));
 
         encryptObject encrypt = new encryptObject();
         Map<String, String> map;
@@ -397,10 +451,12 @@ public class surveyController {
 
         /* Get the pages */
         List<SurveyPages> surveyPages = surveyManager.getSurveyPages(submittedSurveyDetails.getSurveyId(), false, 0, 0, 0);
-        SurveyPages currentPage = surveyManager.getSurveyPage(submittedSurveyDetails.getSurveyId(), true, 1, clientId, 0, 0, submittedSurveyId);
+        SurveyPages currentPage = surveyManager.getSurveyPage(submittedSurveyDetails.getSurveyId(), true, 1, clientId, 0, 0, submittedSurveyId, 0);
         survey.setPageTitle(currentPage.getPageTitle());
         survey.setSurveyPageQuestions(currentPage.getSurveyQuestions());
         survey.setTotalPages(surveyPages.size());
+        survey.setLastPageId(surveyPages.get(surveyPages.size() - 1).getId());
+        survey.setPageId(currentPage.getId());
 
         mav.addObject("survey", survey);
         mav.addObject("surveyPages", surveyPages);
@@ -410,10 +466,11 @@ public class surveyController {
         /* Get a list of available schools for the selected districts */
         if (selectedEntities != null && !selectedEntities.isEmpty() && !"".equals(selectedEntities)) {
 
-            List<school> schoolList = new ArrayList<school>();
-            List<district> districtList = new ArrayList<district>();
+            districtList = new ArrayList<district>();
 
             for (Integer entityId : selectedEntities) {
+
+                List<school> schoolList = new ArrayList<school>();
 
                 district district = new district();
                 district.setDistrictId(entityId);
@@ -421,7 +478,12 @@ public class surveyController {
                 programHierarchyDetails districtDetails = hierarchymanager.getProgramHierarchyItemDetails(entityId);
                 district.setDistrictName(districtDetails.getName());
 
-                List schools = hierarchymanager.getProgramOrgHierarchyItems(programId, 3, entityId, userDetails.getId());
+                Integer userId = 0;
+                if (userDetails.getRoleId() == 3) {
+                    userId = userDetails.getId();
+                }
+
+                List schools = hierarchymanager.getProgramOrgHierarchyItems(programId, 3, entityId, userId);
 
                 if (!schools.isEmpty() && schools.size() > 0) {
 
@@ -463,11 +525,12 @@ public class surveyController {
         mav.addObject("selectedEntities", selectedEntities.toString().replace("[", "").replace("]", ""));
 
         mav.addObject("qNum", 0);
-        
+
         boolean disabled = false;
-        if("/surveys/viewSurvey".equals(request.getServletPath())) {
+        if ("/surveys/viewSurvey".equals(request.getServletPath())) {
             disabled = true;
-        }
+        } 
+
         mav.addObject("disabled", disabled);
 
         return mav;
@@ -476,23 +539,28 @@ public class surveyController {
     /**
      * The '/takeSurvey' POST request will submit the survey page.
      *
-     * @param client The object containing all the client detail form fields
-     * @param i The encrypted url value containing the selected user id
-     * @param v The encrypted url value containing the secret decode key
+     * @param survey
+     * @param session
+     * @param redirectAttr
+     * @param action
+     * @param goToPage
+     * @param disabled
+     * @param selectedEntities
+     * @param entityIds
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/submitSurvey", method = RequestMethod.POST)
     public ModelAndView saveSurveyPage(@ModelAttribute(value = "survey") survey survey, HttpSession session,
             RedirectAttributes redirectAttr, @RequestParam String action, @RequestParam Integer goToPage, @RequestParam(value = "entityIds", required = false) List<String> entityIds,
-            @RequestParam(value = "selectedDistricts", required = false) List<String> selectedEntities,
-            @RequestParam(value = "disabled", required = true) boolean disabled) throws Exception {
+            @RequestParam(value = "selectedEntities", required = false) List<String> selectedEntities,
+            @RequestParam(value = "disabled", required = true, defaultValue = "false") boolean disabled) throws Exception {
 
         Integer goToQuestion = 0;
         boolean skipToEnd = false;
         boolean submitted = false;
 
-        if (!"".equals(entityIds) && !entityIds.isEmpty()) {
+        if (entityIds != null && !"".equals(entityIds) && !entityIds.isEmpty()) {
             List<Integer> entityIdList = new ArrayList<Integer>();
 
             for (String entityId : entityIds) {
@@ -502,6 +570,8 @@ public class surveyController {
             }
             survey.setEntityIds(entityIdList);
         }
+        
+        Integer lastQuestionSavedId = 0;
 
         if ("next".equals(action) || "done".equals(action) || "save".equals(action)) {
             goToPage = 0;
@@ -513,39 +583,169 @@ public class surveyController {
                 boolean questionFound = false;
 
                 Iterator<surveyQuestionAnswers> it = questionAnswers.iterator();
+                
+                List<surveyQuestionAnswers> toRemove = new ArrayList<surveyQuestionAnswers>();
 
                 while (it.hasNext()) {
                     surveyQuestionAnswers questionAnswer = it.next();
 
                     if (questionAnswer.getQuestionId() == question.getId()) {
+                        
+                        if ((question.getAnswerTypeId() == 1 || question.getAnswerTypeId() == 2) && question.getQuestionValue().contains(",")) {
+                            toRemove.add(questionAnswer);
+                        }
+                        else {
+                            questionFound = true;
+                        
+                            if (question.getAnswerTypeId() == 1 || question.getAnswerTypeId() == 2) {
+                                SurveyQuestionChoices choiceDetails = surveyManager.getSurveyQuestionChoice(Integer.parseInt(question.getQuestionValue()));
 
-                        questionFound = true;
-
-                        if (question.getAnswerTypeId() == 1) {
-                            SurveyQuestionChoices choiceDetails = surveyManager.getSurveyQuestionChoice(Integer.parseInt(question.getQuestionValue()));
-
-                            if (choiceDetails.getChoiceValue() > 0) {
-                                questionAnswer.setAnswerId(choiceDetails.getChoiceValue());
-                            } else {
+                                if (choiceDetails.getChoiceValue() > 0) {
+                                    questionAnswer.setAnswerId(choiceDetails.getChoiceValue());
+                                } /*else {
+                                    questionAnswer.setAnswerText(choiceDetails.getChoiceText());
+                                }*/
                                 questionAnswer.setAnswerText(choiceDetails.getChoiceText());
-                            }
 
-                            if (choiceDetails.isSkipToEnd() == true) {
-                                skipToEnd = true;
-                            } else {
-                                if (choiceDetails.getSkipToPageId() > 0) {
-                                    SurveyPages pageDetails = surveyManager.getSurveyPageDetails(choiceDetails.getSkipToPageId());
-                                    goToPage = pageDetails.getPageNum();
+
+                                if (choiceDetails.isSkipToEnd() == true) {
+                                    skipToEnd = true;
+                                } else {
+                                    if (choiceDetails.getSkipToPageId() > 0) {
+                                        SurveyPages pageDetails = surveyManager.getSurveyPageDetails(choiceDetails.getSkipToPageId());
+                                        goToPage = pageDetails.getPageNum();
+                                    }
+
+                                    goToQuestion = choiceDetails.getSkipToQuestionId();
+
+                                    lastQuestionSavedId = question.getId();
                                 }
 
-                                goToQuestion = choiceDetails.getSkipToQuestionId();
+                                questionAnswer.setAnswerOther(question.getQuestionOtherValue());
+
+                            } else {
+                                questionAnswer.setAnswerText(question.getQuestionValue());
+                            }
+
+                            questionAnswer.setQuestionId(question.getId());
+                            questionAnswer.setProgramPatientId(survey.getClientId());
+                            questionAnswer.setProgramEngagementId(survey.getEngagementId());
+                            questionAnswer.setqNum(question.getQuestionNum());
+                            questionAnswer.setSurveyPageId(question.getSurveyPageId());
+                            questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
+                            questionAnswer.setRelatedQuestionId(question.getRelatedQuestionId());
+                        }
+                    }
+                }
+                if(!toRemove.isEmpty()) {
+                    questionAnswers.removeAll(toRemove);
+                }
+
+                if (questionFound == false) {
+
+                    if ((question.getAnswerTypeId() == 1 || question.getAnswerTypeId() == 2) && !"".equals(question.getQuestionValue())) {
+                        
+                        if (question.getQuestionValue().contains(",")) {
+                            String[] lineVector = question.getQuestionValue().split(",");
+                            
+                            for (int i = 0; i < lineVector.length; i++) {
+                                surveyQuestionAnswers questionAnswer = new surveyQuestionAnswers();
+                                Integer qAnsValue = Integer.parseInt(lineVector[i]);
+
+                                SurveyQuestionChoices choiceDetails = surveyManager.getSurveyQuestionChoice(qAnsValue);
+
+                                if (choiceDetails.getChoiceValue() > 0) {
+                                    questionAnswer.setAnswerId(choiceDetails.getChoiceValue());
+                                } /*else {
+                                    questionAnswer.setAnswerText(choiceDetails.getChoiceText());
+                                }*/
+                                questionAnswer.setAnswerText(choiceDetails.getChoiceText());
+
+                                if (choiceDetails.isSkipToEnd() == true) {
+                                    skipToEnd = true;
+                                } else {
+                                    if (choiceDetails.getSkipToPageId() > 0) {
+                                        SurveyPages pageDetails = surveyManager.getSurveyPageDetails(choiceDetails.getSkipToPageId());
+                                        goToPage = pageDetails.getPageNum();
+                                    }
+
+                                    goToQuestion = choiceDetails.getSkipToQuestionId();
+                                    
+                                    lastQuestionSavedId = question.getId();
+                                }
+
+                                questionAnswer.setQuestionId(question.getId());
+                                questionAnswer.setProgramPatientId(survey.getClientId());
+                                questionAnswer.setProgramEngagementId(survey.getEngagementId());
+                                questionAnswer.setqNum(question.getQuestionNum());
+                                questionAnswer.setSurveyPageId(question.getSurveyPageId());
+                                questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
+                                questionAnswer.setRelatedQuestionId(question.getRelatedQuestionId());
+
+                                questionAnswers.add(questionAnswer);
+
+                                if (i == 0) {
+                                    questionAnswer.setAnswerOther(question.getQuestionOtherValue());
+                                }
+
+                            }
+
+                        } else {
+
+                            surveyQuestionAnswers questionAnswer = new surveyQuestionAnswers();
+
+                            boolean isInt = true;
+
+                            try {
+                                Integer.parseInt(question.getQuestionValue());
+                            } catch (NumberFormatException e) {
+                                isInt = false;
+                            } catch (NullPointerException e) {
+                                isInt = false;
+                            }
+
+                            if (isInt) {
+                                SurveyQuestionChoices choiceDetails = surveyManager.getSurveyQuestionChoice(Integer.parseInt(question.getQuestionValue()));
+                                if (choiceDetails.getChoiceValue() > 0) {
+                                    questionAnswer.setAnswerId(choiceDetails.getChoiceValue());
+                                } /*else {
+                                    questionAnswer.setAnswerText(choiceDetails.getChoiceText());
+                                }*/
+                                questionAnswer.setAnswerText(choiceDetails.getChoiceText());
+
+
+                                if (choiceDetails.isSkipToEnd() == true) {
+                                    skipToEnd = true;
+                                } else {
+                                    if (choiceDetails.getSkipToPageId() > 0) {
+                                        SurveyPages pageDetails = surveyManager.getSurveyPageDetails(choiceDetails.getSkipToPageId());
+                                        goToPage = pageDetails.getPageNum();
+                                    }
+
+                                    goToQuestion = choiceDetails.getSkipToQuestionId();
+                                    
+                                    lastQuestionSavedId = question.getId();
+                                }
+
+                            } else {
+                                questionAnswer.setAnswerText(question.getQuestionValue());
                             }
 
                             questionAnswer.setAnswerOther(question.getQuestionOtherValue());
+                            questionAnswer.setQuestionId(question.getId());
+                            questionAnswer.setProgramPatientId(survey.getClientId());
+                            questionAnswer.setProgramEngagementId(survey.getEngagementId());
+                            questionAnswer.setqNum(question.getQuestionNum());
+                            questionAnswer.setSurveyPageId(question.getSurveyPageId());
+                            questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
+                            questionAnswer.setRelatedQuestionId(question.getRelatedQuestionId());
 
-                        } else {
-                            questionAnswer.setAnswerText(question.getQuestionValue());
+                            questionAnswers.add(questionAnswer);
                         }
+
+                    } else {
+                        surveyQuestionAnswers questionAnswer = new surveyQuestionAnswers();
+                        questionAnswer.setAnswerText(question.getQuestionValue());
 
                         questionAnswer.setQuestionId(question.getId());
                         questionAnswer.setProgramPatientId(survey.getClientId());
@@ -553,47 +753,11 @@ public class surveyController {
                         questionAnswer.setqNum(question.getQuestionNum());
                         questionAnswer.setSurveyPageId(question.getSurveyPageId());
                         questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
-                    }
-                }
+                        questionAnswer.setRelatedQuestionId(question.getRelatedQuestionId());
 
-                if (questionFound == false) {
-                    surveyQuestionAnswers questionAnswer = new surveyQuestionAnswers();
-
-                    if (question.getAnswerTypeId() == 1 && !"".equals(question.getQuestionValue())) {
-
-                        SurveyQuestionChoices choiceDetails = surveyManager.getSurveyQuestionChoice(Integer.parseInt(question.getQuestionValue()));
-
-                        if (choiceDetails.getChoiceValue() > 0) {
-                            questionAnswer.setAnswerId(choiceDetails.getChoiceValue());
-                        } else {
-                            questionAnswer.setAnswerText(choiceDetails.getChoiceText());
-                        }
-
-                        if (choiceDetails.isSkipToEnd() == true) {
-                            skipToEnd = true;
-                        } else {
-                            if (choiceDetails.getSkipToPageId() > 0) {
-                                SurveyPages pageDetails = surveyManager.getSurveyPageDetails(choiceDetails.getSkipToPageId());
-                                goToPage = pageDetails.getPageNum();
-                            }
-
-                            goToQuestion = choiceDetails.getSkipToQuestionId();
-                        }
-
-                        questionAnswer.setAnswerOther(question.getQuestionOtherValue());
-
-                    } else {
-                        questionAnswer.setAnswerText(question.getQuestionValue());
+                        questionAnswers.add(questionAnswer);
                     }
 
-                    questionAnswer.setQuestionId(question.getId());
-                    questionAnswer.setProgramPatientId(survey.getClientId());
-                    questionAnswer.setProgramEngagementId(survey.getEngagementId());
-                    questionAnswer.setqNum(question.getQuestionNum());
-                    questionAnswer.setSurveyPageId(question.getSurveyPageId());
-                    questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
-
-                    questionAnswers.add(questionAnswer);
                 }
 
                 lastQuestionSaved = question.getQuestionNum();
@@ -622,6 +786,7 @@ public class surveyController {
         NextPage.setNextButton(survey.getNextButton());
         NextPage.setSaveButton(survey.getSaveButton());
         NextPage.setSubmittedSurveyId(survey.getSubmittedSurveyId());
+        NextPage.setEntityIds(survey.getEntityIds());
 
         SurveyPages currentPage = null;
         Integer qNum = 1;
@@ -637,7 +802,7 @@ public class surveyController {
             /* Remove this page from array */
             seenPages.remove(seenPages.size() - 1);
 
-            currentPage = surveyManager.getSurveyPage(survey.getSurveyId(), true, nextPage, survey.getClientId(), 0, goToQuestion, survey.getSubmittedSurveyId());
+            currentPage = surveyManager.getSurveyPage(survey.getSurveyId(), true, nextPage, survey.getClientId(), 0, goToQuestion, survey.getSubmittedSurveyId(), lastQuestionSavedId);
 
             Integer totalPageQuestions = 0;
             for (SurveyQuestions question : currentPage.getSurveyQuestions()) {
@@ -653,12 +818,22 @@ public class surveyController {
             if (goToPage > 0) {
                 nextPage = goToPage;
             } else {
-                nextPage = survey.getCurrentPage() + 1;
+
+                /* Check to see if page has any skip logic */
+                SurveyPages currentPageDetails = surveyManager.getSurveyPageDetails(survey.getPageId());
+                if (currentPageDetails.getSkipToPage() > 0) {
+                    SurveyPages skiptoPageDetails = surveyManager.getSurveyPageDetails(currentPageDetails.getSkipToPage());
+                    nextPage = skiptoPageDetails.getPageNum();
+                } else if (currentPageDetails.getSkipToPage() == -1) {
+                    skipToEnd = true;
+                } else {
+                    nextPage = survey.getCurrentPage() + 1;
+                }
             }
 
             seenPages.add(survey.getCurrentPage());
 
-            currentPage = surveyManager.getSurveyPage(survey.getSurveyId(), true, nextPage, survey.getClientId(), 0, goToQuestion, survey.getSubmittedSurveyId());
+            currentPage = surveyManager.getSurveyPage(survey.getSurveyId(), true, nextPage, survey.getClientId(), 0, goToQuestion, survey.getSubmittedSurveyId(), lastQuestionSavedId);
 
             qNum = survey.getLastQNumAnswered();
 
@@ -678,7 +853,28 @@ public class surveyController {
             /**
              * Submit answers to DB *
              */
-            surveyManager.submitSurvey(userDetails.getId(), programId, survey, questionAnswers, submitted, selectedEntities);
+            Integer submittedSurveyId = surveyManager.submitSurvey(userDetails.getId(), programId, survey, questionAnswers, submitted, selectedEntities);
+
+            if (surveyContentCriterias != null) {
+                Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
+
+                /* Delete existing code sets */
+                surveyManager.deleteSurveyCodeSets(submittedSurveyId);
+
+                while (it.hasNext()) {
+
+                    surveyContentCriteria criteria = it.next();
+
+                    if (criteria.isChecked()) {
+                        submittedsurveycontentcriteria savedCodeSets = new submittedsurveycontentcriteria();
+                        savedCodeSets.setCodeId(criteria.getCodeId());
+                        savedCodeSets.setEntityId(criteria.getSchoolId());
+                        savedCodeSets.setSubmittedSurveyId(submittedSurveyId);
+
+                        surveyManager.submitSurveyCodeSets(savedCodeSets);
+                    }
+                }
+            }
 
             encryptObject encrypt = new encryptObject();
             Map<String, String> map;
@@ -695,56 +891,455 @@ public class surveyController {
          * If reached the last page or an option was selected to skip to the end *
          */
         else if (currentPage == null || skipToEnd == true) {
-            
-            if(disabled == false) {
+
+            if (disabled == false) {
                 User userDetails = (User) session.getAttribute("userDetails");
 
                 /**
                  * Submit answers to DB *
                  */
-                surveyManager.submitSurvey(userDetails.getId(), programId, survey, questionAnswers, submitted, selectedEntities);
+                Integer submittedSurveyId = surveyManager.submitSurvey(userDetails.getId(), programId, survey, questionAnswers, submitted, selectedEntities);
+
+                if (surveyContentCriterias != null) {
+                    Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
+
+                    /* Delete existing code sets */
+                    surveyManager.deleteSurveyCodeSets(submittedSurveyId);
+
+                    while (it.hasNext()) {
+
+                        surveyContentCriteria criteria = it.next();
+
+                        if (criteria.isChecked()) {
+                            submittedsurveycontentcriteria savedCodeSets = new submittedsurveycontentcriteria();
+                            savedCodeSets.setCodeId(criteria.getCodeId());
+                            savedCodeSets.setEntityId(criteria.getSchoolId());
+                            savedCodeSets.setSubmittedSurveyId(submittedSurveyId);
+
+                            surveyManager.submitSurveyCodeSets(savedCodeSets);
+                        }
+                    }
+                }
+
+                encryptObject encrypt = new encryptObject();
+                Map<String, String> map;
+
+                //Encrypt the use id to pass in the url
+                map = new HashMap<String, String>();
+                map.put("id", Integer.toString(survey.getSurveyId()));
+                map.put("topSecret", topSecret);
+
+                String[] encrypted = encrypt.encryptObject(map);
 
                 mav.setViewName("/completedSurvey");
                 surveys surveyDetails = surveyManager.getSurveyDetails(survey.getSurveyId());
                 mav.addObject("surveyDetails", surveyDetails);
-            }
-            else {
+                mav.addObject("selDistricts", districtList);
+                mav.addObject("surveys", surveys);
+                mav.addObject("selectedEntities", selectedEntities.toString().replace("[", "").replace("]", ""));
+                mav.addObject("i", encrypted[0]);
+                mav.addObject("v", encrypted[1]);
+                mav.addObject("submittedSurveyId", submittedSurveyId);
                 
+                /* Get a list of survey documents */
+                List<submittedSurveyDocuments> surveyDocuments = surveyManager.getSubmittedSurveyDocuments(submittedSurveyId);
+
+                if(surveyDocuments != null && surveyDocuments.size() > 0) {
+                    for(submittedSurveyDocuments document : surveyDocuments) {
+                        if(document.getUploadedFile() != null && !"".equals(document.getUploadedFile())) {
+                            int index = document.getUploadedFile().lastIndexOf('.');
+                            document.setFileExt(document.getUploadedFile().substring(index+1));
+                        }
+                    }
+                }
+
+                mav.addObject("surveyDocuments", surveyDocuments);
+
+                
+            } else {
+
             }
-            
+
         } else {
+            
             NextPage.setPageTitle(currentPage.getPageTitle());
             NextPage.setSurveyPageQuestions(currentPage.getSurveyQuestions());
-
+            NextPage.setPageId(currentPage.getId());
+            
             /* Loop through to get actually question answers */
+            
             for (SurveyQuestions question : currentPage.getSurveyQuestions()) {
-
+                
+                String questionValue = "";
+                
                 Iterator<surveyQuestionAnswers> it = questionAnswers.iterator();
 
                 while (it.hasNext()) {
                     surveyQuestionAnswers questionAnswer = it.next();
-
+                    
                     if (questionAnswer.getQuestionId() == question.getId()) {
+                        
+                        if (questionAnswer != null) {
+                            if (questionAnswer.getAnswerId() > 0) {
+                                questionValue += String.valueOf(questionAnswer.getAnswerId());
+                            } else {
+                                questionValue += questionAnswer.getAnswerText();
+                            }
 
-                        if (questionAnswer.getAnswerId() > 0) {
-                            question.setQuestionValue(String.valueOf(questionAnswer.getAnswerId()));
-                        } else {
-                            question.setQuestionValue(questionAnswer.getAnswerText());
+                            questionValue+=",";
                         }
                     }
+                }
+                
+                if(!"".equals(questionValue)) {
+                    question.setQuestionValue(StringEscapeUtils.escapeHtml3(questionValue.replaceAll("(,)*$", "")));
                 }
             }
 
             NextPage.setTotalPages(surveyPages.size());
             NextPage.setCurrentPage(nextPage);
+            NextPage.setLastPageId(surveyPages.get(surveyPages.size() - 1).getId());
 
             mav.addObject("survey", NextPage);
             mav.addObject("surveyPages", surveyPages);
             mav.addObject("qNum", qNum);
             mav.addObject("selectedEntities", selectedEntities);
+            mav.addObject("selDistricts", districtList);
+            mav.addObject("surveys", surveys);
+            mav.addObject("disabled", disabled);
+            mav.addObject("selSurvey", survey.getSurveyId());
         }
 
         return mav;
     }
 
+    /**
+     * The 'getEntityCodeSets' GET request will get all the code sets for the selected entities.
+     *
+     * @param entityId
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getEntityCodeSets", method = RequestMethod.GET)
+    public @ResponseBody
+    ModelAndView getEntityCodeSets(
+            @RequestParam(value = "entityId", required = true) List<Integer> entityIdList, 
+            @RequestParam(value = "surveyId", required = true) Integer surveyId,
+            @RequestParam(value = "disabled", required = true) Boolean disabled) throws Exception {
+
+        for (Integer entityId : entityIdList) {
+            programHierarchyDetails entityDetails = hierarchymanager.getProgramHierarchyItemDetails(entityId);
+
+            /* Get the associated code sets for the passed in entity */
+            List<Integer> activityCodes = activitycodemanager.getActivityCodesForEntity(entityId);
+
+            if (activityCodes != null && !activityCodes.isEmpty()) {
+
+                for (Integer activityCode : activityCodes) {
+                    boolean codeSetFound = false;
+
+                    Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
+
+                    while (it.hasNext()) {
+
+                        surveyContentCriteria criteria = it.next();
+
+                        if (criteria.getSchoolId() == entityId && criteria.getCodeId() == activityCode) {
+                            codeSetFound = true;
+                        }
+                    }
+
+                    if (codeSetFound == false) {
+
+                        activityCodes codeDetails = activitycodemanager.getActivityCodeById(activityCode);
+
+                        surveyContentCriteria newCriteria = new surveyContentCriteria();
+                        newCriteria.setCodeId(activityCode);
+                        newCriteria.setCodeDesc(codeDetails.getCodeDesc());
+                        newCriteria.setCodeValue(codeDetails.getCode());
+                        newCriteria.setSchoolId(entityId);
+                        newCriteria.setSchoolName(entityDetails.getName());
+
+                        if (surveyId > 0) {
+                            submittedsurveycontentcriteria codesetFound = surveyManager.getSurveyContentCriteria(surveyId, entityId, activityCode);
+
+                            if (codesetFound != null && codesetFound.getId() > 0) {
+                                newCriteria.setChecked(true);
+                            }
+                        }
+
+                        surveyContentCriterias.add(newCriteria);
+
+                    }
+
+                }
+            }
+        }
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/survey/contentCriteriaTable");
+
+        /* Sort surveyContentCriterias */
+        mav.addObject("contentCriteria", surveyContentCriterias);
+        mav.addObject("disabled", disabled);
+
+        return mav;
+
+    }
+
+    /**
+     * The 'removeCodeSets' GET request will remove the selected code set from the entity.
+     *
+     * @param entityId
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/removeCodeSets", method = RequestMethod.GET)
+    public @ResponseBody
+    ModelAndView removeCodeSets(@RequestParam(value = "entityId", required = true) Integer entityId,
+            @RequestParam(value = "disabled", required = true) Boolean disabled) throws Exception {
+
+        Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
+
+        List<surveyContentCriteria> toRemove = new ArrayList<surveyContentCriteria>();
+
+        while (it.hasNext()) {
+
+            surveyContentCriteria criteria = it.next();
+
+            if (criteria.getSchoolId() == entityId) {
+                toRemove.add(criteria);
+            }
+        }
+
+        if (toRemove != null && !toRemove.isEmpty()) {
+            surveyContentCriterias.removeAll(toRemove);
+        }
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/survey/contentCriteriaTable");
+        mav.addObject("contentCriteria", surveyContentCriterias);
+        mav.addObject("disabled", disabled);
+
+        return mav;
+
+    }
+
+    /**
+     *
+     * @param entityId
+     * @param codeId
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/saveSelCodeSet", method = RequestMethod.POST)
+    public @ResponseBody
+    Integer saveSelCodeSet(@RequestParam(value = "entityId", required = true) Integer entityId, @RequestParam(value = "codeId", required = true) Integer codeId) throws Exception {
+
+        Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
+
+        while (it.hasNext()) {
+
+            surveyContentCriteria criteria = it.next();
+
+            if (criteria.getSchoolId() == entityId && criteria.getCodeId() == codeId) {
+                criteria.setChecked(true);
+            }
+        }
+
+        return (Integer) 1;
+    }
+
+    /**
+     *
+     * @param entityId
+     * @param codeId
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/removeSelCodeSet", method = RequestMethod.POST)
+    public @ResponseBody
+    Integer removeSelCodeSet(@RequestParam(value = "entityId", required = true) Integer entityId, @RequestParam(value = "codeId", required = true) Integer codeId) throws Exception {
+
+        Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
+
+        while (it.hasNext()) {
+
+            surveyContentCriteria criteria = it.next();
+
+            if (criteria.getSchoolId() == entityId && criteria.getCodeId() == codeId) {
+                criteria.setChecked(false);
+            }
+        }
+
+        return (Integer) 1;
+    }
+    
+    /**
+     * The 'removeEntry' POST request will mark the survey submission as deleted.
+     * 
+     * @param surveyId
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/removeEntry", method = RequestMethod.POST)
+    public @ResponseBody
+    Integer removeEntry(@RequestParam(value = "i", required = true) Integer surveyId) throws Exception {
+
+        /* Get the submitted surveys for the selected survey type */
+        if (!"".equals(surveyId) && surveyId != null) {
+           
+            submittedSurveys survey = surveyManager.getSubmittedSurvey(surveyId);
+            
+            survey.setDeleted(true);
+            
+            surveyManager.deleteSurveyEntry(survey);
+        }
+
+        return (Integer) 1;
+    }
+    
+    /**
+     * The 'getSurveyDocuments' GET request will return a list of submitted survey documents.
+     *
+     * @param surveyId
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getSurveyDocuments.do", method = RequestMethod.GET)
+    public @ResponseBody
+    ModelAndView getSurveyDocuments(@RequestParam(value = "surveyId", required = true) Integer surveyId) throws Exception {
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/survey/uploadedDocs");
+        mav.addObject("surveyId", surveyId);
+        
+        /* Get a list of survey documents */
+        List<submittedSurveyDocuments> surveyDocuments = surveyManager.getSubmittedSurveyDocuments(surveyId);
+        
+        if(surveyDocuments != null && surveyDocuments.size() > 0) {
+            for(submittedSurveyDocuments document : surveyDocuments) {
+                if(document.getUploadedFile() != null && !"".equals(document.getUploadedFile())) {
+                    int index = document.getUploadedFile().lastIndexOf('.');
+                    document.setFileExt(document.getUploadedFile().substring(index+1));
+                }
+            }
+        }
+        
+        mav.addObject("surveyDocuments", surveyDocuments);
+
+        return mav;
+
+    }
+    
+    /**
+     * The 'saveDocumentForm' POST request will handle saving the new/updated document
+     * message.
+     *
+     * @param surveyDocuments
+     * @param redirectAttr
+     * @param session
+     * @param surveyId
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/saveDocumentForm.do", method = RequestMethod.POST)
+    public @ResponseBody
+    ModelAndView saveDocumentForm(@RequestParam(value = "surveyDocuments", required = false) List<MultipartFile> surveyDocuments, RedirectAttributes redirectAttr,
+            HttpSession session, @RequestParam(value = "surveyId", required = true) Integer surveyId,
+            @RequestParam(value = "completed", required = true) Integer completed,
+            @RequestParam(value = "selectedEntities", required = false) List<String> selectedEntities) throws Exception {
+
+        /* Get a list of completed surveys the logged in user has access to */
+        User userDetails = (User) session.getAttribute("userDetails");
+
+        if (surveyDocuments != null) {
+            for(MultipartFile uploadedFile : surveyDocuments) {
+                
+                submittedSurveyDocuments surveyDocument = new submittedSurveyDocuments();
+                surveyDocument.setSystemUserId(userDetails.getId());
+                surveyDocument.setSubmittedSurveyId(surveyId);
+                
+                surveyManager.saveSurveyDocument(surveyDocument, uploadedFile, programId);
+            }
+        }
+        
+        if("1".equals(completed.toString())) {
+            submittedSurveys submittedSurveyDetails = surveyManager.getSubmittedSurvey(surveyId);
+            
+            encryptObject encrypt = new encryptObject();
+            Map<String, String> map;
+
+            //Encrypt the use id to pass in the url
+            map = new HashMap<String, String>();
+            map.put("id", Integer.toString(submittedSurveyDetails.getSurveyId()));
+            map.put("topSecret", topSecret);
+
+            String[] encrypted = encrypt.encryptObject(map);
+            
+            surveys surveyDetails = surveyManager.getSurveyDetails(submittedSurveyDetails.getSurveyId());
+            redirectAttr.addFlashAttribute("surveyDetails", surveyDetails);
+            redirectAttr.addFlashAttribute("selDistricts", districtList);
+            redirectAttr.addFlashAttribute("surveys", surveys);
+            redirectAttr.addFlashAttribute("selectedEntities", selectedEntities.toString().replace("[", "").replace("]", ""));
+            redirectAttr.addFlashAttribute("i", encrypted[0]);
+            redirectAttr.addFlashAttribute("v", encrypted[1]);
+            redirectAttr.addFlashAttribute("submittedSurveyId", surveyId);
+
+            /* Get a list of survey documents */
+            List<submittedSurveyDocuments> uploadedsurveyDocuments = surveyManager.getSubmittedSurveyDocuments(surveyId);
+
+            if(uploadedsurveyDocuments != null && uploadedsurveyDocuments.size() > 0) {
+                for(submittedSurveyDocuments document : uploadedsurveyDocuments) {
+                    if(document.getUploadedFile() != null && !"".equals(document.getUploadedFile())) {
+                        int index = document.getUploadedFile().lastIndexOf('.');
+                        document.setFileExt(document.getUploadedFile().substring(index+1));
+                    }
+                }
+            }
+            
+            redirectAttr.addFlashAttribute("surveyDocuments", uploadedsurveyDocuments);
+            
+            ModelAndView mav = new ModelAndView(new RedirectView("/surveys/completedSurvey"));
+            return mav;
+
+        }
+        else {
+            redirectAttr.addFlashAttribute("message", "fileUploaded");
+            ModelAndView mav = new ModelAndView(new RedirectView("/surveys"));
+            return mav;
+        }
+
+    }
+    
+    /**
+     * The 'deleteDocument' POST request will remove the clicked uploaded
+     * document.
+     *
+     * @param documentId The id of the clicked document.
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/deleteDocument.do", method = RequestMethod.POST)
+    public @ResponseBody
+    Integer deleteDocument(@RequestParam(value = "documentId", required = true) Integer documentId) throws Exception {
+        
+        submittedSurveyDocuments documentDetails = surveyManager.getDocumentById(documentId);
+        documentDetails.setStatus(false);
+        surveyManager.saveSurveyDocument(documentDetails, null, programId);
+        return 1;
+    }
+    
+    /**
+     * 
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/completedSurvey", method = RequestMethod.GET)
+    public ModelAndView completedSurvey() throws Exception {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/completedSurvey");
+        
+        return mav;
+    }
 }

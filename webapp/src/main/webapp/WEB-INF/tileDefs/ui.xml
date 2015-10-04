@@ -9,7 +9,19 @@
         <put-attribute name="title" value="" />
         <put-attribute name="body" value="" />
     </definition>
-
+    
+    <!-- Main Definitions -->
+    <definition name="base.definition.main-ui" template="/WEB-INF/tiles/layout.jsp">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/breadcrumbs.jsp" />
+        <put-attribute name="body" value="" />
+        <put-attribute name="submenu" value="" />
+    </definition>
+    
+    <definition name="/home" extends="base.definition.main-ui">
+        <put-attribute name="body" value="/WEB-INF/jsp/missouriHome.jsp" />
+    </definition>
+    
     <!-- Login -->
     <definition name="/login" extends="base.definition.ui">
         <put-attribute name="title" value="RLogin" />
@@ -32,6 +44,17 @@
     <definition name="/exception" extends="base.definition.ui">
         <put-attribute name="header" value="/WEB-INF/jsp/common/header.jsp" />
         <put-attribute name="body" value="/WEB-INF/jsp/exception.jsp" />
+    </definition>
+    
+    <definition name="/profile" extends="base.definition.main-ui">
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/profile/breadcrumbs.jsp" />
+        <put-attribute name="body" value="/WEB-INF/jsp/profile/profile.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/profile/profile.js" />
+         <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/jquery-ui.custom.min.js" />
+            <add-attribute value="/dspResources/js/jquery.ui.touch-punch.min.js" />
+            <add-attribute value="/dspResources/js/ace-elements.min.js" />
+        </put-list-attribute>
     </definition>
 
 </tiles-definitions>

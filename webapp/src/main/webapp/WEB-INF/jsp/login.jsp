@@ -3,16 +3,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 
-<div class="login-container">
-
-    <div class="space-6"></div>
-    <div class="center">
-        <h4 class="blue" id="id-company-text">MO Healthy Schools Monitoring System</h4>
-    </div>
+<div class="login-container" style="height:100%">
 
     <div class="space-6"></div>
 
-    <div class="position-relative">
+    <div class="position-relative"  >
         <div id="login-box" class="login-box visible widget-box no-border">
             <div class="widget-body">
                 <div class="widget-main">
@@ -32,19 +27,25 @@
                         </c:when>
                         <c:otherwise><div class="space-6"></div></c:otherwise>
                     </c:choose>
+                        
+                    <%
+                        if (request.getParameter("expired") != null) {
+                            out.println("<ul class=\"list-unstyled spaced2\"><li class=\"text-warning bigger-110 orange\"><i class=\"ace-icon fa fa-exclamation-triangle\"></i>Your session has expired.</li></ul>");
+                        } 
+                    %>    
                     
                     <form role="form" id="form-admin-login" name='f' action="<c:url value='j_spring_security_check' />" method='POST'>
                         <fieldset>
                             <label class="block clearfix">
                                 <span class="block input-icon input-icon-right">
-                                    <input type="text" class="form-control" placeholder="Username" name="j_username" value="jamesavilla@gmail.com" autofocus="true" autocomplete="off" />
+                                    <input type="text" class="form-control username" placeholder="Username" name="j_username" value="" autofocus="true" autocomplete="off" />
                                     <i class="ace-icon fa fa-user"></i>
                                 </span>
                             </label>
 
                             <label class="block clearfix">
                                 <span class="block input-icon input-icon-right">
-                                    <input type="password" class="form-control" placeholder="Password" name="j_password" value="jimvilla" autocomplete="off" />
+                                    <input type="password" class="form-control" placeholder="Password" name="j_password" value="" autocomplete="off" />
                                     <i class="ace-icon fa fa-lock"></i>
                                 </span>
                             </label>
@@ -52,10 +53,10 @@
                             <div class="space"></div>
 
                             <div class="clearfix">
-                                <label class="inline">
+                               <!-- <label class="inline">
                                     <input type="checkbox" class="ace" />
                                     <span class="lbl"> Remember Me</span>
-                                </label>
+                                </label>-->
 
                                 <button type="submit" class="width-35 pull-right btn btn-sm btn-primary">
                                     <i class="ace-icon fa fa-key"></i>

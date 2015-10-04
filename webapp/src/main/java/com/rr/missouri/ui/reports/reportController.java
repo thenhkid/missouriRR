@@ -27,25 +27,28 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/reports")
 public class reportController {
     
+   private static Integer moduleId = 3;
+   
    @Autowired
    private hierarchyManager hierarchymanager;
     
    @Value("${programId}")
    private Integer programId;
    
-   /**
-     * The '' request will display the list of client.
-     *
-     * @param request
-     * @param response
-     * @return	the administrator dashboard view
-     * @throws Exception
-     */
-    @RequestMapping(value = "", method = RequestMethod.GET)
+   
+    @RequestMapping(value = "", method = {RequestMethod.POST, RequestMethod.GET})
+    public ModelAndView listReports(HttpSession session) throws Exception {
+       
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/list");
+        return mav;
+    }
+   
+    @RequestMapping(value = "/request", method = RequestMethod.GET)
     public ModelAndView adHocReports(HttpSession session) throws Exception {
        
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("/adHoc");
+        mav.setViewName("/request");
         
         User userDetails = (User) session.getAttribute("userDetails");
         
@@ -62,15 +65,8 @@ public class reportController {
         
         return mav;
     }
+
     
-    /**
-     * The 'custom' request will display the list of custom generated reports.
-     *
-     * @param request
-     * @param response
-     * @return	the administrator dashboard view
-     * @throws Exception
-     */
     @RequestMapping(value = "/custom", method = RequestMethod.GET)
     public ModelAndView customReports(HttpSession session) throws Exception {
        
@@ -81,6 +77,7 @@ public class reportController {
         
         return mav;
     }
+    
     
     /**
      * The 'customReport' request will display the selected custom Report
