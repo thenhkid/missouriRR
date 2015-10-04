@@ -567,4 +567,22 @@ public class documentController {
         return 1;
 
     }
+    
+    @RequestMapping(value = "/documents/checkFolderName.do", method = RequestMethod.POST)
+    public @ResponseBody
+    Integer checkFolderName (@RequestParam(value = "folderId", required = true) Integer folderId,
+            @RequestParam(value = "folderName", required = true) String folderName,
+            @RequestParam(value = "parentFolderId", required = true) Integer parentFolderId,
+            HttpSession session, HttpServletRequest request) throws Exception {
+        System.out.println("in checkFolderName");
+        documentFolder folder = documentmanager.getFolderByNameIncParent(programId, folderName, parentFolderId);
+        if (folder.getId() != folderId) {
+            if (folder.getId() != 0) {
+                return 1;
+            }
+        }
+        
+       return 0;
+
+    }
 }

@@ -11,10 +11,10 @@
 
 <div>
     <form:form id="folderForm" modelAttribute="folderDetails" action="/documents/saveFolderForm.do" role="form" class="form" method="post" >
-        <form:hidden path="id" />
+        <form:hidden path="id" id="folderId"/>
         <form:hidden path="dateCreated" />
         <form:hidden path="systemUserId" />
-        <form:hidden path="parentFolderId" />
+        <form:hidden path="parentFolderId" id="parentFolderId"/>
         <c:choose>
             <c:when test="${sessionScope.userDetails.roleId == 2}">
                 <div class="form-group">
