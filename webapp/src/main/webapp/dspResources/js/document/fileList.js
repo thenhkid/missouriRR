@@ -29,7 +29,7 @@ jQuery(function ($) {
             type: 'GET',
             url: '/documents/getFolderForm.do',
             data: {'subfolder': false},
-            success: function (data) {
+            success: function (data, event) {
                 
                 data = $(data);
                 
@@ -53,7 +53,7 @@ jQuery(function ($) {
                                 label: "Create",
                                 className: "btn-primary",
                                 callback: function () {
-                                    return folderFn(event);
+                                    return folderFn();
                                 }
                             },
                         }
@@ -70,7 +70,7 @@ jQuery(function ($) {
             type: 'GET',
             url: '/documents/getFolderForm.do',
             data: {'subfolder': true},
-            success: function (data) {
+            success: function (data, event) {
                 
                 data = $(data);
                 
@@ -94,7 +94,7 @@ jQuery(function ($) {
                                 label: "Create",
                                 className: "btn-primary",
                                 callback: function () {
-                                    return folderFn(event);
+                                    return folderFn();
                                 }
                             },
                         }
@@ -124,77 +124,42 @@ jQuery(function ($) {
         }
     });
     
-    function folderFn(event) {
-        alert("in folder fn here");
-        var errorFound = false;
-
+    function folderFn() {
+        
+        var noErrors = true;
+        
         /** make sure there is a category **/
         if ($('#folderName').val().trim() == "") {
             $('#folderNameDiv').addClass("has-error");
             $('#folderNameMsg').addClass("has-error");
             $('#folderNameMsg').html('The folder name is required.');
-            event.preventDefault();
-            return false;
+            noErrors = false;
         }
         
         if ($("#isNotCountyFolder").is(':checked')) {
-                $('#entityId').val(0);
-        
+              $('#entityId').val(0);
         }
         
-        /****** FOR CHAD 
-         * THis function doesn't seem to pick up the info I need.
-         * 
-         * What I want it to do is check the name and don't submit the form
-         * if ajax call comes back fine, submit the form
-         * 
-         * ****/
+        var folderName = $('#folderName').val();
+        var folderId = $('#folderId').val();
+        var parentFolderId = $('#parentFolderId').val();
         
-        alert($('#folderName').val().trim());
-        alert($('#folderId').val().trim());
-        alert($('#parentFolderId').val().trim());
+        var nameFound = checkFolderName(folderName, folderId, parentFolderId);
         
-        //submit ajax form here to check folder name
-        $.ajax({
-                url: '/documents/checkFolderName.do',
-                type: 'POST',
-                data: {
-                    'folderName': $('#folderName').val().trim(),
-                    'folderId': $('#folderId').val().trim(),
-                    'parentFolderId': $('#parentFolderId').val().trim()
-                },
-                success: function (data) {
-                   
-                    alert("in ajax call");
-                    data = $(data);
-                
-                //Check if the session has expired.
-                if(data.find('1').length > 0) {
-                    errorFound = true;
-                    event.preventDefault();
-                    return false;
-                }
-                else {
-                    errorFound = false;
-                    
-                }
-                },
-                error: function () {
-                    alert("in error function call");
-                    errorFound = true;
-                    event.preventDefault();
-                    return false;
-
-                }
-            });
-        alert("hold");
-        if(errorFound == false) {
+        if(nameFound == 1) {
+            $('#folderNameDiv').addClass("has-error");
+            $('#folderNameMsg').addClass("has-error");
+            $('#folderNameMsg').html('This folder exists already.');
+            noErrors = false;
+        }
+        
+        if(noErrors == false) {
+            return false;
+        }
+        else {
             $("#folderForm").submit();
-            
-        } else {
-            event.preventDefault();
-            return false; 
-        } 
+        }
+        
     }
     
     //Edit Document button
@@ -464,6 +429,30 @@ jQuery(function ($) {
     }); 
 
 });
+
+function checkFolderName(folderName, folderId, parentFolderId) {
+    
+    var result = "";
+     
+    $.ajax({
+        url: '/documents/checkFolderName.do',
+        type: 'POST',
+        async: false,
+        data: {
+            'folderName': folderName,
+            'folderId': folderId,
+            'parentFolderId': parentFolderId
+        },
+        success: function (data) {
+            result = data;
+        },
+        error: function () {
+            console.log(error);
+        }
+    });
+    
+    return result;
+}
 
 function isEmail(email) {
       var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
