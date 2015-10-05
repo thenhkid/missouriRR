@@ -35,24 +35,49 @@
                     </button>
                 </div>
             </c:if>
-            <div class="pull-right no-margin col-md-2">
-                <div class="widget-box transparent">
-                    <form class="form-search">
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="ace-icon fa fa-search grey"></i></span>
-                            <span class="block input-icon input-icon-right">
-                                <input type="text" placeholder="Search ..." class="width-150" id="nav-search-input" autocomplete="off" />
-                                <i id="clearSearch" class="ace-icon fa fa-times-circle red" style="cursor: pointer; display: none"></i>
-                                <i id="searchSpinner" class="ace-icon fa fa-spinner fa-spin red bigger-120"  style="display: none"></i>
-                            </span>
-                        </div>
-                    </form>
+            <c:if test="${not empty regularTopics && not empty announcementTopics}">
+                <div class="pull-right no-margin col-md-2">
+                    <div class="widget-box transparent">
+                        <form class="form-search">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="ace-icon fa fa-search grey"></i></span>
+                                <span class="block input-icon input-icon-right">
+                                    <input type="text" placeholder="Search ..." class="width-100" id="nav-search-input" autocomplete="off" />
+                                    <i id="clearSearch" class="ace-icon fa fa-times-circle red" style="cursor: pointer; display: none"></i>
+                                    <i id="searchSpinner" class="ace-icon fa fa-spinner fa-spin red bigger-120"  style="display: none"></i>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            </c:if>
         </div>
         <div class="hr dotted"></div>
     </div>
     <div id="topicsDiv" class="col-sm-12">
+        <c:if test="${empty regularTopics && empty announcementTopics}">
+            <div class="row">
+                <div>
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col" class="center">Views</th>
+                                <th scope="col" class="center">Replies</th>
+                                <th scope="col">Last Post</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="center" colspan="4">
+                                    There are currently no active forum topics.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </c:if>
         <c:if test="${not empty announcementTopics && sessionScope.userDetails.roleId != 2}">
             <div class="row">
                 <div class="table-header">
