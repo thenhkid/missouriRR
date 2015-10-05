@@ -131,7 +131,7 @@
                                     <td  class="center">
                                         <div class="hidden-sm hidden-xs btn-group">
                                             <c:if test="${not empty document.uploadedFile}">
-                                                <a class="btn btn-xs btn-success" href="<c:url value="/FileDownload/downloadFile.do?filename=${document.uploadedFile}&foldername=documents/${selFolderName}"/>" title="${document.title}">
+                                                <a class="btn btn-xs btn-success" href="<c:url value="/FileDownload/downloadFile.do?filename=${document.uploadedFile}&foldername=documents/${selFolderNameEncoded}"/>" title="${document.title}">
                                                 <i class="ace-icon fa fa-download bigger-120"></i>
                                                 </a>
                                             </c:if>

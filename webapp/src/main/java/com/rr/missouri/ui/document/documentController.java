@@ -31,6 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.registryKit.user.userProgramModules;
 import java.net.URLEncoder;
 import javax.servlet.http.HttpServletRequest;
+import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -131,7 +132,8 @@ public class documentController {
         selFolder = folderList.get(0).getId();
         mav.addObject("selFolder", selFolder);
         mav.addObject("selParentFolder", folderList.get(0).getParentFolderId());
-        mav.addObject("selFolderName", URLEncoder.encode(folderList.get(0).getFolderName(),"UTF-8"));
+        mav.addObject("selFolderName", folderList.get(0).getFolderName());
+        mav.addObject("selFolderNameEncoded", URLEncoder.encode(folderList.get(0).getFolderName(),"UTF-8"));
         
         /* Get Documents for the folder */
         List<document> documents = documentmanager.getFolderDocuments(programId, userDetails, folderList.get(0).getId());
@@ -263,7 +265,8 @@ public class documentController {
         selFolder = folderDetails.getId();
         mav.addObject("selFolder", selFolder);
         mav.addObject("selParentFolder", folderDetails.getParentFolderId());
-        mav.addObject("selFolderName", URLEncoder.encode(folderDetails.getFolderName(),"UTF-8"));
+        mav.addObject("selFolderName", folderDetails.getFolderName());
+        mav.addObject("selFolderNameEncoded", URLEncoder.encode(folderDetails.getFolderName(),"UTF-8"));
         
         mav.addObject("allowCreate", allowCreate);
         mav.addObject("allowEdit", allowEdit);
@@ -569,7 +572,7 @@ public class documentController {
 
     }
     
-    @RequestMapping(value = "/checkFolderName.do", method = RequestMethod.POST)
+    @RequestMapping(value = "/checkFolderName.do", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
     Integer checkFolderName (@RequestParam(value = "folderId", required = true) Integer folderId,
             @RequestParam(value = "folderName", required = true) String folderName,
