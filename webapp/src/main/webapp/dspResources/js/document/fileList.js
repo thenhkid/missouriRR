@@ -53,7 +53,7 @@ jQuery(function ($) {
                                 label: "Create",
                                 className: "btn-primary",
                                 callback: function () {
-                                    return folderFn(event);
+                                    folderFn(event);
                                 }
                             },
                         }
@@ -94,7 +94,7 @@ jQuery(function ($) {
                                 label: "Create",
                                 className: "btn-primary",
                                 callback: function () {
-                                    return folderFn(event);
+                                    folderFn(event);
                                 }
                             },
                         }
@@ -125,9 +125,7 @@ jQuery(function ($) {
     });
     
     function folderFn(event) {
-        alert("in folder fn here");
-        var errorFound = false;
-
+        
         /** make sure there is a category **/
         if ($('#folderName').val().trim() == "") {
             $('#folderNameDiv').addClass("has-error");
@@ -142,59 +140,50 @@ jQuery(function ($) {
         
         }
         
-        /****** FOR CHAD 
-         * THis function doesn't seem to pick up the info I need.
-         * 
-         * What I want it to do is check the name and don't submit the form
-         * if ajax call comes back fine, submit the form
-         * 
-         * ****/
-        
-        alert($('#folderName').val().trim());
-        alert($('#folderId').val().trim());
-        alert($('#parentFolderId').val().trim());
+        var folderName = $('#folderName').val();
+        var folderId = $('#folderId').val();
+        var parentFolderId = $('#parentFolderId').val();
+        alert(folderName + " is folderName");
+        alert(folderId + " is folderId");
+        alert(parentFolderId + " is parentFolderId");
         
         //submit ajax form here to check folder name
         $.ajax({
                 url: '/documents/checkFolderName.do',
                 type: 'POST',
                 data: {
-                    'folderName': $('#folderName').val().trim(),
-                    'folderId': $('#folderId').val().trim(),
-                    'parentFolderId': $('#parentFolderId').val().trim()
+                    'folderName': folderName,
+                    'folderId': folderId,
+                    'parentFolderId': parentFolderId
                 },
                 success: function (data) {
-                   
-                    alert("in ajax call");
-                    data = $(data);
-                
+                alert("in success");
+                data = $(data);
+                alert(data + "is data");
                 //Check if the session has expired.
                 if(data.find('1').length > 0) {
-                    errorFound = true;
+                    alert("in found 1");
+                    $('#folderNameDiv').addClass("has-error");
+                    $('#folderNameMsg').addClass("has-error");
+                    $('#folderNameMsg').html('This folder exists already.');
                     event.preventDefault();
                     return false;
-                }
-                else {
-                    errorFound = false;
-                    
+                } else {
+                    alert(" in not found, submitting form");
+                    event.preventDefault();
+                    return false;
+                    //$("#folderForm").submit();   
                 }
                 },
                 error: function () {
-                    alert("in error function call");
-                    errorFound = true;
+                    alert("in error");
                     event.preventDefault();
                     return false;
-
                 }
             });
-        alert("hold");
-        if(errorFound == false) {
-            $("#folderForm").submit();
-            
-        } else {
-            event.preventDefault();
-            return false; 
-        } 
+        alert("end"); 
+        event.preventDefault();
+        return false;
     }
     
     //Edit Document button

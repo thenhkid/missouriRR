@@ -569,7 +569,7 @@ public class documentController {
 
     }
     
-    @RequestMapping(value = "/documents/checkFolderName.do", method = RequestMethod.POST)
+    @RequestMapping(value = "/checkFolderName.do", method = RequestMethod.POST)
     public @ResponseBody
     Integer checkFolderName (@RequestParam(value = "folderId", required = true) Integer folderId,
             @RequestParam(value = "folderName", required = true) String folderName,
@@ -577,8 +577,15 @@ public class documentController {
             HttpSession session, HttpServletRequest request) throws Exception {
         System.out.println("in checkFolderName");
         documentFolder folder = documentmanager.getFolderByNameIncParent(programId, folderName, parentFolderId);
+        System.out.println(folder.getFolderName() + " is return folder's name");
+        System.out.println(folder.getId() + " is return folder's id");
+        System.out.println(parentFolderId + " is parentFolderId");
+        System.out.println(folderId + " is folderId");
+        
         if (folder.getId() != folderId) {
+            System.out.println("in folderid is not equal");
             if (folder.getId() != 0) {
+                System.out.println("returning 1");
                 return 1;
             }
         }
