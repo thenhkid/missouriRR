@@ -25,8 +25,8 @@
         <repository>
             <id>rr-mvn-repo</id>
             <name>The Rapid Registry module repositories</name>
-            <url>https://github.com/bowlinktech/rr-mvn-repo/tree/master/raw/master/</url>
-            <!--<url>https://rrkit.health-e-link.net/</url>-->
+           <!-- <url>https://github.com/bowlinktech/rr-mvn-repo/tree/master/raw/master/</url>-->
+            <url>https://rrkit.health-e-link.net/</url>
         </repository>
     </repositories>
 </project>
