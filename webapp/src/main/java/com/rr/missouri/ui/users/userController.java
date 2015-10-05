@@ -8,6 +8,8 @@ package com.rr.missouri.ui.users;
 
 import com.registryKit.calendar.calendarManager;
 import com.registryKit.calendar.calendarNotificationPreferences;
+import com.registryKit.document.documentManager;
+import com.registryKit.document.documentNotificationPreferences;
 import com.registryKit.forum.forumManager;
 import com.registryKit.forum.forumNotificationPreferences;
 import com.registryKit.hierarchy.hierarchyManager;
@@ -72,6 +74,9 @@ public class userController {
     
     @Autowired
     private forumManager forummanager;
+    
+    @Autowired
+    private documentManager documentmanager;
     
     @Value("${programId}")
     private Integer programId;
@@ -249,6 +254,16 @@ public class userController {
         forumPreferences.setProgramId(programId);
         
         forummanager.saveNotificationPreferences(forumPreferences);
+        
+        /* Opt in document notification preferences */
+        documentNotificationPreferences documentPreferences = new documentNotificationPreferences();
+        documentPreferences.setAllDocs(true);
+        documentPreferences.setProgramId(programId);
+        documentPreferences.setNotificationEmail(newuserDetails.getEmail());
+        documentPreferences.setSystemUserId(userId);
+        documentPreferences.setMyHierarchiesOnly(true);
+        
+        documentmanager.saveNotificationPreferences(documentPreferences);
         
         Map<String,String> map = new HashMap<String,String>();
         map.put("id",Integer.toString(userId));
