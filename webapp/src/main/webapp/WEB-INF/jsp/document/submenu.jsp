@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 
-<ul class="submenu" style="height:200px; overflow: auto">
+<ul class="submenu" style="max-height:200px; overflow: auto">
     <c:forEach var="folder" items="${folders}">
         <li ${selFolder == folder.id || selParentFolder == folder.id ? 'class="active"' : ''}>
             <a href="/documents/folder?i=${folder.encryptedId}&v=${folder.encryptedSecret}">

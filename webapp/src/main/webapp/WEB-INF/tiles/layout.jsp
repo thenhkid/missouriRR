@@ -63,7 +63,7 @@
                     <a href="/home" class="navbar-brand">
                         <small>
                             <i class="fa fa-building"></i>
-                            MO HSHC Healthy Link
+                            MO HSHC Health-e-Link
                         </small>
                     </a>
                 </div>

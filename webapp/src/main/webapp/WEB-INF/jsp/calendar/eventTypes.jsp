@@ -14,7 +14,7 @@
     </div>
 </div>
 
-<div class="row" style="height:250px; overflow: auto">
+<div class="row" style="max-height:250px; overflow: auto">
     <div class="col-sm-12">
         <table cellspacing="0" cellpadding="0" border="0" width="100%" id="eventTypesTable" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
             <thead>

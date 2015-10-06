@@ -112,15 +112,23 @@
                                         </c:if>
                                     </td>
                                     <td>
-                                        <strong><c:choose><c:when test="${not empty document.title}">${document.title}</c:when><c:otherwise>${document.uploadedFile}</c:otherwise></c:choose></strong>
-                                        <c:if test="${not empty document.externalWebLink}">
-                                            <br />
-                                            URL: <a href="${document.externalWebLink}" target="_blank">Click to visit site</a>
+                                        <c:if test="${document.privateDoc == true}">
+                                             <i class="ace-icon fa fa-lock red"></i>
                                         </c:if>
-                                        <c:if test="${not empty document.docDesc}">
-                                            <br />
-                                            ${document.docDesc}
-                                        </c:if>
+                                        <strong>
+                                            <c:choose>
+                                                <c:when test="${not empty document.title}">${document.title}</c:when>
+                                                <c:otherwise>${document.uploadedFile}</c:otherwise>
+                                            </c:choose>
+                                        </strong>
+                                            <c:if test="${not empty document.externalWebLink}">
+                                                <br />
+                                                URL: <a href="${document.externalWebLink}" target="_blank">Click to visit site</a>
+                                            </c:if>
+                                            <c:if test="${not empty document.docDesc}">
+                                                <br />
+                                                ${document.docDesc}
+                                            </c:if>
                                     </td>
                                     <td class="center">
                                         <fmt:formatDate value="${document.dateCreated}" type="date" pattern="M/dd/yyyy h:mm a" />
