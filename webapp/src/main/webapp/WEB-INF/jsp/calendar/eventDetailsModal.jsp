@@ -60,7 +60,7 @@
                     <c:set var="trimmedDocumentTitle" value="${document.documentTitle}" />
                 </c:if>
                 <span class="ellipsis"><i class="fa fa-file bigger-110 orange"></i> <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.documentTitle}&foldername=calendarUploadedFiles"/>" title="${document.documentTitle}">${trimmedDocumentTitle}</a></span>
-                </c:forEach>
+            </c:forEach>
         </div>
     </c:if>
     

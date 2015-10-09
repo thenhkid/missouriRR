@@ -12,7 +12,7 @@
 <jsp:useBean id="today" class="java.util.Date" />
 <fmt:formatDate value="${today}" var="today" type="both" pattern="yyyy-MM-dd HH:mm" />
 
-<div class="page-content" id="createEventForm" style="width:500px;padding:0;">
+<div class="page-content" id="createEventForm" style="width:500px;padding:0;max-height: 500px; overflow: auto">
     <form:form id="eventForm" modelAttribute="calendarEvent" role="form" class="form" method="post" enctype="multipart/form-data">
         <form:hidden path="eventTypeId" id="hiddenEventTypeId" value="${calendarEvent.eventTypeId}" />
         <form:hidden path="id" />
@@ -144,9 +144,7 @@
                 <div class="form-group">         
                     <label for="document1">Documents</label>
                     <div class="form-group">
-
                         <input  multiple="" name="eventDocuments" type="file" id="id-input-file-2" />
-
                     </div>
                 </div>
             </div>

@@ -30,7 +30,14 @@
             <c:forEach var="messageData" items="${message.messages}">
                 <div class="timeline-item clearfix">
                     <div class="timeline-info">
-                        <img alt="" src="<%=request.getContextPath()%>/dspResources/img/avatars/avatar2.png" />
+                        <c:choose>
+                            <c:when test="${not empty messageData.postedByPhoto}">
+                                <img src="/profilePhotos/${messageData.postedByPhoto}" alt="Photo"  />
+                            </c:when>
+                            <c:otherwise>
+                                <img alt="Profile Photo" src="<%=request.getContextPath()%>/dspResources/img/avatars/avatar2.png" />
+                            </c:otherwise>
+                        </c:choose>
                         <span class="label label-info label-sm"><fmt:formatDate value="${messageData.dateCreated}" type="time" pattern="h:mm" /></span>
                     </div>
 
