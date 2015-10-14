@@ -21,8 +21,6 @@
         <put-list-attribute name="headScripts">
             <add-attribute value="/dspResources/js/dataTables/jquery.dataTables.min.js" />
             <add-attribute value="/dspResources/js/dataTables/jquery.dataTables.bootstrap.min.js" />
-            <add-attribute value="/dspResources/js/dataTables/extensions/TableTools/js/dataTables.tableTools.min.js" />
-            <add-attribute value="/dspResources/js/dataTables/extensions/ColVis/js/dataTables.colVis.min.js" />
             <add-attribute value="/dspResources/js/bootbox.min.js" />
             <add-attribute value="/dspResources/js/bootstrap-multiselect.min.js" />
             <add-attribute value="/dspResources/js/jquery.gritter.min.js" />

@@ -133,12 +133,18 @@ jQuery(function ($) {
         var confirmed = confirm("Are you sure you want to remove this activity log?");
 
         if (confirmed) {
+            
+            var table = $('#dynamic-table').DataTable();
+            
+            table.row($(this).parents('tr')).remove().draw();
+            
             $.ajax({
                 type: 'POST',
                 url: '/surveys/removeEntry.do',
                 data: {'i': $(this).attr('rel')},
                 success: function (data) {
-                    location.reload();
+                    //location.reload();
+                    
                 }
             });
         }

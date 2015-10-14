@@ -341,6 +341,12 @@ jQuery(function ($) {
 
         if (confirmed) {
             var docId = $(this).attr('rel');
+            
+            var table = $('#dynamic-table').DataTable();
+            
+            table.row($(this).parents('tr')).remove().draw();
+            
+            
             $.ajax({
                 url: '/documents/deleteDocument.do',
                 type: 'POST',
@@ -348,7 +354,7 @@ jQuery(function ($) {
                     'documentId': docId
                 },
                 success: function (data) {
-                    location.reload();
+                    //location.reload();
                 },
                 error: function (error) {
 
