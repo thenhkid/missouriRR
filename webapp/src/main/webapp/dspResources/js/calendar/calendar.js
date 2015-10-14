@@ -206,6 +206,7 @@ jQuery(function ($) {
             right: 'prev,next today'
         },
         events: events,
+        nextDayThreshold: '00:00:00',
         timezone: 'local',
         editable: true,
         droppable: false, // this allows things to be dropped onto the calendar !!!
