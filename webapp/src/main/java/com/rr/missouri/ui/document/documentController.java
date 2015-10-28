@@ -198,6 +198,8 @@ public class documentController {
         int clickedFolderId = Integer.parseInt(result[0].substring(4));
         
         documentFolder folderDetails = documentmanager.getFolderById(clickedFolderId);
+        
+        String downloadLink;
 
         /* Get a list of folders  */
         Integer mainFolderId = 0;
@@ -217,8 +219,11 @@ public class documentController {
             parent.setEncryptedId(encryptedParent[0]);
             parent.setEncryptedSecret(encryptedParent[1]);
             mav.addObject("parentFolder", parent);   
+            
+            downloadLink = parent.getFolderName()+"/"+folderDetails.getFolderName();
         } else {
             mainFolderId = folderDetails.getId();
+            downloadLink = folderDetails.getFolderName();
         }
         
         List<documentFolder> subfolderList = documentmanager.getSubFolders(programId, userDetails, mainFolderId);
@@ -255,6 +260,7 @@ public class documentController {
                 }
                 User createdBy = usermanager.getUserById(doc.getSystemUserId());
                 doc.setCreatedBy(createdBy.getFirstName() + " " + createdBy.getLastName());
+                doc.setDownloadLink(downloadLink);
             } 
         }
         
