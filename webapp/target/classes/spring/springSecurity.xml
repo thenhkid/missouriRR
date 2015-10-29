@@ -16,6 +16,7 @@
         <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/faq/**"></intercept-url>
         <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/forum/**"></intercept-url>
         <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/documents/**"></intercept-url>
+        <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/surveys/**"></intercept-url>
         <intercept-url access="permitAll" pattern="/login/*"></intercept-url>
         <intercept-url access="permitAll" pattern="/logout"></intercept-url>
         <logout invalidate-session="true" delete-cookies="JSESSIONID" logout-success-url="/login" logout-url="/logout"></logout>
