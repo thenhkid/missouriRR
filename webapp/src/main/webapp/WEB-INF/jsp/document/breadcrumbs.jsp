@@ -11,6 +11,12 @@
                 <a href="/documents">Documents</a>
             </li>
             
+            <c:if test="${not empty superParentFolder}">
+                <li>
+                    <a href="/documents/folder<c:url value="?i=${superParentFolder.encryptedId}&v=${superParentFolder.encryptedSecret}"/>">${superParentFolder.folderName}</a>
+                </li>
+            </c:if>
+            
             <c:if test="${not empty parentFolder}">
                 <li>
                     <a href="/documents/folder<c:url value="?i=${parentFolder.encryptedId}&v=${parentFolder.encryptedSecret}"/>">${parentFolder.folderName}</a>

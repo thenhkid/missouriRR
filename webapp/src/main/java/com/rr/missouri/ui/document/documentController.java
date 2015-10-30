@@ -199,54 +199,118 @@ public class documentController {
         
         documentFolder folderDetails = documentmanager.getFolderById(clickedFolderId);
         
-        String downloadLink;
+        String downloadLink = "";
+        Integer folderCount = 1;
 
         /* Get a list of folders  */
-        Integer mainFolderId = 0;
+        Integer parentFolderId = 0;
+        Integer getSubFoldersFor = 0;
+        Integer getSubSubFoldersFor = 0;
         if (folderDetails.getParentFolderId() > 0) {
-            mainFolderId = folderDetails.getParentFolderId();
+            folderCount+=1;
             
-            documentFolder parent = documentmanager.getFolderById(folderDetails.getParentFolderId());
-            mav.addObject("selParentFolderName", parent.getFolderName());
+            parentFolderId = folderDetails.getParentFolderId();
+            
+            documentFolder parentFolderDetails = documentmanager.getFolderById(parentFolderId);
+            
+            if(parentFolderDetails.getParentFolderId() > 0) {
+                folderCount+=1;
+                
+                getSubFoldersFor = parentFolderDetails.getParentFolderId();
+                getSubSubFoldersFor = folderDetails.getParentFolderId();
+                
+                documentFolder superParentFolderDetails = documentmanager.getFolderById(parentFolderDetails.getParentFolderId());
+                
+                 mav.addObject("selSuperParentFolderName", superParentFolderDetails.getFolderName());
+                 
+                 //need to encrypt parent folder here
+                encryptObject encryptParent = new encryptObject();
+                Map<String, String> mapParent;
+                mapParent = new HashMap<String, String>();
+                mapParent.put("id", String.valueOf(superParentFolderDetails.getId()));
+                mapParent.put("topSecret", topSecret);
+                String[] encryptedParent = encryptParent.encryptObject(mapParent);
+                superParentFolderDetails.setEncryptedId(encryptedParent[0]);
+                superParentFolderDetails.setEncryptedSecret(encryptedParent[1]);
+                mav.addObject("superParentFolder", superParentFolderDetails); 
+                
+                downloadLink = superParentFolderDetails.getFolderName()+"/";
+            }
+            else {
+                getSubFoldersFor = folderDetails.getParentFolderId();
+                getSubSubFoldersFor = clickedFolderId;
+            }
+            
+            mav.addObject("selParentFolderName", parentFolderDetails.getFolderName());
                         
             //need to encrypt parent folder here
             encryptObject encryptParent = new encryptObject();
             Map<String, String> mapParent;
             mapParent = new HashMap<String, String>();
-            mapParent.put("id", String.valueOf(parent.getId()));
+            mapParent.put("id", String.valueOf(parentFolderDetails.getId()));
             mapParent.put("topSecret", topSecret);
             String[] encryptedParent = encryptParent.encryptObject(mapParent);
-            parent.setEncryptedId(encryptedParent[0]);
-            parent.setEncryptedSecret(encryptedParent[1]);
-            mav.addObject("parentFolder", parent);   
+            parentFolderDetails.setEncryptedId(encryptedParent[0]);
+            parentFolderDetails.setEncryptedSecret(encryptedParent[1]);
+            mav.addObject("parentFolder", parentFolderDetails);  
             
-            downloadLink = parent.getFolderName()+"/"+folderDetails.getFolderName();
+            downloadLink += parentFolderDetails.getFolderName()+"/"+folderDetails.getFolderName();
+            
+            
         } else {
-            mainFolderId = folderDetails.getId();
+            getSubFoldersFor = folderDetails.getId();
+            parentFolderId = folderDetails.getId();
             downloadLink = folderDetails.getFolderName();
         }
         
-        List<documentFolder> subfolderList = documentmanager.getSubFolders(programId, userDetails, mainFolderId);
+        if(getSubFoldersFor > 0) {
+            List<documentFolder> subfolderList = documentmanager.getSubFolders(programId, userDetails, getSubFoldersFor);
 
-        if (subfolderList != null && subfolderList.size() > 0) {
+            if (subfolderList != null && subfolderList.size() > 0) {
 
-            encryptObject encrypt = new encryptObject();
-            Map<String, String> map;
+                encryptObject encrypt = new encryptObject();
+                Map<String, String> map;
 
-            for (documentFolder folder : subfolderList) {
-                //Encrypt the use id to pass in the url
-                map = new HashMap<String, String>();
-                map.put("id", Integer.toString(folder.getId()));
-                map.put("topSecret", topSecret);
+                for (documentFolder folder : subfolderList) {
+                    //Encrypt the use id to pass in the url
+                    map = new HashMap<String, String>();
+                    map.put("id", Integer.toString(folder.getId()));
+                    map.put("topSecret", topSecret);
 
-                String[] encrypted = encrypt.encryptObject(map);
+                    String[] encrypted = encrypt.encryptObject(map);
 
-                folder.setEncryptedId(encrypted[0]);
-                folder.setEncryptedSecret(encrypted[1]);
+                    folder.setEncryptedId(encrypted[0]);
+                    folder.setEncryptedSecret(encrypted[1]);
 
+                }
+
+                mav.addObject("subfolders", subfolderList);
             }
+        }
+        
+        if(getSubSubFoldersFor > 0) {
+            List<documentFolder> subsubfolderList = documentmanager.getSubFolders(programId, userDetails, getSubSubFoldersFor);
 
-            mav.addObject("subfolders", subfolderList);
+            if (subsubfolderList != null && subsubfolderList.size() > 0) {
+
+                encryptObject encrypt = new encryptObject();
+                Map<String, String> map;
+
+                for (documentFolder folder : subsubfolderList) {
+                    //Encrypt the use id to pass in the url
+                    map = new HashMap<String, String>();
+                    map.put("id", Integer.toString(folder.getId()));
+                    map.put("topSecret", topSecret);
+
+                    String[] encrypted = encrypt.encryptObject(map);
+
+                    folder.setEncryptedId(encrypted[0]);
+                    folder.setEncryptedSecret(encrypted[1]);
+
+                }
+
+                mav.addObject("subsubfolders", subsubfolderList);
+            }
         }
         
         /* Get Documents for the folder */
@@ -267,6 +331,7 @@ public class documentController {
         mav.addObject("documents", documents);
 
         mav.addObject("folders", folders);
+        mav.addObject("folderCount", folderCount);
         
         selFolder = folderDetails.getId();
         mav.addObject("selFolder", selFolder);

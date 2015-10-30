@@ -27,7 +27,7 @@
     <div class="hr dotted"></div>
     <div class="row">
         <div class="clearfix">
-            <c:if test="${sessionScope.userDetails.roleId == 2 && selParentFolder == 0}">
+            <c:if test="${sessionScope.userDetails.roleId == 2 && (selParentFolder == 0 || folderCount < 3)}">
                 <div class="pull-left no-margin col-md-6">
                     <button class="btn btn-info btn-xs" type="button" id="newSubfolder">
                         <i class="ace-icon fa fa-plus-square bigger-110"></i>
