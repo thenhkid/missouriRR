@@ -1,0 +1,218 @@
+/** 10312015 09:46PM Not ON RR OR RRDEV YET**/
+
+use rapidregistry;
+
+drop table if exists rel_stdreportentities;
+drop table if exists  program_reports;
+drop table if exists cannedreports;
+drop table if exists reportstdrequests;
+
+
+USE `rapidregistry`;
+
+
+DROP TABLE IF EXISTS `lu_reportStatuses`;
+CREATE TABLE `lu_reportStatuses` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `statusForAdmin` varchar(45) DEFAULT NULL,
+  `statusDisplay` varchar(45) NOT NULL,
+  `statusDesc` text,
+  `dateCreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+INSERT INTO `lu_reportStatuses` VALUES (1,'Requested','Requested',NULL,'2015-10-30 22:42:52'),(2,'Processing','Requested',NULL,'2015-10-30 22:42:52'),(3,'Ready for Viewing','Ready for Viewing',NULL,'2015-10-30 22:42:52'),(4,'Viewed','Viewed',NULL,'2015-10-30 22:42:52'),(5,'Errored','Requested',NULL,'2015-10-30 23:04:52'),(6,'Deleted','Deleted',NULL,'2015-10-31 00:31:39');
+
+DROP TABLE IF EXISTS `lu_reportTypes`;
+CREATE TABLE `lu_reportTypes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `reportType` varchar(45) DEFAULT NULL,
+  `dateCreated` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+INSERT INTO `lu_reportTypes` VALUES (1,'Detail','2015-10-28 16:46:23'),(2,'Summary Count','2015-10-28 16:46:23');
+
+
+DROP TABLE IF EXISTS `reportDetails`;
+CREATE TABLE `reportDetails` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `programId` int(11) NOT NULL,
+  `reportTypeId` int(11) NOT NULL,
+  `reportName` varchar(45) DEFAULT NULL,
+  `reportDesc` text,
+  `reportFile` varchar(45) DEFAULT NULL,
+  `status` bit(1) NOT NULL DEFAULT b'1',
+  `surveyId` int(11) DEFAULT NULL,
+  `surveyDateQuestionId` int(11) DEFAULT NULL,
+  `groupByQuestionId` int(11) DEFAULT NULL,
+  `orderByQuestionId` int(11) DEFAULT NULL,
+  `dateCreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+INSERT INTO `reportDetails` VALUES (1,6,1,'Resources Leveraged/Grant Proposals',NULL,'','',36,0,NULL,NULL,'2015-10-29 12:19:43'),(2,6,1,'Resources/Tools Used',NULL,'','',37,0,NULL,NULL,'2015-10-29 12:19:43'),(3,6,1,'Meetings',NULL,'','',38,0,NULL,NULL,'2015-10-29 12:19:43'),(4,6,1,'Media/Promotions',NULL,'','',39,0,NULL,NULL,'2015-10-29 12:19:43'),(5,6,1,'Events/Programs',NULL,'','',40,0,NULL,NULL,'2015-10-29 12:19:43'),(6,6,1,'Successes / Challenges / Other Info',NULL,'','',41,0,NULL,NULL,'2015-10-29 12:19:43'),(7,6,1,'Practice, Policy,  Environmental Change',NULL,'','',42,0,NULL,NULL,'2015-10-29 12:19:43'),(8,6,2,'Resources Leveraged/Grant Proposals',NULL,'','',36,0,NULL,NULL,'2015-10-29 12:19:50'),(9,6,2,'Resources/Tools Used',NULL,'','',37,0,NULL,NULL,'2015-10-29 12:19:50'),(10,6,2,'Meetings',NULL,'','',38,0,NULL,NULL,'2015-10-29 12:19:50'),(11,6,2,'Media/Promotions',NULL,'','',39,0,NULL,NULL,'2015-10-29 12:19:50'),(12,6,2,'Events/Programs',NULL,'','',40,0,NULL,NULL,'2015-10-29 12:19:50'),(13,6,2,'Successes / Challenges / Other Info',NULL,'','',41,0,NULL,NULL,'2015-10-29 12:19:50'),(14,6,2,'Practice, Policy,  Environmental Change',NULL,'','',42,0,NULL,NULL,'2015-10-29 12:19:50');
+
+
+
+DROP TABLE IF EXISTS `reportRequests`;
+CREATE TABLE `reportRequests` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `programId` int(11) NOT NULL,
+  `systemUserId` int(11) NOT NULL,
+  `startDate` datetime NOT NULL,
+  `endDate` datetime NOT NULL,
+  `startProcessTime` datetime DEFAULT NULL,
+  `endProcessTime` datetime DEFAULT NULL,
+  `statusId` int(11) NOT NULL DEFAULT '1',
+  `notifcationSent` bit(1) DEFAULT b'0',
+  `dateCreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_status_idx` (`statusId`),
+  KEY `fk_user_idx` (`systemUserId`),
+  CONSTRAINT `fk_status` FOREIGN KEY (`statusId`) REFERENCES `lu_reportStatuses` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_user` FOREIGN KEY (`systemUserId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+
+
+
+
+DROP TABLE IF EXISTS `reportQuestions`;
+CREATE TABLE `reportQuestions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `surveyQuestionId` int(11) NOT NULL,
+  `reportId` int(11) NOT NULL,
+  `questionDisplay` text,
+  `showInReport` bit(1) NOT NULL DEFAULT b'1',
+  `dateCreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `reportRequestContentCriteria`;
+CREATE TABLE `reportRequestContentCriteria` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `codeId` int(11) NOT NULL,
+  `reportRequestId` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_rrId_idx` (`reportRequestId`),
+  KEY `fk_rrccCodeId_idx` (`codeId`),
+  CONSTRAINT `fk_rrId` FOREIGN KEY (`reportRequestId`) REFERENCES `reportRequests` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_rrccCodeId` FOREIGN KEY (`codeId`) REFERENCES `lu_activitycodes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `reportRequestDisplay`;
+CREATE TABLE `reportRequestDisplay` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `reportRequestId` int(11) NOT NULL,
+  `dateSubmitted` datetime NOT NULL,
+  `ReportType` varchar(255) DEFAULT NULL,
+  `ReportNames` varchar(1000) DEFAULT NULL,
+  `Entity3Names` varchar(1000) DEFAULT NULL,
+  `statusId` int(11) NOT NULL,
+  `statusDisplay` varchar(45) DEFAULT NULL,
+  `systemUserId` int(11) NOT NULL,
+  `firstName` varchar(100) DEFAULT NULL,
+  `lastName` varchar(100) DEFAULT NULL,
+  `datesRequested` varchar(50) NOT NULL,
+  `programId` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_systemUserId_idx` (`systemUserId`),
+  KEY `fk_statusId_idx` (`statusId`),
+  KEY `fk_progId_idx` (`programId`),
+  KEY `fk_reqRepId_idx` (`reportRequestId`),
+  CONSTRAINT `fk_reqRepId` FOREIGN KEY (`reportRequestId`) REFERENCES `reportRequests` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_progId` FOREIGN KEY (`programId`) REFERENCES `programs` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_statusId` FOREIGN KEY (`statusId`) REFERENCES `lu_reportStatuses` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_systemUserId` FOREIGN KEY (`systemUserId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `reportRequestEntities`;
+CREATE TABLE `reportRequestEntities` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `reportRequestId` int(11) NOT NULL,
+  `entity3Id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_rre_rrId_idx` (`reportRequestId`),
+  KEY `fk_rre_entityId_idx` (`entity3Id`),
+  CONSTRAINT `fk_rre_entityId` FOREIGN KEY (`entity3Id`) REFERENCES `programorghierarchy_details` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_rre_rrId` FOREIGN KEY (`reportRequestId`) REFERENCES `reportRequests` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `reportRequestReports`;
+CREATE TABLE `reportRequestReports` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `reportRequestId` int(11) DEFAULT NULL,
+  `reportId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_rrr_rrId_idx` (`reportRequestId`),
+  KEY `fk_rrr_repId_idx` (`reportId`),
+  CONSTRAINT `fk_rrr_rrId` FOREIGN KEY (`reportRequestId`) REFERENCES `reportRequestReports` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_rrr_repId` FOREIGN KEY (`reportId`) REFERENCES `reportDetails` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+
+
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` trigger insertRepDisplay after insert on reportRequests
+for each row
+begin
+  insert into reportRequestDisplay (reportRequestId, DateRequested, statusId, systemUserId, programId, datesRequested)
+  values (new.id, new.datecreated, new.statusId, 
+  new.systemUserId, new.programId, concat(date(new.startdate), ' - ', date(new.enddate)));
+  
+  UPDATE reportRequestDisplay INNER JOIN users ON reportRequestDisplay.systemUserId = users.id
+	SET reportRequestDisplay.firstName = users.firstName, reportRequestDisplay.lastName = users.lastname
+	WHERE reportRequestDisplay.reportRequestId = new.id;
+    
+   update  reportRequestDisplay INNER JOIN lu_reportStatuses
+   on reportRequestDisplay.statusId =  lu_reportStatuses.id
+   set reportRequestDisplay.statusDisplay = lu_reportStatuses.statusDisplay
+   WHERE reportRequestDisplay.reportRequestId = new.id;
+   
+end ;;
+DELIMITER ;
+
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` trigger udpateRepDisplayStatus after update on reportRequests
+for each row
+begin
+  update requestReportDisplay set statusId = new.statusId
+  where reportRequestId = new.id;
+  
+  UPDATE requestReportDisplay
+	INNER JOIN lu_reportstatuses ON requestReportDisplay.statusId = lu_reportstatuses.id
+	SET requestReportDisplay.statusDisplay = lu_reportstatuses.statusDisplay
+	WHERE requestReportDisplay.reportRequestId = new.id;
+
+end ;;
+DELIMITER ;
+
+
+DROP TABLE IF EXISTS `reportViews`;
+CREATE TABLE `reportViews` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `systemUserId` int(11) NOT NULL,
+  `reportId` int(11) NOT NULL,
+  `dateCreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_viewUserId_idx` (`systemUserId`),
+  KEY `fk_reportId_idx` (`reportId`),
+  CONSTRAINT `fk_viewUserId` FOREIGN KEY (`systemUserId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_reportId` FOREIGN KEY (`reportId`) REFERENCES `reportDetails` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` trigger updateReportDisplayUserName after update on users
+for each row
+begin
+  update reportRequestDisplay set firstName = new.firstName, lastName = new.LastName 
+  where systemUserId = new.id;
+end;;
+DELIMITER ;
