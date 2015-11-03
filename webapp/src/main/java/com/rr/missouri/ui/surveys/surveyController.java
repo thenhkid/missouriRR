@@ -28,7 +28,9 @@ import com.rr.missouri.ui.districts.district;
 import com.rr.missouri.ui.districts.school;
 import com.rr.missouri.ui.security.decryptObject;
 import com.rr.missouri.ui.security.encryptObject;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -457,6 +459,26 @@ public class surveyController {
         survey.setTotalPages(surveyPages.size());
         survey.setLastPageId(surveyPages.get(surveyPages.size() - 1).getId());
         survey.setPageId(currentPage.getId());
+        
+        /* Need to update any date functions */
+        if(survey.getSurveyPageQuestions() != null && survey.getSurveyPageQuestions().size() > 0) {
+            for(SurveyQuestions question : survey.getSurveyPageQuestions()) {
+                if(question.getAnswerTypeId() == 6) {
+                    
+                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                    Date formattedDate = df.parse(question.getQuestionValue());
+                    
+                    if(question.getDateFormatType() == 2) { //dd/mm/yyyy
+                        df.applyPattern("dd/MM/yyyy");
+                    }
+                    else { //mm/dd/yyyy
+                        df.applyPattern("MM/dd/yyyy");
+                    }
+                    String formattedDateasString = df.format(formattedDate);
+                    question.setQuestionValue(formattedDateasString);
+                }
+            }
+        }
 
         mav.addObject("survey", survey);
         mav.addObject("surveyPages", surveyPages);
@@ -745,6 +767,7 @@ public class surveyController {
 
                     } else {
                         surveyQuestionAnswers questionAnswer = new surveyQuestionAnswers();
+                        
                         questionAnswer.setAnswerText(question.getQuestionValue());
 
                         questionAnswer.setQuestionId(question.getId());

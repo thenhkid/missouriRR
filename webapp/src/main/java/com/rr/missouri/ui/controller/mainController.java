@@ -145,7 +145,7 @@ public class mainController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/home");
         
-        List<faqQuestions> announcements = faqManager.getLatestQuestions(programId,5);
+        List<faqQuestions> announcements = faqManager.getLatestQuestions(programId,3);
         mav.addObject("announcements", announcements);
        
         return mav;
