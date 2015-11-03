@@ -1,4 +1,4 @@
-/** 10312015 09:46PM Not ON RR OR RRDEV YET**/
+/** 10312015 09:46PM On RR Stage and RR Dev and RR LIVE**/
 
 use rapidregistry;
 
@@ -9,6 +9,26 @@ drop table if exists reportstdrequests;
 
 
 USE `rapidregistry`;
+
+
+DROP TABLE IF EXISTS `reportDetails`;
+CREATE TABLE `reportDetails` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `programId` int(11) NOT NULL,
+  `reportTypeId` int(11) NOT NULL,
+  `reportName` varchar(45) DEFAULT NULL,
+  `reportDesc` text,
+  `reportFile` varchar(45) DEFAULT NULL,
+  `status` bit(1) NOT NULL DEFAULT b'1',
+  `surveyId` int(11) DEFAULT NULL,
+  `surveyDateQuestionId` int(11) DEFAULT NULL,
+  `groupByQuestionId` int(11) DEFAULT NULL,
+  `orderByQuestionId` int(11) DEFAULT NULL,
+  `dateCreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+INSERT INTO `reportDetails` VALUES (1,6,1,'Resources Leveraged/Grant Proposals',NULL,'','',36,0,NULL,NULL,'2015-10-29 12:19:43'),(2,6,1,'Resources/Tools Used',NULL,'','',37,0,NULL,NULL,'2015-10-29 12:19:43'),(3,6,1,'Meetings',NULL,'','',38,0,NULL,NULL,'2015-10-29 12:19:43'),(4,6,1,'Media/Promotions',NULL,'','',39,0,NULL,NULL,'2015-10-29 12:19:43'),(5,6,1,'Events/Programs',NULL,'','',40,0,NULL,NULL,'2015-10-29 12:19:43'),(6,6,1,'Successes / Challenges / Other Info',NULL,'','',41,0,NULL,NULL,'2015-10-29 12:19:43'),(7,6,1,'Practice, Policy,  Environmental Change',NULL,'','',42,0,NULL,NULL,'2015-10-29 12:19:43'),(8,6,2,'Resources Leveraged/Grant Proposals',NULL,'','',36,0,NULL,NULL,'2015-10-29 12:19:50'),(9,6,2,'Resources/Tools Used',NULL,'','',37,0,NULL,NULL,'2015-10-29 12:19:50'),(10,6,2,'Meetings',NULL,'','',38,0,NULL,NULL,'2015-10-29 12:19:50'),(11,6,2,'Media/Promotions',NULL,'','',39,0,NULL,NULL,'2015-10-29 12:19:50'),(12,6,2,'Events/Programs',NULL,'','',40,0,NULL,NULL,'2015-10-29 12:19:50'),(13,6,2,'Successes / Challenges / Other Info',NULL,'','',41,0,NULL,NULL,'2015-10-29 12:19:50'),(14,6,2,'Practice, Policy,  Environmental Change',NULL,'','',42,0,NULL,NULL,'2015-10-29 12:19:50');
 
 
 DROP TABLE IF EXISTS `lu_reportStatuses`;
@@ -34,27 +54,6 @@ CREATE TABLE `lu_reportTypes` (
 INSERT INTO `lu_reportTypes` VALUES (1,'Detail','2015-10-28 16:46:23'),(2,'Summary Count','2015-10-28 16:46:23');
 
 
-DROP TABLE IF EXISTS `reportDetails`;
-CREATE TABLE `reportDetails` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `programId` int(11) NOT NULL,
-  `reportTypeId` int(11) NOT NULL,
-  `reportName` varchar(45) DEFAULT NULL,
-  `reportDesc` text,
-  `reportFile` varchar(45) DEFAULT NULL,
-  `status` bit(1) NOT NULL DEFAULT b'1',
-  `surveyId` int(11) DEFAULT NULL,
-  `surveyDateQuestionId` int(11) DEFAULT NULL,
-  `groupByQuestionId` int(11) DEFAULT NULL,
-  `orderByQuestionId` int(11) DEFAULT NULL,
-  `dateCreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
-INSERT INTO `reportDetails` VALUES (1,6,1,'Resources Leveraged/Grant Proposals',NULL,'','',36,0,NULL,NULL,'2015-10-29 12:19:43'),(2,6,1,'Resources/Tools Used',NULL,'','',37,0,NULL,NULL,'2015-10-29 12:19:43'),(3,6,1,'Meetings',NULL,'','',38,0,NULL,NULL,'2015-10-29 12:19:43'),(4,6,1,'Media/Promotions',NULL,'','',39,0,NULL,NULL,'2015-10-29 12:19:43'),(5,6,1,'Events/Programs',NULL,'','',40,0,NULL,NULL,'2015-10-29 12:19:43'),(6,6,1,'Successes / Challenges / Other Info',NULL,'','',41,0,NULL,NULL,'2015-10-29 12:19:43'),(7,6,1,'Practice, Policy,  Environmental Change',NULL,'','',42,0,NULL,NULL,'2015-10-29 12:19:43'),(8,6,2,'Resources Leveraged/Grant Proposals',NULL,'','',36,0,NULL,NULL,'2015-10-29 12:19:50'),(9,6,2,'Resources/Tools Used',NULL,'','',37,0,NULL,NULL,'2015-10-29 12:19:50'),(10,6,2,'Meetings',NULL,'','',38,0,NULL,NULL,'2015-10-29 12:19:50'),(11,6,2,'Media/Promotions',NULL,'','',39,0,NULL,NULL,'2015-10-29 12:19:50'),(12,6,2,'Events/Programs',NULL,'','',40,0,NULL,NULL,'2015-10-29 12:19:50'),(13,6,2,'Successes / Challenges / Other Info',NULL,'','',41,0,NULL,NULL,'2015-10-29 12:19:50'),(14,6,2,'Practice, Policy,  Environmental Change',NULL,'','',42,0,NULL,NULL,'2015-10-29 12:19:50');
-
-
-
 DROP TABLE IF EXISTS `reportRequests`;
 CREATE TABLE `reportRequests` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -73,10 +72,6 @@ CREATE TABLE `reportRequests` (
   CONSTRAINT `fk_status` FOREIGN KEY (`statusId`) REFERENCES `lu_reportStatuses` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_user` FOREIGN KEY (`systemUserId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
-
-
-
 
 
 DROP TABLE IF EXISTS `reportQuestions`;
@@ -216,3 +211,190 @@ begin
   where systemUserId = new.id;
 end;;
 DELIMITER ;
+
+
+/** grace 11022015 **/
+use rapidRegistry;
+
+drop table if exists tempAnswerTextUpdate;
+
+CREATE TABLE `tempAnswerTextUpdate` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `answerText` VARCHAR(45) NULL,
+  `originalAnswer` VARCHAR(45) NULL, 
+  `string1` VARCHAR(45) NULL,
+  `string2` VARCHAR(45) NULL,
+  `surveyAnswerId` INT NULL,
+  PRIMARY KEY (`id`));
+
+
+drop PROCEDURE if exists  changeDate_mdyyToyyyymmdd;
+
+DELIMITER ;;
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `changeDate_mdyyToyyyymmdd`(in thisYear int)
+proc_main:begin
+
+/**this SP will update date fields in format of m/d/yy to 19/20xx mysql date
+sample usage - call changeDate_mdyyToyyyymmdd (15);
+**/
+
+update tempAnswerTextUpdate 
+set answertext = concat(case when (left(answertext,2)) like '%/%' then concat('0', answertext) else answertext end)
+ where length(answerText) > 0;
+
+-- now we update the date
+update tempAnswerTextUpdate
+set answertext =
+ case when substring(answertext,4,2) like '%/%' then 
+concat(left(answertext,3), '0', substring(answertext,4,1) , right(answertext,3)) 
+else 
+concat(left(answertext,3),  substring(answertext,4,2) , right(answertext,3)) end where length(answerText) > 0;
+
+-- update year 
+update tempAnswerTextUpdate
+set answertext =
+case when (cast(right(answertext, 2) as decimal) between 0 and thisYear)  then 
+concat(left(answerText,6), '20',  right(answertext,2)) else
+concat(left(answerText,6), '19',  right(answertext,2)) end where length(answerText) > 0;
+
+-- now reformat
+update tempAnswerTextUpdate 
+set answertext = concat(right(answertext,4) , '-', left(answertext, 2), '-', substring(answertext, 4,2))
+ where length(answerText) > 0;
+     
+select '';
+ 
+end proc_main;;
+DELIMITER ;
+
+-- this part updates current answerText
+delete from tempAnswerTextUpdate;
+
+insert into tempAnswerTextUpdate (answerText, surveyAnswerId)
+select answerText, id
+from submittedsurveyanswers where questionid in 
+(select id from survey_questions where answerTypeId = 6)
+and answerText not like '%^^^^%'
+and length(answerText) > 0
+and ROUND (   
+        (
+            LENGTH(answertext)
+            - LENGTH( REPLACE ( answertext, "/", "") ) 
+        ) / LENGTH("/")        
+    ) = 2 ;
+
+call changeDate_mdyyToyyyymmdd (15);
+
+
+update submittedsurveyanswers join tempAnswerTextUpdate on 
+tempAnswerTextUpdate.surveyAnswerId = submittedsurveyanswers.id
+set submittedsurveyanswers.answerText = tempAnswerTextUpdate.answerText;
+  
+/** this updates the multivalues **/
+  
+delete from tempAnswerTextUpdate;
+
+insert into tempAnswerTextUpdate (answerText, surveyAnswerId, originalanswer)
+select answerText, id, answerText
+from submittedsurveyanswers where questionid in 
+(select id from survey_questions where answerTypeId = 6)
+and answerText like '%^^^^%'
+and length(answerText) > 0;
+
+update tempAnswerTextUpdate  set string1 =  substring_index(answerText, '^^^^^', 1), 
+string2 = replace(substring(substring_index(answertext, '^^^^^', 2), length(substring_index(answertext, '^^^^^', 2 - 1)) + 1), '^^^^^', '')
+;
+
+
+update tempAnswerTextUpdate set answerText = string1;
+call changeDate_mdyyToyyyymmdd (15);
+update tempAnswerTextUpdate set string1 = answertext;
+
+
+update tempAnswerTextUpdate set answerText = string2;
+
+
+call changeDate_mdyyToyyyymmdd (15);
+
+update tempAnswerTextUpdate set  string2 = answertext;
+update tempAnswerTextUpdate set answertext = concat(string1, '^^^^^', string2);
+
+update submittedsurveyanswers join tempAnswerTextUpdate on 
+tempAnswerTextUpdate.surveyAnswerId = submittedsurveyanswers.id
+set submittedsurveyanswers.answerText = tempAnswerTextUpdate.answerText;
+
+drop PROCEDURE if exists  updateRepDisplayTable;
+DELIMITER ;;
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `updateRepDisplayTable`(in repReqId int)
+proc_main:begin
+
+/**this SP will update reportRequestDisplay with long names of entities and reports so that we will have all request
+info on hand
+**/
+-- this updates the report names
+
+	BEGIN
+		set @stmt = concat(
+        " UPDATE reportRequestDisplay JOIN (select ",repReqId ," matchid, ",
+        " group_concat(distinct reportname ORDER BY reportname asc SEPARATOR '<br/>') as label ",
+        " from reportDetails where reportdetails.id in (select reportId from reportrequestreports",
+        " where reportrequestid = ", repReqId , ")) tbl_concat",
+		" ON reportRequestDisplay.reportRequestId = tbl_concat.matchid",
+		" SET reportRequestDisplay.reportnames = tbl_concat.label ",
+        " WHERE reportRequestDisplay.reportRequestId = ", repReqId, ";");
+
+	END;
+
+
+PREPARE stmt from @stmt;
+EXECUTE stmt;-- execute
+
+-- this updates the report type display
+
+	BEGIN
+		set @stmt = concat(
+        " UPDATE reportRequestDisplay JOIN (select ",repReqId," matchid, ",
+		 " group_concat(distinct reportType ORDER BY reportType asc SEPARATOR ', ') as label 
+			from lu_reportTypes where id in (select distinct reportTypeId from reportDetails where
+            id in (select reportid  from reportrequestreports
+            where reportrequestid = ", repReqId, "))) tbl_concat",
+		" ON reportRequestDisplay.reportRequestId = tbl_concat.matchid",
+		" SET reportRequestDisplay.reportType = tbl_concat.label ",
+        " WHERE reportRequestDisplay.reportRequestId = ", repReqId, ";");
+
+	END;
+
+PREPARE stmt from @stmt;
+EXECUTE stmt;-- execute
+
+-- now update entity names
+
+BEGIN
+		set @stmt = concat(
+        " UPDATE reportRequestDisplay JOIN (select ",repReqId," matchid, ",
+		" group_concat(distinct name  ORDER BY name asc SEPARATOR '<br/>') as label ",
+		" from programorghierarchy_details where id in (select distinct entity3id ",
+        " from reportRequestEntities where reportrequestid = ",repReqId,")) tbl_concat",
+		" ON reportRequestDisplay.reportRequestId = tbl_concat.matchid",
+		" SET reportRequestDisplay.entity3names = tbl_concat.label ",
+        " WHERE reportRequestDisplay.reportRequestId = ", repReqId, ";");
+
+	END;
+
+PREPARE stmt from @stmt;
+EXECUTE stmt;-- execute
+
+-- the only error for this is if SP bombs, no need to write in insert error logs
+select * from reportRequestDisplay where reportRequestId = repReqId;
+end proc_main;;
+
+DELIMITER ;;
+  
+
+
+
+
+
+
