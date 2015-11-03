@@ -8,7 +8,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<div>
+<div class="page-content" style="padding:0;max-height: 500px; overflow: auto">
     <form:form id="documentForm" modelAttribute="documentDetails" action="/documents/saveDocuemntForm.do" role="form" class="form" method="post" enctype="multipart/form-data">
         <form:hidden path="id" id="documentId" />
         <form:hidden path="dateCreated" />
@@ -26,6 +26,11 @@
                                 <c:if test="${not empty folders.subfolders}">
                                     <c:forEach items="${folders.subfolders}" var="subfolder">
                                         <option value="${subfolder.id}" style="padding-left:15px" <c:if test="${documentDetails.folderId == subfolder.id}">selected</c:if>>${subfolder.folderName}</option>
+                                        <c:if test="${not empty subfolder.subfolders}">
+                                            <c:forEach items="${subfolder.subfolders}" var="subsubfolder">
+                                                <option value="${subsubfolder.id}" style="padding-left:25px" <c:if test="${documentDetails.folderId == subsubfolder.id}">selected</c:if>>${subsubfolder.folderName}</option>
+                                            </c:forEach>
+                                        </c:if>
                                     </c:forEach>
                                 </c:if>
                             </c:forEach>

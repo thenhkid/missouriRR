@@ -29,7 +29,7 @@
                 <tbody>
                     <c:forEach var="module" items="${programModules}">
                         <tr>
-                            <td>${module.displayName}</td>
+                            <td><c:choose><c:when test="${module.moduleId == '11'}">Activity Logs</c:when><c:when test="${module.moduleId == '8'}">Announcements</c:when><c:otherwise>${module.displayName}</c:otherwise></c:choose></td>
                             <td class="center"><input class="programModules" name="programModules" type="checkbox" value="${module.moduleId}" <c:if test="${module.useModule == true}">checked="checked"</c:if> /></td>
                             <td class="center"><input name="create_${module.moduleId}" type="checkbox" value="1" <c:if test="${module.allowCreate == true}">checked="checked"</c:if> ${module.moduleId == 3 || module.moduleId == 2 || module.moduleId == 4 ? 'disabled="disabled"' : ''} /></td>
                             <td class="center"><input name="edit_${module.moduleId}" type="checkbox" value="1" <c:if test="${module.allowEdit == true}">checked="checked"</c:if> ${module.moduleId == 3 || module.moduleId == 2 || module.moduleId == 4 ? 'disabled="disabled"' : ''} /></td>

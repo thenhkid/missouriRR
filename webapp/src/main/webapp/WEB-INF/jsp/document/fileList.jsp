@@ -70,7 +70,7 @@
                                 <tr>
                                     <td class="center" style="vertical-align: middle; ">
                                         <c:if test="${not empty document.uploadedFile}">
-                                            <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.uploadedFile}&foldername=documents/${selFolderName}"/>" title="${document.title}">
+                                            <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.uploadedFile}&foldername=documents/${document.downloadLink}"/>" title="${document.title}">
                                             <c:choose>
                                                 <c:when test="${document.fileExt == 'pdf'}">
                                                     <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
