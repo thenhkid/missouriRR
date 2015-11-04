@@ -35,7 +35,7 @@
                     </button>
                 </div>
             </c:if>
-            <c:if test="${allowCreate == true}">
+            <c:if test="${sessionScope.userDetails.roleId == 2 || (allowCreate == true && readOnly == false)}">
                 <div class="pull-right no-margin col-md-6">
                     <button class="btn btn-success btn-xs pull-right" type="button" id="newDocument" >
                         <i class="ace-icon fa fa-plus-square bigger-110"></i>

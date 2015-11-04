@@ -1,3 +1,8 @@
+/** 11042015 12:39PM On RR Stage and RR Dev and RR LIVE**/
+ALTER TABLE `rapidregistry`.`documentfolders` 
+ADD COLUMN `readOnly` BIT(1) NULL DEFAULT b'0' AFTER `dateCreated`;
+
+
 /** 10312015 09:46PM On RR Stage and RR Dev and RR LIVE**/
 
 use rapidregistry;

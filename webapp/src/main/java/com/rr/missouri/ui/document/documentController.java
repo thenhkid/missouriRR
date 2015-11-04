@@ -134,6 +134,7 @@ public class documentController {
         mav.addObject("selParentFolder", folderList.get(0).getParentFolderId());
         mav.addObject("selFolderName", folderList.get(0).getFolderName());
         mav.addObject("selFolderNameEncoded", URLEncoder.encode(folderList.get(0).getFolderName(),"UTF-8"));
+        mav.addObject("readOnly", folderList.get(0).getReadOnly());
         
         /* Get Documents for the folder */
         List<document> documents = documentmanager.getFolderDocuments(programId, userDetails, folderList.get(0).getId());
@@ -339,6 +340,7 @@ public class documentController {
         mav.addObject("selParentFolder", folderDetails.getParentFolderId());
         mav.addObject("selFolderName", folderDetails.getFolderName());
         mav.addObject("selFolderNameEncoded", URLEncoder.encode(folderDetails.getFolderName(),"UTF-8"));
+        mav.addObject("readOnly", folderDetails.getReadOnly());
         
         mav.addObject("allowCreate", allowCreate);
         mav.addObject("allowEdit", allowEdit);

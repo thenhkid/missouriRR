@@ -28,8 +28,19 @@
                         </label>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="readOnly" class="control-label">Permissions *</label>
+                    <div>
+                        <label class="radio-inline">
+                            <form:radiobutton path="readOnly"  value="1"/> User Read Only
+                        </label>
+                        <label class="radio-inline">
+                            <form:radiobutton path="readOnly" value="0"/> User Read / Write
+                        </label>
+                    </div>
+                </div>
             </c:when>
-            <c:otherwise><form:hidden path="adminOnly" /></c:otherwise>
+            <c:otherwise><form:hidden path="adminOnly" /><form:hidden path="readOnly" /></c:otherwise>
         </c:choose>
 
         <div class="form-group" id="folderNameDiv">
