@@ -23,7 +23,14 @@
                         <div>
                             <c:forEach items="${announcements}" var="announcement">
                                 <div class="profile-activity clearfix">
-                                    ${announcement.answer}
+                                    <c:choose>
+                                        <c:when test="${empty announcement.answer}">
+                                            ${announcement.question}
+                                        </c:when>
+                                        <c:otherwise>
+                                            ${announcement.answer}
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
                             </c:forEach>
                         </div>
@@ -45,6 +52,6 @@
 
 <div class="row">
     <div class="col-xs-12">
-        <p>Grantees: To share an event, program, or meeting, please add the activity to the Calendar page. To share materials, please add them to your folder in the Documents tab. To share thoughts, questions, or comments with other grantees, please use the Forum page.</p>
+        <p>Grantees: To share an event, program, or meeting, please add the activity to the Calendar page. To share materials, please add them to one of the public folders available to you under the Documents tab. To share thoughts, questions, or comments with other grantees, please use the Forum page.</p>
     </div>
 </div>
