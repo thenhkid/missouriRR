@@ -8,45 +8,43 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
-<div class="row">
-    <div class="col-xs-12">
-        <!-- PAGE CONTENT BEGINS -->	
-        <c:choose>
-            <c:when test="${not empty announcements}">
-                <div class="widget-box transparent">
-                    <div class="widget-header widget-header-small">
-                        <h4 class="widget-title blue smaller">
-                            <i class="ace-icon fa fa-bullhorn orange"></i>
-                            Recent Announcements
-                        </h4>
-                    </div>
-                    <div class="widget-body">
-                        <div class="widget-main padding-8">
-                            <div>
-                                <c:forEach items="${announcements}" var="announcement">
-                                    <div class="profile-activity clearfix">
-                                        ${announcement.answer}
-                                    </div>
-                                </c:forEach>
-                            </div>
+<c:if test="${not empty announcements}">
+    <div class="row">
+        <div class="col-xs-12">	
+            <div class="widget-box transparent" >
+                <div class="widget-header widget-header-small">
+                    <h4 class="widget-title blue smaller">
+                        <i class="ace-icon fa fa-bullhorn orange"></i>
+                        Recent Announcements
+                    </h4>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main padding-8">
+                        <div>
+                            <c:forEach items="${announcements}" var="announcement">
+                                <div class="profile-activity clearfix">
+                                    ${announcement.answer}
+                                </div>
+                            </c:forEach>
                         </div>
                     </div>
                 </div>
-            </c:when>
-            <c:otherwise>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h4>Welcome</h4>
+            </div>
+        </div>
+    </div>
+</c:if>
 
-                        <h2>Some heading</h2>
-                        <p>
-                            Home page content will go here. This can be text, links, images, etc.
-                        </p>
-                    </div><!-- /.col -->
-                </div>
-            </c:otherwise>
-        </c:choose>
+<div class="row">
+    <div class="col-xs-5 center">
+        <img src="../../dspResources/images/Landing page image.jpg" style="max-width: 100%; max-height: 100%;" alt=""/>
+    </div>
+    <div class="col-xs-7 center">
+        <img src="../../dspResources/images/HSHC_Map_w_Cohort.jpg" style="max-width: 100%; max-height: 100%;"  alt=""/>
+    </div>
+</div>
 
-        <!-- PAGE CONTENT ENDS -->
-    </div><!-- /.col -->
-</div><!-- /.row -->
+<div class="row">
+    <div class="col-xs-12">
+        <p>Grantees: To share an event, program, or meeting, please add the activity to the Calendar page. To share materials, please add them to your folder in the Documents tab. To share thoughts, questions, or comments with other grantees, please use the Forum page.</p>
+    </div>
+</div>
