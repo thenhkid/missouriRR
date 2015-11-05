@@ -52,8 +52,8 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="widget-box">
-                        <div class="widget-header">
-                            <h4 class="widget-title">Surveys</h4>
+                        <div class="widget-header">                       
+                            <h4 class="widget-title">Reports</h4>
 
                             <span class="widget-toolbar">
                                 <a href="#" data-action="collapse">
@@ -151,7 +151,7 @@
                         <div class="widget-body">
                             <div class="widget-main">
                                 <div>
-                                    <select name="entity1Ids" multiple="" class="chosen-select form-control" id="entity1Ids" data-placeholder="Select Counties...">
+                                <select name="selectedEntities" class="multiselect form-control" id="entity1Ids" multiple="">
                                             <c:forEach items="${entity1List}" var="county">
                                                     <option value="${county.id}">${county.name} - ${county.id}</option>
                                             </c:forEach>

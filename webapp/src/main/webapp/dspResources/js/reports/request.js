@@ -37,22 +37,28 @@ jQuery(function ($) {
         	$('#entity2Div').show();
         	$('#changeEntity1').show();
         	$('#showEntity2').hide();
-        	/**
-            	$.ajax({
+        	 
+        	 var selectednumbers = [];
+             $('#entity1Ids :selected').each(function(i, selected) {
+                 selectednumbers[i] = $(selected).val();
+             });
+        	 
+             selectednumbers = selectednumbers.join(", ");
+        	 
+             $.ajax({
                 type: 'POST',
-                url: "/reports/returnEntity2List.do",
-                data:{'entity1Ids': mySelections}, 
+                url: "/reports/returnEntityList.do",
+                data:{'entityIds':selectednumbers,
+                	'tier':1},
                 success: function(data) {
                      $("#entity2Div").html(data);
-                	//$("#entity2Div").html("hello");
                 },
                 error: function (error) {
                     console.log(error);
                 }
-            });
-            **/
-        }); 
-   
+            });  
+        });
+        
         $('#showEntity2').click(function(event) {
         	event.preventDefault();
         	/**a - we disable entity1
@@ -64,7 +70,7 @@ jQuery(function ($) {
         	$('#entity2Div').show();
         	$('#changeEntity1').show();
         	$('#showEntity2').hide();
-        	/**
+        	
             	$.ajax({
                 type: 'POST',
                 url: "/reports/returnEntity2List.do",
@@ -77,7 +83,7 @@ jQuery(function ($) {
                     console.log(error);
                 }
             });
-            **/
+           
         }); 
         
         $('#changeEntity1').click(function(event) {

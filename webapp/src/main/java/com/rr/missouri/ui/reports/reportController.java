@@ -17,15 +17,20 @@ import com.registryKit.user.User;
 import com.registryKit.user.userManager;
 import com.registryKit.user.userProgramModules;
 import com.rr.missouri.ui.security.encryptObject;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.text.SimpleDateFormat;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -156,7 +161,7 @@ public class reportController {
     	List <reportDetails> availableReports = reportmanager.getReportsForType(programId, false, reportTypeId);
     	//this ideally will just overwrite the current select box
         ModelAndView mav = new ModelAndView();
-        //mav.setViewName("/reports/optionList.jsp");
+        //mav.setViewName("/reports/optionList");
         mav.addObject("availableReports", availableReports);
         return mav;
      }
@@ -166,15 +171,11 @@ public class reportController {
     //this returns entities 2 & 3
     @RequestMapping(value = "/returnEntityList.do", method = RequestMethod.POST)
     public @ResponseBody
-    ModelAndView changeDisplayPosList(HttpSession session,
-            @RequestParam(value = "entityIds", required = true) List <Integer> entityIds,
+    ModelAndView returnEntities (HttpSession session, HttpServletRequest request,
+            @RequestParam(value = "entityIds", required = false)List <Integer> entityIds,
             @RequestParam(value = "tier", required = true) Integer tier
     )
             throws Exception {
-    	
-    	entityIds = Arrays.asList(37,38,39);
-    	tier = 2;
-    	
     	
     	User userDetails = (User) session.getAttribute("userDetails");
         
@@ -182,20 +183,19 @@ public class reportController {
         List<programHierarchyDetails> hierarchyItems = null;
         //look up all the entity2Ids for entity1Ids for user who has permission
     	if (userDetails.getRoleId() != 3) { 
-    		hierarchyItems = hierarchymanager.getProgramHierarchyItemsByAssocList(orgHierarchyList.get(tier-1).getId(), entityIds, 0);
+    		hierarchyItems = hierarchymanager.getProgramHierarchyItemsByAssocList(orgHierarchyList.get(tier).getId(), entityIds, 0);
         } else {
-    		hierarchyItems = hierarchymanager.getProgramHierarchyItemsByAssocList(orgHierarchyList.get(tier-1).getId(), entityIds, userDetails.getId());
+    		hierarchyItems = hierarchymanager.getProgramHierarchyItemsByAssocList(orgHierarchyList.get(tier).getId(), entityIds, userDetails.getId());
         }
     	
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("/reports/optionList.jsp");
+        mav.setViewName("/reports/optionList");
         mav.addObject("selectText", "Districts");
         mav.addObject("listValues", hierarchyItems);
         return mav;
      }
     
     //narrows down code list by report
-  //this returns entities 2 & 3
     @RequestMapping(value = "/getCodeList.do", method = RequestMethod.POST)
     public @ResponseBody
     ModelAndView getCodeList(HttpSession session,
