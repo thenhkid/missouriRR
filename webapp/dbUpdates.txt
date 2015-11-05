@@ -397,9 +397,96 @@ end proc_main;;
 
 DELIMITER ;;
   
+  
+/** 11/05/2015 grace not on any BOWLINK servers**/
+  
+
+drop PROCEDURE if exists  insertReportRequestEntities;
+DELIMITER ;;
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insertReportRequestEntities`(in entity3IdsIn varchar(800), in reportRequsestIdIn int)
+proc_main:begin
+
+-- this SP splits the entity3Ids and inserts them into reportRequestEntities
+-- SAMPLE USAGE - call insertReportRequestEntities ('74,75,76',  7);
+
+SET @codeIds = entity3IdsIn;
+SET @rrId = reportRequsestIdIn;
+
+SET @values = REPLACE(@codeIds, ',', CONCAT(', ', @rrId, '),('));
+SET @values = CONCAT('(', @values, ', ', @rrId, ')'); -- This produces a string like this -> (1, 100),(2, 100),(3, 100)
+
+SET @insert = CONCAT('INSERT INTO reportRequestEntities (entity3Id, reportRequestId) VALUES', @values); -- Build INSERT statement like this -> INSERT INTO RolesMenus VALUES(1, 100),(2, 100),(3, 100)
+
+
+-- Execute INSERT statement
+PREPARE stmt FROM @insert;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+-- the only error for this is if SP bombs, no need to write in insert error logs
+select '';
+
+end proc_main;;
+
+DELIMITER ;
+
+  
+drop PROCEDURE if exists  insertReportRequestContentCriteria;
+DELIMITER ;;
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insertReportRequestContentCriteria`(in codeIdsIn varchar(800), in reportRequsestIdIn int)
+proc_main:begin
+
+-- this SP splits the codeIds and inserts them into insertReportRequestContentCriteria
+-- SAMPLE USAGE - call reportRequestContentCriteria ('74,75,76',  7);
+
+SET @codeIds = codeIdsIn;
+SET @rrId = reportRequsestIdIn;
+
+SET @values = REPLACE(@codeIds, ',', CONCAT(', ', @rrId, '),('));
+SET @values = CONCAT('(', @values, ', ', @rrId, ')'); -- This produces a string like this -> (1, 100),(2, 100),(3, 100)
+
+SET @insert = CONCAT('INSERT INTO reportRequestContentCriteria (codeId, reportRequestId) VALUES', @values); -- Build INSERT statement like this -> INSERT INTO RolesMenus VALUES(1, 100),(2, 100),(3, 100)
+
+
+-- Execute INSERT statement
+PREPARE stmt FROM @insert;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+-- the only error for this is if SP bombs, no need to write in insert error logs
+select '';
+
+end proc_main;;
+
+DELIMITER ;
 
 
 
+drop PROCEDURE if exists  insertReportRequestReports;
+DELIMITER ;;
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insertReportRequestReports`(in reportIdsIn varchar(800), in reportRequsestIdIn int)
+proc_main:begin
+
+-- this SP splits the codeIds and inserts them into reportRequestReports
+-- SAMPLE USAGE - call insertReportRequestReports ('74,75,76',  7);
+
+SET @codeIds = reportIdsIn;
+SET @rrId = reportRequsestIdIn;
+
+SET @values = REPLACE(@codeIds, ',', CONCAT(', ', @rrId, '),('));
+SET @values = CONCAT('(', @values, ', ', @rrId, ')'); -- This produces a string like this -> (1, 100),(2, 100),(3, 100)
+
+SET @insert = CONCAT('INSERT INTO reportRequestReports (reportId, reportRequestId) VALUES', @values); -- Build INSERT statement like this -> INSERT INTO RolesMenus VALUES(1, 100),(2, 100),(3, 100)
 
 
+-- Execute INSERT statement
+PREPARE stmt FROM @insert;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+-- the only error for this is if SP bombs, no need to write in insert error logs
+select '';
 
+end proc_main;;
+
+DELIMITER ;

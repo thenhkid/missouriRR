@@ -1,5 +1,3 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
     
@@ -20,9 +18,9 @@
                         <div class="widget-body">
                             <div class="widget-main">
                                 <div>
-                                    <select multiple="" name="entity2Ids" class="chosen-select form-control" <c:if test="${disabled == true}">disabled</c:if> id="schoolSelect" data-placeholder="Select Schools / ECC...">
-                                       <c:forEach items="${entity2List}" var="district">
-                                                    <option value="${district.id}">${district.name}</option>
+                                    <select multiple="" name="entityIds" class="chosen-select form-control" id="schoolSelect" data-placeholder="Select Schools / ECC...">
+                                       <c:forEach items="${entityList}" var="entity">
+                                                    <option value="${entity.id}">${entity.name}</option>
                                             </c:forEach>        
                                     </select>
                                     <div id="errorMsg_schools" style="display: none; color:#A94442" class="help-block col-xs-12 col-sm-reset inline"></div>         

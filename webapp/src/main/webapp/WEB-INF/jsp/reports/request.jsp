@@ -19,7 +19,67 @@
     <hr/>
      </div>
 </div>
-        <form class="form-horizontal" id="newReport" method="post" action="/reports" role="form">
+        <form class="form-horizontal" id="newReport" method="post" action="saveRequest.do" role="form">
+           
+           <%-- start of report types --%>
+                <div class="row">
+                <div class="col-sm-12">
+                    <div class="widget-box">
+                        <div class="widget-header">
+                            <h4 class="widget-title">Report Type</h4>
+
+                            <span class="widget-toolbar">
+                                <a href="#" data-action="collapse">
+                                    <i class="ace-icon fa fa-chevron-up"></i>
+                                </a>
+                            </span>
+                        </div>
+						<%--- get distinct report type ---%>
+                        <div class="widget-body">
+                            <div class="widget-main">
+                                <div>
+                                    <select name="reportTypeId" class="chosen-select form-control"  id="reportTypeId" data-placeholder="Select Report Type">
+                                        	 <c:forEach items="${reportTypes}" var="reportType">
+                                                    <option value="${reportType.id}">${reportType.reportType}</option>
+                                            </c:forEach>
+                                            
+                                    </select>
+                                    <div id="errorMsg_reportType" style="display: none; color:#A94442" class="help-block col-xs-12 col-sm-reset inline"></div>         
+                                </div>
+                            </div>   
+                        </div>
+                </div><!-- row -->
+               <%-- end of report types --%>
+           <%-- start of surveys --%>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="widget-box">
+                        <div class="widget-header">
+                            <h4 class="widget-title">Surveys</h4>
+
+                            <span class="widget-toolbar">
+                                <a href="#" data-action="collapse">
+                                    <i class="ace-icon fa fa-chevron-up"></i>
+                                </a>
+                            </span>
+                        </div>
+
+                        <div class="widget-body">
+                            <div class="widget-main">
+                                <div>
+                                    <select multiple="" name="entityIds" class="chosen-select form-control" <c:if test="${disabled == true}">disabled</c:if> id="schoolSelect" data-placeholder="Select Schools / ECC...">
+                                        <c:forEach items="${reportList}" var="report">
+                                                    <option value="${report.id}">${report.reportName}</option>
+                                            </c:forEach>
+                                    </select>
+                                    <div id="errorMsg_schools" style="display: none; color:#A94442" class="help-block col-xs-12 col-sm-reset inline"></div>         
+                                </div>
+                            </div>   
+                        </div>
+                </div><!-- row -->
+                <%-- end of surveys --%>
+           
+           
             <%-- row for start /end dates --%>
             <div class="row">
                 <div class="col-sm-6">
@@ -93,9 +153,9 @@
                         <div class="widget-body">
                             <div class="widget-main">
                                 <div>
-                                    <select name="entity1Ids" class="chosen-select form-control" <c:if test="${disabled == true}">disabled</c:if> id="schoolSelect" data-placeholder="Select Schools / ECC...">
+                                    <select name="entity1Ids" multiple="" class="chosen-select form-control" id="entity1Ids" data-placeholder="Select Counties...">
                                             <c:forEach items="${entity1List}" var="county">
-                                                    <option value="${county.id}">${county.name}</option>
+                                                    <option value="${county.id}">${county.name} - ${county.id}</option>
                                             </c:forEach>
                                     </select>
                                     <div id="errorMsg_schools" style="display: none; color:#A94442" class="help-block col-xs-12 col-sm-reset inline"></div>         
@@ -109,73 +169,97 @@
             <c:if test="${fn:length(entity1List) == 1}">
                         	<input type="hidden" name="entit1Ids" value="${entity1List[0].id}"/>
             </c:if>
-            <jsp:include page="optionList.jsp">
-    				<jsp:param name="entity2Ids" value="${entity2List}" />
-			</jsp:include>
-           
+            <div class="row" id="entity2Div">
+                <div class="col-sm-12">
+                    <div class="widget-box">
+                        <div class="widget-header">
+                            <h4 class="widget-title">Please select district(s) </h4>
+
+                            <div class="widget-toolbar">
+                                <a href="#" data-action="collapse">
+                                    <i class="ace-icon fa fa-chevron-up"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="widget-body">
+                            <div class="widget-main">
+                                <div>
+                                    <select multiple="" name="entity2Ids" class="chosen-select form-control" id="schoolSelect" data-placeholder="Select Districts...">
+                                       <c:forEach items="${entity2List}" var="entity">
+                                                    <option value="${entity.id}">${entity.name}</option>
+                                            </c:forEach>        
+                                    </select>
+                                    <div id="errorMsg_districts" style="display: none; color:#A94442" class="help-block col-xs-12 col-sm-reset inline"></div>         
+                                </div>
+                            </div>   
+                        </div>
+                    </div>
+                </div><!-- /.span -->
+            </div><!-- /.row -->
             
-            <%-- start of surveys --%>
-            <div class="row">
+            <div class="row" id="entity3Div">
                 <div class="col-sm-12">
                     <div class="widget-box">
                         <div class="widget-header">
-                            <h4 class="widget-title">Surveys</h4>
+                            <h4 class="widget-title">Please select schools </h4>
 
-                            <span class="widget-toolbar">
+                            <div class="widget-toolbar">
                                 <a href="#" data-action="collapse">
                                     <i class="ace-icon fa fa-chevron-up"></i>
                                 </a>
-                            </span>
+                            </div>
                         </div>
 
                         <div class="widget-body">
                             <div class="widget-main">
                                 <div>
-                                    <select multiple="" name="entityIds" class="chosen-select form-control" <c:if test="${disabled == true}">disabled</c:if> id="schoolSelect" data-placeholder="Select Schools / ECC...">
-                                        <option>Resources Leveraged/Grant Proposals</option>
-                                            <option>Resources / Tools Used</option>
-                                            <option>Meetings</option>
-                                            <option>Media/Promotions</option>
-                                            <option>Events/Programs</option>
-                                            <option>Successes/Challenges/Other Info</option>
-                                            <option>Practice, Policy,  Environmental Change</option>
+                                    <select multiple="" name="entity3Ids" class="chosen-select form-control" id="schoolSelect" data-placeholder="Select Schools / ECC...">
+                                       <c:forEach items="${entity3List}" var="entity">
+                                                    <option value="${entity.id}">${entity.name}</option>
+                                            </c:forEach>        
                                     </select>
                                     <div id="errorMsg_schools" style="display: none; color:#A94442" class="help-block col-xs-12 col-sm-reset inline"></div>         
                                 </div>
                             </div>   
                         </div>
-                </div><!-- row -->
-                <%-- end of surveys --%>
-                
-                <%-- start of report types --%>
-                <div class="row">
+                    </div>
+                </div><!-- /.span -->
+            </div><!-- /.row -->
+            
+            
+            <div class="row" id="contentDiv">
                 <div class="col-sm-12">
                     <div class="widget-box">
                         <div class="widget-header">
-                            <h4 class="widget-title">Report Type</h4>
+                            <h4 class="widget-title">Please select content</h4>
 
-                            <span class="widget-toolbar">
+                            <div class="widget-toolbar">
                                 <a href="#" data-action="collapse">
                                     <i class="ace-icon fa fa-chevron-up"></i>
                                 </a>
-                            </span>
+                            </div>
                         </div>
-						<%--- get distinct report type ---%>
+
                         <div class="widget-body">
                             <div class="widget-main">
                                 <div>
-                                    <select name="entityIds" class="chosen-select form-control" <c:if test="${disabled == true}">disabled</c:if> id="schoolSelect" data-placeholder="Select Schools / ECC...">
-                                        	<option>Summary Count Report</option>
-                                            <option>Detail Report</option>
-                                            
+                                    <select multiple="" name="codeIds" class="chosen-select form-control" id="schoolSelect" data-placeholder="Select Schools / ECC...">
+                                       <c:forEach items="${codeList}" var="code">
+                                                    <option value="${code.id}">${code.name}</option>
+                                            </c:forEach>        
                                     </select>
                                     <div id="errorMsg_schools" style="display: none; color:#A94442" class="help-block col-xs-12 col-sm-reset inline"></div>         
                                 </div>
                             </div>   
                         </div>
-                </div><!-- row -->
-               <%-- end of report types --%>
+                    </div>
+                </div><!-- /.span -->
+            </div><!-- /.row -->
+           
                <%-- buttons --%>
+               <%-- this button should only be highlighted if there are surveys in the
+               system fitting info --%>
                 <div class="wizard-actions">
                <button class="btn btn-success btn-next nextPage" data-last="Finish">
                                                         Request Report
