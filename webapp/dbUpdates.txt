@@ -520,3 +520,26 @@ begin
 end$$
 DELIMITER ;
 
+
+/** 11052015 grace 1151AM **/
+USE `rapidregistry`;
+
+DELIMITER $$
+
+DROP TRIGGER IF EXISTS rapidregistry.udpateRepDisplayStatus$$
+USE `rapidregistry`$$
+CREATE DEFINER=`root`@`localhost` trigger udpateRepDisplayStatus after update on reportRequests
+for each row
+begin
+  update reportRequestDisplay set statusId = new.statusId
+  where reportRequestId = new.id;
+  
+  UPDATE reportRequestDisplay rrd
+	INNER JOIN lu_reportstatuses ON rrd.statusId = lu_reportstatuses.id
+	SET rrd.statusDisplay = lu_reportstatuses.statusDisplay
+	WHERE rrd.reportRequestId = new.id;
+
+end$$
+DELIMITER ;
+
+

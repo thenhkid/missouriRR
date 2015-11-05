@@ -17,15 +17,13 @@ import com.registryKit.user.User;
 import com.registryKit.user.userManager;
 import com.registryKit.user.userProgramModules;
 import com.rr.missouri.ui.security.encryptObject;
-
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.text.SimpleDateFormat;
 import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -65,7 +63,7 @@ public class reportController {
    @Value("${topSecret}")
    private String topSecret;
    
-    @RequestMapping(value = "", method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(value={"", "/list"}, method = {RequestMethod.POST, RequestMethod.GET})
     public ModelAndView listReports(HttpSession session) throws Exception {
        
     	User userDetails = (User) session.getAttribute("userDetails");
@@ -212,25 +210,29 @@ public class reportController {
         
         
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("/reports/optionList.jsp");
+        mav.setViewName("/reports/optionList");
         mav.addObject("selectText", "Districts");
         return mav;
      }
     
     @RequestMapping(value = "/saveReportRequest.do", method = {RequestMethod.POST, RequestMethod.GET})
     public ModelAndView saveReportRequest(HttpSession session,
-    		 @RequestParam(value = "startDate", required = true) Date startDate,
-             @RequestParam(value = "endDate", required = true) Date endDate,
-             @RequestParam(value = "entities", required = true) String entity3Ids,
+    		 @RequestParam(value = "startDate", required = true) String startDate,
+             @RequestParam(value = "endDate", required = true) String endDate,
+             @RequestParam(value = "entity3Ids", required = true) String entity3Ids,
              @RequestParam(value = "codeIds", required = true) String codeIds,
-             @RequestParam(value = "reportId", required = true) String reportIds
+             @RequestParam(value = "reportIds", required = true) String reportIds
             ) throws Exception {
        
     	User userDetails = (User) session.getAttribute("userDetails");
     	//we set up report request
     	reportRequest rr = new reportRequest();
-    	rr.setStartDateTime(startDate);
-    	rr.setEndDateTime(endDate);
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	    Date sd = sdf.parse(startDate);
+	    Date ed = sdf.parse(endDate);
+	    
+    	rr.setStartDateTime(sd);
+    	rr.setEndDateTime(ed);
     	rr.setProgramId(programId);
     	rr.setSystemUserId(userDetails.getId());
     	
@@ -246,6 +248,13 @@ public class reportController {
     	reportmanager.updateReportDisplayTable(reportRequestId);
     	
         ModelAndView mav = new ModelAndView(new RedirectView("/reports/list"));
+        return mav;
+    }
+    
+    @RequestMapping(value = "/sampleSubmit", method = {RequestMethod.POST, RequestMethod.GET})
+    public ModelAndView saveReportRequest() throws Exception {
+    	ModelAndView mav = new ModelAndView();
+        mav.setViewName("/list");
         return mav;
     }
     
