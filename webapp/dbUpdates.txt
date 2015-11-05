@@ -490,3 +490,33 @@ select '';
 end proc_main;;
 
 DELIMITER ;
+
+
+
+USE `rapidregistry`;
+
+DELIMITER $$
+
+DROP TRIGGER IF EXISTS insertRepDisplay$$
+
+CREATE DEFINER=`root`@`localhost` trigger insertRepDisplay after insert on reportRequests
+for each row
+begin
+  insert into reportRequestDisplay (reportRequestId, dateSubmitted, statusId, systemUserId, 
+  programId, datesRequested)
+  values (new.id, new.datecreated, new.statusId, 
+  new.systemUserId, new.programId, concat(left(new.startdate, 10), ' - ', left(new.enddate,10)));
+  
+  UPDATE reportRequestDisplay INNER JOIN users ON reportRequestDisplay.systemUserId = users.id
+	SET reportRequestDisplay.firstName = users.firstName, reportRequestDisplay.lastName = users.lastname
+	WHERE reportRequestDisplay.reportRequestId = new.id;
+    
+   update  reportRequestDisplay INNER JOIN lu_reportStatuses
+   on reportRequestDisplay.statusId =  lu_reportStatuses.id
+   set reportRequestDisplay.statusDisplay = lu_reportStatuses.statusDisplay
+   WHERE reportRequestDisplay.reportRequestId = new.id;
+   
+   
+end$$
+DELIMITER ;
+
