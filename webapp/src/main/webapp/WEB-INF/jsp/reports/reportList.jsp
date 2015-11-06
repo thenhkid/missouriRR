@@ -76,7 +76,8 @@
                                     <td class="center">
                                         <div class="hidden-sm hidden-xs action-buttons">
                                             <c:if test="${rr.statusDisplay!= 'Requested'}">
-	                                            <a href="reports/viewReport?i=${rr.encryptedId}&v=${rr.encryptedSecret}"  title="View this report" role="button">
+	                                            <!-- <a href="reports/viewReport?i=${rr.encryptedId}&v=${rr.encryptedSecret}"  title="View this report" role="button"> -->
+	                                                <a href="/FileDownload/downloadFile.do?filename=sampleDetailReport.pdf&foldername=reports"  title="View this report" role="button">
 	                                                <button class="btn btn-xs btn-success">
 	                                                    <i class="ace-icon fa fa-download bigger-120"></i>
 	                                                </button>

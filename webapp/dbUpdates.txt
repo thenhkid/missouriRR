@@ -395,7 +395,7 @@ EXECUTE stmt;-- execute
 select * from reportRequestDisplay where reportRequestId = repReqId;
 end proc_main;;
 
-DELIMITER ;;
+DELIMITER ;
   
   
 /** 11/05/2015 grace not on any BOWLINK servers**/
