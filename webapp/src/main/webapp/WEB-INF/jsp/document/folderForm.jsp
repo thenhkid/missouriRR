@@ -14,6 +14,7 @@
         <form:hidden path="id" id="folderId"/>
         <form:hidden path="dateCreated" />
         <form:hidden path="systemUserId" />
+        <form:hidden path="currentFolderName" />
         <form:hidden path="parentFolderId" id="parentFolderId"/>
         <c:choose>
             <c:when test="${sessionScope.userDetails.roleId == 2}">
@@ -78,9 +79,6 @@
                 <form:hidden path="entityId" />
             </c:otherwise>
         </c:choose>    
-            
-        
-            
             
     </form:form>
 </div>

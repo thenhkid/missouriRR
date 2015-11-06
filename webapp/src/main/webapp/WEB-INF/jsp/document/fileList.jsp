@@ -20,6 +20,14 @@
                 </button>
                 <ul class="dropdown-menu" role="menu" aria-labelledby="preferences">
                     <li role="presentation"><a role="menuitem" tabindex="-1" href="#" id="documentNotificationManagerModel">Document Notification Preferences</a></li>
+                    <c:if test="${sessionScope.userDetails.roleId == 2}">
+                        <li role="presentation">
+                            <a role="menuitem" tabindex="-1" href="#" id="modifyFolder">Modify Folder</a>
+                        </li>
+                        <li role="presentation">
+                            <a role="menuitem" tabindex="-1" href="#" id="deleteFolder">Delete Folder</a>
+                        </li>
+                    </c:if>
                 </ul>
             </div>
         </div>

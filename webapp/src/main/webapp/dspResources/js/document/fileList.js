@@ -24,11 +24,73 @@ jQuery(function ($) {
             });
             
     //New main folder button
+    $(document).on('click', '#modifyFolder', function(event) {
+       $.ajax({
+            type: 'GET',
+            url: '/documents/getFolderForm.do',
+            data: {'editFolder': true, 'subfolder': false},
+            success: function (data, event) {
+                
+                data = $(data);
+                
+                //Check if the session has expired.
+                if(data.find('.username').length > 0) {
+                   top.location.href = '/login?expired';
+                }
+                else {
+                   bootbox.dialog({
+                        message: data,
+                        title: "New Folder Form",
+                        buttons: {
+                            cancel: {
+                                label: "Cancel",
+                                className: "btn-default",
+                                callback: function () {
+
+                                }
+                            },
+                            success: {
+                                label: "Update",
+                                className: "btn-primary",
+                                callback: function () {
+                                    return folderFn();
+                                }
+                            },
+                        }
+                    }); 
+                }
+            }
+        });
+        
+    });  
+    
+    /* Remove selected folder */
+    $(document).on('click', '#deleteFolder', function () {
+
+        var confirmed = confirm("Are you sure you want to remove this folder and all subfolders?");
+
+        if (confirmed) {
+            $.ajax({
+                url: '/documents/deleteFolder.do',
+                type: 'POST',
+                success: function (data) {
+                  window.location.href = data;
+                },
+                error: function (error) {
+
+                }
+            });
+        }
+
+    });
+    
+            
+    //New main folder button
     $(document).on('click', '#newFolder', function(event) {
        $.ajax({
             type: 'GET',
             url: '/documents/getFolderForm.do',
-            data: {'subfolder': false},
+            data: {'editFolder': false, 'subfolder': false},
             success: function (data, event) {
                 
                 data = $(data);
@@ -63,13 +125,13 @@ jQuery(function ($) {
         });
         
     });
-            
+       
     //New subfolder button
     $(document).on('click', '#newSubfolder', function(event) {
        $.ajax({
             type: 'GET',
             url: '/documents/getFolderForm.do',
-            data: {'subfolder': true},
+            data: {'editFolder': false, 'subfolder': true},
             success: function (data, event) {
                 
                 data = $(data);

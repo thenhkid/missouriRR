@@ -361,32 +361,40 @@ public class documentController {
      */
     @RequestMapping(value = "/getFolderForm.do", method = RequestMethod.GET)
     public @ResponseBody
-    ModelAndView getFolderForm(HttpSession session, @RequestParam(value = "subfolder", required = true) Boolean subfolder) throws Exception {
+    ModelAndView getFolderForm(HttpSession session, @RequestParam(value = "editFolder", required = true) Boolean editFolder, @RequestParam(value = "subfolder", required = true) Boolean subfolder) throws Exception {
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/document/folderForm");
         
         /* Get a list of completed surveys the logged in user has access to */
         User userDetails = (User) session.getAttribute("userDetails");
-
-        documentFolder newFolder = new documentFolder();
-        newFolder.setSystemUserId(userDetails.getId());
         
-        if(subfolder == true && selFolder > 0) {
-            documentFolder parentFolderDetails = documentmanager.getFolderById(selFolder);
-            newFolder.setParentFolderId(selFolder);
-            newFolder.setCountyFolder(parentFolderDetails.getCountyFolder());
-            newFolder.setEntityId(parentFolderDetails.getEntityId());
+        documentFolder folderDetails;
+
+        if(editFolder == true) {
+            folderDetails = documentmanager.getFolderById(selFolder);
+            folderDetails.setSystemUserId(userDetails.getId());
+            folderDetails.setCurrentFolderName(folderDetails.getFolderName());
+        }
+        else {
+            folderDetails = new documentFolder();
+            folderDetails.setSystemUserId(userDetails.getId());
+            
+            if(subfolder == true && selFolder > 0) {
+                documentFolder parentFolderDetails = documentmanager.getFolderById(selFolder);
+                folderDetails.setParentFolderId(selFolder);
+                folderDetails.setCountyFolder(parentFolderDetails.getCountyFolder());
+                folderDetails.setEntityId(parentFolderDetails.getEntityId());
+            }
         }
         
         if (userDetails.getRoleId() == 2) {
             programOrgHierarchy topLevel = hierarchymanager.getProgramOrgHierarchyBydspPos(1, programId);
             List<programHierarchyDetails> counties = hierarchymanager.getProgramHierarchyItems(topLevel.getId(), 0);
-           mav.addObject("countyList", counties);
-        
+            mav.addObject("countyList", counties);
         }
         
-        mav.addObject("folderDetails", newFolder);
+        mav.addObject("folderDetails", folderDetails);
 
         return mav;
     }
@@ -413,13 +421,11 @@ public class documentController {
         
         Integer folderId = documentmanager.saveFolder(folderDetails);
 
-        documentFolder folder = documentmanager.getFolderById(folderId);
-        
         encryptObject encrypt = new encryptObject();
         Map<String, String> map;
         
         map = new HashMap<String, String>();
-        map.put("id", Integer.toString(folder.getId()));
+        map.put("id", Integer.toString(folderId));
         map.put("topSecret", topSecret);
 
         String[] encrypted = encrypt.encryptObject(map);
@@ -672,5 +678,46 @@ public class documentController {
         
        return 0;
 
+    }
+    
+    /**
+     * The 'deleteFolder' POST request will change the status to false for the selected folder.
+     *
+     * @param documentId The id of the clicked document.
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/deleteFolder.do", method = RequestMethod.POST)
+    public @ResponseBody
+    String deleteFolder(HttpSession session) throws Exception {
+        
+        documentFolder folderDetails = documentmanager.getFolderById(selFolder);
+        folderDetails.setStatus(false);
+        
+        documentmanager.saveFolder(folderDetails);
+        
+        String loadURL;
+        
+        if(folderDetails.getParentFolderId() > 0) {
+            documentFolder parentfolderDetails = documentmanager.getFolderById(folderDetails.getParentFolderId());
+            
+            encryptObject encrypt = new encryptObject();
+            Map<String, String> map;
+
+            map = new HashMap<String, String>();
+            map.put("id", Integer.toString(parentfolderDetails.getId()));
+            map.put("topSecret", topSecret);
+
+            String[] encrypted = encrypt.encryptObject(map);
+            
+            loadURL = "/documents/folder?i=" + encrypted[0] + "&v=" + encrypted[1];
+       
+        }
+        else {
+            loadURL = "/documents";
+       }
+        
+        return loadURL;
+        
     }
 }
