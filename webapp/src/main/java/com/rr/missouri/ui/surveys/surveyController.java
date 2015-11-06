@@ -464,18 +464,19 @@ public class surveyController {
         if(survey.getSurveyPageQuestions() != null && survey.getSurveyPageQuestions().size() > 0) {
             for(SurveyQuestions question : survey.getSurveyPageQuestions()) {
                 if(question.getAnswerTypeId() == 6) {
-                    
-                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                    Date formattedDate = df.parse(question.getQuestionValue());
-                    
-                    if(question.getDateFormatType() == 2) { //dd/mm/yyyy
-                        df.applyPattern("dd/MM/yyyy");
+                	 if (question.getQuestionValue().length() > 0) {
+	                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	                    Date formattedDate = df.parse(question.getQuestionValue());
+	                   
+		                    if(question.getDateFormatType() == 2) { //dd/mm/yyyy
+		                        df.applyPattern("dd/MM/yyyy");
+		                    }
+		                    else { //mm/dd/yyyy
+		                        df.applyPattern("MM/dd/yyyy");
+		                    }
+		                    String formattedDateasString = df.format(formattedDate);
+		                    question.setQuestionValue(formattedDateasString);
                     }
-                    else { //mm/dd/yyyy
-                        df.applyPattern("MM/dd/yyyy");
-                    }
-                    String formattedDateasString = df.format(formattedDate);
-                    question.setQuestionValue(formattedDateasString);
                 }
             }
         }
