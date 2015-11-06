@@ -169,6 +169,13 @@ public class forumController {
                     List<forumMessages> messageReplies = forumManager.getTopicMessageReplies(message.getId());
 
                     if (!messageReplies.isEmpty()) {
+                        for(forumMessages reply : messageReplies) {
+                            List<forumDocuments> documentList = forumManager.getMessageDocuments(reply.getId());
+
+                            if (!documentList.isEmpty()) {
+                                reply.setForumDocuments(documentList);
+                            }
+                        }
                         message.setReplies(messageReplies);
                     }
 
@@ -191,6 +198,13 @@ public class forumController {
                     List<forumMessages> messageReplies = forumManager.getTopicMessageReplies(message.getId());
 
                     if (!messageReplies.isEmpty()) {
+                        for(forumMessages reply : messageReplies) {
+                            List<forumDocuments> documentList = forumManager.getMessageDocuments(reply.getId());
+
+                            if (!documentList.isEmpty()) {
+                                reply.setForumDocuments(documentList);
+                            }
+                        }
                         message.setReplies(messageReplies);
                     }
 
@@ -207,6 +221,13 @@ public class forumController {
                     List<forumMessages> messageReplies = forumManager.getTopicMessageReplies(message.getId());
 
                     if (!messageReplies.isEmpty()) {
+                        for(forumMessages reply : messageReplies) {
+                            List<forumDocuments> documentList = forumManager.getMessageDocuments(reply.getId());
+
+                            if (!documentList.isEmpty()) {
+                                reply.setForumDocuments(documentList);
+                            }
+                        }
                         message.setReplies(messageReplies);
                     }
 
