@@ -89,15 +89,11 @@
 
                         <div class="widget-body">
                             <div class="widget-main" id="startDateDiv">
-                                 <div class="input-group">
-                                 <%--date-picker   --%>
-                                        <input class="form-control  required Date" id="startDate" type="text" name="startDate"  data-date-format="yyyy-mm-dd" value="2015-10-09" />
-                                          <span class="input-group-addon">
-                                        <i class="fa fa-calendar bigger-110"></i>
-                                         </span>
-                                  <div id="errorMsg_startDate" style="display: none; color:#A94442" class="help-block col-xs-12 col-sm-reset inline"></div>
-                                 
-                                  </div>       
+                                <div class="input-group">
+                                    <input class="form-control date-picker required Date" id="startDate" type="text" name="startDate"  data-date-format="yyyy-mm-dd" value="" />
+                                    <span class="input-group-addon"><i class="fa fa-calendar bigger-110"></i></span>
+                               </div>   
+                                <div id="errorMsg_startDate" style="display: none; color:#A94442" class="help-block col-xs-12 col-sm-reset inline"></div>
                             </div>   
                         </div>
                     </div>
@@ -118,12 +114,10 @@
                         <div class="widget-body">
                             <div class="widget-main">
                                 <div class="input-group" id="endDateDiv">
-                                        <input class="form-control  required Date" id="endDate" type="text" name="endDate" data-date-format="yyyy-mm-dd" value="2015-10-20" />
-                                          <span class="input-group-addon">
-                                        <i class="fa fa-calendar bigger-110"></i>
-                                         </span>
-                                         <div id="errorMsg_endDate" style="display: none; color:#A94442" class="help-block col-xs-12 col-sm-reset inline"></div>
-                                  </div> 
+                                    <input class="form-control date-picker required Date" id="endDate" type="text" name="endDate" data-date-format="yyyy-mm-dd" value="" />
+                                    <span class="input-group-addon"><i class="fa fa-calendar bigger-110"></i></span>
+                               </div> 
+                               <div id="errorMsg_endDate" style="display: none; color:#A94442" class="help-block col-xs-12 col-sm-reset inline"></div>
                             </div>   
                         </div>
                     </div>
