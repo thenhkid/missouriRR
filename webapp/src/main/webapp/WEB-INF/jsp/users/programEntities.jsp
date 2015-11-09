@@ -23,11 +23,12 @@
                  <input type="hidden" id="completed" value="${completed}" />
                  
                  <div class="orgHierarchyDiv" style="padding-bottom:20px">
-                    <select name="selectedEntityItems" class="form-control" multiple style="height:200px;">
+                    <select id="selectedEntityItems" name="selectedEntityItems" class="form-control" multiple style="height:200px;">
                         <c:forEach var="entityItem" items="${entityItems}">
                             <option value="${entityItem.id}" <c:if test="${fn:contains(userEntityItems, entityItem.id)}">selected</c:if>>${entityItem.name}</option>
                         </c:forEach>
                     </select>
+                    <span id="selectedEntity" class="control-label"></span>
                 </div> 
                 </form>  
             </div>

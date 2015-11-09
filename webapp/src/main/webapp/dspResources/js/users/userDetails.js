@@ -124,40 +124,50 @@ jQuery(function ($) {
 
     //Function to submit the selected program to the user
     $(document).on('click', '#submitEntityButton', function(event) {
+        
+        $('div.form-group').removeClass("has-error");
+        $('span.control-label').removeClass("has-error");
+        $('span.control-label').html("");
+        
+        if($('#selectedEntityItems').val() == null) {
+            $('.orgHierarchyDiv').addClass("has-error");
+            $('#selectedEntity').addClass("has-error");
+            $('#selectedEntity').html('At least one entity must be selected.');
+        }
+        else {
+            var formData = $("#newProgramEntityForm").serialize();
 
-        var formData = $("#newProgramEntityForm").serialize();
+            $.ajax({
+                url: 'saveProgramUserEntity.do',
+                data: formData,
+                type: "POST",
+                async: false,
+                success: function(data) {
+                    data = $(data);
 
-        $.ajax({
-            url: 'saveProgramUserEntity.do',
-            data: formData,
-            type: "POST",
-            async: false,
-            success: function(data) {
-                data = $(data);
-
-                if(data.find('.username').length > 0) {
-                   top.location.href = '/login?expired';
-                }
-                else {
-                    var url = data.find('#encryptedURL').val();
-                    var completed = data.find('#completed').val();
-                    
-                    if(completed === "1") {
-                        window.location.href = "details"+url+"&msg=entityAdded";
+                    if(data.find('.username').length > 0) {
+                       top.location.href = '/login?expired';
                     }
                     else {
-                        $('.popover').popover('destroy');
-                        bootbox.hideAll();
-                        bootbox.dialog({
-                            title: "Associated Entities",
-                            message: data
-                        });
+                        var url = data.find('#encryptedURL').val();
+                        var completed = data.find('#completed').val();
+
+                        if(completed === "1") {
+                            window.location.href = "details"+url+"&msg=entityAdded";
+                        }
+                        else {
+                            $('.popover').popover('destroy');
+                            bootbox.hideAll();
+                            bootbox.dialog({
+                                title: "Associated Entities",
+                                message: data
+                            });
+                        }
                     }
                 }
-            }
-        });
-
-
+            });
+        }
+ 
         event.preventDefault();
         return false;
 
