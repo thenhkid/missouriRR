@@ -98,24 +98,26 @@
                                     <%--<td></td>--%>
                                     <td class="center">
                                         <div class="hidden-sm hidden-xs action-buttons">
-                                            <%--<c:choose>
-                                                <c:when test="${sessionScope.userDetails.id == submittedSurvey.systemUserId || sessionScope.userDetails.roleId == 2}">--%>
-                                            <a href="surveys/editSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Survey" role="button">
-                                                <button class="btn btn-xs btn-success">
-                                                    <i class="ace-icon fa fa-pencil bigger-120"></i>
-                                                </button>
-                                            </a>
-                                            <a href="javascript:void(0);" class="deleteSurvey" rel="${submittedSurvey.id}"  title="Delete This Survey" role="button">
-                                                <button class="btn btn-xs btn-danger">
-                                                    <i class="ace-icon fa fa-close bigger-120"></i>
-                                                </button>
-                                            </a>
-                                            <a href="javascript:void(0);" class="surveyDocuments" rel="${submittedSurvey.id}"  title="Upload File" role="button">   
-                                                <button class="btn btn-xs btn-info">
-                                                    <i class="ace-icon fa fa-upload bigger-120"></i>
-                                                </button>
-                                            </a>     
-                                            <%--</c:when>
+                                            <c:choose>
+                                                <c:when test="${allowEdit == true || sessionScope.userDetails.roleId == 2}">
+                                                    <a href="surveys/editSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Activity Log" role="button">
+                                                        <button class="btn btn-xs btn-success">
+                                                            <i class="ace-icon fa fa-pencil bigger-120"></i>
+                                                        </button>
+                                                    </a>
+                                                    <c:if test="${allowDelete == true}">
+                                                        <a href="javascript:void(0);" class="deleteSurvey" rel="${submittedSurvey.id}"  title="Delete This Activity Log" role="button">
+                                                            <button class="btn btn-xs btn-danger">
+                                                                <i class="ace-icon fa fa-close bigger-120"></i>
+                                                            </button>
+                                                        </a>
+                                                    </c:if> 
+                                                    <a href="javascript:void(0);" class="surveyDocuments" rel="${submittedSurvey.id}"  title="Upload File" role="button">   
+                                                        <button class="btn btn-xs btn-info">
+                                                            <i class="ace-icon fa fa-upload bigger-120"></i>
+                                                        </button>
+                                                    </a>     
+                                            </c:when>
                                             <c:otherwise>
                                                 <a href="surveys/viewSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Survey" role="button">
                                                     <button class="btn btn-xs btn-info">
@@ -123,7 +125,7 @@
                                                     </button>
                                                 </a>
                                             </c:otherwise>
-                                        </c:choose>--%>
+                                        </c:choose>
                                         </div>
                                     </td>
                                 </tr>

@@ -19,7 +19,7 @@
             <input type="hidden" name="engagementId" value="${survey.engagementId}" /> 
             <input type="hidden" name="clientId" value="${survey.clientId}" /> 
             <input type="hidden" name="currentPage" id="currentPage" value="${survey.currentPage}" />
-            <input type="hidden" name="lastQNumAnswered" id="lastQNumAnswered" value="" />
+            <input type="hidden" name="lastQNumAnswered" id="lastQNumAnswered" value="1" />
             <input type="hidden" name="totalPages" value="${survey.totalPages}" />
             <input type="hidden" name="surveyTitle" value="${survey.surveyTitle}" />
             <input type="hidden" name="prevButton" value="${survey.prevButton}" />

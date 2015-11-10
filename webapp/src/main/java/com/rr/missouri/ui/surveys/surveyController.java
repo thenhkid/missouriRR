@@ -102,6 +102,7 @@ public class surveyController {
 
     private static boolean allowCreate = false;
     private static boolean allowEdit = false;
+    private static boolean allowDelete = false;
 
     /**
      * The '' request will display the list of taken surveys.
@@ -211,13 +212,16 @@ public class surveyController {
         if (userDetails.getRoleId() == 2) {
             allowCreate = true;
             allowEdit = true;
+            allowDelete = true;
         } else {
             allowCreate = modulePermissions.isAllowCreate();
             allowEdit = modulePermissions.isAllowEdit();
+            allowDelete = modulePermissions.isAllowDelete();
         }
 
         mav.addObject("allowCreate", allowCreate);
         mav.addObject("allowEdit", allowEdit);
+        mav.addObject("allowDelete", allowDelete);
 
         return mav;
     }
