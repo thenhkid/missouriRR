@@ -25,6 +25,7 @@ jQuery(function ($) {
          
 
         $('#reportTypeId').change(function (event) {
+        	clearErrors ();
             event.preventDefault();
             var reportTypeId = $('#reportTypeId').val();
             $.ajax({
@@ -52,16 +53,24 @@ jQuery(function ($) {
              * b - we get data and show entity2
              * c - we change button to say Change
              **/
+            
+            clearErrors ();
+            
+            var errors = checkDatesAndReport();
+            
             if ($('#entity1Ids').val() == null) {
                 var message = errorMsg + $(this).attr("rel");
                 $('#entity1Div').addClass('has-error');
                 $('#errorMsg_entity1').html(message);
-                return false;
+                errors++;
+            }
+            
+            
+            if (errors > 0) {  
+            	return false;
             }
 
-
-            $('#entity1Div').removeClass('has-error');
-            $('#errorMsg_entity1').html("");
+            
             $('#entity1Ids').prop('disabled', 'disabled');
             $('#entity2Div').show();
             $('#changeEntity1').show();
@@ -94,6 +103,10 @@ jQuery(function ($) {
 
         $('#changeEntity1').click(function (event) {
             event.preventDefault();
+            clearErrors ();
+            
+            var errors = checkDatesAndReport();
+            
             /**a - we disable entity1
              * b - we get data and show entity2
              * c - we change button to say Change
@@ -119,16 +132,22 @@ jQuery(function ($) {
              * b - we get data and show entity2
              * c - we change button to say Change
              **/
+            clearErrors ();
+            
+            var errors = checkDatesAndReport();
+            
+            
             if ($('#entity2Ids').val() == null) {
                 var message = errorMsg + $(this).attr("rel");
                 $('#entity2Div').addClass('has-error');
                 $('#errorMsg_entity2').html(message);
-                return false;
+                errors++;
+            }
+           
+            if (errors > 0) {
+            	return false;
             }
 
-
-            $('#entity2Div').removeClass('has-error');
-            $('#errorMsg_entity2').html("");
             $('#entity2Ids').prop('disabled', 'disabled');
             $('#entity3Div').show();
             $('#changeEntity2').show();
@@ -159,6 +178,9 @@ jQuery(function ($) {
 
         $('#changeEntity2').click(function (event) {
             event.preventDefault();
+            clearErrors ();
+            var errors = checkDatesAndReport();
+            
             $("#entity2Ids").removeAttr("disabled");
             $('#showEntity3').show();
             $('#entity3Div').hide();
@@ -176,16 +198,22 @@ jQuery(function ($) {
              * b - we get data and show entity2
              * c - we change button to say Change
              **/
+            clearErrors ();
+            
+            var errors = checkDatesAndReport();
+            
             if ($('#entity3Ids').val() == null) {
                 var message = errorMsg + $(this).attr("rel");
                 $('#entity3Div').addClass('has-error');
                 $('#errorMsg_entity3').html(message);
-                return false;
+                errors++;
             }
 
 
-            $('#entity3Div').removeClass('has-error');
-            $('#errorMsg_entity3').html("");
+            if (errors > 0) {
+            	return false;
+            }
+            
             $('#entity3Ids').prop('disabled', 'disabled');
             $('#contentDiv').show();
             $('#requestButton').show();
@@ -220,6 +248,9 @@ jQuery(function ($) {
 
         $('#changeEntity3').click(function (event) {
             event.preventDefault();
+            clearErrors ();
+            var errors = checkDatesAndReport();
+            
             $("#entity3Ids").removeAttr("disabled");
             $('#showCodes').show();
             $('#contentDiv').hide();
@@ -231,48 +262,20 @@ jQuery(function ($) {
         /** here we submit the form **.
          */
         $('#submitButton').click(function (event) {
-            $('#contentDiv').removeClass('has-error');
-            $('#startDateDiv').removeClass('has-error');
-            $('#endDateDiv').removeClass('has-error');
-            $('#selectReportDiv').removeClass('has-error');
-            $('#errorMsg_codes').html("");
-            $('#errorMsg_reports').html("");
-            $('#errorMsg_startDate').html("");
-            $('#errorMsg_endDate').html("");
+        	
+        	clearErrors ();
             
-            //Check start date
-            var DateValidated = validateDate($('#startDate').val());
-
-            if (DateValidated === false) {
-                $('#errorMsg_startDate').addClass("has-error");
-                $('#errorMsg_startDate').html('The start date is not valid, format should be yyyy-mm-dd.');
-                $('#errorMsg_startDate').show();
-                return false;
-            }
+            var errors = checkDatesAndReport();
             
-            //Check end date
-            var DateValidated = validateDate($('#endDate').val());
-
-            if (DateValidated === false) {
-                $('#errorMsg_endDate').addClass("has-error");
-                $('#errorMsg_endDate').html('This end date is not valid, format should be yyyy-mm-dd.');
-                $('#errorMsg_endDate').show();
-                return false;
-            }
-
-
             if ($('#codeIds').val() == null) {
                 $('#contentDiv').addClass('has-error');
                 $('#errorMsg_codes').html("Please select at least one Content Area & Criteria");
-                return false;
+                errors++;
             }
-
-            if ($('#reportIds').val() == null) {
-                $('#reportIdDiv').addClass('has-error');
-                $('#errorMsg_reports').html("Please select at least one report");
-                return false;
+            
+            if (errors > 0) {            	
+            	return false;
             }
-
 
             var selectednumbers = [];
             $('#entity3Ids :selected').each(function (i, selected) {
@@ -305,10 +308,69 @@ jQuery(function ($) {
             $("#requestForm").submit();
 
 
-        });
+        });                
 
     });
 });
+
+function clearErrors () {
+	$('#selectReportDiv').removeClass('has-error');
+	$('#errorMsg_reports').html("");
+	
+	$('#startDateDiv').removeClass('has-error');
+	$('#errorMsg_startDate').html("");
+	   
+	$('#endDateDiv').removeClass('has-error');
+	$('#errorMsg_endDate').html("");
+	
+	$('#entity1Div').removeClass('has-error');
+    $('#errorMsg_entity1').html("");
+	 
+	$('#entity2Div').removeClass('has-error');
+	$('#errorMsg_entity2').html("");
+	
+	$('#entity3Div').removeClass('has-error');
+	$('#errorMsg_entity3').html("");
+	
+	
+	$('#contentDiv').removeClass('has-error');
+    $('#errorMsg_codes').html("");
+}
+
+
+function checkDatesAndReport() {
+	var errors = 0;
+	
+	var DateValidated = validateDate($('#startDate').val());
+
+	if (DateValidated === false) {
+        $('#errorMsg_startDate').addClass("has-error");
+        $('#errorMsg_startDate').html('The start date is not valid, format should be yyyy-mm-dd.');
+        $('#errorMsg_startDate').show();
+        errors++;
+    }
+    
+    //Check end date
+    var DateValidated = validateDate($('#endDate').val());
+
+    if (DateValidated === false) {
+        $('#errorMsg_endDate').addClass("has-error");
+        $('#errorMsg_endDate').html('This end date is not valid, format should be yyyy-mm-dd.');
+        $('#errorMsg_endDate').show();
+        errors++;
+    }
+    
+    if ($('#reportIds').val() == null) {
+        $('#reportIdDiv').addClass('has-error');
+        $('#errorMsg_reports').html("Please select at least one report");
+        errors++;
+    }
+	
+    return errors;
+	
+	
+}
+
 
 function validateDate($date) {
 
