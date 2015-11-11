@@ -38,7 +38,7 @@
                                 <div>
                                     <select name="reportTypeId" class="chosen-select form-control"  id="reportTypeId" data-placeholder="Select Report Type">
                                         	 <c:forEach items="${reportTypes}" var="reportType">
-                                                    <option value="${reportType.id}">${reportType.reportType}</option>
+                                                    <option value="${reportType.id}">${reportType.reportType} (${reportType.reportDesc})</option>
                                             </c:forEach>
                                             
                                     </select>
