@@ -147,6 +147,10 @@ public class documentController {
                 }
                 User createdBy = usermanager.getUserById(doc.getSystemUserId());
                 doc.setCreatedBy(createdBy.getFirstName() + " " + createdBy.getLastName());
+                
+                String encodedFileName = URLEncoder.encode(doc.getUploadedFile(),"UTF-8");
+                doc.setUploadedFile(encodedFileName);
+                
                 doc.setDownloadLink(URLEncoder.encode(folderList.get(0).getFolderName(),"UTF-8"));
             } 
         }
@@ -326,6 +330,10 @@ public class documentController {
                 }
                 User createdBy = usermanager.getUserById(doc.getSystemUserId());
                 doc.setCreatedBy(createdBy.getFirstName() + " " + createdBy.getLastName());
+                
+                String encodedFileName = URLEncoder.encode(doc.getUploadedFile(),"UTF-8");
+                doc.setUploadedFile(encodedFileName);
+                
                 doc.setDownloadLink(URLEncoder.encode(downloadLink,"UTF-8"));
             } 
         }
@@ -494,6 +502,26 @@ public class documentController {
         }
         
         if(userDetails.getRoleId() != 3) {
+            for(documentFolder folder : folders) {
+                List<documentFolder> folderSubfolders = documentmanager.getSubFolders(programId, userDetails, folder.getId());
+                
+                if(folderSubfolders != null && folderSubfolders.size() > 0) {
+                    
+                    for(documentFolder subfolders : folderSubfolders) {
+                        List<documentFolder> subfolderSubfolders = documentmanager.getSubFolders(programId, userDetails, subfolders.getId());
+                
+                        if(subfolderSubfolders != null && subfolderSubfolders.size() > 0) {
+                            subfolders.setSubfolders(subfolderSubfolders);
+                        }
+                    }
+                    
+                    folder.setSubfolders(folderSubfolders);
+                    
+                }
+            }
+            mav.addObject("documentfolder", folders);
+        }
+        else if(documentId > 0 && documentDetails.getSystemUserId() == userDetails.getId()) {
             for(documentFolder folder : folders) {
                 List<documentFolder> folderSubfolders = documentmanager.getSubFolders(programId, userDetails, folder.getId());
                 

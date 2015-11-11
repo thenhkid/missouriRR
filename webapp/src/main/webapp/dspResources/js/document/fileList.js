@@ -7,8 +7,7 @@
 
 jQuery(function ($) {
     
-    $("input:text,form").attr("autocomplete", "off");
-    
+	
     //initiate dataTables plugin
     var oTable1 =
             $('#dynamic-table')

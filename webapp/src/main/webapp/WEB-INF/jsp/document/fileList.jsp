@@ -20,7 +20,7 @@
                 </button>
                 <ul class="dropdown-menu" role="menu" aria-labelledby="preferences">
                     <li role="presentation"><a role="menuitem" tabindex="-1" href="#" id="documentNotificationManagerModel">Document Notification Preferences</a></li>
-                    <c:if test="${sessionScope.userDetails.roleId == 2}">
+                        <c:if test="${sessionScope.userDetails.roleId == 2}">
                         <li role="presentation">
                             <a role="menuitem" tabindex="-1" href="#" id="modifyFolder">Modify Folder</a>
                         </li>
@@ -79,49 +79,49 @@
                                     <td class="center" style="vertical-align: middle; ">
                                         <c:if test="${not empty document.uploadedFile}">
                                             <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.uploadedFile}&foldername=documents/${document.downloadLink}"/>" title="${document.title}">
-                                            <c:choose>
-                                                <c:when test="${document.fileExt == 'pdf'}">
-                                                    <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
-                                                        <div class="infobox-icon">
-                                                            <i class="ace-icon fa fa-file-pdf-o"></i>
+                                                <c:choose>
+                                                    <c:when test="${document.fileExt == 'pdf'}">
+                                                        <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
+                                                            <div class="infobox-icon">
+                                                                <i class="ace-icon fa fa-file-pdf-o"></i>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </c:when>
-                                                <c:when test="${document.fileExt == 'doc' || document.fileExt == 'docx'}">
-                                                    <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
-                                                        <div class="infobox-icon">
-                                                            <i class="ace-icon fa fa-file-word-o"></i>
+                                                    </c:when>
+                                                    <c:when test="${document.fileExt == 'doc' || document.fileExt == 'docx'}">
+                                                        <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
+                                                            <div class="infobox-icon">
+                                                                <i class="ace-icon fa fa-file-word-o"></i>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </c:when>
-                                                <c:when test="${document.fileExt == 'xls' || document.fileExt == 'xlsx'}">
-                                                    <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
-                                                        <div class="infobox-icon">
-                                                            <i class="ace-icon fa fa-file-excel-o"></i>
+                                                    </c:when>
+                                                    <c:when test="${document.fileExt == 'xls' || document.fileExt == 'xlsx'}">
+                                                        <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
+                                                            <div class="infobox-icon">
+                                                                <i class="ace-icon fa fa-file-excel-o"></i>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </c:when>
-                                                <c:when test="${document.fileExt == 'txt'}">
-                                                    <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
-                                                        <div class="infobox-icon">
-                                                            <i class="ace-icon fa fa-file-text-o"></i>
+                                                    </c:when>
+                                                    <c:when test="${document.fileExt == 'txt'}">
+                                                        <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
+                                                            <div class="infobox-icon">
+                                                                <i class="ace-icon fa fa-file-text-o"></i>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </c:when>
-                                                <c:when test="${document.fileExt == 'jpg' || document.fileExt == 'gif' || document.fileExt == 'jpeg' || document.fileExt == 'png'}">
-                                                    <div class="infobox infobox-orange" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
-                                                        <div class="infobox-icon">
-                                                            <i class="ace-icon fa fa-file-image-o"></i>
+                                                    </c:when>
+                                                    <c:when test="${document.fileExt == 'jpg' || document.fileExt == 'gif' || document.fileExt == 'jpeg' || document.fileExt == 'png'}">
+                                                        <div class="infobox infobox-orange" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
+                                                            <div class="infobox-icon">
+                                                                <i class="ace-icon fa fa-file-image-o"></i>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </c:when>
-                                            </c:choose>
+                                                    </c:when>
+                                                </c:choose>
                                             </a> 
                                         </c:if>
                                     </td>
                                     <td>
                                         <c:if test="${document.privateDoc == true}">
-                                             <i class="ace-icon fa fa-lock red"></i>
+                                            <i class="ace-icon fa fa-lock red"></i>
                                         </c:if>
                                         <strong>
                                             <c:choose>
@@ -129,14 +129,14 @@
                                                 <c:otherwise>${document.uploadedFile}</c:otherwise>
                                             </c:choose>
                                         </strong>
-                                            <c:if test="${not empty document.externalWebLink}">
-                                                <br />
-                                                URL: <a href="${document.externalWebLink}" target="_blank">Click to visit site</a>
-                                            </c:if>
-                                            <c:if test="${not empty document.docDesc}">
-                                                <br />
-                                                ${document.docDesc}
-                                            </c:if>
+                                        <c:if test="${not empty document.externalWebLink}">
+                                            <br />
+                                            URL: <a href="${document.externalWebLink}" target="_blank">Click to visit site</a>
+                                        </c:if>
+                                        <c:if test="${not empty document.docDesc}">
+                                            <br />
+                                            ${document.docDesc}
+                                        </c:if>
                                     </td>
                                     <td class="center">
                                         <fmt:formatDate value="${document.dateCreated}" type="date" pattern="M/dd/yyyy h:mm a" />
@@ -148,7 +148,7 @@
                                         <div class="hidden-sm hidden-xs btn-group">
                                             <c:if test="${not empty document.uploadedFile}">
                                                 <a class="btn btn-xs btn-success" href="<c:url value="/FileDownload/downloadFile.do?filename=${document.uploadedFile}&foldername=documents/${document.downloadLink}"/>" title="${document.title}">
-                                                <i class="ace-icon fa fa-download bigger-120"></i>
+                                                    <i class="ace-icon fa fa-download bigger-120"></i>
                                                 </a>
                                             </c:if>
                                             <c:if test="${sessionScope.userDetails.roleId != 3 || (allowEdit == true && sessionScope.userDetails.id == document.systemUserId)}">
@@ -173,7 +173,49 @@
                 </tbody>
             </table>
         </div>
-
+                    
+        <c:if test="${(folderCount == 2 && not empty subsubfolders) || (folderCount == 1 && not empty subfolders)}">
+            <div class="space-10"></div>
+            <div class="row">
+                <div class="page-header">
+                    <h1>
+                      ${selFolderName} Subfolders
+                    </h1>
+                </div>
+                <div class="col-xs-12">
+                    <div class="dd" id="nestable">
+                        <ol class="dd-list">
+                            <c:choose>
+                            <c:when test="${folderCount == 2 && not empty subsubfolders}">
+                                <c:forEach var="subsubfolder" items="${subsubfolders}">
+                                    <li class="dd-item" data-id="${subsubfolder.id}">
+                                        <div class="dd-handle">
+                                            <i class="fa fa-folder blue"></i>
+                                            <a href="/documents/folder?i=${subsubfolder.encryptedId}&v=${subsubfolder.encryptedSecret}">
+                                            ${subsubfolder.folderName}
+                                            </a>
+                                        </div>
+                                    </li>
+                                </c:forEach>
+                            </c:when>
+                            <c:when test="${folderCount == 1 && not empty subfolders}">
+                                <c:forEach var="subfolder" items="${subfolders}">
+                                    <li class="dd-item" data-id="${subfolder.id}">
+                                        <div class="dd-handle">
+                                            <i class="fa fa-folder red"></i>
+                                            <a href="/documents/folder?i=${subfolder.encryptedId}&v=${subfolder.encryptedSecret}">
+                                            ${subfolder.folderName}
+                                            </a>
+                                        </div>
+                                    </li>
+                                </c:forEach>
+                            </c:when>
+                            </c:choose>        
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </c:if>
     </div><!-- /.col -->
 </div>
 

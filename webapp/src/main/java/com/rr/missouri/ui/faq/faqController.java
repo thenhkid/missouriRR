@@ -15,6 +15,7 @@ import com.registryKit.user.User;
 import com.registryKit.user.userActivity;
 import com.registryKit.user.userManager;
 import com.registryKit.user.userProgramModules;
+import java.net.URLEncoder;
 import java.util.List;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -251,6 +252,12 @@ public class faqController {
          */
         if (toDo.equalsIgnoreCase("Edit")) {
             List<faqQuestionDocuments> documentList = faqManager.getFAQQuestionDocuments(question.getId(), statusId);
+            
+            for(faqQuestionDocuments doc : documentList) {
+               String encodedFileName = URLEncoder.encode(doc.getDocumentTitle(),"UTF-8");
+               doc.setDocumentTitle(encodedFileName);
+            }
+            
             mav.addObject("documentList", documentList);
         }
         return mav;

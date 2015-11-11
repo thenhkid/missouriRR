@@ -9,13 +9,13 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <div class="page-content" style="padding:0;max-height: 500px; overflow: auto">
-    <form:form id="documentForm" modelAttribute="documentDetails" action="/documents/saveDocuemntForm.do" role="form" class="form" method="post" enctype="multipart/form-data">
+   <form:form id="documentForm" modelAttribute="documentDetails" action="/documents/saveDocuemntForm.do" role="form" class="form" method="post" enctype="multipart/form-data">
         <form:hidden path="id" id="documentId" />
         <form:hidden path="dateCreated" />
         <form:hidden path="systemUserId" />
         <form:hidden path="uploadedFile" id="uploadedFile" />
         <c:choose>
-            <c:when test="${sessionScope.userDetails.roleId == 2}">
+            <c:when test="${sessionScope.userDetails.roleId == 2 || (documentDetails.id > 0 && documentDetails.systemUserId == sessionScope.userDetails.id)}">
 
                 <c:if test="${not empty documentfolder}">
                     <div class="form-group">
@@ -37,18 +37,24 @@
                         </form:select>
                     </div>
                 </c:if>
+                
+                <c:choose>
+                    <c:when test="${sessionScope.userDetails.roleId == 2}">
+                        <div class="form-group">
+                            <label for="adminOnly" class="control-label">Admin Only Document? *</label>
+                            <div>
+                                <label class="radio-inline">
+                                    <form:radiobutton path="adminOnly"  value="1"/> Yes
+                                </label>
+                                <label class="radio-inline">
+                                    <form:radiobutton path="adminOnly" value="0"/> No
+                                </label>
+                            </div>
+                        </div>
+                    </c:when>
+                    <c:otherwise><form:hidden path="adminOnly" /></c:otherwise>
+                </c:choose>
 
-                <div class="form-group">
-                    <label for="adminOnly" class="control-label">Admin Only Document? *</label>
-                    <div>
-                        <label class="radio-inline">
-                            <form:radiobutton path="adminOnly"  value="1"/> Yes
-                        </label>
-                        <label class="radio-inline">
-                            <form:radiobutton path="adminOnly" value="0"/> No
-                        </label>
-                    </div>
-                </div>
             </c:when>
             <c:otherwise><form:hidden path="folderId" /><form:hidden path="adminOnly" /></c:otherwise>
         </c:choose>

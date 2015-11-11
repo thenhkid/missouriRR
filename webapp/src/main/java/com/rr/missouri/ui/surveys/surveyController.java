@@ -28,6 +28,7 @@ import com.rr.missouri.ui.districts.district;
 import com.rr.missouri.ui.districts.school;
 import com.rr.missouri.ui.security.decryptObject;
 import com.rr.missouri.ui.security.encryptObject;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -977,6 +978,9 @@ public class surveyController {
                         if(document.getUploadedFile() != null && !"".equals(document.getUploadedFile())) {
                             int index = document.getUploadedFile().lastIndexOf('.');
                             document.setFileExt(document.getUploadedFile().substring(index+1));
+                            
+                            String encodedFileName = URLEncoder.encode(document.getUploadedFile(),"UTF-8");
+                            document.setUploadedFile(encodedFileName);
                         }
                     }
                 }
@@ -1250,6 +1254,9 @@ public class surveyController {
                 if(document.getUploadedFile() != null && !"".equals(document.getUploadedFile())) {
                     int index = document.getUploadedFile().lastIndexOf('.');
                     document.setFileExt(document.getUploadedFile().substring(index+1));
+                    
+                    String encodedFileName = URLEncoder.encode(document.getUploadedFile(),"UTF-8");
+                    document.setUploadedFile(encodedFileName);
                 }
             }
         }
@@ -1322,6 +1329,9 @@ public class surveyController {
                     if(document.getUploadedFile() != null && !"".equals(document.getUploadedFile())) {
                         int index = document.getUploadedFile().lastIndexOf('.');
                         document.setFileExt(document.getUploadedFile().substring(index+1));
+                        
+                        String encodedFileName = URLEncoder.encode(document.getUploadedFile(),"UTF-8");
+                        document.setUploadedFile(encodedFileName);
                     }
                 }
             }

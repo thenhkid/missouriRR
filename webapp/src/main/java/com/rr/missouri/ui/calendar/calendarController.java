@@ -23,6 +23,7 @@ import com.registryKit.program.programManager;
 import com.registryKit.user.User;
 import com.registryKit.user.userManager;
 import com.registryKit.user.userProgramModules;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -333,6 +334,12 @@ public class calendarController {
         List<calendarEventDocuments> existingDocuments = calendarManager.getEventDocuments(eventDetails.getId());
 
         if (existingDocuments != null) {
+            
+            for(calendarEventDocuments doc : existingDocuments) {
+               String encodedFileName = URLEncoder.encode(doc.getDocumentTitle(),"UTF-8");
+               doc.setDocumentTitle(encodedFileName);
+            }
+            
             eventDetails.setExistingDocuments(existingDocuments);
         }
 

@@ -20,6 +20,7 @@ import com.registryKit.hierarchy.programOrgHierarchy;
 import com.registryKit.user.User;
 import com.registryKit.user.userManager;
 import com.registryKit.user.userProgramModules;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -173,6 +174,10 @@ public class forumController {
                             List<forumDocuments> documentList = forumManager.getMessageDocuments(reply.getId());
 
                             if (!documentList.isEmpty()) {
+                                for(forumDocuments doc : documentList) {
+                                    String encodedFileName = URLEncoder.encode(doc.getDocumentTitle(),"UTF-8");
+                                    doc.setDocumentTitle(encodedFileName);
+                                 }
                                 reply.setForumDocuments(documentList);
                             }
                         }
@@ -182,6 +187,10 @@ public class forumController {
                     List<forumDocuments> documentList = forumManager.getMessageDocuments(message.getId());
 
                     if (!documentList.isEmpty()) {
+                        for(forumDocuments doc : documentList) {
+                           String encodedFileName = URLEncoder.encode(doc.getDocumentTitle(),"UTF-8");
+                           doc.setDocumentTitle(encodedFileName);
+                        }
                         message.setForumDocuments(documentList);
                     }
 
@@ -202,6 +211,10 @@ public class forumController {
                             List<forumDocuments> documentList = forumManager.getMessageDocuments(reply.getId());
 
                             if (!documentList.isEmpty()) {
+                                for(forumDocuments doc : documentList) {
+                                    String encodedFileName = URLEncoder.encode(doc.getDocumentTitle(),"UTF-8");
+                                    doc.setDocumentTitle(encodedFileName);
+                                 }
                                 reply.setForumDocuments(documentList);
                             }
                         }
@@ -211,6 +224,10 @@ public class forumController {
                     List<forumDocuments> documentList = forumManager.getMessageDocuments(message.getId());
 
                     if (!documentList.isEmpty()) {
+                        for(forumDocuments doc : documentList) {
+                            String encodedFileName = URLEncoder.encode(doc.getDocumentTitle(),"UTF-8");
+                            doc.setDocumentTitle(encodedFileName);
+                         }
                         message.setForumDocuments(documentList);
                     }
 
@@ -225,6 +242,10 @@ public class forumController {
                             List<forumDocuments> documentList = forumManager.getMessageDocuments(reply.getId());
 
                             if (!documentList.isEmpty()) {
+                                for(forumDocuments doc : documentList) {
+                                    String encodedFileName = URLEncoder.encode(doc.getDocumentTitle(),"UTF-8");
+                                    doc.setDocumentTitle(encodedFileName);
+                                 }
                                 reply.setForumDocuments(documentList);
                             }
                         }
@@ -234,6 +255,10 @@ public class forumController {
                     List<forumDocuments> documentList = forumManager.getMessageDocuments(message.getId());
 
                     if (!documentList.isEmpty()) {
+                        for(forumDocuments doc : documentList) {
+                            String encodedFileName = URLEncoder.encode(doc.getDocumentTitle(),"UTF-8");
+                            doc.setDocumentTitle(encodedFileName);
+                         }
                         message.setForumDocuments(documentList);
                     }
 
