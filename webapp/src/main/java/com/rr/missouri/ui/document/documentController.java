@@ -156,6 +156,7 @@ public class documentController {
         }
         
         mav.addObject("documents", documents);
+        mav.addObject("folderCount", 1);
 
         /* Get user permissions */
          userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
