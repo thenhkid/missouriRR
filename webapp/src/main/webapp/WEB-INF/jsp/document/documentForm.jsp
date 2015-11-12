@@ -113,9 +113,9 @@
                         <div class="checkbox">
                             <label>
                                 <c:if test="${documentDetails.countyFolder == true}">
-                                    <input type="radio" name="alertUsers" value="1"> Send email regarding this new document to users of the selected county?<br />
+                                    <input type="radio" name="alertUsers" value="1" checked> Send email regarding this new document to users of the selected county?<br />
                                 </c:if>
-                                <input type="radio" name="alertUsers" value="2"> Send email regarding this new document to all users?
+                                <input type="radio" name="alertUsers" value="2" checked> Send email regarding this new document to all users?
                             </label>
                         </div>
                     </div>
