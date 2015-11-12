@@ -15,8 +15,7 @@
         <form:hidden path="systemUserId" />
         <form:hidden path="uploadedFile" id="uploadedFile" />
         <c:choose>
-            <c:when test="${sessionScope.userDetails.roleId == 2 || (documentDetails.id > 0 && documentDetails.systemUserId == sessionScope.userDetails.id)}">
-
+            <c:when test="${sessionScope.userDetails.roleId == 2}">
                 <c:if test="${not empty documentfolder}">
                     <div class="form-group">
                         <label for="folderId" class="control-label">Save this document to the following folder:</label>
@@ -38,23 +37,17 @@
                     </div>
                 </c:if>
                 
-                <c:choose>
-                    <c:when test="${sessionScope.userDetails.roleId == 2}">
-                        <div class="form-group">
-                            <label for="adminOnly" class="control-label">Admin Only Document? *</label>
-                            <div>
-                                <label class="radio-inline">
-                                    <form:radiobutton path="adminOnly"  value="1"/> Yes
-                                </label>
-                                <label class="radio-inline">
-                                    <form:radiobutton path="adminOnly" value="0"/> No
-                                </label>
-                            </div>
-                        </div>
-                    </c:when>
-                    <c:otherwise><form:hidden path="adminOnly" /></c:otherwise>
-                </c:choose>
-
+                <div class="form-group">
+                    <label for="adminOnly" class="control-label">Admin Only Document? *</label>
+                    <div>
+                        <label class="radio-inline">
+                            <form:radiobutton path="adminOnly"  value="1"/> Yes
+                        </label>
+                        <label class="radio-inline">
+                            <form:radiobutton path="adminOnly" value="0"/> No
+                        </label>
+                    </div>
+                </div>
             </c:when>
             <c:otherwise><form:hidden path="folderId" /><form:hidden path="adminOnly" /></c:otherwise>
         </c:choose>

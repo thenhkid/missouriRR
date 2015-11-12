@@ -12,7 +12,7 @@
 <jsp:useBean id="today" class="java.util.Date" />
 <fmt:formatDate value="${today}" var="today" type="both" pattern="yyyy-MM-dd HH:mm" />
 
-<div class="page-content" id="createEventForm" style="width:500px;padding:0;max-height: 500px; overflow: auto">
+<div class="page-content" id="createEventForm" style="width:540px;padding:0;max-height: 500px; overflow: auto">
     <form:form id="eventForm" modelAttribute="calendarEvent" role="form" class="form" method="post" enctype="multipart/form-data">
         <form:hidden path="eventTypeId" id="hiddenEventTypeId" value="${calendarEvent.eventTypeId}" />
         <form:hidden path="id" />
@@ -123,20 +123,32 @@
 
         <c:if test="${not empty calendarEvent.existingDocuments}">
             <div class="row">
-                <div class="form-group">
-                    <label for="document1">Uploaded Documents</label>
-                    <c:forEach var="document" items="${calendarEvent.existingDocuments}">
-                        <div class="input-group" id="docDiv_${document.id}">
-                            <span class="input-group-addon">
-                                <i class="fa fa-file bigger-110 orange"></i>
-                            </span>
-                            <input id="" readonly="" class="form-control active" type="text" name="date-range-picker" title="${document.documentTitle}" placeholder="${document.documentTitle}"></input>
-                            <span class="input-group-addon">
-                                <a href="javascript:void(0)" class="removeAttachment" rel="${document.id}"><i class="fa fa-times bigger-110 red"></i></a>
-                            </span>
-                        </div>
-                    </c:forEach>
-                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="document1">Uploaded Documents</label>
+                        <c:forEach var="document" items="${calendarEvent.existingDocuments}">
+                            <div class="input-group" id="docDiv_${document.id}">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-file bigger-110 orange"></i>
+                                </span>
+                                <c:choose>
+                                    <c:when test="${document.shortenedTitle != ''}">
+                                        <input id="" readonly="" class="form-control active" type="text" name="date-range-picker" title="${document.documentTitle}" placeholder="${document.shortenedTitle}"></input>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <input id="" readonly="" class="form-control active" type="text" name="date-range-picker" title="${document.documentTitle}" placeholder="${document.documentTitle}"></input>
+                                    </c:otherwise>
+                                </c:choose>
+                                <span class="input-group-addon">
+                                    <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.encodedTitle}&foldername=calendarUploadedFiles"/>"  title="${document.documentTitle}" rel="${document.id}"><i class="fa fa-download bigger-110 green"></i></a>
+                                </span>        
+                                <span class="input-group-addon">
+                                    <a href="javascript:void(0)" class="removeAttachment" rel="${document.id}"><i class="fa fa-times bigger-110 red"></i></a>
+                                </span>
+                            </div>
+                        </c:forEach>
+                    </div>
+                </div>     
             </div>
         </c:if>
         <div class="row">

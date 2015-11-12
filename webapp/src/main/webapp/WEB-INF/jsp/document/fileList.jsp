@@ -173,49 +173,69 @@
                 </tbody>
             </table>
         </div>
-                    
-        <c:if test="${(folderCount == 2 && not empty subsubfolders) || (folderCount == 1 && not empty subfolders)}">
-            <div class="space-10"></div>
-            <div class="row">
-                <div class="page-header">
-                    <h1>
-                      ${selFolderName} Subfolders
-                    </h1>
-                </div>
-                <div class="col-xs-12">
-                    <div class="dd" id="nestable">
-                        <ol class="dd-list">
-                            <c:choose>
-                            <c:when test="${folderCount == 2 && not empty subsubfolders}">
-                                <c:forEach var="subsubfolder" items="${subsubfolders}">
-                                    <li class="dd-item" data-id="${subsubfolder.id}">
-                                        <div class="dd-handle">
-                                            <i class="fa fa-folder blue"></i>
-                                            <a href="/documents/folder?i=${subsubfolder.encryptedId}&v=${subsubfolder.encryptedSecret}">
-                                            ${subsubfolder.folderName}
-                                            </a>
-                                        </div>
-                                    </li>
-                                </c:forEach>
-                            </c:when>
-                            <c:when test="${folderCount == 1 && not empty subfolders}">
-                                <c:forEach var="subfolder" items="${subfolders}">
-                                    <li class="dd-item" data-id="${subfolder.id}">
-                                        <div class="dd-handle">
-                                            <i class="fa fa-folder red"></i>
-                                            <a href="/documents/folder?i=${subfolder.encryptedId}&v=${subfolder.encryptedSecret}">
-                                            ${subfolder.folderName}
-                                            </a>
-                                        </div>
-                                    </li>
-                                </c:forEach>
-                            </c:when>
-                            </c:choose>        
-                        </ol>
+        
+        <c:choose>
+            <c:when test="${(folderCount == 2 && not empty subsubfolders) || (folderCount == 1 && not empty subfolders)}">
+                <div class="space-10"></div>
+                <div class="row">
+                    <div class="page-header">
+                        <h1>
+                          ${selFolderName} Subfolders
+                        </h1>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="dd" id="nestable">
+                            <ol class="dd-list">
+                                <c:choose>
+                                <c:when test="${folderCount == 2 && not empty subsubfolders}">
+                                    <c:forEach var="subsubfolder" items="${subsubfolders}">
+                                        <li class="dd-item" data-id="${subsubfolder.id}">
+                                            <div class="dd-handle">
+                                                <i class="fa fa-folder blue"></i>
+                                                <a href="/documents/folder?i=${subsubfolder.encryptedId}&v=${subsubfolder.encryptedSecret}">
+                                                ${subsubfolder.folderName}
+                                                </a>
+                                            </div>
+                                        </li>
+                                    </c:forEach>
+                                </c:when>
+                                <c:when test="${folderCount == 1 && not empty subfolders}">
+                                    <c:forEach var="subfolder" items="${subfolders}">
+                                        <li class="dd-item" data-id="${subfolder.id}">
+                                            <div class="dd-handle">
+                                                <i class="fa fa-folder red"></i>
+                                                <a href="/documents/folder?i=${subfolder.encryptedId}&v=${subfolder.encryptedSecret}">
+                                                ${subfolder.folderName}
+                                                </a>
+                                            </div>
+                                        </li>
+                                    </c:forEach>
+                                </c:when>
+                                </c:choose>        
+                            </ol>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </c:if>
+            </c:when>
+            <c:when test="${folderCount == 3 || folderCount == 2 && empty subsubfolders}">
+                <div class="space-10"></div>
+                <div class="row">
+                    <div class="page-header">
+                        <h1>
+                            <c:choose>
+                                <c:when test="${not empty parentFolder}">
+                                   <a href="/documents/folder<c:url value="?i=${parentFolder.encryptedId}&v=${parentFolder.encryptedSecret}"/>"> Return to ${parentFolder.folderName} Subfolders</a>
+                                </c:when>   
+                                <c:when test="${not empty superParentFolder}">
+                                   <a href="/documents/folder<c:url value="?i=${superParentFolder.encryptedId}&v=${superParentFolder.encryptedSecret}"/>"> Return to ${superParentFolder.folderName} folders</a>
+                                </c:when>
+                            </c:choose>
+                        </h1>
+                    </div>
+                </div>
+            </c:when>
+        </c:choose>
+        
     </div><!-- /.col -->
 </div>
 

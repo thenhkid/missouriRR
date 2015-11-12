@@ -336,8 +336,11 @@ public class calendarController {
         if (existingDocuments != null) {
             
             for(calendarEventDocuments doc : existingDocuments) {
-               String encodedFileName = URLEncoder.encode(doc.getDocumentTitle(),"UTF-8");
-               doc.setDocumentTitle(encodedFileName);
+               if(doc.getDocumentTitle().length() > 60) {
+                   String shortenedTitle = doc.getDocumentTitle().substring(0,30) + "..." + doc.getDocumentTitle().substring(doc.getDocumentTitle().length()-10, doc.getDocumentTitle().length());
+                   doc.setShortenedTitle(shortenedTitle);
+               }
+               doc.setEncodedTitle(URLEncoder.encode(doc.getDocumentTitle(),"UTF-8"));
             }
             
             eventDetails.setExistingDocuments(existingDocuments);
