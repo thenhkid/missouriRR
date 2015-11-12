@@ -211,14 +211,30 @@ public class reportController {
     @RequestMapping(value = "/getCodeList.do", method = RequestMethod.POST)
     public @ResponseBody
     ModelAndView getCodeList(HttpSession session,
-            @RequestParam(value = "startDate", required = false) String startDate,
-            @RequestParam(value = "endDate", required = false) String endDate,
-            @RequestParam(value = "entities", required = false) String entityIds,
-            @RequestParam(value = "reportIds", required = false) String reportIds
+            @RequestParam(value = "startDate", required = true) String startDate,
+            @RequestParam(value = "endDate", required = true) String endDate,
+            @RequestParam(value = "entity3Ids", required = true) List <Integer> entity3Ids,
+            @RequestParam(value = "reportIds", required = true) List <Integer> reportIds
     )
             throws Exception {
+    	User userDetails = (User) session.getAttribute("userDetails");
     	
-    	List<activityCodes> codeList = activitycodemanager.getActivityCodesByProgram(programId);
+    	List<programOrgHierarchy> orgHierarchyList = hierarchymanager.getProgramOrgHierarchy(programId);
+    	
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	    Date sd = sdf.parse(startDate);
+	    Date ed = sdf.parse(endDate);
+	    
+    	//set up report request
+    	reportRequest rr = new reportRequest();
+    	rr.setProgramId(programId);
+    	rr.setProgramHeirarchyId(orgHierarchyList.get(orgHierarchyList.size()-1).getId());
+    	rr.setStartDateTime(sd);
+	    rr.setEndDateTime(ed);
+	    rr.setEntity3Ids(entity3Ids);
+	    rr.setReportIds(reportIds);
+    	    	
+    	List<activityCodes> codeList = reportmanager.getReportRequestCodeList(rr, userDetails);
         
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/reports/optionCodes");
@@ -229,11 +245,11 @@ public class reportController {
     
     @RequestMapping(value = "/saveReportRequest.do", method = {RequestMethod.POST, RequestMethod.GET})
     public ModelAndView saveReportRequest(HttpSession session,
-    		 @RequestParam(value = "startDate", required = false) String startDate,
-             @RequestParam(value = "endDate", required = false) String endDate,
-             @RequestParam(value = "entity3Ids", required = false) String entity3Ids,
-             @RequestParam(value = "codeIds", required = false) String codeIds,
-             @RequestParam(value = "reportIds", required = false) String reportIds
+    		 @RequestParam(value = "startDate", required = true) String startDate,
+             @RequestParam(value = "endDate", required = true) String endDate,
+             @RequestParam(value = "entity3Ids", required = true) String entity3Ids,
+             @RequestParam(value = "codeIds", required = true) String codeIds,
+             @RequestParam(value = "reportIds", required = true) String reportIds
             ) throws Exception {
        
     	User userDetails = (User) session.getAttribute("userDetails");

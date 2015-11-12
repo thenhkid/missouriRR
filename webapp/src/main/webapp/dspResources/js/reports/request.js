@@ -229,14 +229,29 @@ jQuery(function ($) {
 
             selectednumbers = selectednumbers.join(", ");
 
+            var selectedreports = [];
+            $('#reportIds :selected').each(function (i, selected) {
+                selectedreports[i] = $(selected).val();
+            });
+
+            selectedreports = selectedreports.join(", ");
+            
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+            
             $.ajax({
                 type: 'POST',
                 url: "/reports/getCodeList.do",
-                data: {'entityIds': selectednumbers
-                            /** need to submit dates and report ids also **/
+                data: {'entity3Ids': selectednumbers,
+                	   'reportIds': selectedreports,
+                	   'startDate': startDate,
+                	   'endDate': endDate,
+                        
                 },
                 success: function (data) {
-                    $("#codesSelectDiv").html(data);
+                	$("#codesSelectDiv").html("");
+                	alert(data);
+                	$("#codesSelectDiv").html(data);
                 },
                 error: function (error) {
                     console.log(error);

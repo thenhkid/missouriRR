@@ -247,7 +247,7 @@
 
                         <div class="widget-body">
                             <div class="widget-main">
-                                <div class="codesSelectDiv">
+                                <div id="codesSelectDiv">
                                 <jsp:include page="optionCodes.jsp"/>
                              	</div>
                             </div>   
