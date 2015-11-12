@@ -142,7 +142,7 @@
 						
                         <div class="widget-body">
                             <div class="widget-main">
-                                <div>
+                                <div id="entity1SelectDiv">
                                 <select name="selectedEntities" class="multiselect form-control" id="entity1Ids" multiple="">
                                             <c:forEach items="${entity1List}" var="entity">
                                                     <option value="${entity.id}">${entity.name}</option>

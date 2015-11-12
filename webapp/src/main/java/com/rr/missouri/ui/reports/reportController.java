@@ -15,9 +15,11 @@ import com.registryKit.report.reportManager;
 import com.registryKit.report.reportRequest;
 import com.registryKit.report.reportRequestDisplay;
 import com.registryKit.report.reportType;
+import com.registryKit.report.reportView;
 import com.registryKit.user.User;
 import com.registryKit.user.userManager;
 import com.registryKit.user.userProgramModules;
+import com.rr.missouri.ui.security.decryptObject;
 import com.rr.missouri.ui.security.encryptObject;
 
 import java.util.Date;
@@ -282,10 +284,48 @@ public class reportController {
         return mav;
     }
     
-    @RequestMapping(value = "/sampleSubmit", method = {RequestMethod.POST, RequestMethod.GET})
-    public ModelAndView saveReportRequest() throws Exception {
+    
+    @RequestMapping(value = "/viewReport", method = {RequestMethod.POST, RequestMethod.GET})
+    public ModelAndView viewReport(@RequestParam String i, @RequestParam String v, HttpSession session) throws Exception {
+    	
     	ModelAndView mav = new ModelAndView();
+    	Integer reportId = 0;
+    	reportView rv = new reportView();
+    	
+    	if (session.getAttribute("userDetails") != null) {
+    		//1 decrpt and get the reportId
+            decryptObject decrypt = new decryptObject();
+            Object obj = decrypt.decryptObject(i, v);
+            String[] result = obj.toString().split((","));
+            reportId = Integer.parseInt(result[0].substring(4));
+            rv.setReportRequestId(reportId);
+            
+            //now we get the report details
+            reportDetails rd = reportmanager.getReportDetails(reportId);
+            if (rd != null ) {
+            	//we check permission and program
+            	
+            }
+            //if report doesn't exist we send them back to list with a message
+            
+    		
+    		
+    	} else {
+    		//someone somehow got to this link, we just log
+    		//we log who is accessing 
+            //now we have report id, we check to see which program it belongs to and if the user has permission
+            rv.setReportRequestId(reportId);
+            rv.setReportAction("Accessed report link - no user session found");
+            reportmanager.saveReportView(rv);
+    		
+    	}
+    	
+        
+        
+        
+    	
         mav.setViewName("/list");
+        
         return mav;
     }
     

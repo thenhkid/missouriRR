@@ -1,0 +1,16 @@
+/** 11.12.15 **/
+ALTER TABLE `rapidregistry`.`reportrequests` 
+ADD COLUMN `reportFileName` VARCHAR(200) NULL AFTER `statusId`;
+
+ALTER TABLE `rapidregistry`.`reportviews` 
+DROP FOREIGN KEY `fk_reportId`;
+ALTER TABLE `rapidregistry`.`reportviews` 
+CHANGE COLUMN `reportId` `reportRequestId` INT(11) NOT NULL ,
+ADD COLUMN `reportAction` VARCHAR(45) NULL AFTER `reportRequestId`;
+ALTER TABLE `rapidregistry`.`reportviews` 
+ADD CONSTRAINT `fk_reportId`
+  FOREIGN KEY (`reportRequestId`)
+  REFERENCES `rapidregistry`.`reportdetails` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
