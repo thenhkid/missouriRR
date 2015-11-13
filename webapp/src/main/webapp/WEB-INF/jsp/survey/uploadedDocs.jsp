@@ -27,9 +27,16 @@
                                     <c:when test="${documentDetails.fileExt == 'jpg' || documentDetails.fileExt == 'gif' || documentDetails.fileExt == 'jpeg'}"><i class="fa fa-file-image-o bigger-110 orange"></i></c:when>
                                 </c:choose>
                             </span>
-                            <input id="" readonly="" class="form-control active" type="text" name="date-range-picker" title="${documentDetails.uploadedFile}" placeholder="${documentDetails.uploadedFile}"></input>
+                            <c:choose>
+                                <c:when test="${documentDetails.shortenedTitle != ''}">
+                                    <input id="" readonly="" class="form-control active" type="text" name="date-range-picker" title="${documentDetails.uploadedFile}" placeholder="${documentDetails.shortenedTitle}"></input>
+                                </c:when>
+                                <c:otherwise>
+                                    <input id="" readonly="" class="form-control active" type="text" name="date-range-picker" title="${documentDetails.uploadedFile}" placeholder="${documentDetails.uploadedFile}"></input>
+                                </c:otherwise>
+                            </c:choose>
                             <span class="input-group-addon">
-                                <a href="<c:url value="/FileDownload/downloadFile.do?filename=${documentDetails.uploadedFile}&foldername=surveyUploadedFiles"/>" title="Download File"  rel="${documentDetails.id}"><i class="fa fa-download bigger-110 blue"></i></a>
+                                <a href="<c:url value="/FileDownload/downloadFile.do?filename=${documentDetails.encodedTitle}&foldername=surveyUploadedFiles"/>" title="Download File"  rel="${documentDetails.id}"><i class="fa fa-download bigger-110 blue"></i></a>
                             </span>
                             <span class="input-group-addon">
                                 <a href="javascript:void(0)" class="deleteDocument" title="Delete File" rel="${documentDetails.id}"><i class="fa fa-times bigger-110 red"></i></a>

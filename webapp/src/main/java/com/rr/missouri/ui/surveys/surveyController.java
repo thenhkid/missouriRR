@@ -979,8 +979,12 @@ public class surveyController {
                             int index = document.getUploadedFile().lastIndexOf('.');
                             document.setFileExt(document.getUploadedFile().substring(index+1));
                             
-                            String encodedFileName = URLEncoder.encode(document.getUploadedFile(),"UTF-8");
-                            document.setUploadedFile(encodedFileName);
+                            if(document.getUploadedFile().length() > 60) {
+                                String shortenedTitle = document.getUploadedFile().substring(0,30) + "..." + document.getUploadedFile().substring(document.getUploadedFile().length()-10, document.getUploadedFile().length());
+                                document.setShortenedTitle(shortenedTitle);
+                            }
+                            document.setEncodedTitle(URLEncoder.encode(document.getUploadedFile(),"UTF-8"));
+                            
                         }
                     }
                 }
@@ -1255,8 +1259,11 @@ public class surveyController {
                     int index = document.getUploadedFile().lastIndexOf('.');
                     document.setFileExt(document.getUploadedFile().substring(index+1));
                     
-                    String encodedFileName = URLEncoder.encode(document.getUploadedFile(),"UTF-8");
-                    document.setUploadedFile(encodedFileName);
+                    if(document.getUploadedFile().length() > 60) {
+                        String shortenedTitle = document.getUploadedFile().substring(0,30) + "..." + document.getUploadedFile().substring(document.getUploadedFile().length()-10, document.getUploadedFile().length());
+                        document.setShortenedTitle(shortenedTitle);
+                    }
+                    document.setEncodedTitle(URLEncoder.encode(document.getUploadedFile(),"UTF-8"));
                 }
             }
         }
@@ -1330,8 +1337,12 @@ public class surveyController {
                         int index = document.getUploadedFile().lastIndexOf('.');
                         document.setFileExt(document.getUploadedFile().substring(index+1));
                         
-                        String encodedFileName = URLEncoder.encode(document.getUploadedFile(),"UTF-8");
-                        document.setUploadedFile(encodedFileName);
+                        if(document.getUploadedFile().length() > 60) {
+                            String shortenedTitle = document.getUploadedFile().substring(0,30) + "..." + document.getUploadedFile().substring(document.getUploadedFile().length()-10, document.getUploadedFile().length());
+                            document.setShortenedTitle(shortenedTitle);
+                        }
+                        document.setEncodedTitle(URLEncoder.encode(document.getUploadedFile(),"UTF-8"));
+                        
                     }
                 }
             }

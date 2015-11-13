@@ -175,8 +175,7 @@ public class forumController {
 
                             if (!documentList.isEmpty()) {
                                 for(forumDocuments doc : documentList) {
-                                    String encodedFileName = URLEncoder.encode(doc.getDocumentTitle(),"UTF-8");
-                                    doc.setDocumentTitle(encodedFileName);
+                                    doc.setEncodedTitle(URLEncoder.encode(doc.getDocumentTitle(),"UTF-8"));
                                  }
                                 reply.setForumDocuments(documentList);
                             }
@@ -188,8 +187,7 @@ public class forumController {
 
                     if (!documentList.isEmpty()) {
                         for(forumDocuments doc : documentList) {
-                           String encodedFileName = URLEncoder.encode(doc.getDocumentTitle(),"UTF-8");
-                           doc.setDocumentTitle(encodedFileName);
+                           doc.setEncodedTitle(URLEncoder.encode(doc.getDocumentTitle(),"UTF-8"));
                         }
                         message.setForumDocuments(documentList);
                     }
@@ -212,8 +210,7 @@ public class forumController {
 
                             if (!documentList.isEmpty()) {
                                 for(forumDocuments doc : documentList) {
-                                    String encodedFileName = URLEncoder.encode(doc.getDocumentTitle(),"UTF-8");
-                                    doc.setDocumentTitle(encodedFileName);
+                                    doc.setEncodedTitle(URLEncoder.encode(doc.getDocumentTitle(),"UTF-8"));
                                  }
                                 reply.setForumDocuments(documentList);
                             }
@@ -225,8 +222,7 @@ public class forumController {
 
                     if (!documentList.isEmpty()) {
                         for(forumDocuments doc : documentList) {
-                            String encodedFileName = URLEncoder.encode(doc.getDocumentTitle(),"UTF-8");
-                            doc.setDocumentTitle(encodedFileName);
+                            doc.setEncodedTitle(URLEncoder.encode(doc.getDocumentTitle(),"UTF-8"));
                          }
                         message.setForumDocuments(documentList);
                     }
@@ -243,8 +239,7 @@ public class forumController {
 
                             if (!documentList.isEmpty()) {
                                 for(forumDocuments doc : documentList) {
-                                    String encodedFileName = URLEncoder.encode(doc.getDocumentTitle(),"UTF-8");
-                                    doc.setDocumentTitle(encodedFileName);
+                                     doc.setEncodedTitle(URLEncoder.encode(doc.getDocumentTitle(),"UTF-8"));
                                  }
                                 reply.setForumDocuments(documentList);
                             }
@@ -256,8 +251,7 @@ public class forumController {
 
                     if (!documentList.isEmpty()) {
                         for(forumDocuments doc : documentList) {
-                            String encodedFileName = URLEncoder.encode(doc.getDocumentTitle(),"UTF-8");
-                            doc.setDocumentTitle(encodedFileName);
+                             doc.setEncodedTitle(URLEncoder.encode(doc.getDocumentTitle(),"UTF-8"));
                          }
                         message.setForumDocuments(documentList);
                     }
