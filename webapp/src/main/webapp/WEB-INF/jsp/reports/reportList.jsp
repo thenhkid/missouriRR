@@ -55,7 +55,7 @@
                     <c:choose>
                         <c:when test="${not empty reportRequestList}">
                             <c:forEach var="rr" items="${reportRequestList}">
-                                <tr>
+                                <tr id="reportRow_${rr.id}">
                                     <td class="center">${rr.statusDisplay}</td>
                                     <td class="center"><fmt:formatDate value="${rr.dateSubmitted}" type="date" pattern="M/dd/yyyy h:mm a" /></td>
                                     <td>
@@ -75,14 +75,14 @@
                                     </td>
                                     <td class="center">
                                         <div class="hidden-sm hidden-xs action-buttons">
-                                            <c:if test="${rr.statusDisplay!= 'Requested'}">
+                                            <c:if test="${rr.statusId == 3 || rr.statusId == 4}">
 	                                           	<a href="reports/viewReport?i=${rr.encryptedId}&v=${rr.encryptedSecret}"  title="View this report" role="button">
 	                                                <button class="btn btn-xs btn-success">
 	                                                    <i class="ace-icon fa fa-download bigger-120"></i>
 	                                                </button>
 	                                            </a>
                                             </c:if>
-                                            <a href="javascript:void(0);" class="deleteSurvey" rel="${rr.id}"  title="Delete This Report" role="button">
+                                            <a href="javascript:void(0);" class="deleteReport" rel="${rr.id}"  title="Delete This Report" role="button">
                                                 <button class="btn btn-xs btn-danger">
                                                     <i class="ace-icon fa fa-close bigger-120"></i>
                                                 </button>
@@ -100,7 +100,9 @@
                 </tbody>
             </table>
         </div>
-
+		<form action="#" method="Post" name="delRepReq" id="delRepReq">
+			<input type="hidden" name="delRRId" id="delRRId"/>
+		</form>
     </div><!-- /.col -->
 </div>
 

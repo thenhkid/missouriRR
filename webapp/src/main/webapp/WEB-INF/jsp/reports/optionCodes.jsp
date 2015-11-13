@@ -10,5 +10,5 @@
 <div id="errorMsg_codes" style="display: none; color:#A94442" class="help-block col-xs-12 col-sm-reset inline"></div>         
  </c:if>
 <c:if test="${fn:length(codeList) < 1}">
-There are no reports fitting the above criteria.
+There are no reports fitting the above criteria.  Please change your selections.
 </c:if>

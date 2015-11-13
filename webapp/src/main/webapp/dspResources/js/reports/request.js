@@ -9,13 +9,19 @@ jQuery(function ($) {
 
     $(document).ready(function () {
 
+    	var startDate = new Date('2013-09-02');
+    	var toEndDate = new Date();
+    	
         $("input:text,form").attr("autocomplete", "off");
         var errorMsg = "You must select at least 1 ";
         
          $(function(){
          $('.date-picker').datepicker({
-         autoclose: true,
-         todayHighlight: true
+        	 format: 'yyyy-mm-dd',
+	         autoclose: true,
+	         todayHighlight: true,
+	         endDate:toEndDate,
+	         startDate:startDate
          })
          //show datepicker when clicking on the icon
          .next().on(ace.click_event, function () {
@@ -40,9 +46,6 @@ jQuery(function ($) {
                 }
             });
         });
-
-
-
 
         /** need to rewrite eventually to streamline fns, don't need so many and can use variables **/
 
@@ -250,7 +253,11 @@ jQuery(function ($) {
                 },
                 success: function (data) {
                 	$("#codesSelectDiv").html("");
-                	alert(data);
+                	/** need to check to see if there are any code ids returned **/
+                	if (data.indexOf('option') < 1) {
+                		//hide submit button
+                		$('#requestButton').hide();
+                	} 
                 	$("#codesSelectDiv").html(data);
                 },
                 error: function (error) {
@@ -323,8 +330,12 @@ jQuery(function ($) {
             $("#requestForm").submit();
 
 
-        });                
-
+        });  
+        
+        
+        
+        
+        
     });
 });
 

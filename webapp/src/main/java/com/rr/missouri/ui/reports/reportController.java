@@ -26,9 +26,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +44,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
@@ -286,7 +292,8 @@ public class reportController {
     
     
     @RequestMapping(value = "/viewReport", method = {RequestMethod.GET})
-    public void viewReport(@RequestParam String i, @RequestParam String v, HttpSession session) throws Exception {
+    public void viewReport(@RequestParam String i, @RequestParam String v, 
+    		HttpSession session, HttpServletResponse response) throws Exception {
     	
     	Integer reportRequestId = 0;
     	reportView rv = new reportView();
@@ -301,7 +308,8 @@ public class reportController {
             reportRequestId = Integer.parseInt(result[0].substring(4));
             rv.setReportRequestId(reportRequestId);
             rv.setReportAction("Accessed report link");
-            reportmanager.saveReportView(rv);
+            rv.setSystemUserId(userDetails.getId());
+  	        reportmanager.saveReportView(rv);
             //now we get the report details
             reportRequest rr = reportmanager.getReportRequestById(reportRequestId);
             
@@ -315,11 +323,66 @@ public class reportController {
             } 
             //we log them, grab report for them to download
             //if report doesn't exist we send them back to list with a message
-            if(canViewReport) {
-            	
-        		
-        
-            }
+            if (!canViewReport) {
+	       		 rv = new reportView();
+	       		 rv.setReportRequestId(reportRequestId);
+	       		 rv.setSystemUserId(userDetails.getId());
+	       		 rv.setReportAction("User does not have permission to view report");
+	       		 reportmanager.saveReportView(rv);
+	       		 throw new Exception("user does not have permission - " + reportRequestId);
+            	}   else {
+            	//generate the report for user to download
+            	//need to get report path
+            	String filePath= reportmanager.getReportPath(programId);
+            	String fileName = rr.getReportFileName();
+            	try {
+            	File f = new File(filePath+fileName);
+	            	 if(!f.exists()){
+	            		 throw new Exception("Error with File " +filePath + fileName);
+	            	 }
+            	 } catch (Exception e) {
+            		 try {
+           	    	  //update file to error
+           	    	  rr.setStatusId(5);
+           	    	  reportmanager.updateReportRequest(rr);
+           	    	  throw new Exception("File does not exists " +filePath + fileName);
+           	      } catch (Exception ex1) {
+           	    	  throw new Exception("File does not exists " +filePath + fileName + ex1);
+           	      }
+       	    	  
+       	      	}
+
+          	  
+            	try {
+            		  // get your file as InputStream
+            		  InputStream is = new FileInputStream(filePath+fileName);
+            	      // copy it to response's OutputStream
+            	      
+            	      String mimeType = "application/octet-stream";
+            		  response.setContentType(mimeType);
+            		  response.setHeader("Content-Transfer-Encoding", "binary");
+                      response.setHeader("Content-Disposition", "attachment;filename=\"" + fileName + "\"");
+                      org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
+                      response.flushBuffer();
+            	      is.close();
+            	      rv = new reportView();
+            	      rv.setSystemUserId(userDetails.getId());
+            	      rv.setReportRequestId(reportRequestId);
+                      rv.setReportAction("Viewed Report");
+                      reportmanager.saveReportView(rv);
+            	    } catch (IOException ex) {
+            	    	ex.printStackTrace();
+            	    	System.out.println("Error writing file to output stream. Filename was '{}'"+ fileName + ex);
+            	      try {
+            	    	  //update file to error
+            	    	  rr.setStatusId(5);
+            	    	  reportmanager.updateReportRequest(rr);
+            	    	  throw new Exception("Error with File " +filePath + fileName + ex);
+            	      } catch (Exception e) {
+            	    	  throw new Exception("Error with File " +filePath + fileName + ex);
+            	      }
+            	    }
+            	}
             
         } else {
     		//someone somehow got to this link, we just log
@@ -328,9 +391,26 @@ public class reportController {
             rv.setReportRequestId(reportRequestId);
             rv.setReportAction("Accessed report link - no user session found");
             reportmanager.saveReportView(rv);
+            throw new Exception("invalid report download - " + reportRequestId);
     		
     	}
-    }
+    	
+    }  
+    
+  //this returns available reports for selected type
+    @RequestMapping(value = "/deleteReportRequest.do", method = RequestMethod.POST)
+    public @ResponseBody
+    Integer deleteReport(HttpSession session, RedirectAttributes redirectAttr,
+            @RequestParam(value = "reportRequestId", required = true) Integer reportRequestId         
+    )
+            throws Exception {
+    	
+    	reportRequest rr = reportmanager.getReportRequestById(reportRequestId);
+    	redirectAttr.addFlashAttribute("msg", "Deleted");
+    	rr.setStatusId(6);
+    	reportmanager.updateReportRequest(rr);
+    	return 1;
+     }
     
     
 }
