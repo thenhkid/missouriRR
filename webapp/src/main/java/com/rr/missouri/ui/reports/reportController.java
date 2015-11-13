@@ -285,48 +285,51 @@ public class reportController {
     }
     
     
-    @RequestMapping(value = "/viewReport", method = {RequestMethod.POST, RequestMethod.GET})
-    public ModelAndView viewReport(@RequestParam String i, @RequestParam String v, HttpSession session) throws Exception {
+    @RequestMapping(value = "/viewReport", method = {RequestMethod.GET})
+    public void viewReport(@RequestParam String i, @RequestParam String v, HttpSession session) throws Exception {
     	
-    	ModelAndView mav = new ModelAndView();
-    	Integer reportId = 0;
+    	Integer reportRequestId = 0;
     	reportView rv = new reportView();
+    	boolean canViewReport = false;
     	
     	if (session.getAttribute("userDetails") != null) {
+    		User userDetails = (User) session.getAttribute("userDetails");
     		//1 decrpt and get the reportId
             decryptObject decrypt = new decryptObject();
             Object obj = decrypt.decryptObject(i, v);
             String[] result = obj.toString().split((","));
-            reportId = Integer.parseInt(result[0].substring(4));
-            rv.setReportRequestId(reportId);
-            
+            reportRequestId = Integer.parseInt(result[0].substring(4));
+            rv.setReportRequestId(reportRequestId);
+            rv.setReportAction("Accessed report link");
+            reportmanager.saveReportView(rv);
             //now we get the report details
-            reportDetails rd = reportmanager.getReportDetails(reportId);
-            if (rd != null ) {
-            	//we check permission and program
-            	
-            }
-            //if report doesn't exist we send them back to list with a message
+            reportRequest rr = reportmanager.getReportRequestById(reportRequestId);
             
-    		
-    		
-    	} else {
+            if (rr != null) {
+            	//we check permission and program
+            	if (userDetails.getRoleId() ==3 && rr.getSystemUserId() == userDetails.getId() && rr.getProgramId() == programId)  {
+            		canViewReport = true;
+            	} else if (userDetails.getRoleId() != 3 && rr.getProgramId() == programId) {
+            		canViewReport = true;
+            	}
+            } 
+            //we log them, grab report for them to download
+            //if report doesn't exist we send them back to list with a message
+            if(canViewReport) {
+            	
+        		
+        
+            }
+            
+        } else {
     		//someone somehow got to this link, we just log
     		//we log who is accessing 
             //now we have report id, we check to see which program it belongs to and if the user has permission
-            rv.setReportRequestId(reportId);
+            rv.setReportRequestId(reportRequestId);
             rv.setReportAction("Accessed report link - no user session found");
             reportmanager.saveReportView(rv);
     		
     	}
-    	
-        
-        
-        
-    	
-        mav.setViewName("/list");
-        
-        return mav;
     }
     
     
