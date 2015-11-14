@@ -102,7 +102,7 @@ public class reportController {
         encryptObject encrypt = new encryptObject();
         Map<String, String> map;
         
-        List <reportRequestDisplay> reportRequestList =  reportmanager.getReportRequests(programId, userDetails);
+        List <reportRequestDisplay> reportRequestList =  reportmanager.getReportRequestDisplays(programId, userDetails);
         for (reportRequestDisplay rr : reportRequestList) {
             //Encrypt the use id to pass in the url
             map = new HashMap<String, String>();
@@ -370,6 +370,11 @@ public class reportController {
             	      rv.setReportRequestId(reportRequestId);
                       rv.setReportAction("Viewed Report");
                       reportmanager.saveReportView(rv);
+                      //update status
+                      if (rr.getStatusId() == 3) {
+                    	  rr.setStatusId(4);
+                    	  reportmanager.updateReportRequest(rr);
+                      }
             	    } catch (IOException ex) {
             	    	ex.printStackTrace();
             	    	System.out.println("Error writing file to output stream. Filename was '{}'"+ fileName + ex);

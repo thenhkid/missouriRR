@@ -1,0 +1,10 @@
+/** grace 11.13.2015 **/
+ALTER TABLE `rapidregistry`.`reportrequests` 
+ADD COLUMN `fileTypeId` INT NOT NULL DEFAULT 6 AFTER `endProcessTime`,
+ADD INDEX `fk_fileTypeId_idx` (`fileTypeId` ASC);
+ALTER TABLE `rapidregistry`.`reportrequests` 
+ADD CONSTRAINT `fk_rrFileTypeId`
+  FOREIGN KEY (`fileTypeId`)
+  REFERENCES `rapidregistry`.`lu_filetypes` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
