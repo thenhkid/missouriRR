@@ -8,3 +8,35 @@ ADD CONSTRAINT `fk_rrFileTypeId`
   REFERENCES `rapidregistry`.`lu_filetypes` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
+
+  
+ALTER TABLE `rapidregistry`.`reportrequestreports` 
+DROP FOREIGN KEY `fk_rrr_repId`,
+DROP FOREIGN KEY `fk_rrr_rrId`;
+ALTER TABLE `rapidregistry`.`reportrequestreports` 
+CHANGE COLUMN `reportRequestId` `reportRequestId` INT(11) NOT NULL ,
+CHANGE COLUMN `reportId` `reportId` INT(11) NOT NULL ,
+ADD COLUMN `reportFileName` VARCHAR(45) NULL AFTER `reportId`,
+ADD COLUMN `startProcessingTime` DATETIME NULL AFTER `reportFileName`,
+ADD COLUMN `endProcessingTime` DATETIME NULL AFTER `startProcessingTime`;
+ALTER TABLE `rapidregistry`.`reportrequestreports` 
+ADD CONSTRAINT `fk_rrr_repId`
+  FOREIGN KEY (`reportId`)
+  REFERENCES `rapidregistry`.`reportdetails` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `fk_rrr_rrId`
+  FOREIGN KEY (`reportRequestId`)
+  REFERENCES `rapidregistry`.`reportrequestreports` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+  
+  
+  ALTER TABLE `rapidregistry`.`reportrequestreports` 
+ADD COLUMN `statusId` INT NULL DEFAULT 1 AFTER `endProcessingTime`;
+  
+ALTER TABLE `rapidregistry`.`reportrequestreports` 
+CHANGE COLUMN `startProcessingTime` `startProcessTime` DATETIME NULL DEFAULT NULL ,
+CHANGE COLUMN `endProcessingTime` `endProcessTime` DATETIME NULL DEFAULT NULL ;
+
+  

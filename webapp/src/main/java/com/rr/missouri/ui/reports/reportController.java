@@ -411,9 +411,14 @@ public class reportController {
             throws Exception {
     	
     	reportRequest rr = reportmanager.getReportRequestById(reportRequestId);
+    	if (rr.getStatusId() == 3 || rr.getStatusId() == 4) {
+    		//we rename file
+        	reportmanager.renameDeletedFile(rr);
+    	}
     	redirectAttr.addFlashAttribute("msg", "Deleted");
     	rr.setStatusId(6);
     	reportmanager.updateReportRequest(rr);
+    	
     	return 1;
      }
     
