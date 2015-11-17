@@ -14,7 +14,7 @@ jQuery(function ($) {
         no_icon: 'ace-icon fa fa-cloud-upload',
         droppable: false,
         thumbnail: 'small',
-        allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx', 'ppt', 'csv', 'pptx', 'wma', 'zip','dmg'],
+        allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx', 'ppt', 'csv', 'pptx', 'wma', 'zip'],
         before_remove: function () {
             return true;
         }
