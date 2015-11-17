@@ -14,7 +14,7 @@ jQuery(function ($) {
         no_icon: 'ace-icon fa fa-cloud-upload',
         droppable: false,
         thumbnail: 'small',
-        allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx', 'ppt', 'csv', 'pptx', 'wma', 'zip'],
+        allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx', 'ppt', 'csv', 'pptx', 'wma', 'zip','dmg'],
         before_remove: function () {
             return true;
         }
@@ -42,10 +42,38 @@ jQuery(function ($) {
             event.preventDefault();
             return false;
         }
+        else {
+            $('#uploading').show();
+            $('#surveyBtns').hide();
+        }
         
         var submitURL = "/surveys/saveDocumentForm.do";
         $("#surveyDocForm").attr("action", submitURL);
         $("#surveyDocForm").submit();
+    });
+    
+    /* Remove existing document */
+    $(document).on('click', '.deleteDocument', function () {
+
+        var confirmed = confirm("Are you sure you want to remove this file?");
+
+        if (confirmed) {
+            var docId = $(this).attr('rel');
+            $.ajax({
+                url: '/surveys/deleteDocument.do',
+                type: 'POST',
+                data: {
+                    'documentId': docId
+                },
+                success: function (data) {
+                    $('#docDiv_' + docId).remove();
+                },
+                error: function (error) {
+
+                }
+            });
+        }
+
     });
 
 });

@@ -75,7 +75,13 @@
     </div>
     <div class="col-md-12">
         <div class="col-sm-4">
-            <div>
+            <div id="uploading" style="display:none;">
+                <h3 class=" smaller lighter grey">
+                    <i class="ace-icon fa fa-spinner fa-spin orange bigger-124"></i>
+                    Uploading Documents
+                </h3>
+            </div>
+            <div id="surveyBtns">
                 <div class="pull-left">
                     <a href="<c:url value="/surveys?i=${i}&v=${v}" />"><button class="btn">Return to Activity Log</button></a>
                 </div>
