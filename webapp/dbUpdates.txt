@@ -39,4 +39,22 @@ ALTER TABLE `rapidregistry`.`reportrequestreports`
 CHANGE COLUMN `startProcessingTime` `startProcessTime` DATETIME NULL DEFAULT NULL ,
 CHANGE COLUMN `endProcessingTime` `endProcessTime` DATETIME NULL DEFAULT NULL ;
 
-  
+
+/** 11.15.2015 **/
+ALTER TABLE `rapidregistry`.`reportrequests` 
+ADD COLUMN `reportTypeId` INT NOT NULL DEFAULT 1 AFTER `endProcessTime`;
+
+CREATE TABLE `reportquestions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `reportId` int(11) NOT NULL,
+  `surveyQuestionId` int(11) NOT NULL,
+  `isGroupByQ` bit(1) NOT NULL DEFAULT b'0',
+  `cwId` int(11) NOT NULL DEFAULT '0',
+  `questionDisplay` text,
+  `displayOrder` int(11) NOT NULL DEFAULT '1',
+  `showInReport` bit(1) NOT NULL DEFAULT b'1',
+  `dateCreated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `parentQId` int(11) NOT NULL DEFAULT '0',
+  `answerId` int(11) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

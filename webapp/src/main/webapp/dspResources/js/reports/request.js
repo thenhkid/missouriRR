@@ -326,6 +326,8 @@ jQuery(function ($) {
             $("#entity3IdsForm").val(selectednumbers);
             $("#codeIdsForm").val(selectedcodes);
             $("#reportIdsForm").val(selectedreports);
+            $("#reportTypeIdForm").val($('#reportTypeId').val());
+            
 
             $("#requestForm").submit();
 

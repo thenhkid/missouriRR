@@ -88,4 +88,26 @@
         </trigger>
     </schedule>
     
+    <!-- reports -->
+        <schedule>
+        <job>
+            <name>runReportsJob</name>
+            <group>processGroup</group>
+            <description>This process will run every 1 min to look for reports.</description>
+            <job-class>com.rr.missouri.ui.jobs.runReports</job-class>
+        </job>
+ 
+        <trigger>
+            <cron>
+                <name>runReports</name>
+                <job-name>runReportsJob</job-name>
+                <job-group>processGroup</job-group>
+                <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
+                <!-- Runs every 45 seconds, starting at 32 seconds on the clock-->
+                <cron-expression>0 0/1 * * * ?</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+    
+    
 </job-scheduling-data>

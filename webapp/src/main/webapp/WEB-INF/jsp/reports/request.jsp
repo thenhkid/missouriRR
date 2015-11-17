@@ -266,6 +266,7 @@
 					<input type="hidden" name="entity3Ids" id="entity3IdsForm" value=""/>
 					<input type="hidden" name="codeIds" id="codeIdsForm" value=""/>
 					<input type="hidden" name="reportIds" id="reportIdsForm" value=""/>
+					<input type="hidden" name="reportTypeId" id="reportTypeIdForm" value=""/>
 				
                <button class="btn btn-success btn-next nextPage" data-last="Finish" id="submitButton">
                                                         Request Report

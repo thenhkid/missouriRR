@@ -242,7 +242,7 @@ public class reportController {
 	    rr.setEntity3Ids(entity3Ids);
 	    rr.setReportIds(reportIds);
     	    	
-    	List<activityCodes> codeList = reportmanager.getReportRequestCodeList(rr, userDetails);
+    	List<activityCodes> codeList = reportmanager.getAvailableReportRequestCodeList(rr, userDetails);
         
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/reports/optionCodes");
@@ -255,6 +255,7 @@ public class reportController {
     public ModelAndView saveReportRequest(HttpSession session,
     		 @RequestParam(value = "startDate", required = true) String startDate,
              @RequestParam(value = "endDate", required = true) String endDate,
+             @RequestParam(value = "reportTypeId", required = true) Integer reportTypeId,
              @RequestParam(value = "entity3Ids", required = true) String entity3Ids,
              @RequestParam(value = "codeIds", required = true) String codeIds,
              @RequestParam(value = "reportIds", required = true) String reportIds
@@ -269,6 +270,7 @@ public class reportController {
 	    
     	rr.setStartDateTime(sd);
     	rr.setEndDateTime(ed);
+    	rr.setReportTypeId(reportTypeId);
     	rr.setProgramId(programId);
     	rr.setSystemUserId(userDetails.getId());
     	
