@@ -80,41 +80,35 @@
                                         <c:if test="${not empty document.uploadedFile}">
                                             <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.uploadedFile}&foldername=documents/${document.downloadLink}"/>" title="${document.title}">
                                                 <c:choose>
-                                                    <c:when test="${document.fileExt == 'pdf'}">
-                                                        <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
-                                                            <div class="infobox-icon">
-                                                                <i class="ace-icon fa fa-file-pdf-o"></i>
-                                                            </div>
-                                                        </div>
-                                                    </c:when>
-                                                    <c:when test="${document.fileExt == 'doc' || document.fileExt == 'docx'}">
-                                                        <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
-                                                            <div class="infobox-icon">
-                                                                <i class="ace-icon fa fa-file-word-o"></i>
-                                                            </div>
-                                                        </div>
-                                                    </c:when>
-                                                    <c:when test="${document.fileExt == 'xls' || document.fileExt == 'xlsx'}">
-                                                        <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
-                                                            <div class="infobox-icon">
-                                                                <i class="ace-icon fa fa-file-excel-o"></i>
-                                                            </div>
-                                                        </div>
-                                                    </c:when>
-                                                    <c:when test="${document.fileExt == 'txt'}">
-                                                        <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
-                                                            <div class="infobox-icon">
-                                                                <i class="ace-icon fa fa-file-text-o"></i>
-                                                            </div>
-                                                        </div>
-                                                    </c:when>
-                                                    <c:when test="${document.fileExt == 'jpg' || document.fileExt == 'gif' || document.fileExt == 'jpeg' || document.fileExt == 'png'}">
+                                                     <c:when test="${document.fileExt == 'jpg' || document.fileExt == 'gif' || document.fileExt == 'jpeg' || document.fileExt == 'png'}">
                                                         <div class="infobox infobox-orange" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
                                                             <div class="infobox-icon">
                                                                 <i class="ace-icon fa fa-file-image-o"></i>
                                                             </div>
                                                         </div>
                                                     </c:when>
+                                                    <c:when test="${document.fileExt == 'wmv'}">
+                                                        <div class="infobox infobox-red" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
+                                                            <div class="infobox-icon">
+                                                                <i class="ace-icon fa fa-file-video-o"></i>
+                                                            </div>
+                                                        </div>
+                                                    </c:when> 
+                                                    <c:otherwise>
+                                                        <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
+                                                            <div class="infobox-icon">
+                                                                <c:choose>
+                                                                    <c:when test="${document.fileExt == 'pdf'}"><i class="ace-icon fa fa-file-pdf-o"></i></c:when>
+                                                                    <c:when test="${document.fileExt == 'doc' || document.fileExt == 'docx'}"><i class="ace-icon fa fa-file-word-o"></i></c:when>
+                                                                    <c:when test="${document.fileExt == 'xls' || document.fileExt == 'xlsx'}"> <i class="ace-icon fa fa-file-excel-o"></i></c:when>
+                                                                    <c:when test="${document.fileExt == 'txt' || document.fileExt == 'csv'}"><i class="ace-icon fa fa-file-text-o"></i></c:when>
+                                                                    <c:when test="${document.fileExt == 'zip'}"><i class="ace-icon fa fa-file-zip-o"></i></c:when>
+                                                                    <c:when test="${document.fileExt == 'ppt' || document.fileExt == 'pptx'}"><i class="ace-icon fa fa-file-powerpoint-o"></i></c:when>
+                                                                </c:choose>
+                                                            </div>
+                                                        </div>
+                                                    </c:otherwise>
+                                                   
                                                 </c:choose>
                                             </a> 
                                         </c:if>
