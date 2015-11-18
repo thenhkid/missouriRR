@@ -153,10 +153,11 @@
         </c:if>
         <div class="row">
             <div class="col-md-12">
-                <div class="form-group">         
-                    <label for="document1">Documents</label>
+                <div class="form-group"  id="docDiv">         
+                    <label for="document1"  class="control-label">Documents</label>
                     <div class="form-group">
                         <input  multiple="" name="eventDocuments" type="file" id="id-input-file-2" />
+                        <span id="docMsg" class="control-label"></span>
                     </div>
                 </div>
             </div>

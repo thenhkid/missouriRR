@@ -83,7 +83,7 @@
                 <hr/>
                 <div class="form-group">
                     <label for="document1">Uploaded Document</label>
-                    <div class="input-group" id="docDiv">
+                    <div class="input-group">
                         <span class="input-group-addon">
                             <c:choose>
                                 <c:when test="${documentDetails.fileExt == 'pdf'}"><i class="fa fa-file-pdf-o bigger-110 orange"></i></c:when>

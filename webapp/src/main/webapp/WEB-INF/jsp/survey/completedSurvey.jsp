@@ -62,10 +62,11 @@
                         <input type="hidden" name="surveyId" value="${submittedSurveyId}" />
                         <input type="hidden" name="completed" value="1" />
                         <input type="hidden" name="selectedEntities" value="${selectedEntities}" />
-                        <div class="form-group">         
-                            <label for="document1">Survey Files</label>
+                        <div class="form-group" id="docDiv">         
+                            <label for="document1" class="control-label">Survey Files</label>
                             <div class="form-group">
                                 <input  multiple="" name="surveyDocuments" type="file" id="id-input-file-2" />
+                                <span id="docMsg" class="control-label"></span>
                             </div>
                         </div>
                     </form:form>

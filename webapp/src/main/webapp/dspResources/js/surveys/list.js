@@ -60,7 +60,20 @@ jQuery(function ($) {
                         thumbnail: 'small',
                         allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx', 'ppt', 'csv', 'pptx', 'wma', 'zip'],
                         before_remove: function () {
-                            return true;
+                           return true;
+                       },
+                       before_change: function() {
+                           $('span').removeClass("has-error");
+                           $('div').removeClass("has-error");
+                           $('#docMsg').html("");
+                           return true;
+                       }
+                    }).on('file.error.ace', function(event, info) {
+                        if(info.error_count['ext'] > 0) {
+                            $('#docDiv').addClass("has-error");
+                            $('#docMsg').addClass("has-error");
+                            $('#docMsg').html("There were files attached that have an invalid file extension.<br />Valid File Extension:<br /> pdf, txt, doc, docx, gif, png, jpg, jpeg, xls, xlsx, csv, ppt, pptx, wma, zip");
+                            event.preventDefault();
                         }
                     });
 

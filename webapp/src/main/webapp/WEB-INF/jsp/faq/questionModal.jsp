@@ -55,10 +55,11 @@
                         </div>
                     </div>
                 </c:if>
-                <div class="form-group">
+                <div class="form-group" id="docDiv">
                     <hr/>
                     <label  class="control-label" for="question">Associated Documents</label>
                     <input  multiple="" name="faqDocuments" type="file" id="id-input-file-2" />
+                    <span id="docMsg" class="control-label"></span>
                 </div>
             </form:form>
         </div>
