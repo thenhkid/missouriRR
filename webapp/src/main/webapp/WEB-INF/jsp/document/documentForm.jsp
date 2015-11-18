@@ -112,10 +112,15 @@
                         <label class="control-label">New Document Email Alert</label>
                         <div class="checkbox">
                             <label>
-                                <c:if test="${documentDetails.countyFolder == true}">
-                                    <input type="radio" name="alertUsers" value="1" checked> Send email regarding this new document to users of the selected county?<br />
-                                </c:if>
-                                <input type="radio" name="alertUsers" value="2" checked> Send email regarding this new document to all users?
+                                <c:choose>
+                                    <c:when test="${documentDetails.countyFolder == true}">
+                                         <input type="radio" name="alertUsers" value="1" checked> Send email regarding this new document to users of the selected county?<br />
+                                         <input type="radio" name="alertUsers" value="2"> Send email regarding this new document to all users?
+                                     </c:when>
+                                     <c:otherwise>
+                                         <input type="checkbox" name="alertUsers" value="2" checked> Send email regarding this new document to all users?
+                                     </c:otherwise>
+                                </c:choose>
                             </label>
                         </div>
                     </div>

@@ -415,6 +415,9 @@ jQuery(function ($) {
             event.preventDefault();
             return false;
         }
+        else {
+            $('#uploading').show();
+        }
         
         var submitURL = "/documents/saveDocuemntForm.do";
         $("#documentForm").attr("action", submitURL);

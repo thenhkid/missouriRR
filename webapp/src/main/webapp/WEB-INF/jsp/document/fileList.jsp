@@ -57,6 +57,14 @@
     <div class="col-sm-12">
 
         <div class="row">
+            
+            <div id="uploading" style="display:none;">
+                <h3 class=" smaller lighter grey">
+                    <i class="ace-icon fa fa-spinner fa-spin orange bigger-124"></i>
+                    Uploading Documents
+                </h3>
+            </div>
+            
             <div class="table-header">
                 Documents uploaded to the ${selFolderName} folder
             </div>
