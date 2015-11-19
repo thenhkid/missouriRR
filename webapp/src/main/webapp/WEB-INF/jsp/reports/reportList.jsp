@@ -76,7 +76,7 @@
                                     <td class="center">
                                         <div class="hidden-sm hidden-xs action-buttons">
                                             <c:if test="${rr.statusId == 3 || rr.statusId == 4}">
-	                                           	<a href="viewReport?i=${rr.encryptedId}&v=${rr.encryptedSecret}"  title="View this report" role="button">
+	                                           	<a href="/reports/viewReport?i=${rr.encryptedId}&v=${rr.encryptedSecret}"  title="View this report" role="button">
 	                                                <button class="btn btn-xs btn-success">
 	                                                    <i class="ace-icon fa fa-download bigger-120"></i>
 	                                                </button>
