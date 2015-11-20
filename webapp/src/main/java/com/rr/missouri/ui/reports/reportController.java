@@ -103,15 +103,15 @@ public class reportController {
         Map<String, String> map;
         
         List <reportRequestDisplay> reportRequestList =  reportmanager.getReportRequestDisplays(programId, userDetails);
-        for (reportRequestDisplay rr : reportRequestList) {
+        for (reportRequestDisplay rrd : reportRequestList) {
             //Encrypt the use id to pass in the url
             map = new HashMap<String, String>();
-            map.put("id", Integer.toString(rr.getId()));
+            map.put("id", Integer.toString(rrd.getReportRequestId()));
             map.put("topSecret", topSecret);
 
             String[] encrypted = encrypt.encryptObject(map);
-            rr.setEncryptedId(encrypted[0]);
-            rr.setEncryptedSecret(encrypted[1]);
+            rrd.setEncryptedId(encrypted[0]);
+            rrd.setEncryptedSecret(encrypted[1]);
         }
         
         
@@ -412,10 +412,17 @@ public class reportController {
     )
             throws Exception {
     	
+    	User userDetails = (User) session.getAttribute("userDetails");
+    	reportView rv = new reportView();
+	    rv.setSystemUserId(userDetails.getId());
+	    rv.setReportRequestId(reportRequestId);
+        rv.setReportAction("Deleted Report");
+        reportmanager.saveReportView(rv);
+    	
     	reportRequest rr = reportmanager.getReportRequestById(reportRequestId);
     	if (rr.getStatusId() == 3 || rr.getStatusId() == 4) {
     		//we rename file
-        	reportmanager.renameDeletedFile(rr);
+        	reportmanager.deleteReportFile(rr);
     	}
     	redirectAttr.addFlashAttribute("msg", "Deleted");
     	rr.setStatusId(6);

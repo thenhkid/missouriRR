@@ -54,35 +54,35 @@
                 <tbody>
                     <c:choose>
                         <c:when test="${not empty reportRequestList}">
-                            <c:forEach var="rr" items="${reportRequestList}">
-                                <tr id="reportRow_${rr.id}">
-                                    <td class="center">${rr.statusDisplay}</td>
-                                    <td class="center"><fmt:formatDate value="${rr.dateSubmitted}" type="date" pattern="M/dd/yyyy h:mm a" /></td>
+                            <c:forEach var="rrd" items="${reportRequestList}">
+                                <tr id="reportRow_${rrd.reportRequestId}">
+                                    <td class="center">${rrd.statusDisplay}</td>
+                                    <td class="center"><fmt:formatDate value="${rrd.dateSubmitted}" type="date" pattern="M/dd/yyyy h:mm a" /></td>
                                     <td>
-                                        ${rr.reportType}
+                                        ${rrd.reportType}
                                     </td>
                                     <td>
-                                         ${rr.reportNames}
+                                         ${rrd.reportNames}
                                     </td>
                                     <td>
-                                        ${rr.datesRequested}
+                                        ${rrd.datesRequested}
                                     </td>
                                      <td>
-                                        ${rr.entity3Names}
+                                        ${rrd.entity3Names}
                                     </td>
                                     <td>
-                                        ${rr.firstName} ${rr.lastName}
+                                        ${rrd.firstName} ${rrd.lastName}
                                     </td>
                                     <td class="center">
                                         <div class="hidden-sm hidden-xs action-buttons">
-                                            <c:if test="${rr.statusId == 3 || rr.statusId == 4}">
-	                                           	<a href="/reports/viewReport?i=${rr.encryptedId}&v=${rr.encryptedSecret}"  title="View this report" role="button">
+                                            <c:if test="${rrd.statusId == 3 || rrd.statusId == 4}">
+	                                           	<a href="/reports/viewReport?i=${rrd.encryptedId}&v=${rrd.encryptedSecret}"  title="View this report" role="button">
 	                                                <button class="btn btn-xs btn-success">
 	                                                    <i class="ace-icon fa fa-download bigger-120"></i>
 	                                                </button>
 	                                            </a>
                                             </c:if>
-                                            <a href="javascript:void(0);" class="deleteReport" rel="${rr.id}"  title="Delete This Report" role="button">
+                                            <a href="javascript:void(0);" class="deleteReport" rel="${rrd.reportRequestId}"  title="Delete This Report" role="button">
                                                 <button class="btn btn-xs btn-danger">
                                                     <i class="ace-icon fa fa-close bigger-120"></i>
                                                 </button>
