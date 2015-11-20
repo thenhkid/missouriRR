@@ -17,9 +17,13 @@ import org.springframework.stereotype.Component;
 
 import com.rr.missouri.ui.security.CustomWebAuthenticationDetails.MyAuthenticationDetails;
 import com.registryKit.user.userManager;
+import org.springframework.beans.factory.annotation.Value;
 
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
+    
+    @Value("${programId}")
+    private Integer programId;
 
     @Autowired
     private userManager usermanager;
@@ -40,7 +44,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         //we login with email 
         String loginUser = name;
         
-        com.registryKit.user.User user = usermanager.getUserByEmail(name);
+        com.registryKit.user.User user = usermanager.getUserByEmail(name, programId);
         com.registryKit.user.User loginUserInfo = user;
 
         if (user == null) {
