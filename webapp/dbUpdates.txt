@@ -1,0 +1,7 @@
+11.23.15 grace
+ALTER TABLE `rapidregistry`.`reportquestions` 
+ADD COLUMN `isAvgByQId` INT NULL DEFAULT 0 AFTER `answerId`;
+
+ALTER TABLE `rapidregistry`.`reportdetails` 
+ADD COLUMN `addSummary` BIT(1) NULL DEFAULT 0 AFTER `dateCreated`;
+
