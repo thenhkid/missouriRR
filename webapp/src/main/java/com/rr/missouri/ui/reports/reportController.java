@@ -126,15 +126,22 @@ public class reportController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/request");
         
+        boolean adminUser = true;
+        
+        User userDetails = (User) session.getAttribute("userDetails");
+        
+        if (userDetails.getRoleId() == 3) {
+        	adminUser = false;
+        }
+        
         //this returns the report type list for this program
-        List<reportType> reportTypeList = reportmanager. getReportTypes(programId, false);
+        List<reportType> reportTypeList = reportmanager. getReportTypes(programId, false, adminUser);
         mav.addObject("reportTypes", reportTypeList);
         
         //these are the surveys, but should be populated with /availableReports.do
         List<reportDetails> reportList = reportmanager.getReportsForType(programId, false, reportTypeList.get(0).getId());
         mav.addObject("reportList", reportList);
         
-        User userDetails = (User) session.getAttribute("userDetails");
         
         List<programOrgHierarchy> orgHierarchyList = hierarchymanager.getProgramOrgHierarchy(programId);
         

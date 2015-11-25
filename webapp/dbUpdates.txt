@@ -5,3 +5,19 @@ ADD COLUMN `isAvgByQId` INT NULL DEFAULT 0 AFTER `answerId`;
 ALTER TABLE `rapidregistry`.`reportdetails` 
 ADD COLUMN `addSummary` BIT(1) NULL DEFAULT 0 AFTER `dateCreated`;
 
+11.24.15
+ALTER TABLE `rapidregistry`.`reportdetails` 
+ADD COLUMN `adminOnly` BIT(1) NULL DEFAULT 0 AFTER `addSummary`;
+
+11.25.15
+INSERT INTO `rapidregistry`.`lu_reporttypes` (`id`, `reportType`) VALUES ('3', 'Admin Reports');
+UPDATE `rapidregistry`.`lu_reporttypes` SET `reportDesc`='contains admin only reports' WHERE `id`='3';
+
+INSERT INTO `rapidregistry`.`reportdetails` (`programId`, `reportTypeId`, `reportName`, `status`, `cssFile`, `addSummary`, `adminOnly`) VALUES ('6', '3', 'Documents Exports (CSV File)', 1, 'default.css', 0, 1);
+ALTER TABLE `rapidregistry`.`reportdetails` 
+CHANGE COLUMN `surveyId` `surveyId` INT(11) NULL DEFAULT 0 ,
+CHANGE COLUMN `surveyDateQuestionId` `surveyDateQuestionId` INT(11) NULL DEFAULT 0 ,
+CHANGE COLUMN `groupByQuestionId` `groupByQuestionId` INT(11) NULL DEFAULT 0 ,
+CHANGE COLUMN `orderByQuestionId` `orderByQuestionId` INT(11) NULL DEFAULT 0 ;
+
+
