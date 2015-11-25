@@ -9,7 +9,8 @@ jQuery(function ($) {
 
     $(document).ready(function () {
 
-    	var startDate = new Date('2013-09-02');
+    	//var startDate = new Date('2013-09-02');
+    	var startDate = new Date('09/02/2013');
     	var toEndDate = new Date();
     	
         $("input:text,form").attr("autocomplete", "off");
@@ -17,7 +18,8 @@ jQuery(function ($) {
         
          $(function(){
          $('.date-picker').datepicker({
-        	 format: 'yyyy-mm-dd',
+        	 //format: 'yyyy-mm-dd',
+        	 format: 'mm/dd/yyyy',
 	         autoclose: true,
 	         todayHighlight: true,
 	         endDate:toEndDate,
@@ -211,20 +213,14 @@ jQuery(function ($) {
                 $('#errorMsg_entity3').html(message);
                 errors++;
             }
-
-
+            
             if (errors > 0) {
             	return false;
             }
-            
-            $('#entity3Ids').prop('disabled', 'disabled');
+
             $('#contentDiv').show();
-            $('#requestButton').show();
-            $('#changeEntity3').show();
-            $('#showCodes').hide();
 
-
-
+            
             var selectednumbers = [];
             $('#entity3Ids :selected').each(function (i, selected) {
                 selectednumbers[i] = $(selected).val();
@@ -255,10 +251,16 @@ jQuery(function ($) {
                 	$("#codesSelectDiv").html("");
                 	/** need to check to see if there are any code ids returned **/
                 	if (data.indexOf('option') < 1) {
-                		//hide submit button
-                		$('#requestButton').hide();
-                	} 
+                		
+                	} else {
+                		$('#entity3Ids').prop('disabled', 'disabled');
+                        
+                        $('#requestButton').show();
+                        $('#changeEntity3').show();
+                        $('#showCodes').hide();
+                	}
                 	$("#codesSelectDiv").html(data);
+                	
                 },
                 error: function (error) {
                     console.log(error);
@@ -373,7 +375,7 @@ function checkDatesAndReport() {
 
 	if (DateValidated === false) {
         $('#errorMsg_startDate').addClass("has-error");
-        $('#errorMsg_startDate').html('The start date is not valid, format should be yyyy-mm-dd.');
+        $('#errorMsg_startDate').html('The start date is not valid, format should be mm/dd/yyyy.');
         $('#errorMsg_startDate').show();
         errors++;
     }
@@ -383,7 +385,7 @@ function checkDatesAndReport() {
 
     if (DateValidated === false) {
         $('#errorMsg_endDate').addClass("has-error");
-        $('#errorMsg_endDate').html('This end date is not valid, format should be yyyy-mm-dd.');
+        $('#errorMsg_endDate').html('This end date is not valid, format should be mm/dd/yyyy.');
         $('#errorMsg_endDate').show();
         errors++;
     }
@@ -400,7 +402,7 @@ function checkDatesAndReport() {
 }
 
 
-function validateDate($date) {
+function validateDateOld($date) {
 
     var currVal = $date;
 
@@ -450,4 +452,40 @@ function validateDate($date) {
      else {
      return true;
      } */
+}
+
+
+function validateDate($date) {
+
+    var currVal = $date;
+
+    if (currVal == '')
+        return false;
+
+    //Declare Regex  
+    var rxDatePattern = /^(\d{1,2})(\/|-)(\d{1,2})(\/|-)(\d{4})$/;
+    var dtArray = currVal.match(rxDatePattern); // is format OK?
+
+    if (dtArray == null)
+        return false;
+
+    //Checks for mm/dd/yyyy format.
+    dtMonth = dtArray[1];
+    dtDay = dtArray[3];
+    dtYear = dtArray[5];
+
+    if (dtMonth < 1 || dtMonth > 12)
+        return false;
+    else if (dtDay < 1 || dtDay > 31)
+        return false;
+    else if ((dtMonth == 4 || dtMonth == 6 || dtMonth == 9 || dtMonth == 11) && dtDay == 31)
+        return false;
+    else if (dtMonth == 2)
+    {
+        var isleap = (dtYear % 4 == 0 && (dtYear % 100 != 0 || dtYear % 400 == 0));
+        if (dtDay > 29 || (dtDay == 29 && !isleap))
+            return false;
+    }
+    return true;
+
 }

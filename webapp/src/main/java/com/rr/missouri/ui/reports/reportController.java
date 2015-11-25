@@ -236,9 +236,17 @@ public class reportController {
     	
     	List<programOrgHierarchy> orgHierarchyList = hierarchymanager.getProgramOrgHierarchy(programId);
     	
+    	//need to rearrange date 
+    	
+    	SimpleDateFormat dateformat = new SimpleDateFormat("MM/dd/yyyy");
+    	Date sd = dateformat.parse(startDate);
+ 	    Date ed = dateformat.parse(endDate);
+        
+        /**
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-	    Date sd = sdf.parse(startDate);
-	    Date ed = sdf.parse(endDate);
+	    Date sd = sdf.parse(sdori);
+	    Date ed = sdf.parse(edori);
+	    **/
 	    
     	//set up report request
     	reportRequest rr = new reportRequest();
@@ -269,12 +277,13 @@ public class reportController {
             ) throws Exception {
        
     	User userDetails = (User) session.getAttribute("userDetails");
-    	//we set up report request
+    	
     	reportRequest rr = new reportRequest();
-    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-	    Date sd = sdf.parse(startDate);
-	    Date ed = sdf.parse(endDate);
-	    
+    	
+    	SimpleDateFormat dateformat = new SimpleDateFormat("MM/dd/yyyy");
+    	Date sd = dateformat.parse(startDate);
+ 	    Date ed = dateformat.parse(endDate);
+        
     	rr.setStartDateTime(sd);
     	rr.setEndDateTime(ed);
     	rr.setReportTypeId(reportTypeId);
