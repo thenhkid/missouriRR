@@ -11,13 +11,18 @@
     
 
     <http auto-config="true" use-expressions="true" disable-url-rewriting="false" >
-        <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/districts/**"></intercept-url>
         <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/calendar/**"></intercept-url>
+        <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/FileDownload/**"></intercept-url> 
+        <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/districts/**"></intercept-url>
+        <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/documents/**"></intercept-url>
         <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/faq/**"></intercept-url>
         <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/forum/**"></intercept-url>
-        <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/documents/**"></intercept-url>
         <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/surveys/**"></intercept-url>
-        <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/reports/**"></intercept-url>        
+        <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/reports/**"></intercept-url> 
+        <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/profile/**"></intercept-url> 
+        <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/home/**"></intercept-url> 
+        <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/import-export/**"></intercept-url> 
+        <intercept-url access="hasAnyRole('ROLE_USER','ROLE_PROGRAMADMIN')" pattern="/users/**"></intercept-url> 
         <intercept-url access="permitAll" pattern="/login/*"></intercept-url>
         <intercept-url access="permitAll" pattern="/logout"></intercept-url>
         <logout invalidate-session="true" delete-cookies="JSESSIONID" logout-success-url="/login" logout-url="/logout"></logout>
