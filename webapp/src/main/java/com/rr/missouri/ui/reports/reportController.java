@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 
 import javax.servlet.http.HttpServletRequest;
@@ -424,9 +425,17 @@ public class reportController {
     @RequestMapping(value = "/deleteReportRequest.do", method = RequestMethod.POST)
     public @ResponseBody
     Integer deleteReport(HttpSession session, RedirectAttributes redirectAttr,
-            @RequestParam(value = "reportRequestId", required = true) Integer reportRequestId         
+    		@RequestParam String reli, @RequestParam String relv                
     )
             throws Exception {
+    	
+    	String i = URLDecoder.decode(reli, "UTF-8");
+    	String v = URLDecoder.decode(relv, "UTF-8");
+    	
+    	decryptObject decrypt = new decryptObject();
+        Object obj = decrypt.decryptObject(i, v);
+        String[] result = obj.toString().split((","));
+        Integer reportRequestId = Integer.parseInt(result[0].substring(4));
     	
     	User userDetails = (User) session.getAttribute("userDetails");
     	reportView rv = new reportView();

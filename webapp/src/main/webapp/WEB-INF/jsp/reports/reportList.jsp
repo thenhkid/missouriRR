@@ -8,7 +8,7 @@
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <div class="row">
     <div class="col-xs-12">
@@ -82,7 +82,7 @@
 	                                                </button>
 	                                            </a>
                                             </c:if>
-                                            <a href="javascript:void(0);" class="deleteReport" rel="${rrd.reportRequestId}"  title="Delete This Report" role="button">
+                                            <a href="javascript:void(0);" class="deleteReport" rel="${rrd.reportRequestId}"  reli="${rrd.encryptedId}" relv="${rrd.encryptedSecret}" title="Delete This Report" role="button">
                                                 <button class="btn btn-xs btn-danger">
                                                     <i class="ace-icon fa fa-close bigger-120"></i>
                                                 </button>
@@ -100,9 +100,6 @@
                 </tbody>
             </table>
         </div>
-		<form action="#" method="Post" name="delRepReq" id="delRepReq">
-			<input type="hidden" name="delRRId" id="delRRId"/>
-		</form>
     </div><!-- /.col -->
 </div>
 

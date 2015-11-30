@@ -15,6 +15,9 @@ jQuery(function ($) {
         $('.deleteReport').click(function() { 
             // need to confirm
             var reportRequestId = $(this).attr('rel');
+            var reli = $(this).attr('reli');
+            var relv = $(this).attr('relv');
+            
             bootbox.confirm({
                 size: 'small',
                 message: "Are you sure you want to delete this report?",
@@ -23,14 +26,16 @@ jQuery(function ($) {
                         $.ajax({
                             type: 'POST',
                             url: "/reports/deleteReportRequest.do",
-                            data:{'reportRequestId': reportRequestId}, 
-                            success: function (data) {
-                                $('#reportRow_'+reportRequestId).remove();
-                                //$("#documentListDiv").html(data);
-                            },
-                            error: function (error) {
-                                console.log(error);
-                            }
+                            data:{
+	                            'reli': reli, 
+	                            'relv': relv},
+	                            success: function (data) {
+	                                $('#reportRow_'+reportRequestId).remove();
+	                                //$("#documentListDiv").html(data);
+	                            },
+	                            error: function (error) {
+	                                console.log(error);
+	                            }
                         });
                     }
                 }
