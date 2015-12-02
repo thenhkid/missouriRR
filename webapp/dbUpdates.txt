@@ -1,0 +1,3 @@
+/** grace on dev and stage 12012015 **/
+ALTER TABLE `rapidregistry`.`reportrequests` 
+ADD COLUMN `displayCodeOnly` BIT(1) NOT NULL DEFAULT 1 AFTER `dateCreated`;
