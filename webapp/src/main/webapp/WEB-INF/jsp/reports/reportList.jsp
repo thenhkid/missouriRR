@@ -16,7 +16,9 @@
         <%--<h3 class="header smaller lighter blue">Activity Logs</h3>--%>
         
         <div class="clearfix">
+            <%-- 
             <c:if test="${allowCreate == true}">
+            --%>
             <div class="pull-right">
                 <form:form id="newReport" method="POST" action="/reports/request" role="form">
                     <ul class="list-unstyled spaced2">
@@ -30,7 +32,9 @@
                     </ul>
                 </form:form>  
             </div>
+            <%--
             </c:if>
+            --%>
         </div>
 
         <div class="table-header">
