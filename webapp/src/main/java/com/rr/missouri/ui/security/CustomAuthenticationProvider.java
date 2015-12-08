@@ -44,7 +44,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         //we login with email 
         String loginUser = name;
         
-        com.registryKit.user.User user = usermanager.getUserByEmail(name, programId);
+        com.registryKit.user.User user = usermanager.getUserByUsername(name, programId);
         com.registryKit.user.User loginUserInfo = user;
 
         if (user == null) {

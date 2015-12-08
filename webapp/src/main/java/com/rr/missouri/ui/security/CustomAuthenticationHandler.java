@@ -47,7 +47,7 @@ public class CustomAuthenticationHandler extends SimpleUrlAuthenticationSuccessH
 
         if (roles.contains("ROLE_USER") || roles.contains("ROLE_PROGRAMADMIN")) {
             // Need to get the userId 
-            User userDetails = usermanager.getUserByEmail(authentication.getName());
+            User userDetails = usermanager.getUserByUsername(authentication.getName(), programId);
            
             // Need to store the user object in session 
             session.setAttribute("userDetails", userDetails);

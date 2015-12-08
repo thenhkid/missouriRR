@@ -207,11 +207,12 @@ function getUrlParameter(sParam)
 
 function checkForm()
 {
+    var errorFound = 0;
+
     $('div.form-group').removeClass("has-error");
     $('span.control-label').removeClass("has-error");
     $('span.control-label').html("");
-     
-    
+
     var newPassword = $('#password').val();
     var confirmPassword = $('#confirmPassword').val();
     
@@ -235,5 +236,43 @@ function checkForm()
             return false;
         } 
     } 
-    return true;
+
+    if ($('#email').val().trim() == "") {
+        $('#emailDiv').addClass("has-error");
+        $('#emailMsg').html('The email address is a required field.');
+        errorFound = 1;
+    }
+
+    if ($('#username').val().trim() == "") {
+        $('#usernameDiv').addClass("has-error");
+        $('#usernameMsg').html('The username is a required field.');
+        errorFound = 1;
+    }
+
+    if($('#email').val().trim() != "") {
+        var emailValidated = validateEmail($('#email').val().trim());
+
+        if (emailValidated === false) {
+            $('#emailDiv').addClass("has-error");
+            $('#emailMsg').html('The email address entered is not a valid email address.');
+            errorFound = 1;
+        }
+    }
+
+    if(errorFound == 0) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }   
+
+function validateEmail($email) {
+    var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+    if (!emailReg.test($email)) {
+        return false;
+    }
+    else {
+        return true;
+    }
+}

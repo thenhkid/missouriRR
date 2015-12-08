@@ -6,6 +6,11 @@
 
 
 jQuery(function ($) {
+    
+    //Fade out the updated/created message after being displayed.
+    if ($('.alert').length > 0) {
+        $('.alert').delay(2000).fadeOut(1000);
+    }
 
     $('#user-profile-3')
             .find('input[type=file]').ace_file_input({
@@ -48,6 +53,12 @@ jQuery(function ($) {
             $('#emailDiv').addClass("has-error");
             errorFound = true;
         }
+        
+        if ($('#username').val().trim() == "") {
+            $('#usernameDiv').addClass("has-error");
+            errorFound = true;
+        }
+        
         
         if ($('#firstName').val().trim() == "" || $('#lastName').val().trim() == "") {
             $('#nameDiv').addClass("has-error");

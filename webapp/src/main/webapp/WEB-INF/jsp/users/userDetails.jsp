@@ -74,11 +74,20 @@
                                     </div>
                                 </spring:bind>
                                 <spring:bind path="email">
-                                    <div class="form-group ${status.error || not empty existingUser ? 'has-error' : '' }">
+                                    <div id="emailDiv" class="form-group ${status.error ? 'has-error' : '' }">
                                         <label class="control-label" for="email">Email *</label>
                                         <form:input path="email" id="email" class="form-control" type="text"  maxLength="255" />
                                         <form:errors path="email" cssClass="control-label" element="label" />
+                                        <span id="emailMsg" class="control-label"></span>
+                                    </div>
+                                </spring:bind>
+                                <spring:bind path="username">
+                                    <div id="usernameDiv" class="form-group ${status.error || not empty existingUser ? 'has-error' : '' }">
+                                        <label class="control-label" for="email">Username *</label>
+                                        <form:input path="username" id="username" class="form-control" type="text"  maxLength="255" />
+                                        <form:errors path="username" cssClass="control-label" element="label" />
                                         <c:if test="${not empty existingUser}"><span class="control-label has-error">${existingUser}</span></c:if>
+                                        <span id="usernameMsg" class="control-label"></span>
                                     </div>
                                 </spring:bind>
                                 <spring:bind path="password">

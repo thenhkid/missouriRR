@@ -7,6 +7,15 @@
         <div >
             <div id="user-profile-3" class="user-profile row">
                 <div class="col-sm-offset-1 col-sm-10">
+                    
+                    <c:if test="${not empty savedStatus}" >
+                        <div class="col-md-12">
+                            <div class="alert alert-success" role="alert">
+                                <strong>Success!</strong> 
+                                Your profile has been successfully updated!
+                            </div>
+                        </div>
+                    </c:if>
 
                     <div class="space"></div>
 
@@ -56,6 +65,20 @@
                                                 </div>
 
                                             </div>
+                                                
+                                            <div class="space-4"></div>
+                                            
+                                            <div class="form-group <c:if test="${not empty existingUser}">has-error</c:if>" id="usernameDiv">
+                                                <label class="col-sm-4 control-label no-padding-right" for="email">Username</label>
+
+                                                <div class="col-sm-8">
+                                                    <input class="col-xs-12 col-sm-10" name="username" type="text" id="username" placeholder="Username" value="${userDetails.username}" />
+                                                    <c:if test="${not empty existingUser}">
+                                                        <br />
+                                                        <span class="col-xs-10 control-label has-error">${existingUser}</span>
+                                                    </c:if>
+                                                </div>
+                                            </div>       
 
                                             <div class="space-4"></div>
 

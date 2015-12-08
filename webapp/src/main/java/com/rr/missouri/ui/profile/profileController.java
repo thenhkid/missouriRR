@@ -70,6 +70,7 @@ public class profileController {
      */
     @RequestMapping(value = "saveProfileForm.do", method = RequestMethod.POST)
     public ModelAndView submitProfileForm(HttpSession session, @RequestParam String email,
+            @RequestParam String username,
             @RequestParam String firstName,
             @RequestParam String lastName,
             @RequestParam String newPassword,
@@ -80,9 +81,20 @@ public class profileController {
 
         /* Get a list of completed surveys the logged in user has access to */
         User userDetails = (User) session.getAttribute("userDetails");
+        
+        /* Check for duplicate email address */
+        User existingUser = usermanager.checkDuplicateUsername(username, programId, userDetails.getId());
+        
+        if (existingUser != null ) {
+            mav.addObject("existingUser", "The username is already being used by another user.");
+            return mav;
+        }
+        
+        
         userDetails.setFirstName(firstName);
         userDetails.setLastName(lastName);
         userDetails.setEmail(email);
+        userDetails.setUsername(username);
 
         if (!"".equals(newPassword)) {
             userDetails.setPassword(newPassword);
@@ -95,6 +107,8 @@ public class profileController {
         }
 
         usermanager.updateUser(userDetails);
+        
+        mav.addObject("savedStatus", "updated");
 
         return mav;
     }

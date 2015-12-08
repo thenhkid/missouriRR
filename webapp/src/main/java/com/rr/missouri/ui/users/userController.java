@@ -209,12 +209,12 @@ public class userController {
         }
         
         /* Check for duplicate email address */
-        User existingUser = usermanager.getUserByEmail(newuserDetails.getEmail());
+        User existingUser = usermanager.checkDuplicateUsername(newuserDetails.getUsername(), programId, 0);
         
         if (existingUser != null ) {
             ModelAndView mav = new ModelAndView();
             mav.setViewName("/users/newUser");
-            mav.addObject("existingUser", "The email address is already being used by another user.");
+            mav.addObject("existingUser", "The username is already being used by another user.");
             return mav;
         }
           
@@ -352,11 +352,11 @@ public class userController {
         }
         
         /* Check for duplicate email address */
-        User existingUser = usermanager.getUserByEmail(userDetais.getEmail());
+        User existingUser = usermanager.checkDuplicateUsername(userDetais.getUsername(), programId, readableUserId);
         if (existingUser != null && existingUser.getId() != readableUserId) {
             ModelAndView mav = new ModelAndView();
             mav.setViewName("/userDetails");
-            mav.addObject("existingUser", "The email address is already being used by another user.");
+            mav.addObject("existingUser", "The username is already being used by another user.");
 
             return mav;
         }

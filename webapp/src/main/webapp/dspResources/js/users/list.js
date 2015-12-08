@@ -42,10 +42,12 @@ jQuery(function ($) {
     //submit the new user fields from the modal window.
     $(document).on('click', '#saveNewUser', function(event) {
 
-      $('div.form-group').removeClass("has-error");
+        var errorFound = 0;
+
+        $('div.form-group').removeClass("has-error");
         $('span.control-label').removeClass("has-error");
         $('span.control-label').html("");
-
+        
         var newPassword = $('#password').val();
         var confirmPassword = $('#confirmPassword').val();
 
@@ -53,17 +55,46 @@ jQuery(function ($) {
             $('#passwordDiv').addClass("has-error");
             $('#passwordMsg').addClass("has-error");
             $('#passwordMsg').html('The new password must be between 5 and 15 characters.');
+            errorFound = 1;
         }
-        else if(confirmPassword.length < 5) {
+        
+        if(confirmPassword.length < 5) {
             $('#confirmPasswordDiv').addClass("has-error");
             $('#confirmPasswordMsg').addClass("has-error");
             $('#confirmPasswordMsg').html('The confirm password must be between 5 and 15 characters.');
+            errorFound = 1;
         }
-        else if(newPassword != confirmPassword) {
+        
+        if(newPassword != confirmPassword) {
             $('#confirmPasswordDiv').addClass("has-error");
             $('#confirmPasswordMsg').addClass("has-error");
             $('#confirmPasswordMsg').html('The confirm password must be equal to the new password.');
-        } else {
+            errorFound = 1;
+        } 
+        
+        if ($('#email').val().trim() == "") {
+            $('#emailDiv').addClass("has-error");
+            $('#emailMsg').html('The email address is a required field.');
+            errorFound = 1;
+        }
+        
+        if ($('#username').val().trim() == "") {
+            $('#usernameDiv').addClass("has-error");
+            $('#usernameMsg').html('The username is a required field.');
+            errorFound = 1;
+        }
+        
+        if($('#email').val().trim() != "") {
+            var emailValidated = validateEmail($('#email').val().trim());
+
+            if (emailValidated === false) {
+                $('#emailDiv').addClass("has-error");
+                $('#emailMsg').html('The email address entered is not a valid email address.');
+                errorFound = 1;
+            }
+        }
+        
+        if(errorFound == 0) {
 
             var formData = $("#newuserform").serialize();
 
@@ -97,3 +128,12 @@ jQuery(function ($) {
     
 });
 
+function validateEmail($email) {
+    var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+    if (!emailReg.test($email)) {
+        return false;
+    }
+    else {
+        return true;
+    }
+}
