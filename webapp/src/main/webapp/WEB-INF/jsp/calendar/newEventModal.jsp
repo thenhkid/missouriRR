@@ -64,6 +64,9 @@
         </div>                 
         <div class="hr hr-dotted"></div>
         <div class="row">
+            <div class="col-md-12">Note: Please add entries according to when they would occur in CT</div>
+        </div>
+        <div class="row">
             <div class="col-md-6">
                 <div class="form-group" id="eventTitleDiv">
                     <label for="eventName">Event Name</label>
