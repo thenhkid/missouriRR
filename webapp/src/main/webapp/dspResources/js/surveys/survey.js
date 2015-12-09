@@ -241,9 +241,9 @@ jQuery(function ($) {
     /* Function to process the NEXT button */
     $(document).on('click', '.nextPage', function (event) {
         var errorsFound = 0;
-
+        
         errorsFound = checkSurveyFields();
-
+        
         if (errorsFound == 0) {
             $('#action').val("next");
             $('#lastQNumAnswered').val($('.qNumber:last').attr('rel'));
@@ -317,44 +317,45 @@ function checkSurveyFields() {
         missingQuestions+="- Involved School(s) / ECC,";
         errorFound = 1;
     }
-    
-    
-    if($('#schoolSelect').val().length > 1) {
-        var schools = $("#schoolSelect").val();
-        var missingContent = 0;
-        
-        for(i =0; i < $('#schoolSelect').val().length; i++) {
-            var missingSchoolContent = 1;
-            
-            $('.contentSel').each(function() {
-               if($(this).is(':checked') && $(this).attr('rel') == schools[i]) {
-                    missingSchoolContent = 0;
-                    return false;
-               } 
-            });
-            
-            if(missingSchoolContent == 1) {
-                missingContent = 1;
-                break;
+    else {
+        if($('#schoolSelect').val().length > 1) {
+            var schools = $("#schoolSelect").val();
+            var missingContent = 0;
+
+            for(i =0; i < $('#schoolSelect').val().length; i++) {
+                var missingSchoolContent = 1;
+
+                $('.contentSel').each(function() {
+                   if($(this).is(':checked') && $(this).attr('rel') == schools[i]) {
+                        missingSchoolContent = 0;
+                        return false;
+                   } 
+                });
+
+                if(missingSchoolContent == 1) {
+                    missingContent = 1;
+                    break;
+                }
+            }
+
+            if(missingContent == 1) {
+                $('#errorMsg_content').html("At least one content area & criteria must be selected for each selected school.");
+                $('#errorMsg_content').show();
+                missingQuestions+="- Content Area & Criteria,";
+                errorFound = 1;
             }
         }
-        
-        if(missingContent == 1) {
-            $('#errorMsg_content').html("At least one content area & criteria must be selected for each selected school.");
-            $('#errorMsg_content').show();
-            missingQuestions+="- Content Area & Criteria,";
-            errorFound = 1;
+        else {
+            //Make sure at least one content and criteria is selected per school
+            if ($('.contentSel').is(':checked') == false) {
+                $('#errorMsg_content').html("At least one content area & criteria must be selected.");
+                $('#errorMsg_content').show();
+                missingQuestions+="- Content Area & Criteria,";
+                errorFound = 1;
+            }
         }
     }
-    else {
-        //Make sure at least one content and criteria is selected per school
-        if ($('.contentSel').is(':checked') == false) {
-            $('#errorMsg_content').html("At least one content area & criteria must be selected.");
-            $('#errorMsg_content').show();
-            missingQuestions+="- Content Area & Criteria,";
-            errorFound = 1;
-        }
-    }
+    
     
     //Look at all required fields.
     $('.required').each(function () {

@@ -63,12 +63,13 @@
                                 </c:forEach>
                             </div>
                         </div>
+                        </div>
                     </div>
-                </div>
-                <div id="calendarDiv" class="col-sm-10">
-                    <div class="space"></div>
-                    <div id="calendar"></div>
-                </div>
+                    <div id="calendarDiv" class="col-sm-10">
+                        <div class="space"></div>
+                        <div>Note: All calendar entries are shown in Central Time (CT). Please add entries according to when they would occur in CT.</div>
+                        <div id="calendar"></div>
+                    </div>
                 <div id="searchResults" class="col-sm-2" style="display:none; background-color: #f2f2f2; height:100vh; overflow: auto"></div>
             </div>
 
