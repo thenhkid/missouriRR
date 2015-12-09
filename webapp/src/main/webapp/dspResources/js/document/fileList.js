@@ -19,7 +19,7 @@ jQuery(function ($) {
                     null, null, 
                     {"bSortable": false}
                 ],
-                "aaSorting": []
+                "aaSorting": [[2, 'desc']]
             });
             
     //New main folder button
