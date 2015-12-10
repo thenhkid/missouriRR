@@ -92,7 +92,7 @@ public class surveyController {
     private static List<surveyQuestionAnswers> questionAnswers = null;
 
     /* Variable to hold the content criteria while taking the survey */
-    private static List<surveyContentCriteria> surveyContentCriterias = null;
+    //private static List<surveyContentCriteria> surveyContentCriterias = null;
 
     /* Keep track of visited pages */
     private static List<Integer> seenPages;
@@ -249,7 +249,14 @@ public class surveyController {
 
         //Set the survey answer array to get ready to hold data
         questionAnswers = new CopyOnWriteArrayList<surveyQuestionAnswers>();
-        surveyContentCriterias = new CopyOnWriteArrayList<surveyContentCriteria>();
+        
+        if(session.getAttribute("selectedContentCriterias") != null) {
+            session.removeAttribute("selectedContentCriterias");
+        }
+        session.setAttribute("selectedContentCriterias", new ArrayList<surveyContentCriteria>());
+        
+        //surveyContentCriterias = new CopyOnWriteArrayList<surveyContentCriteria>();
+        
         seenPages = new ArrayList<Integer>();
 
         int clientId = 0;
@@ -412,7 +419,13 @@ public class surveyController {
 
         //Set the survey answer array to get ready to hold data
         questionAnswers = new CopyOnWriteArrayList<surveyQuestionAnswers>();
-        surveyContentCriterias = new CopyOnWriteArrayList<surveyContentCriteria>();
+        
+        if(session.getAttribute("selectedContentCriterias") != null) {
+            session.removeAttribute("selectedContentCriterias");
+        }
+        session.setAttribute("selectedContentCriterias", null);
+        
+        //surveyContentCriterias = new CopyOnWriteArrayList<surveyContentCriteria>();
         seenPages = new ArrayList<Integer>();
 
         int clientId = 0;
@@ -884,8 +897,11 @@ public class surveyController {
              */
             Integer submittedSurveyId = surveyManager.submitSurvey(userDetails.getId(), programId, survey, questionAnswers, submitted, selectedEntities);
 
-            if (surveyContentCriterias != null) {
-                Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
+            //if (surveyContentCriterias != null) {
+            if(session.getAttribute("selectedContentCriterias") != null) {
+                List<surveyContentCriteria> selectedContentCriteria = (List<surveyContentCriteria>)session.getAttribute("selectedContentCriterias");
+
+                Iterator<surveyContentCriteria> it = selectedContentCriteria.iterator();
 
                 /* Delete existing code sets */
                 surveyManager.deleteSurveyCodeSets(submittedSurveyId);
@@ -929,8 +945,10 @@ public class surveyController {
                  */
                 Integer submittedSurveyId = surveyManager.submitSurvey(userDetails.getId(), programId, survey, questionAnswers, submitted, selectedEntities);
 
-                if (surveyContentCriterias != null) {
-                    Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
+                if (session.getAttribute("selectedContentCriterias") != null) {
+                    List<surveyContentCriteria> selectedContentCriteria = (List<surveyContentCriteria>)session.getAttribute("selectedContentCriterias");
+
+                    Iterator<surveyContentCriteria> it = selectedContentCriteria.iterator();
 
                     /* Delete existing code sets */
                     surveyManager.deleteSurveyCodeSets(submittedSurveyId);
@@ -1061,7 +1079,8 @@ public class surveyController {
     ModelAndView getEntityCodeSets(
             @RequestParam(value = "entityId", required = true) List<Integer> entityIdList, 
             @RequestParam(value = "surveyId", required = true) Integer surveyId,
-            @RequestParam(value = "disabled", required = true) Boolean disabled) throws Exception {
+            @RequestParam(value = "disabled", required = true) Boolean disabled,
+            HttpSession session) throws Exception {
 
         for (Integer entityId : entityIdList) {
             programHierarchyDetails entityDetails = hierarchymanager.getProgramHierarchyItemDetails(entityId);
@@ -1070,21 +1089,25 @@ public class surveyController {
             List<Integer> activityCodes = activitycodemanager.getActivityCodesForEntity(entityId);
 
             if (activityCodes != null && !activityCodes.isEmpty()) {
-
+                
+                List<surveyContentCriteria> selectedContentCriteria = (List<surveyContentCriteria>)session.getAttribute("selectedContentCriterias");
+                    
                 for (Integer activityCode : activityCodes) {
                     boolean codeSetFound = false;
+                    
+                    if(selectedContentCriteria != null) {
+                        Iterator<surveyContentCriteria> it = selectedContentCriteria.iterator();
+                        
+                        while (it.hasNext()) {
 
-                    Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
+                            surveyContentCriteria criteria = it.next();
 
-                    while (it.hasNext()) {
-
-                        surveyContentCriteria criteria = it.next();
-
-                        if (criteria.getSchoolId() == entityId && criteria.getCodeId() == activityCode) {
-                            codeSetFound = true;
+                            if (criteria.getSchoolId() == entityId && criteria.getCodeId() == activityCode) {
+                                codeSetFound = true;
+                            }
                         }
                     }
-
+                    
                     if (codeSetFound == false) {
 
                         activityCodes codeDetails = activitycodemanager.getActivityCodeById(activityCode);
@@ -1103,8 +1126,8 @@ public class surveyController {
                                 newCriteria.setChecked(true);
                             }
                         }
-
-                        surveyContentCriterias.add(newCriteria);
+                        
+                        selectedContentCriteria.add(newCriteria);
 
                     }
 
@@ -1116,7 +1139,8 @@ public class surveyController {
         mav.setViewName("/survey/contentCriteriaTable");
 
         /* Sort surveyContentCriterias */
-        mav.addObject("contentCriteria", surveyContentCriterias);
+        List<surveyContentCriteria> selectedContentCriteria = (List<surveyContentCriteria>)session.getAttribute("selectedContentCriterias");
+        mav.addObject("contentCriteria", selectedContentCriteria);
         mav.addObject("disabled", disabled);
 
         return mav;
@@ -1133,9 +1157,11 @@ public class surveyController {
     @RequestMapping(value = "/removeCodeSets", method = RequestMethod.GET)
     public @ResponseBody
     ModelAndView removeCodeSets(@RequestParam(value = "entityId", required = true) Integer entityId,
-            @RequestParam(value = "disabled", required = true) Boolean disabled) throws Exception {
-
-        Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
+            @RequestParam(value = "disabled", required = true) Boolean disabled,
+            HttpSession session) throws Exception {
+        
+        List<surveyContentCriteria> selectedContentCriteria = (List<surveyContentCriteria>)session.getAttribute("selectedContentCriterias");
+        Iterator<surveyContentCriteria> it = selectedContentCriteria.iterator();
 
         List<surveyContentCriteria> toRemove = new ArrayList<surveyContentCriteria>();
 
@@ -1149,12 +1175,14 @@ public class surveyController {
         }
 
         if (toRemove != null && !toRemove.isEmpty()) {
-            surveyContentCriterias.removeAll(toRemove);
+            selectedContentCriteria.removeAll(toRemove);
         }
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/survey/contentCriteriaTable");
-        mav.addObject("contentCriteria", surveyContentCriterias);
+        
+        List<surveyContentCriteria> updatedselectedContentCriteria = (List<surveyContentCriteria>)session.getAttribute("selectedContentCriterias");
+        mav.addObject("contentCriteria", updatedselectedContentCriteria);
         mav.addObject("disabled", disabled);
 
         return mav;
@@ -1170,9 +1198,12 @@ public class surveyController {
      */
     @RequestMapping(value = "/saveSelCodeSet", method = RequestMethod.POST)
     public @ResponseBody
-    Integer saveSelCodeSet(@RequestParam(value = "entityId", required = true) Integer entityId, @RequestParam(value = "codeId", required = true) Integer codeId) throws Exception {
+    Integer saveSelCodeSet(@RequestParam(value = "entityId", required = true) Integer entityId, 
+            @RequestParam(value = "codeId", required = true) Integer codeId,
+            HttpSession session) throws Exception {
 
-        Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
+        List<surveyContentCriteria> selectedContentCriteria = (List<surveyContentCriteria>)session.getAttribute("selectedContentCriterias");
+        Iterator<surveyContentCriteria> it = selectedContentCriteria.iterator();
 
         while (it.hasNext()) {
 
@@ -1195,9 +1226,12 @@ public class surveyController {
      */
     @RequestMapping(value = "/removeSelCodeSet", method = RequestMethod.POST)
     public @ResponseBody
-    Integer removeSelCodeSet(@RequestParam(value = "entityId", required = true) Integer entityId, @RequestParam(value = "codeId", required = true) Integer codeId) throws Exception {
+    Integer removeSelCodeSet(@RequestParam(value = "entityId", required = true) Integer entityId, 
+            @RequestParam(value = "codeId", required = true) Integer codeId,
+            HttpSession session) throws Exception {
 
-        Iterator<surveyContentCriteria> it = surveyContentCriterias.iterator();
+        List<surveyContentCriteria> selectedContentCriteria = (List<surveyContentCriteria>)session.getAttribute("selectedContentCriterias");
+        Iterator<surveyContentCriteria> it = selectedContentCriteria.iterator();
 
         while (it.hasNext()) {
 
