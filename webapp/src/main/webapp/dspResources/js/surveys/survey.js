@@ -115,7 +115,7 @@ jQuery(function ($) {
                 schools.push(entityId);
             });
             var schoolList = schools.join(',');
-
+            
             $.ajax({
                 url: 'getEntityCodeSets',
                 data: {'entityId': schoolList, 'surveyId': surveyId, 'disabled': disabled},
@@ -132,7 +132,6 @@ jQuery(function ($) {
 
     /* Get the content area and criteria for the clicked school */
     $('#schoolSelect').on('change', function (evt, params) {
-
         if (params.selected > 0) {
             $.ajax({
                 url: 'getEntityCodeSets',
