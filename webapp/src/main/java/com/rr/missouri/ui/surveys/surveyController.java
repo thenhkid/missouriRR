@@ -607,7 +607,9 @@ public class surveyController {
         Integer goToQuestion = 0;
         boolean skipToEnd = false;
         boolean submitted = false;
-
+        
+        ModelAndView mav = new ModelAndView();
+        
         if (entityIds != null && !"".equals(entityIds) && !entityIds.isEmpty()) {
             List<Integer> entityIdList = new ArrayList<Integer>();
 
@@ -830,7 +832,7 @@ public class surveyController {
 
         }
 
-        ModelAndView mav = new ModelAndView();
+        
 
         survey NextPage = new survey();
         NextPage.setClientId(survey.getClientId());
@@ -972,23 +974,6 @@ public class surveyController {
 
             String[] encrypted = encrypt.encryptObject(map);
             
-            //clear the session data
-            if(session.getAttribute("questionAnswers") != null) {
-                session.removeAttribute("questionAnswers");
-            }
-
-            if(session.getAttribute("selectedContentCriterias") != null) {
-                session.removeAttribute("selectedContentCriterias");
-            }
-            
-            if(session.getAttribute("districtList") != null) {
-                session.removeAttribute("districtList");
-            }
-            
-            if(session.getAttribute("seenPages") != null) {
-                session.removeAttribute("seenPages");
-            }
-
             mav = new ModelAndView(new RedirectView("/surveys?i=" + encrypted[0] + "&v=" + encrypted[1]));
         } /**
          * If reached the last page or an option was selected to skip to the end *
@@ -1068,22 +1053,6 @@ public class surveyController {
                     }
                 }
                 
-                //clear the session data
-                if(session.getAttribute("questionAnswers") != null) {
-                    session.removeAttribute("questionAnswers");
-                }
-
-                if(session.getAttribute("selectedContentCriterias") != null) {
-                    session.removeAttribute("selectedContentCriterias");
-                }
-                
-                if(session.getAttribute("districtList") != null) {
-                    session.removeAttribute("districtList");
-                }
-
-                if(session.getAttribute("seenPages") != null) {
-                    session.removeAttribute("seenPages");
-                }
 
                 mav.addObject("surveyDocuments", surveyDocuments);
 
