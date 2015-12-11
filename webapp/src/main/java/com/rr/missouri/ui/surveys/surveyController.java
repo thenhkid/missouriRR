@@ -88,13 +88,7 @@ public class surveyController {
     @Value("${topSecret}")
     private String topSecret;
 
-   
-    /* Keep track of visited pages */
-    private static List<Integer> seenPages;
-
     private static List<surveys> surveys;
-
-    private static List<district> districtList;
 
     private static boolean allowCreate = false;
     private static boolean allowEdit = false;
@@ -253,8 +247,16 @@ public class surveyController {
         }
         session.setAttribute("selectedContentCriterias", new ArrayList<surveyContentCriteria>());
         
-        seenPages = new ArrayList<Integer>();
-
+        if(session.getAttribute("districtList") != null) {
+            session.removeAttribute("districtList");
+        }
+        session.setAttribute("districtList", new ArrayList<district>());
+        
+        if(session.getAttribute("seenPages") != null) {
+            session.removeAttribute("seenPages");
+        }
+        session.setAttribute("seenPages", new ArrayList<Integer>());
+        
         int clientId = 0;
         int surveyId = 0;
         
@@ -326,12 +328,11 @@ public class surveyController {
         /* Get a list of available schools for the selected districts */
         if (selectedEntities != null && !selectedEntities.isEmpty() && !"".equals(selectedEntities)) {
             
-
             encryptObject encrypt = new encryptObject();
             Map<String, String> map;
-
-            districtList = new ArrayList<district>();
-
+            
+            List<district> districtList = (List<district>)session.getAttribute("districtList");
+            
             for (Integer entity : selectedEntities) {
 
                 List<school> schoolList = new ArrayList<school>();
@@ -424,8 +425,16 @@ public class surveyController {
         }
         session.setAttribute("selectedContentCriterias", new ArrayList<surveyContentCriteria>());
         
-        seenPages = new ArrayList<Integer>();
-
+        if(session.getAttribute("districtList") != null) {
+            session.removeAttribute("districtList");
+        }
+        session.setAttribute("districtList", new ArrayList<district>());
+        
+        if(session.getAttribute("seenPages") != null) {
+            session.removeAttribute("seenPages");
+        }
+        session.setAttribute("seenPages", new ArrayList<Integer>());
+        
         int clientId = 0;
 
         /* Decrypt the url */
@@ -504,9 +513,9 @@ public class surveyController {
 
         /* Get a list of available schools for the selected districts */
         if (selectedEntities != null && !selectedEntities.isEmpty() && !"".equals(selectedEntities)) {
-
-            districtList = new ArrayList<district>();
-
+            
+            List<district> districtList = (List<district>)session.getAttribute("districtList");
+           
             for (Integer entityId : selectedEntities) {
 
                 List<school> schoolList = new ArrayList<school>();
@@ -842,7 +851,9 @@ public class surveyController {
 
         if ("prev".equals(action)) {
             mav.setViewName("/takeSurvey");
-
+            
+            List<Integer> seenPages = (List<Integer>)session.getAttribute("seenPages");
+            
             nextPage = seenPages.get(seenPages.size() - 1);
             /* Remove this page from array */
             seenPages.remove(seenPages.size() - 1);
@@ -854,7 +865,7 @@ public class surveyController {
             List<surveyQuestionAnswers> questionAnswers = (List<surveyQuestionAnswers>)session.getAttribute("questionAnswers");
             
             for (SurveyQuestions question : currentPage.getSurveyQuestions()) {
-                
+                 question.setQuestionValue("");
                  if(questionAnswers != null && questionAnswers.size() > 0) {
                     
                     Iterator<surveyQuestionAnswers> it = questionAnswers.iterator();
@@ -863,7 +874,15 @@ public class surveyController {
                         surveyQuestionAnswers questionAnswer = it.next();
                         
                          if (questionAnswer.getQuestionId() == question.getId()) {
-                             question.setQuestionValue(questionAnswer.getAnswerText());
+                             if("".equals(question.getQuestionValue())) {
+                                 question.setQuestionValue(questionAnswer.getAnswerText());
+                             }
+                             else {
+                                 String currValue = question.getQuestionValue();
+                                 currValue+=",";
+                                 currValue += questionAnswer.getAnswerText();
+                                 question.setQuestionValue(currValue);
+                             }
                          }
                     }
                 }
@@ -892,7 +911,8 @@ public class surveyController {
                     nextPage = survey.getCurrentPage() + 1;
                 }
             }
-
+            
+            List<Integer> seenPages = (List<Integer>)session.getAttribute("seenPages");
             seenPages.add(survey.getCurrentPage());
 
             currentPage = surveyManager.getSurveyPage(survey.getSurveyId(), true, nextPage, survey.getClientId(), 0, goToQuestion, survey.getSubmittedSurveyId(), lastQuestionSavedId);
@@ -960,6 +980,14 @@ public class surveyController {
             if(session.getAttribute("selectedContentCriterias") != null) {
                 session.removeAttribute("selectedContentCriterias");
             }
+            
+            if(session.getAttribute("districtList") != null) {
+                session.removeAttribute("districtList");
+            }
+            
+            if(session.getAttribute("seenPages") != null) {
+                session.removeAttribute("seenPages");
+            }
 
             mav = new ModelAndView(new RedirectView("/surveys?i=" + encrypted[0] + "&v=" + encrypted[1]));
         } /**
@@ -1012,6 +1040,8 @@ public class surveyController {
                 mav.setViewName("/completedSurvey");
                 surveys surveyDetails = surveyManager.getSurveyDetails(survey.getSurveyId());
                 mav.addObject("surveyDetails", surveyDetails);
+                
+                List<district> districtList = (List<district>)session.getAttribute("districtList");
                 mav.addObject("selDistricts", districtList);
                 mav.addObject("surveys", surveys);
                 mav.addObject("selectedEntities", selectedEntities.toString().replace("[", "").replace("]", ""));
@@ -1045,6 +1075,14 @@ public class surveyController {
 
                 if(session.getAttribute("selectedContentCriterias") != null) {
                     session.removeAttribute("selectedContentCriterias");
+                }
+                
+                if(session.getAttribute("districtList") != null) {
+                    session.removeAttribute("districtList");
+                }
+
+                if(session.getAttribute("seenPages") != null) {
+                    session.removeAttribute("seenPages");
                 }
 
                 mav.addObject("surveyDocuments", surveyDocuments);
@@ -1099,6 +1137,7 @@ public class surveyController {
             mav.addObject("surveyPages", surveyPages);
             mav.addObject("qNum", qNum);
             mav.addObject("selectedEntities", selectedEntities);
+            List<district> districtList = (List<district>)session.getAttribute("districtList");
             mav.addObject("selDistricts", districtList);
             mav.addObject("surveys", surveys);
             mav.addObject("disabled", disabled);
@@ -1396,6 +1435,7 @@ public class surveyController {
             
             surveys surveyDetails = surveyManager.getSurveyDetails(submittedSurveyDetails.getSurveyId());
             redirectAttr.addFlashAttribute("surveyDetails", surveyDetails);
+            List<district> districtList = (List<district>)session.getAttribute("districtList");
             redirectAttr.addFlashAttribute("selDistricts", districtList);
             redirectAttr.addFlashAttribute("surveys", surveys);
             redirectAttr.addFlashAttribute("selectedEntities", selectedEntities.toString().replace("[", "").replace("]", ""));
