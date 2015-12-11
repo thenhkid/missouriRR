@@ -865,7 +865,7 @@ public class surveyController {
             List<surveyQuestionAnswers> questionAnswers = (List<surveyQuestionAnswers>)session.getAttribute("questionAnswers");
             
             for (SurveyQuestions question : currentPage.getSurveyQuestions()) {
-                
+                 question.setQuestionValue("");
                  if(questionAnswers != null && questionAnswers.size() > 0) {
                     
                     Iterator<surveyQuestionAnswers> it = questionAnswers.iterator();
@@ -874,7 +874,15 @@ public class surveyController {
                         surveyQuestionAnswers questionAnswer = it.next();
                         
                          if (questionAnswer.getQuestionId() == question.getId()) {
-                             question.setQuestionValue(questionAnswer.getAnswerText());
+                             if("".equals(question.getQuestionValue())) {
+                                 question.setQuestionValue(questionAnswer.getAnswerText());
+                             }
+                             else {
+                                 String currValue = question.getQuestionValue();
+                                 currValue+=",";
+                                 currValue += questionAnswer.getAnswerText();
+                                 question.setQuestionValue(currValue);
+                             }
                          }
                     }
                 }
