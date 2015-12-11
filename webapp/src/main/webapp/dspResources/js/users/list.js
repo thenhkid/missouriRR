@@ -12,6 +12,19 @@ jQuery(function ($) {
         $('.alert').delay(2000).fadeOut(1000);
     }
     
+     //initiate dataTables plugin
+    var oTable1 =
+            $('#dynamic-table')
+            .dataTable({
+                bAutoWidth: true,
+                "aoColumns": [
+                    null, null, null, null,
+                    {"bSortable": false}
+                ],
+                "aaSorting": [[0, 'asc']]
+            });
+            
+    
     //Show the modification field modal
     $('.newUser').click(function (event) {
         $('.popover').popover('destroy');
