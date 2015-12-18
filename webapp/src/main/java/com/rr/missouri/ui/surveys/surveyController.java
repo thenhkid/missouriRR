@@ -175,24 +175,12 @@ public class surveyController {
                 survey.setEncryptedId(encrypted[0]);
                 survey.setEncryptedSecret(encrypted[1]);
 
-                List<Integer> selectedEntities = surveyManager.getSubmittedSurveyEntities(survey.getId(), userDetails);
+                List<String> selectedEntities = surveyManager.getSubmittedSurveyEntitiesByName(survey.getId(), userDetails);
 
                 if (selectedEntities != null && !selectedEntities.isEmpty()) {
-
-                    List<String> entityList = new ArrayList<String>();
-
-                    for (Integer entityId : selectedEntities) {
-                        programHierarchyDetails entityDetails = hierarchymanager.getProgramHierarchyItemDetails(entityId);
-
-                        entityList.add(entityDetails.getName());
-                    }
-
-                    survey.setSelectedEntities(entityList);
-
+                    survey.setSelectedEntities(selectedEntities);
                 }
-
             }
-
         }
 
         mav.addObject("submittedSurveys", submittedSurveys);
