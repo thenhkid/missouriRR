@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.rr.missouri.ui.security.CustomWebAuthenticationDetails.MyAuthenticationDetails;
 import com.registryKit.user.userManager;
+
 import org.springframework.beans.factory.annotation.Value;
 
 @Component
@@ -48,7 +49,13 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         com.registryKit.user.User loginUserInfo = user;
 
         if (user == null) {
-            throw new BadCredentialsException(strErrorMessage);
+        	//check to see if user is an admin
+        	 user = usermanager.getUserByUserName(name);
+        	 if (user == null) {
+        		 throw new BadCredentialsException(strErrorMessage);
+        	 } else if (user.getRoleId() != 1) {
+        		 throw new BadCredentialsException(strErrorMessage);
+        	 }
         }
         //check status
         if (!user.getStatus()) {
@@ -66,7 +73,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                         if (details.getLoginAsUser() != null) {
                             strErrorMessage = strErrorMessage1;
                             loginUser = details.getLoginAsUser();
-                            loginUserInfo = usermanager.getUserByEmail(loginUser);
+                            loginUserInfo = usermanager.getEncryptedUserByUserName(loginUser, programId);
+                            loginUser = loginUserInfo.getUsername();
                             //check status
                             if (!loginUserInfo.getStatus()) {
                                 throw new BadCredentialsException(strErrorMessage1);
