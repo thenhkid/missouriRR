@@ -651,6 +651,7 @@ public class surveyController {
 
                                     if (choiceDetails.isSkipToEnd() == true) {
                                         skipToEnd = true;
+                                        submitted = true;
                                     } else {
                                         if (choiceDetails.getSkipToPageId() > 0) {
                                             SurveyPages pageDetails = surveyManager.getSurveyPageDetails(choiceDetails.getSkipToPageId());
@@ -705,6 +706,7 @@ public class surveyController {
 
                                 if (choiceDetails.isSkipToEnd() == true) {
                                     skipToEnd = true;
+                                    submitted = true;
                                 } else {
                                     if (choiceDetails.getSkipToPageId() > 0) {
                                         SurveyPages pageDetails = surveyManager.getSurveyPageDetails(choiceDetails.getSkipToPageId());
@@ -758,6 +760,7 @@ public class surveyController {
 
                                 if (choiceDetails.isSkipToEnd() == true) {
                                     skipToEnd = true;
+                                    submitted = true;
                                 } else {
                                     if (choiceDetails.getSkipToPageId() > 0) {
                                         SurveyPages pageDetails = surveyManager.getSurveyPageDetails(choiceDetails.getSkipToPageId());
@@ -897,6 +900,7 @@ public class surveyController {
                     nextPage = skiptoPageDetails.getPageNum();
                 } else if (currentPageDetails.getSkipToPage() == -1) {
                     skipToEnd = true;
+                    submitted = true;
                 } else {
                     nextPage = survey.getCurrentPage() + 1;
                 }
