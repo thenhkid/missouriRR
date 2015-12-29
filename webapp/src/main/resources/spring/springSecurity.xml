@@ -26,7 +26,10 @@
         <intercept-url access="permitAll" pattern="/login/*"></intercept-url>
         <intercept-url access="permitAll" pattern="/logout"></intercept-url>
         <logout invalidate-session="true" delete-cookies="JSESSIONID" logout-success-url="/login" logout-url="/logout"></logout>
-        <form-login authentication-success-handler-ref="authenticationSuccessRedirecthandler" authentication-failure-url="/loginfailed" login-page="/login"></form-login>
+        <form-login authentication-success-handler-ref="authenticationSuccessRedirecthandler" 
+        authentication-failure-url="/loginfailed" 
+        authentication-details-source-ref="customWebAuthenticationDetails"
+        login-page="/login"></form-login>
         <session-management invalid-session-url="/login"></session-management>
         <session-management><concurrency-control expired-url="/login?expired" /></session-management>
         <headers>
