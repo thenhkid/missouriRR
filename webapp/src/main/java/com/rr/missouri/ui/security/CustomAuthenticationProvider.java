@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.rr.missouri.ui.security.CustomWebAuthenticationDetails.MyAuthenticationDetails;
+import com.registryKit.user.userActivity;
 import com.registryKit.user.userManager;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -82,7 +83,26 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                         }
                     }
                 }
-
+                //logging
+                try {
+                	if (name != loginUser) {
+                		try {
+                            userActivity ua = new userActivity ();
+                            ua.setMethodName("/loginAs");
+                            ua.setItemId(loginUserInfo.getId());
+                            ua.setControllerName("CustomAuthenticationProvider");
+                            ua.setUserId(user.getId());
+                            ua.setItemDesc(loginUserInfo.getUsername());
+                            usermanager.saveUserActivity(ua);
+                        } catch (Exception ex) {
+                            System.err.println(ex.toString() + " error at exception");
+                        }
+                	}
+                } catch (Exception ex) {
+                	ex.printStackTrace();
+                	System.err.println("Error logging login as");
+                }
+                
                 final List<GrantedAuthority> grantedAuths = new ArrayList<>();
                 //we get authority for login user
                 List<String> userRoles = usermanager.getUserRoles(loginUserInfo);
