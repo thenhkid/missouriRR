@@ -96,6 +96,13 @@ jQuery(function ($) {
             $('#creatingExport').show();
 
             var formData = $("#exportForm").serialize();
+            
+            var intervalID = setInterval(function(){
+                updateProgressBar();
+            },1000);
+            
+            $('.exportProgress').show();
+            $('.createSurveyExport').hide();
 
             $.ajax({
                 url: '/import-export/saveActivityLogExport.do',
@@ -105,23 +112,32 @@ jQuery(function ($) {
 
                     data = $(data);
                     
-                    data.find(".alert").delay(2000).fadeOut(1000);
+                    //Check if the session has expired.
+                    if(data.find('.username').length > 0) {
+                       top.location.href = '/login?expired';
+                    }
+                    else {
+                    
+                        data.find(".alert").delay(2000).fadeOut(1000);
 
-                    data.find(".exportStartDate").datepicker({
-                        showOtherMonths: true,
-                        selectOtherMonths: true
-                    });
-                    data.find(".exportEndDate").datepicker({
-                        showOtherMonths: true,
-                        selectOtherMonths: true
-                    });
+                        data.find(".exportStartDate").datepicker({
+                            showOtherMonths: true,
+                            selectOtherMonths: true
+                        });
+                        data.find(".exportEndDate").datepicker({
+                            showOtherMonths: true,
+                            selectOtherMonths: true
+                        });
 
-                    bootbox.hideAll();
+                        bootbox.hideAll();
 
-                    bootbox.dialog({
-                        title: "Activity Log Export",
-                        message: data
-                    });
+                        clearInterval(intervalID);
+
+                        bootbox.dialog({
+                            title: "Activity Log Export",
+                            message: data
+                        });
+                    }
                 },
                 error: function (error) {
                     console.log(error);
@@ -134,3 +150,15 @@ jQuery(function ($) {
 
 
 });
+
+function updateProgressBar() {
+    
+    var uniqueId = $('#uniqueId').val();
+    
+     $.getJSON('/import-export/updateProgressBar.do', {
+        uniqueId: uniqueId
+    }, function(data) {
+       $('.progress').attr('data-percent', data + '%');
+       $('.progress-bar').css("width", data + '%');
+    });
+}

@@ -7,18 +7,33 @@ package com.rr.missouri.ui.importexport;
 
 import com.registryKit.exportTool.export;
 import com.registryKit.exportTool.exportManager;
+import com.registryKit.exportTool.progressBar;
+import com.registryKit.program.programManager;
+import com.registryKit.reference.fileSystem;
+import com.registryKit.survey.SurveyQuestions;
+import com.registryKit.survey.submittedSurveys;
 import com.registryKit.survey.surveyManager;
 import com.registryKit.survey.surveys;
 import com.registryKit.user.User;
 import com.registryKit.user.userManager;
 import com.registryKit.user.userProgramModules;
 import com.rr.missouri.ui.security.encryptObject;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +45,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
@@ -52,6 +68,9 @@ public class importExportController {
     
     @Autowired
     private exportManager exportManager;
+    
+    @Autowired
+    private programManager programManager;
 
     @Value("${programId}")
     private Integer programId;
@@ -154,6 +173,9 @@ public class importExportController {
         exportDetails.setExportName(surveyName);
         exportDetails.setQuestionOnly(false);
         
+        Random rand = new Random(); 
+        exportDetails.setUniqueId(rand.nextInt(50000000));
+        
         mav.addObject("exportDetails", exportDetails);
         mav.addObject("showDateRange", true);
 
@@ -190,7 +212,184 @@ public class importExportController {
             exportDetails.setExportEndDate(realEndDate);
         }
         
-        String exportFileName = exportManager.createSurveyExport(exportDetails, programId);
+        progressBar newProgressBar = new progressBar();
+        newProgressBar.setExportId(exportDetails.getUniqueId());
+        newProgressBar.setPercentComplete(0);
+
+        exportManager.saveProgessBar(newProgressBar);
+        
+        //String exportFileName = exportManager.createSurveyExport(exportDetails, programId);
+        
+        String exportFileName = "";
+          
+        String registryName = programManager.getProgramById(programId).getProgramName().replaceAll(" ", "-").toLowerCase();
+        
+        /* Get a list of survey questions */
+        List<SurveyQuestions> surveyQuestions = surveyManager.getSurveyQuestionList(exportDetails.getSurveyId());
+        
+        List<submittedSurveys> submittedSurveys = null;
+        boolean createExport = true;
+        
+        /* Get a list of submitted surveys */
+        if(exportDetails.getQuestionOnly() == false) {
+            submittedSurveys = surveyManager.getSubmittedSurveys(exportDetails.getSurveyId(), exportDetails.getExportStartDate(), exportDetails.getExportEndDate());
+            
+            if(submittedSurveys == null || submittedSurveys.isEmpty()) {
+                createExport = false;
+            }
+        }
+        
+        if(surveyQuestions != null && surveyQuestions.size() > 0 && createExport == true) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssS");
+            Date date = new Date();
+            String fileName = "";
+            String delimiter = ",";
+            
+            if(exportDetails.getExportType() == 1) {
+                fileName = new StringBuilder().append(exportDetails.getExportName()).append(dateFormat.format(date)).append(".csv").toString();
+                delimiter = ",";
+            }
+            else if(exportDetails.getExportType() == 2) {
+                fileName = new StringBuilder().append(exportDetails.getExportName()).append(dateFormat.format(date)).append(".txt").toString();
+                delimiter = ",";
+            }
+            else if(exportDetails.getExportType() == 3) {
+                fileName = new StringBuilder().append(exportDetails.getExportName()).append(dateFormat.format(date)).append(".txt").toString();
+                delimiter = "|";
+            }
+            else if(exportDetails.getExportType() == 4) {
+                fileName = new StringBuilder().append(exportDetails.getExportName()).append(dateFormat.format(date)).append(".txt").toString();
+                delimiter = "\t";
+            }
+            
+            /* Create new export file */
+            InputStream inputStream = null;
+            OutputStream outputStream = null;
+            
+            fileSystem dir = new fileSystem();
+            dir.setDir(registryName, "exportFiles");
+            
+            File newFile = new File(dir.getDir() + fileName);
+            
+            /* Create the empty file in the correct location */
+            try {
+
+                if (newFile.exists()) {
+                    int i = 1;
+                    while (newFile.exists()) {
+                        int iDot = fileName.lastIndexOf(".");
+                        newFile = new File(dir.getDir() + fileName.substring(0, iDot) + "_(" + ++i + ")" + fileName.substring(iDot));
+                    }
+                    fileName = newFile.getName();
+                    newFile.createNewFile();
+                } else {
+                    newFile.createNewFile();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            
+            /* Read in the file */
+            FileInputStream fileInput = null;
+            File file = new File(dir.getDir() + fileName);
+            fileInput = new FileInputStream(file);
+            
+            exportFileName = fileName;
+            
+            FileWriter fw = null;
+
+            try {
+                fw = new FileWriter(file, true);
+            } catch (IOException ex) {
+                Logger.getLogger(exportManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            StringBuilder exportRow = new StringBuilder();
+            
+            /* Set the header row */
+            if(exportDetails.getQuestionOnly() == false) {
+                exportRow.append("Date Submitted").append(delimiter);
+            }
+            
+            for(SurveyQuestions question : surveyQuestions) {
+                exportRow.append("q"+question.getId()).append(delimiter);
+            }
+            
+            exportRow.append(System.getProperty("line.separator"));
+            
+            fw.write(exportRow.toString());
+            
+             String answerVal;
+                
+            Integer totalDone = 0;
+            float percentComplete;
+            
+            progressBar exportProgressBar = exportManager.getProgressBar(exportDetails.getUniqueId());
+            
+            if(exportDetails.getQuestionOnly() == true) {
+                exportRow = new StringBuilder();
+                
+                for(SurveyQuestions question : surveyQuestions) {
+                    exportRow.append(question.getQuestion()).append(delimiter);
+                    
+                    //Update progress bar
+                    totalDone = totalDone+1;
+                    percentComplete = ((float) totalDone) / surveyQuestions.size();
+                    
+                    exportProgressBar.setPercentComplete(Math.round(percentComplete*100));
+                    
+                    exportManager.saveProgessBar(exportProgressBar);
+                }
+                
+                fw.write(exportRow.toString());
+            }
+            else {
+            
+                for(submittedSurveys submission : submittedSurveys) {
+
+                    exportRow = new StringBuilder();
+
+                    exportRow.append(submission.getDateCreated()).append(delimiter);
+                    
+                    List answerValues = surveyManager.getSubmittedSurveyQuestionAnswerForReport(submission.getId(), surveyQuestions);
+
+                    Iterator<String> answers = answerValues.iterator();
+                    
+                    while(answers.hasNext()) {
+                        String answer = answers.next();
+                        
+                        if(answer == null) {
+                            answer = "";
+                        }
+                        exportRow.append('"').append(answer.replace("\"", "\"\"")).append('"').append(delimiter);
+
+                    }
+                    
+                    /*for(SurveyQuestions question : surveyQuestions) {
+
+                        answerVal = surveyManager.getSubmittedSurveyQuestionAnswer(submission.getId(), question.getId());
+
+                        exportRow.append('"').append(answerVal.replace("\"", "\"\"")).append('"').append(delimiter);
+
+                    }*/
+
+                    exportRow.append(System.getProperty("line.separator"));
+
+                    fw.write(exportRow.toString());
+                    
+                    //Update progress bar
+                    totalDone = totalDone+1;
+                    percentComplete = ((float) totalDone) / submittedSurveys.size();
+                    
+                    exportProgressBar.setPercentComplete(Math.round(percentComplete*100));
+                    
+                    exportManager.saveProgessBar(exportProgressBar);
+                    
+                }
+            }
+            
+            fw.close();
+        }
         
         ModelAndView mav = new ModelAndView();
         
@@ -242,11 +441,36 @@ public class importExportController {
         exportDetails.setExportName(surveyName);
         exportDetails.setQuestionOnly(true);
         
+        Random rand = new Random(); 
+        exportDetails.setUniqueId(rand.nextInt(50000000));
+        
         mav.addObject("exportDetails", exportDetails);
         mav.addObject("showDateRange", false);
 
         return mav;
     }
+    
+    /**
+     * The '/updateProgressBar.do' request will return the current value of export progress bar.
+     *
+     * @param uniqueId  The unique export id
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/updateProgressBar.do", method = RequestMethod.GET)
+    @ResponseBody 
+    public Integer updateProgressBar(HttpSession session, @RequestParam Integer uniqueId) throws Exception {
+        
+        progressBar exportProgressBar = exportManager.getProgressBar(uniqueId);
+        
+        if(exportProgressBar != null) {
+            return exportProgressBar.getPercentComplete();
+        }
+        else {
+            return 0;
+        }
+        
+    }   
     
     
 }

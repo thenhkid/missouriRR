@@ -13,6 +13,7 @@
         <form:hidden path="surveyId" />
         <form:hidden path="exportName" />
         <form:hidden path="questionOnly" />
+        <form:hidden path="uniqueId" id="uniqueId" />
         
         <c:if test="${noresults}"><div class="alert alert-danger">No results were found based on your date range selected.</div></c:if>
 
@@ -49,13 +50,15 @@
             </div>
         </c:if>
         <div class="form-group">
+            
+            <div class="exportProgress" style="display:none;">
+                <span>Export Progress:</span>
+                <div class="progress pos-rel" data-percent="0%"><div class="progress-bar" style="width:0%"></div></div>
+            </div>
+            
             <button type="button" class="btn btn-mini btn-primary createSurveyExport">
                 <i class="ace-icon fa fa-download bigger-120 white"></i>
                 Create Export
-            </button>
-            <button type="button" class="btn btn-mini btn-primary" style="display:none;" id="creatingExport">
-                <i class="ace-icon fa fa-spinner fa-spin bigger-120 white"></i>
-                Creating Export
             </button>
         </div>
     </form:form>
