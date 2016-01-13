@@ -192,7 +192,7 @@ jQuery(function ($) {
             eventTypeId: typeArray.toString()
         }
     };
-    
+
     calendar = $('#calendar').fullCalendar({
         //isRTL: true,
         buttonHtml: {
@@ -207,7 +207,7 @@ jQuery(function ($) {
         },
         events: events,
         nextDayThreshold: '00:00:00',
-        //timezone: 'local',
+        timezone: 'local',
         editable: true,
         droppable: false, // this allows things to be dropped onto the calendar !!!
         drop: function (date, allDay) { // this function is called when something is dropped
@@ -281,7 +281,7 @@ jQuery(function ($) {
                                 enableClickableOptGroups: false,
                                 enableCaseInsensitiveFiltering: false,
                                 disableIfEmpty: true,
-                                nonSelectedText: 'Select your Counties',
+                                nonSelectedText: 'Select your Grantees',
                                 numberDisplayed: 10,
                                 templates: {
                                     button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown"></button>',
@@ -473,7 +473,7 @@ jQuery(function ($) {
                             enableClickableOptGroups: false,
                             enableCaseInsensitiveFiltering: false,
                             disableIfEmpty: true,
-                            nonSelectedText: 'Select your Counties',
+                            nonSelectedText: 'Select your Grantees',
                             numberDisplayed: 10,
                             templates: {
                                 button: '<button type="button" class="multiselect dropdown-toggle" data-toggle="dropdown"></button>',
