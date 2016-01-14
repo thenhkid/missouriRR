@@ -251,9 +251,8 @@ jQuery(function ($) {
             $('input, select').attr('disabled', false);
             $('input, radio').attr('disabled', false);
             $('input, checkbox').attr('disabled', false);
-
-            $('form').preventDoubleSubmission();
-            //$("#survey").submit();
+            
+            $("#survey").submit();
         }
 
         event.preventDefault();
@@ -272,8 +271,8 @@ jQuery(function ($) {
         $('input, radio').attr('disabled', false);
         $('input, checkbox').attr('disabled', false);
 
-        $('form').preventDoubleSubmission();
-        //$("#survey").submit();
+        //$('form').preventDoubleSubmission();
+        $("#survey").submit();
     });
 
     /* Function to process the COMPLETE button */
@@ -285,8 +284,8 @@ jQuery(function ($) {
         if (errorsFound == 0) {
             $('#action').val("done");
             $('#lastQNumAnswered').val(1);
-            $('form').preventDoubleSubmission();
-            //$("#survey").submit();
+            //$('form').preventDoubleSubmission();
+            $("#survey").submit();
         }
 
         event.preventDefault();
@@ -299,14 +298,16 @@ jQuery(function ($) {
 
         $('#action').val("save");
         $('#lastQNumAnswered').val(1);
-        $('form').preventDoubleSubmission();
-        //$("#survey").submit();
+        //$('form').preventDoubleSubmission();
+        $("#survey").submit();
     });
     
     // jQuery plugin to prevent double submission of forms
     jQuery.fn.preventDoubleSubmission = function() {
       $(this).on('submit',function(e){
         var $form = $(this);
+        
+        console.log($form.data('submitted'));
 
         if ($form.data('submitted') === true) {
           // Previously submitted - don't submit again

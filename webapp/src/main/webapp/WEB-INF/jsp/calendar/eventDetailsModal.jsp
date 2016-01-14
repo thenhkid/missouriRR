@@ -13,7 +13,6 @@
 <style>
     .ellipsis {
         display: inline-block;
-        //white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;     /** IE6+, Firefox 7+, Opera 11+, Chrome, Safari **/
         -o-text-overflow: ellipsis;  /** Opera 9 & 10 **/
