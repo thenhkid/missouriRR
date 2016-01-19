@@ -175,11 +175,6 @@ public class surveyController {
                 survey.setEncryptedId(encrypted[0]);
                 survey.setEncryptedSecret(encrypted[1]);
 
-                List<String> selectedEntities = surveyManager.getSubmittedSurveyEntitiesByName(survey.getId(), userDetails);
-
-                if (selectedEntities != null && !selectedEntities.isEmpty()) {
-                    survey.setSelectedEntities(selectedEntities);
-                }
             }
         }
 
