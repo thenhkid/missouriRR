@@ -1273,7 +1273,7 @@ public class surveyController {
 
             surveyContentCriteria criteria = it.next();
 
-            if (criteria.getSchoolId() == entityId && criteria.getCodeId() == codeId) {
+            if (Objects.equals(criteria.getSchoolId(), entityId) && Objects.equals(criteria.getCodeId(), codeId)) {
                 criteria.setChecked(false);
             }
         }
