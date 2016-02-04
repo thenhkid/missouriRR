@@ -472,7 +472,7 @@ public class surveyController {
         if(survey.getSurveyPageQuestions() != null && survey.getSurveyPageQuestions().size() > 0) {
             for(SurveyQuestions question : survey.getSurveyPageQuestions()) {
                 if(question.getAnswerTypeId() == 6) {
-                    if (question.getQuestionValue().length() > 0) {
+                    if (question.getQuestionValue().length() > 0 && !question.getQuestionValue().contains("^^^^^")) {
                        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
                        Date formattedDate = df.parse(question.getQuestionValue());
 

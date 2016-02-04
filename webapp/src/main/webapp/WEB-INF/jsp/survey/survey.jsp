@@ -248,14 +248,15 @@
                                                                  </div>
                                                             </div>
                                                             <div id="errorMsg_${question.id}" style="display:none;" class="help-block col-xs-12 col-sm-reset inline"></div> 
+                                                            <div class="row pull-left col-xs-12 hr"></div>
                                                         </c:when>
                                                         <c:when test="${question.answerTypeId == 7}">
                                                             <div class="row col-xs-12">
                                                                  ${question.question}
                                                             </div>
+                                                            <div class="row pull-left col-xs-12 space-10"></div>  
                                                         </c:when>    
                                                     </c:choose>
-                                                    <div class="row pull-left col-xs-12 hr"></div>    
                                                 </div>
                                             </c:forEach>
                                         </c:when>
