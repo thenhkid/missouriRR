@@ -293,6 +293,7 @@ public class surveyController {
                 List<SurveyPages> surveyPages = surveyManager.getSurveyPages(surveyId, false, 0, 0, 0);
                 SurveyPages currentPage = surveyManager.getSurveyPage(surveyId, true, 1, clientId, 0, 0, 0, 0);
                 survey.setPageTitle(currentPage.getPageTitle());
+                survey.setPageDesc(currentPage.getPageDesc());
                 survey.setSurveyPageQuestions(currentPage.getSurveyQuestions());
                 survey.setTotalPages(surveyPages.size());
                 survey.setPageId(currentPage.getId());
@@ -463,6 +464,7 @@ public class surveyController {
         List<SurveyPages> surveyPages = surveyManager.getSurveyPages(submittedSurveyDetails.getSurveyId(), false, 0, 0, 0);
         SurveyPages currentPage = surveyManager.getSurveyPage(submittedSurveyDetails.getSurveyId(), true, 1, clientId, 0, 0, submittedSurveyId, 0);
         survey.setPageTitle(currentPage.getPageTitle());
+        survey.setPageDesc(currentPage.getPageDesc());
         survey.setSurveyPageQuestions(currentPage.getSurveyQuestions());
         survey.setTotalPages(surveyPages.size());
         survey.setLastPageId(surveyPages.get(surveyPages.size() - 1).getId());
@@ -1051,6 +1053,7 @@ public class surveyController {
         } else {
             
             NextPage.setPageTitle(currentPage.getPageTitle());
+            NextPage.setPageDesc(currentPage.getPageDesc());
             NextPage.setSurveyPageQuestions(currentPage.getSurveyQuestions());
             NextPage.setPageId(currentPage.getId());
             
