@@ -114,6 +114,9 @@
                     <h4 class="smaller">
                         ${survey.pageTitle}
                     </h4>
+                    <h6 class="smaller">
+                        ${survey.pageDesc}
+                    </h6>
                 </div>
 
                 <div class="widget-body">
