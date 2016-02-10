@@ -112,7 +112,7 @@ public class fileDownloadController {
 
                 in.close();
                 outputStream.close();
-            return null;
+                return null;
             }
             else {
                 Integer lastSlash = foldername.lastIndexOf("/");
