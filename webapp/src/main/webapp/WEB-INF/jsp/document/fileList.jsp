@@ -65,6 +65,12 @@
                 </h3>
             </div>
             
+            <c:if test="${not empty error}" >
+                <div class="alert alert-danger" role="alert">
+                    The selected file was not found.
+                </div>
+            </c:if>
+            
             <div class="table-header">
                 Documents uploaded to the ${selFolderName} folder
             </div>
