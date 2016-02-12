@@ -202,8 +202,7 @@ jQuery(function ($) {
         header: {
             left: 'title',
             center: '',
-            //right: 'month,agendaWeek,agendaDay'
-            right: 'prev,next today'
+            right: 'month,agendaWeek prev,next today'
         },
         events: events,
         nextDayThreshold: '00:00:00',

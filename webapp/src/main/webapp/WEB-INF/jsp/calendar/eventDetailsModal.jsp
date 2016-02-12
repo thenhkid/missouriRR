@@ -45,6 +45,11 @@
             ${calendarEvent.eventNotes}
         </div>
     </c:if>
+    <c:if test="${not empty calenderEvent.createdBy}">
+        <div class="row">
+           Created By: ${calendarEvent.createdBy}
+        </div>
+    </c:if>
     <c:if test="${not empty calendarEvent.existingDocuments}">
         <div class="row"><hr></div>
         <div class="row">

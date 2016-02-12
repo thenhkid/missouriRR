@@ -66,6 +66,15 @@
         <div class="row">
             <div class="col-md-12">Note: Please add entries according to when they would occur in CT</div>
         </div>
+        <c:if test="${calendarEvent.id > 0 && not empty calendarEvent.createdBy}">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="eventName">Created By:</label>
+                    <span>${calendarEvent.createdBy}</span>
+                </div>
+            </div>
+            <div class="hr hr-dotted"></div>
+        </c:if>
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group" id="eventTitleDiv">

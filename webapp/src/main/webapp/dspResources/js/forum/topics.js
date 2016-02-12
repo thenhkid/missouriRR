@@ -139,6 +139,33 @@ jQuery(function ($) {
                              liGroup: '<li class="multiselect-item group"><label class="multiselect-group" style="padding-left:5px; font-weight:bold;"></label></li>'
                          }
                      });
+                     
+                      /* File input */
+                    data.find('#id-input-file-2').ace_file_input({
+                       style: 'well',
+                       btn_choose: 'click to upload files',
+                       btn_change: null,
+                       no_icon: 'ace-icon fa fa-cloud-upload',
+                       droppable: false,
+                       thumbnail: 'small',
+                       allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx', 'ppt', 'csv', 'pptx', 'wma', 'zip'],
+                       before_remove: function () {
+                            return true;
+                        },
+                        before_change: function() {
+                            $('span').removeClass("has-error");
+                            $('div').removeClass("has-error");
+                            $('#docMsg').html("");
+                            return true;
+                        }
+                    }).on('file.error.ace', function(event, info) {
+                        if(info.error_count['ext'] > 0) {
+                            $('#docDiv').addClass("has-error");
+                            $('#docMsg').addClass("has-error");
+                            $('#docMsg').html("There were files attached that have an invalid file extension.<br />Valid File Extension:<br /> pdf, txt, doc, docx, gif, png, jpg, jpeg, xls, xlsx, csv, ppt, pptx, wma, zip");
+                            event.preventDefault();
+                        }
+                    });
 
                      bootbox.dialog({
                          message: data,
@@ -155,16 +182,7 @@ jQuery(function ($) {
                                  label: "Save",
                                  className: "btn-primary",
                                  callback: function () {
-                                     var topicId = topicFn(event);
-
-                                     if (topicId == 0) {
-                                         return false;
-                                     }
-                                     else {
-                                         //Reload the topics
-                                         window.location.reload();
-                                     }
-
+                                     return topicFn(event);
                                  }
                              },
                          }
@@ -180,9 +198,7 @@ jQuery(function ($) {
         $('#titleMsg').html("");
         $('#messageMsg').html("");
         $('#entityMsg').html("");
-        var formData = $("#topicForm").serialize();
-
-        var topicId = 0;
+        
         var errorFound = false;
 
         /** make sure there is a topic title and initial message **/
@@ -209,24 +225,15 @@ jQuery(function ($) {
             $('#entityMsg').html("At least one county must be selected.");
             errorFound = true;
         }
-
-        if (errorFound == false) {
-
-            $.ajax({
-                url: '/forum/saveTopicForm.do',
-                type: 'POST',
-                async: false,
-                data: formData,
-                success: function (data) {
-                    topicId = data;
-                },
-                error: function (error) {
-                    console.log(error);
-                }
-            });
+        
+        if(errorFound == true) {
+            event.preventDefault();
+            return false;
         }
-
-        return topicId;
+        
+        var submitURL = "/forum/saveTopicForm.do";
+        $("#topicForm").attr("action", submitURL);
+        $("#topicForm").submit();
 
     }
 
