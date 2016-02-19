@@ -341,9 +341,10 @@ public class forumController {
      */
     @RequestMapping(value = "/saveTopicForm.do", method = RequestMethod.POST)
     public @ResponseBody
-    Integer saveTopicForm(@ModelAttribute(value = "forumTopic") forumTopics forumTopic,
+    ModelAndView saveTopicForm(@ModelAttribute(value = "forumTopic") forumTopics forumTopic,
             @RequestParam(value = "whichEntity", required = true) Integer whichEntity,
             @RequestParam(value = "selectedEntities", required = false) List<Integer> selectedEntities,
+            @RequestParam(value = "postDocuments", required = false) List<MultipartFile> postDocuments,
             HttpSession session) throws Exception {
 
         /* Get a list of completed surveys the logged in user has access to */
@@ -389,6 +390,10 @@ public class forumController {
             newTopic = false;
         }
         
+        if (postDocuments != null) {
+            forumManager.saveDocuments(messageDetails, postDocuments);
+        }
+        
         /* Remove existing entities */
         forumManager.removeTopicEntities(programId, topicId);
         
@@ -428,8 +433,8 @@ public class forumController {
             forumManager.saveForumEmailNotification(fen);
         }
         
-        /* Return the topic Id */
-        return topicId;
+        ModelAndView mav = new ModelAndView(new RedirectView("/forum/" + checktopicURL));
+        return mav;
     }
 
     /**

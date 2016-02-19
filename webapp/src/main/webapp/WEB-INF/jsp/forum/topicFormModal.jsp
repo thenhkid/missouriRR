@@ -10,7 +10,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <div>
-    <form:form id="topicForm" modelAttribute="forumTopic" role="form" class="form" method="post">
+    <form:form id="topicForm" modelAttribute="forumTopic" role="form" class="form" method="post" enctype="multipart/form-data">
         <form:hidden path="id" id="topicId" />
         <form:hidden path="totalViews" />
         <form:hidden path="topicURL" />
@@ -53,5 +53,11 @@
                 <span id="messageMsg" class="control-label"></span>  
             </div>
         </c:if>
+        <div class="form-group"  id="docDiv">
+            <hr/>
+            <label  class="control-label" for="question">Associated Documents</label>
+            <input  multiple="" name="postDocuments" type="file" id="id-input-file-2" />
+            <span id="docMsg" class="control-label"></span>
+        </div>    
     </form:form>
 </div>

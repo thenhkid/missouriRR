@@ -324,6 +324,10 @@ public class calendarController {
         Integer eventId = Integer.parseInt(request.getParameter("eventId"));
 
         calendarEvents eventDetails = calendarManager.getEventDetails(eventId);
+        
+        User eventuserDetails = usermanager.getUserById(eventDetails.getSystemUserId());
+        eventDetails.setCreatedBy(eventuserDetails.getFirstName()+" "+eventuserDetails.getLastName());
+       
 
         calendarEventTypes eventTypeObject = calendarManager.getEventType(eventDetails.getEventTypeId());
 
