@@ -309,10 +309,16 @@ public class importExportController {
             /* Set the header row */
             if(exportDetails.getQuestionOnly() == false) {
                 exportRow.append("Date Submitted").append(delimiter);
+                exportRow.append("Selected Content/Criteria").append(delimiter);
+                
+                for(SurveyQuestions question : surveyQuestions) {
+                    exportRow.append('"').append(question.getQuestion().replace("\"", "\"\"")).append('"').append(delimiter);
+                }
             }
-            
-            for(SurveyQuestions question : surveyQuestions) {
-                exportRow.append("q"+question.getId()).append(delimiter);
+            else {
+                for(SurveyQuestions question : surveyQuestions) {
+                    exportRow.append("q"+question.getId()).append(delimiter);
+                }
             }
             
             exportRow.append(System.getProperty("line.separator"));
@@ -350,6 +356,15 @@ public class importExportController {
                     exportRow = new StringBuilder();
 
                     exportRow.append(submission.getDateCreated()).append(delimiter);
+                    
+                    String selectedContent = surveyManager.getSubmittedSurveyContentCriteriaForReport(submission.getId());
+                    
+                    if(selectedContent != null && !"".equals(selectedContent)) {
+                        exportRow.append('"').append(selectedContent.replace("\"", "\"\"")).append('"').append(delimiter);
+                    }
+                    else {
+                        exportRow.append("").append(delimiter);
+                    }
                     
                     List answerValues = surveyManager.getSubmittedSurveyQuestionAnswerForReport(submission.getId(), surveyQuestions);
 
@@ -409,6 +424,7 @@ public class importExportController {
 
             mav.addObject("exportDetails", exportDetails);
             mav.addObject("noresults", true);
+            mav.addObject("showDateRange", true);
         }
         else {
             mav.setViewName("/importExport/exportDownloadModal");
