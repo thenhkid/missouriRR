@@ -146,6 +146,11 @@ public class mainController {
         mav.setViewName("/home");
         
         List<faqQuestions> announcements = faqManager.getLatestQuestions(programId,3);
+        
+        for (faqQuestions question : announcements) {
+            question.setFaqQuestionDocuments(faqManager.getFAQQuestionDocuments(question.getId(), 1));
+        }
+        
         mav.addObject("announcements", announcements);
        
         return mav;

@@ -121,14 +121,6 @@ public class fileDownloadController {
                 /* Get the folder details */
                 documentFolder folderDetails = documentmanager.getFolderByName(programId, folderName);
                 
-                encryptObject encrypt = new encryptObject();
-                Map<String, String> map;
-                map = new HashMap<String, String>();
-                map.put("id", Integer.toString(folderDetails.getId()));
-                map.put("topSecret", topSecret);
-
-                String[] encrypted = encrypt.encryptObject(map);
-                
                 /* Sent Missing Document Email */
                 emailMessage messageDetails = new emailMessage();
                 messageDetails.settoEmailAddress("rrnotifications@gmail.com");
@@ -144,10 +136,25 @@ public class fileDownloadController {
                 messageDetails.setfromEmailAddress("gchan@health-e-link.net");
                 
                 emailManager.sendEmail(messageDetails);
+                
+                if(folderDetails != null) {
+                    encryptObject encrypt = new encryptObject();
+                    Map<String, String> map;
+                    map = new HashMap<String, String>();
+                    map.put("id", Integer.toString(folderDetails.getId()));
+                    map.put("topSecret", topSecret);
 
-                redirectAttr.addFlashAttribute("error", "missing");
-                ModelAndView mav = new ModelAndView(new RedirectView("/documents/folder?i="+encrypted[0]+"&v="+encrypted[1]));
-                return mav;
+                    String[] encrypted = encrypt.encryptObject(map);
+                    
+                    redirectAttr.addFlashAttribute("error", "missing");
+                    ModelAndView mav = new ModelAndView(new RedirectView("/documents/folder?i="+encrypted[0]+"&v="+encrypted[1]));
+                    return mav;
+                }
+                else {
+                    redirectAttr.addFlashAttribute("error", "missing");
+                    ModelAndView mav = new ModelAndView(new RedirectView(request.getHeader("referer")));
+                    return mav;
+                }
             }
 
         } catch (FileNotFoundException e) {

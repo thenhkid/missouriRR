@@ -8,6 +8,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
+ <c:if test="${not empty error}" >
+    <div class="alert alert-danger" role="alert">
+        The selected file was not found.
+    </div>
+</c:if>
 
 
 <div class="row">
