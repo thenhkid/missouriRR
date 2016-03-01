@@ -18,6 +18,8 @@
         <put-attribute name="body" value="/WEB-INF/jsp/forum/topics.jsp" />
         <put-attribute name="jscript" value="/dspResources/js/forum/topics.js" />
         <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/dataTables/jquery.dataTables.min.js" />
+            <add-attribute value="/dspResources/js/dataTables/jquery.dataTables.bootstrap.min.js" />
             <add-attribute value="/dspResources/js/chosen.jquery.min.js" />
             <add-attribute value="/dspResources/js/bootbox.min.js" />
             <add-attribute value="/dspResources/js/ace-elements.min.js" />

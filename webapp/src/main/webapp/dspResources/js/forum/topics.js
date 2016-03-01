@@ -18,6 +18,16 @@ jQuery(function ($) {
     })();
 
     $(document).ready(function () {
+        
+        $('.dynamic-table')
+            .dataTable({
+                bAutoWidth: false,
+                bFilter: false,
+                "aoColumns": [
+                    null, null, null, null
+                ],
+                "aaSorting": []
+            });
 
         $(document).on("keyup", "#nav-search-input", function () {
 

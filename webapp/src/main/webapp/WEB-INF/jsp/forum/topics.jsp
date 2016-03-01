@@ -35,7 +35,7 @@
                     </button>
                 </div>
             </c:if>
-            <c:if test="${not empty regularTopics && not empty announcementTopics}">
+            <c:if test="${not empty regularTopics || not empty announcementTopics}">
                 <div class="pull-right no-margin col-md-2">
                     <div class="widget-box transparent">
                         <form class="form-search">
@@ -84,7 +84,7 @@
                     Announcements
                 </div>
                 <div>
-                    <table class="table table-striped table-bordered table-hover">
+                    <table class="dynamic-table table table-striped table-bordered table-hover">
                         <thead>
                             <tr>
                                 <th scope="col"></th>
@@ -138,7 +138,7 @@
                     Topics
                 </div>
                 <div>
-                    <table class="table table-striped table-bordered table-hover">
+                    <table class="dynamic-table table table-striped table-bordered table-hover">
                         <thead>
                             <tr>
                                 <th scope="col"></th>
