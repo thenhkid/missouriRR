@@ -13,7 +13,7 @@
 <div class="col-sm-12">
     <div class="row">
         <div class="clearfix">
-            <div class="dropdown pull-left no-margin">
+            <div class="dropdown pull-left no-margin col-md-10">
                 <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
                     Preferences
                     <span class="caret"></span>
@@ -22,38 +22,38 @@
                     <li role="presentation"><a role="menuitem" tabindex="-1" href="#" id="forumNotificationManagerModel">Forum Notification Preferences</a></li>
                 </ul>
             </div>
-        </div>
-    </div>
-    <div class="hr dotted"></div>
-    <div class="row">
-        <div class="clearfix">
             <c:if test="${allowCreate == true}">
-                <div class="pull-left no-margin col-md-10">
+                <div class="pull-right no-margin">
                     <button class="btn btn-success btn-xs" type="button" id="newTopic">
                         <i class="ace-icon fa fa-plus-square bigger-110"></i>
                         New Topic
                     </button>
                 </div>
             </c:if>
-            <c:if test="${not empty regularTopics || not empty announcementTopics}">
-                <div class="pull-right no-margin col-md-2">
-                    <div class="widget-box transparent">
-                        <form class="form-search">
-                            <div class="input-group">
-                                <span class="input-group-addon"><i class="ace-icon fa fa-search grey"></i></span>
-                                <span class="block input-icon input-icon-right">
-                                    <input type="text" placeholder="Search ..." class="width-100" id="nav-search-input" autocomplete="off" />
-                                    <i id="clearSearch" class="ace-icon fa fa-times-circle red" style="cursor: pointer; display: none"></i>
-                                    <i id="searchSpinner" class="ace-icon fa fa-spinner fa-spin red bigger-120"  style="display: none"></i>
-                                </span>
-                            </div>
-                        </form>
-                    </div>
+        </div>
+    </div>
+    <div class="hr dotted"></div>
+    <c:if test="${not empty regularTopics || not empty announcementTopics}">
+    <div class="row">
+        <div class="clearfix">
+            <div class="pull-right no-margin col-md-2">
+                <div class="widget-box transparent">
+                    <form class="form-search">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="ace-icon fa fa-search grey"></i></span>
+                            <span class="block input-icon input-icon-right">
+                                <input type="text" placeholder="Search ..." class="width-100" id="nav-search-input" autocomplete="off" />
+                                <i id="clearSearch" class="ace-icon fa fa-times-circle red" style="cursor: pointer; display: none"></i>
+                                <i id="searchSpinner" class="ace-icon fa fa-spinner fa-spin red bigger-120"  style="display: none"></i>
+                            </span>
+                        </div>
+                    </form>
                 </div>
-            </c:if>
+            </div>
         </div>
         <div class="hr dotted"></div>
     </div>
+    </c:if>
     <div id="topicsDiv" class="col-sm-12">
         <c:if test="${empty regularTopics && empty announcementTopics}">
             <div class="row">
