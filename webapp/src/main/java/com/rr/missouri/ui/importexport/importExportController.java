@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
@@ -309,6 +310,9 @@ public class importExportController {
             /* Set the header row */
             if(exportDetails.getQuestionOnly() == false) {
                 exportRow.append("Date Submitted").append(delimiter);
+                exportRow.append("Tier 1").append(delimiter);
+                exportRow.append("Tier 2").append(delimiter);
+                exportRow.append("Tier 3").append(delimiter);
                 exportRow.append("Selected Content/Criteria").append(delimiter);
                 
                 for(SurveyQuestions question : surveyQuestions) {
@@ -357,14 +361,66 @@ public class importExportController {
 
                     exportRow.append(submission.getDateCreated()).append(delimiter);
                     
-                    String selectedContent = surveyManager.getSubmittedSurveyContentCriteriaForReport(submission.getId());
+                    List selectedTierOneandTwo = surveyManager.getSubmittedSurveyTiersOneandTwo(submission.getId());
                     
-                    if(selectedContent != null && !"".equals(selectedContent)) {
-                        exportRow.append('"').append(selectedContent.replace("\"", "\"\"")).append('"').append(delimiter);
+                    if(selectedTierOneandTwo != null) {
+                        for (ListIterator iter = selectedTierOneandTwo.listIterator(); iter.hasNext();) {
+                            
+                            Object[] row = (Object[]) iter.next();
+                            
+                            String selectedTierOnes = String.valueOf(row[0]);
+                            String selectedTierTwos = String.valueOf(row[1]);
+                            
+                            /* Selected Tier 1 */
+                            if(!"".equals(selectedTierOnes)) {
+                             exportRow.append('"').append(selectedTierOnes.replace("\"", "\"\"")).append('"').append(delimiter);
+                            }
+                            else {
+                                exportRow.append("").append(delimiter);
+                            }
+                            
+                            /* Selected Tier 2 */
+                            if(!"".equals(selectedTierTwos)) {
+                             exportRow.append('"').append(selectedTierTwos.replace("\"", "\"\"")).append('"').append(delimiter);
+                            }
+                            else {
+                                exportRow.append("").append(delimiter);
+                            }
+                        }
                     }
                     else {
-                        exportRow.append("").append(delimiter);
+                        exportRow.append("").append(delimiter).append("").append(delimiter);
                     }
+                    
+                    List selectedContentandEntities = surveyManager.getSubmittedSurveyContentCriteriaForReport(submission.getId());
+                    
+                    if(selectedContentandEntities != null) {
+                        for (ListIterator iter = selectedContentandEntities.listIterator(); iter.hasNext();) {
+
+                            Object[] row = (Object[]) iter.next();
+                            
+                            String selectedContent = String.valueOf(row[0]);
+                            String selectedEntities = String.valueOf(row[1]);
+                            
+                            if(!"".equals(selectedEntities)) {
+                             exportRow.append('"').append(selectedEntities.replace("\"", "\"\"")).append('"').append(delimiter);
+                            }
+                            else {
+                                exportRow.append("").append(delimiter);
+                            }
+                            
+                            if(!"".equals(selectedContent)) {
+                             exportRow.append('"').append(selectedContent.replace("\"", "\"\"")).append('"').append(delimiter);
+                            }
+                            else {
+                                exportRow.append("").append(delimiter);
+                            }
+                        }
+                    }
+                    else {
+                        exportRow.append("").append(delimiter).append("").append(delimiter);
+                    }
+                    
                     
                     List answerValues = surveyManager.getSubmittedSurveyQuestionAnswerForReport(submission.getId(), surveyQuestions);
 
