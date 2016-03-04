@@ -73,6 +73,13 @@ jQuery(function ($) {
         }
         
         if(errorFound == false) {
+            
+            if($("li").find('.fa-bell').length > 0 && ($('#email').val() != $('#currEmail').val())) {
+                if(confirm("Would you like to update your notification email address as well?")) {
+                    $('#updateAllEmails').val(1);
+                }
+            }
+            
             var submitURL = "/profile/saveProfileForm.do";
             $("#profileForm").attr("action", submitURL);
             $("#profileForm").submit();
