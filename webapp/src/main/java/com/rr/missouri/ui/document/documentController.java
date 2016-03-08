@@ -7,6 +7,7 @@ package com.rr.missouri.ui.document;
 
 import com.registryKit.document.document;
 import com.registryKit.document.documentEmailNotifications;
+import com.registryKit.document.documentFile;
 import com.registryKit.document.documentFolder;
 import com.registryKit.document.documentManager;
 import com.registryKit.document.documentNotificationPreferences;
@@ -60,6 +61,9 @@ public class documentController {
 
     @Value("${programId}")
     private Integer programId;
+    
+    @Value("${programName}")
+    private String programName;
 
     @Value("${topSecret}")
     private String topSecret;
@@ -141,17 +145,17 @@ public class documentController {
         
         if(documents != null && documents.size() > 0) {
             for(document doc : documents) {
-                if(doc.getUploadedFile() != null && !"".equals(doc.getUploadedFile())) {
-                    int index = doc.getUploadedFile().lastIndexOf('.');
-                    doc.setFileExt(doc.getUploadedFile().substring(index+1));
+                if(doc.getTotalFiles() == 1 && (doc.getFoundFile() != null && !"".equals(doc.getFoundFile()))) {
+                    int index = doc.getFoundFile().lastIndexOf('.');
+                    doc.setFileExt(doc.getFoundFile().substring(index+1));
+
+                    String encodedFileName = URLEncoder.encode(doc.getFoundFile(),"UTF-8");
+                    doc.setUploadedFile(encodedFileName);
+
+                    doc.setDownloadLink(URLEncoder.encode(folderList.get(0).getFolderName(),"UTF-8"));
                 }
                 User createdBy = usermanager.getUserById(doc.getSystemUserId());
                 doc.setCreatedBy(createdBy.getFirstName() + " " + createdBy.getLastName());
-                
-                String encodedFileName = URLEncoder.encode(doc.getUploadedFile(),"UTF-8");
-                doc.setUploadedFile(encodedFileName);
-                
-                doc.setDownloadLink(URLEncoder.encode(folderList.get(0).getFolderName(),"UTF-8"));
             } 
         }
         
@@ -325,17 +329,18 @@ public class documentController {
         
         if(documents != null && documents.size() > 0) {
             for(document doc : documents) {
-                if(doc.getUploadedFile() != null && !"".equals(doc.getUploadedFile())) {
-                    int index = doc.getUploadedFile().lastIndexOf('.');
-                    doc.setFileExt(doc.getUploadedFile().substring(index+1));
+                if(doc.getTotalFiles() == 1 && (doc.getFoundFile() != null && !"".equals(doc.getFoundFile()))) {
+                    int index = doc.getFoundFile().lastIndexOf('.');
+                    doc.setFileExt(doc.getFoundFile().substring(index+1));
+                    
+                    String encodedFileName = URLEncoder.encode(doc.getFoundFile(),"UTF-8");
+                    doc.setUploadedFile(encodedFileName);
+
+                    doc.setDownloadLink(URLEncoder.encode(downloadLink,"UTF-8"));
                 }
                 User createdBy = usermanager.getUserById(doc.getSystemUserId());
                 doc.setCreatedBy(createdBy.getFirstName() + " " + createdBy.getLastName());
                 
-                String encodedFileName = URLEncoder.encode(doc.getUploadedFile(),"UTF-8");
-                doc.setUploadedFile(encodedFileName);
-                
-                doc.setDownloadLink(URLEncoder.encode(downloadLink,"UTF-8"));
             } 
         }
         
@@ -495,11 +500,16 @@ public class documentController {
         } else {
             documentDetails = documentmanager.getDocumentById(documentId);
             
-            if(documentDetails.getUploadedFile() != null && !"".equals(documentDetails.getUploadedFile())) {
-                int index = documentDetails.getUploadedFile().lastIndexOf('.');
-                documentDetails.setFileExt(documentDetails.getUploadedFile().substring(index+1));
-            }
+             List<documentFile> documentFiles = documentmanager.getDocumentFiles(documentId);
             
+            if(documentFiles != null) {
+                for(documentFile document : documentFiles) {
+                    int index = document.getUploadedFile().lastIndexOf('.');
+                    document.setFileExt(document.getUploadedFile().substring(index+1));
+                }
+                
+                mav.addObject("documentFiles", documentFiles);
+            }
         }
         
         if(userDetails.getRoleId() != 3) {
@@ -578,9 +588,9 @@ public class documentController {
         document currDocDetails = documentmanager.getDocumentById(documentDetails.getId());
         
         String newFileNameFromMove = "";
-        if(currDocDetails != null && currDocDetails.getFolderId() != documentDetails.getFolderId() && !"".equals(currDocDetails.getUploadedFile())) {
+        if(currDocDetails != null && currDocDetails.getFolderId() != documentDetails.getFolderId()) {
             /* Need to find the document and move it to the new folder */
-            newFileNameFromMove = documentmanager.moveDocumentFile(programId, currDocDetails.getFolderId(), documentDetails.getFolderId(), currDocDetails.getUploadedFile());
+            documentmanager.moveDocumentFile(programId, currDocDetails.getFolderId(), documentDetails.getFolderId(), documentId);
         }
         
         if(!"".equals(newFileNameFromMove)) {
@@ -748,5 +758,101 @@ public class documentController {
         
         return loadURL;
         
+    }
+    
+    /**
+     * The '/document/getDocumentFiles.do' GET request will return the uploaded files for the selected document. 
+     * form.
+     *
+     * @param session
+     * @param subfolder
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getDocumentFiles.do", method = RequestMethod.GET)
+    public @ResponseBody
+    ModelAndView getDocumentFiles(HttpSession session, @RequestParam(value = "documentId", required = true) Integer documentId) throws Exception {
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/document/multiDocumentFiles");
+        
+        /* Get uploaded files */
+        if(documentId != null && documentId > 0) {
+            List<documentFile> documentFiles = documentmanager.getDocumentFiles(documentId);
+            
+            document documentDetails = documentmanager.getDocumentById(documentId);
+            
+            documentFolder folderDetails = documentmanager.getFolderById(documentDetails.getFolderId());
+        
+            String downloadLink = "";
+            Integer folderCount = 1;
+
+            /* Get a list of folders  */
+            Integer parentFolderId = 0;
+            Integer getSubFoldersFor = 0;
+            Integer getSubSubFoldersFor = 0;
+            if (folderDetails.getParentFolderId() > 0) {
+                folderCount+=1;
+
+                parentFolderId = folderDetails.getParentFolderId();
+
+                documentFolder parentFolderDetails = documentmanager.getFolderById(parentFolderId);
+
+                if(parentFolderDetails.getParentFolderId() > 0) {
+                    folderCount+=1;
+
+                    documentFolder superParentFolderDetails = documentmanager.getFolderById(parentFolderDetails.getParentFolderId());
+
+                    downloadLink = superParentFolderDetails.getFolderName()+"/";
+                }
+                else {
+                    getSubFoldersFor = folderDetails.getParentFolderId();
+                    getSubSubFoldersFor = documentDetails.getFolderId();
+                }
+
+                downloadLink += parentFolderDetails.getFolderName()+"/"+folderDetails.getFolderName();
+
+
+            } else {
+                getSubFoldersFor = folderDetails.getId();
+                parentFolderId = folderDetails.getId();
+                downloadLink = folderDetails.getFolderName();
+            }
+            
+            if(documentFiles != null && documentFiles.size() > 0) {
+                for(documentFile doc : documentFiles) {
+                    if(doc.getUploadedFile() != null && !"".equals(doc.getUploadedFile())) {
+                        
+                        doc.setDocumentTitle(documentDetails.getTitle());
+                        
+                        String encodedFileName = URLEncoder.encode(doc.getUploadedFile(),"UTF-8");
+                        doc.setUploadedFile(encodedFileName);
+
+                        doc.setDownloadLink(URLEncoder.encode(downloadLink,"UTF-8"));
+                    }
+                } 
+                
+                mav.addObject("documentFiles", documentFiles);
+            }
+        }
+        
+        return mav;
+    }
+    
+    /**
+     * The 'deleteDocumentFile' POST request will remove the clicked uploaded
+     * file for the selected document.
+     *
+     * @param fileId The id of the clicked document.
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/deleteDocumentFile.do", method = RequestMethod.POST)
+    public @ResponseBody
+    Integer deleteDocumentFile(@RequestParam(value = "fileId", required = true) Integer fileId) throws Exception {
+
+        documentmanager.deleteDocumentFile(fileId, programName);
+
+        return 1;
     }
 }
