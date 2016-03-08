@@ -387,7 +387,7 @@ jQuery(function ($) {
         }
         
         /** Make sure either a document is uploaded or an external link is provided **/
-        if($('#webLink').val().trim() === "" && $('#id-input-file-2').val().trim() === "" && $('#uploadedFile').val() === "") {
+        if($('.uploadedDocuments').length == 0 && $('#webLink').val().trim() === "" && $('#id-input-file-2').val().trim() === "" && $('#uploadedFile').val() === "") {
             $('#docDiv').addClass("has-error");
             $('#webLinkDiv').addClass("has-error");
             $('#docMsg').addClass("has-error");
