@@ -11,18 +11,21 @@ import javax.servlet.ServletException;
 
 import java.io.IOException;
 import java.util.Set;
+
+import com.registryKit.user.userActivity;
 import com.registryKit.user.userManager;
 import com.registryKit.user.User;
 import com.registryKit.user.userProgramModules;
 import com.registryKit.program.modules;
 import com.registryKit.program.program;
 import com.registryKit.program.programManager;
+
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Value;
 
 public class CustomAuthenticationHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -41,14 +44,36 @@ public class CustomAuthenticationHandler extends SimpleUrlAuthenticationSuccessH
         
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
 
-        usermanager.setLastLogin(authentication.getName());
+      //we only set last login if not loginAs
+        if (request.getParameter("j_username").equalsIgnoreCase(authentication.getName())) {
+        	usermanager.setLastLogin(authentication.getName());
+        }
         
         HttpSession session = request.getSession();
+        // Need to get the userId 
+        User userDetails = usermanager.getUserByUsername(authentication.getName(), programId);
+       
+        if (!request.getParameter("j_username").equalsIgnoreCase(authentication.getName())) {
+	        try {
+	            //log user activity
+	        	User adminDetails = usermanager.getUserByUserName(request.getParameter("j_username"));
+	        	userActivity ua = new userActivity();
+	        	 ua.setUserId(adminDetails.getId());
+	             ua.setControllerName("loginAs");
+	        	 ua.setItemDesc("Logged in as user " + userDetails.getUsername() + " for program " + programId);
+	             ua.setMethodName("/sysAdmin/adminFns/loginas");
+	             ua.setItemId(userDetails.getId());
+	             usermanager.saveUserActivity(ua);
+
+	        } catch (Exception ex) {
+	            System.err.println("Login Handler = error logging user " + ex.getCause());
+	            ex.printStackTrace();
+	        }
+        }
+        
 
         if (roles.contains("ROLE_USER") || roles.contains("ROLE_PROGRAMADMIN")) {
-            // Need to get the userId 
-            User userDetails = usermanager.getUserByUsername(authentication.getName(), programId);
-           
+            
             // Need to store the user object in session 
             session.setAttribute("userDetails", userDetails);
             
