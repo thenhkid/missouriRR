@@ -32,6 +32,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.registryKit.user.userProgramModules;
 import java.net.URLEncoder;
 import javax.servlet.http.HttpServletRequest;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -855,4 +857,87 @@ public class documentController {
 
         return 1;
     }
+    
+    /**
+     * The 'getAvailableFoldersForTree.di' POST request will return a list of available folders for the selected
+     * program and logged in user.
+     *
+     * @param fileId The id of the clicked document.
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getAvailableFoldersForTree.do", method = RequestMethod.POST)
+    public @ResponseBody
+    JSONObject getAvailableFoldersForTree(HttpSession session, @RequestParam(value = "folderId", required = true) String folderId) throws Exception {
+        
+        User userDetails = (User) session.getAttribute("userDetails");
+        
+        JSONObject json = new JSONObject();
+        JSONArray folders = new JSONArray();
+        JSONObject folder;
+
+        if(Integer.parseInt(folderId) > 0) {
+           
+            List<documentFolder> subfolderList = documentmanager.getSubFolders(programId, userDetails, Integer.parseInt(folderId));
+            
+            if (subfolderList != null && subfolderList.size() > 0) {
+                
+                for(documentFolder fldr : subfolderList) {
+                    
+                    folder = new JSONObject();
+                    
+                    List<documentFolder> subsubfolderList = documentmanager.getSubFolders(programId, userDetails, fldr.getId());
+
+                    if (subsubfolderList != null && subsubfolderList.size() > 0) {
+                        folder.put("type", "folder");
+                        folder.put("name", fldr.getFolderName());
+                    }
+                    else {
+                        folder.put("type", "item");
+                        folder.put("name", "<i class=\"ace-icon fa fa-folder\"></i> " + fldr.getFolderName());
+                    }
+                    folder.put("id", fldr.getId());
+
+                    folders.add(folder);
+                    
+                }
+            }
+            
+        }
+        else {
+            List<documentFolder> folderList = documentmanager.getFolders(programId, userDetails);
+
+            if(folderList != null && folderList.size() > 0) {
+
+                for(documentFolder fldr : folderList) {
+
+                    folder = new JSONObject();
+
+                    List<documentFolder> subfolderList = documentmanager.getSubFolders(programId, userDetails, fldr.getId());
+
+                    if (subfolderList != null && subfolderList.size() > 0) {
+                        folder.put("type", "folder");
+                        folder.put("name", fldr.getFolderName());
+                    
+                    }
+                    else {
+                        folder.put("type", "item");
+                        folder.put("name", "<i class=\"ace-icon fa fa-folder green\"></i> " + fldr.getFolderName());
+                    
+                    }
+                    folder.put("id", fldr.getId());
+
+                    folders.add(folder);
+
+                }
+            }
+
+        }
+        
+         json.put("data", folders);
+        
+        return json;
+        
+    }
+
 }

@@ -25,6 +25,7 @@
             <add-attribute value="/dspResources/js/bootstrap-multiselect.min.js" />
             <add-attribute value="/dspResources/js/jquery.gritter.min.js" />
             <add-attribute value="/dspResources/js/ace-elements.min.js" />
+            <add-attribute value="/dspResources/js/fuelux/fuelux.tree.min.js" />
         </put-list-attribute>
         <put-list-attribute name="customCSS">
             <add-attribute value="/dspResources/css/bootstrap-multiselect.min.css" />
@@ -68,6 +69,18 @@
         <put-attribute name="jscript" value="/dspResources/js/surveys/completedSurvey.js" />
         <put-list-attribute name="headScripts">
             <add-attribute value="/dspResources/js/ace-elements.min.js" />
+        </put-list-attribute>
+    </definition>
+    
+    <definition name="/surveyDocuments" extends="base.definition.survey-ui">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/survey/breadcrumbs.jsp?page=documents" />
+        <put-attribute name="body" value="/WEB-INF/jsp/survey/surveyDocuments.jsp" />
+        <put-attribute name="submenu" value="/WEB-INF/jsp/survey/submenu.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/surveys/surveyDocuments.js" />
+        <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/ace-elements.min.js" />
+            <add-attribute value="/dspResources/js/fuelux/fuelux.tree.min.js" />
         </put-list-attribute>
     </definition>
     

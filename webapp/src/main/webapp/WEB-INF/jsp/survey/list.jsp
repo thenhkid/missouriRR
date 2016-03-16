@@ -112,11 +112,22 @@
                                                             </button>
                                                         </a>
                                                     </c:if> 
-                                                    <a href="javascript:void(0);" class="surveyDocuments" rel="${submittedSurvey.id}"  title="Upload File" role="button">   
-                                                        <button class="btn btn-xs btn-info">
-                                                            <i class="ace-icon fa fa-upload bigger-120"></i>
-                                                        </button>
-                                                    </a>     
+                                                    <c:choose>
+                                                        <c:when test="${hasDocumentModule == true}">
+                                                            <a href="surveys/viewSurveyDocuments?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}"  title="Associated Documents" role="button">   
+                                                                <button class="btn btn-xs btn-info">
+                                                                    <i class="ace-icon fa fa-upload bigger-120"></i>
+                                                                </button>
+                                                            </a> 
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <a href="javascript:void(0);" class="surveyDocuments" rel="${submittedSurvey.id}"  title="Associated Documents" role="button">   
+                                                                <button class="btn btn-xs btn-info">
+                                                                    <i class="ace-icon fa fa-upload bigger-120"></i>
+                                                                </button>
+                                                            </a> 
+                                                        </c:otherwise>
+                                                    </c:choose>  
                                             </c:when>
                                             <c:otherwise>
                                                 <a href="surveys/viewSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Survey" role="button">
