@@ -47,6 +47,17 @@
             <li class="active">
               Activity Log Complete
             </li>
-        </c:when>        
+        </c:when>    
+        <c:when test="${param['page'] == 'documents'}">
+            <li>
+                <a href="<c:url value="/surveys" />">Activity Logs</a>
+            </li>
+            <li>
+                <a href="<c:url value="/surveys?i=${i}&v=${v}" />"> ${surveyDetails.title}</a>
+            </li>
+            <li class="active">
+              Associated Documents
+            </li>
+        </c:when>  
     </c:choose>
 </ul>

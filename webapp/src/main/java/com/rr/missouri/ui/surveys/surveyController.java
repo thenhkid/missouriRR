@@ -1531,6 +1531,12 @@ public class surveyController {
 
         int surveyId = Integer.parseInt(result[0].substring(4));
         
+        submittedSurveys submittedSurveyDetails = surveyManager.getSubmittedSurvey(surveyId);
+        
+        surveys surveyDetails = surveyManager.getSurveyDetails(submittedSurveyDetails.getSurveyId());
+        mav.addObject("surveyDetails", surveyDetails);
+        mav.addObject("selSurvey", submittedSurveyDetails.getSurveyId());
+        
         /* Get a list of survey documents */
         List<submittedSurveyDocuments> surveyDocuments = surveyManager.getSubmittedSurveyDocuments(surveyId);
         
@@ -1590,6 +1596,18 @@ public class surveyController {
              mav.addObject("uploadedPaths", uploadedPaths);
         }
         mav.addObject("surveyDocuments", surveyDocuments);
+        
+        //Encrypt the use id to pass in the url
+        encryptObject encrypt = new encryptObject();
+        Map<String, String> map;
+        map = new HashMap<String, String>();
+        map.put("id", Integer.toString(surveyDetails.getId()));
+        map.put("topSecret", topSecret);
+
+        String[] encrypted = encrypt.encryptObject(map);
+        
+        mav.addObject("i", encrypted[0]);
+        mav.addObject("v", encrypted[1]);
 
         return mav;
     }
