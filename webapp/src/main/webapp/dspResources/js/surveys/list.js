@@ -128,7 +128,10 @@ jQuery(function ($) {
                     {"bSortable": false},
                     {"bSortable": false}
                 ],
-                "aaSorting": []
+                "aaSorting": [],
+                "oLanguage": {
+                "sSearch": "Filter:"
+                }
             });
 
 

@@ -21,7 +21,10 @@ jQuery(function ($) {
                     null, null, null, null,
                     {"bSortable": false}
                 ],
-                "aaSorting": [[0, 'asc']]
+                "aaSorting": [[0, 'asc']],
+                "oLanguage": {
+                "sSearch": "Filter:"
+                }
             });
             
     

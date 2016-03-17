@@ -19,7 +19,10 @@ jQuery(function ($) {
                     null, null, 
                     {"bSortable": false}
                 ],
-                "aaSorting": [[2, 'desc']]
+                "aaSorting": [[2, 'desc']],
+                "oLanguage": {
+                "sSearch": "Filter:"
+                }
             });
             
     //New main folder button
