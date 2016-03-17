@@ -597,8 +597,16 @@ public class userController {
         
         mav.addObject("userEntityItems", userEntityItems);
         
+        /* Get a list of completed surveys the logged in user has access to */
+        User userDetails = (User) session.getAttribute("userDetails");
+        
+        Integer loggeduserId = 0;
+        if (userDetails.getRoleId() != 2) {
+            loggeduserId = userDetails.getId();
+        }
+        
         /* Get a list of entity items for the selected entity */
-        List<programHierarchyDetails> entityItems = hierarchymanager.getProgramHierarchyItems(entityId);
+        List<programHierarchyDetails> entityItems = hierarchymanager.getProgramHierarchyItemsActiveOnly(entityId,loggeduserId);
         mav.addObject("entityItems", entityItems);
         
         return mav;
@@ -688,7 +696,9 @@ public class userController {
                     
                      if(selEntityItems != null && selEntityItems.size() > 0) {
                          for(programHierarchyDetails entity : selEntityItems) {
-                             entityItems.add(entity);
+                             if(entity.isStatus()) {
+                                entityItems.add(entity);
+                             }
                          }
                      }
                 }
