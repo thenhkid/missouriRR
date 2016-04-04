@@ -22,6 +22,8 @@ import com.registryKit.user.userProgramModules;
 import com.rr.missouri.ui.security.decryptObject;
 import com.rr.missouri.ui.security.encryptObject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -127,20 +129,19 @@ public class reportController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/request");
         
-        boolean adminUser = true;
-        
         User userDetails = (User) session.getAttribute("userDetails");
-        
+        List <Integer> reportLevels = Arrays.asList(1,2,3);
         if (userDetails.getRoleId() == 3) {
-        	adminUser = false;
+        	userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
+        	reportLevels = reportmanager.getReportLevels(modulePermissions);  
         }
         
         //this returns the report type list for this program
-        List<reportType> reportTypeList = reportmanager. getReportTypes(programId, false, adminUser);
+        List<reportType> reportTypeList = reportmanager. getReportTypes(programId, false,  reportLevels);
         mav.addObject("reportTypes", reportTypeList);
         
         //these are the surveys, but should be populated with /availableReports.do
-        List<reportDetails> reportList = reportmanager.getReportsForType(programId, false, reportTypeList.get(0).getId());
+        List<reportDetails> reportList = reportmanager.getReportsForType(programId, false, reportTypeList.get(0).getId(), reportLevels);
         mav.addObject("reportList", reportList);
         
         
@@ -166,7 +167,8 @@ public class reportController {
         }
         //codeId list depends on selection criteria
         mav.addObject("orgHierarchyList", orgHierarchyList);
-        List<activityCodes> codeList = activitycodemanager.getActivityCodesByProgram(programId);
+        List<activityCodes> codeList = new ArrayList<activityCodes>();
+        		//activitycodemanager.getActivityCodesByProgram(programId);
         mav.addObject("codeList", codeList);
         
         return mav;
@@ -181,7 +183,14 @@ public class reportController {
     )
             throws Exception {
     	
-    	List <reportDetails> availableReports = reportmanager.getReportsForType(programId, false, reportTypeId);
+    	User userDetails = (User) session.getAttribute("userDetails");
+    	userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
+    	List <Integer> reportLevels = Arrays.asList(1,2,3);
+    	if (userDetails.getRoleId() != 1 && userDetails.getRoleId() != 2 && userDetails.getRoleId() != 4) {
+    		reportLevels = reportmanager.getReportLevels(modulePermissions);  
+    	}
+        
+    	List <reportDetails> availableReports = reportmanager.getReportsForType(programId, false, reportTypeId, reportLevels);
     	//this ideally will just overwrite the current select box
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/reports/optionReports");
