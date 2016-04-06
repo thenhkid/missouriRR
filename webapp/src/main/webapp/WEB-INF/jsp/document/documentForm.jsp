@@ -15,6 +15,8 @@
         <form:hidden path="dateCreated" />
         <form:hidden path="systemUserId" />
         <form:hidden path="uploadedFile" id="uploadedFile" />
+        <form:hidden path="dateCreated" />
+        <input type="hidden" value="0" id="fromSearch" name="fromSearch" />
         <c:choose>
             <c:when test="${sessionScope.userDetails.roleId == 2}">
                 <c:if test="${not empty documentfolder}">

@@ -137,7 +137,7 @@ public class fileDownloadController {
                 
                 emailManager.sendEmail(messageDetails);
                 
-                if(folderDetails != null) {
+                if(folderDetails != null && request.getHeader("referer").contains("folder")) {
                     encryptObject encrypt = new encryptObject();
                     Map<String, String> map;
                     map = new HashMap<String, String>();

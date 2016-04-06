@@ -27,5 +27,13 @@
                 ${selFolderName}
             </li>
         </c:when>
+        <c:when test="${param['page'] == 'search'}">
+            <li>
+                <a href="/documents">Documents</a>
+            </li>
+            <li class="active">
+                Document Search
+            </li>
+        </c:when>        
     </c:choose>
 </ul>
