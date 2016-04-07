@@ -13,7 +13,7 @@ jQuery(function ($) {
     }
     
     $(document).ready(function () {
-        if(document.referrer.indexOf("documents") > 0 && ($('#savedSearchString').val() !== "" || $('#savedstartSearchDate').val() !== "")) {
+        if((document.referrer.indexOf("documents") > 0 || document.referrer.indexOf("login")) && ($('#savedSearchString').val() !== "" || $('#savedstartSearchDate').val() !== "")) {
           
           $('#documentSearchValue').val($('#savedSearchString').val());
           

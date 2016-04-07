@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -286,6 +287,53 @@ public class mainController {
 
         }
 
+    }
+    
+    /**
+     * The '/search/documents/{pathVariable}' request will handle viewing a file clicked from the email.
+     *
+     * @param request
+     * @param response
+     * @return	the login page view
+     * @throws Exception
+     */
+    @RequestMapping(value = "/search/documents/{pathVariable}", method = RequestMethod.GET)
+    public ModelAndView viewDocumentFromEmail(HttpSession session, HttpServletRequest request, @PathVariable String pathVariable) throws Exception {
+        
+        String url = request.getRequestURL().toString();
+        int slashIndex = url.lastIndexOf('/');
+        int dotIndex = url.lastIndexOf('.');
+        
+        if(dotIndex > 0) {
+            String filename = url.substring(slashIndex + 1);
+            session.setAttribute("searchmoduleName","documents");
+            session.setAttribute("searchString", filename);
+        }
+        
+        //Redirect to the log in page.
+        ModelAndView mav = new ModelAndView(new RedirectView("/login"));
+        return mav;
+    }
+    
+    /**
+     * The '/search/forums/{pathVariable}' request will handle viewing a forum topic clicked from the email.
+     *
+     * @param request
+     * @param response
+     * @return	the login page view
+     * @throws Exception
+     */
+    @RequestMapping(value = "/search/forums/{pathVariable}", method = RequestMethod.GET)
+    public ModelAndView viewForumTopicFromEmail(HttpSession session, HttpServletRequest request, @PathVariable String pathVariable) throws Exception {
+        
+        if(!"".equals(pathVariable)) {
+            session.setAttribute("searchmoduleName","forum/"+pathVariable);
+        }
+        
+        //Redirect to the log in page.
+        ModelAndView mav = new ModelAndView(new RedirectView("/login"));
+        return mav;
+        
     }
     
 }
