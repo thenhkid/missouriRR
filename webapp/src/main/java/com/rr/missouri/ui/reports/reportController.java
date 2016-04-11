@@ -7,9 +7,14 @@ package com.rr.missouri.ui.reports;
 
 import com.registryKit.activityCode.activityCodeManager;
 import com.registryKit.activityCode.activityCodes;
+import com.registryKit.client.clientManager;
+import com.registryKit.client.engagementManager;
 import com.registryKit.hierarchy.hierarchyManager;
 import com.registryKit.hierarchy.programHierarchyDetails;
 import com.registryKit.hierarchy.programOrgHierarchy;
+import com.registryKit.program.programManager;
+import com.registryKit.report.reportChoices;
+import com.registryKit.report.reportCriteriaField;
 import com.registryKit.report.reportDetails;
 import com.registryKit.report.reportManager;
 import com.registryKit.report.reportRequest;
@@ -70,10 +75,20 @@ public class reportController {
    private reportManager reportmanager;
    
    @Autowired
+   private programManager programmanager;
+   
+   @Autowired
+   private engagementManager engagementmanager;
+   
+   @Autowired
+   private clientManager clientmanager;
+   
+   @Autowired
    private activityCodeManager activitycodemanager;
    
    private static boolean allowCreate = false;
    private static boolean allowEdit = false;
+   private static boolean allowDelete = false;
    
     
    @Value("${programId}")
@@ -94,19 +109,23 @@ public class reportController {
         if (userDetails.getRoleId() == 2) {
             allowCreate = true;
             allowEdit = true;
+            allowDelete = true;
         } else {
             allowCreate = modulePermissions.isAllowCreate();
             allowEdit = modulePermissions.isAllowEdit();
+            allowDelete = modulePermissions.isAllowDelete();
         }
 
         mav.addObject("allowCreate", allowCreate);
         mav.addObject("allowEdit", allowEdit);
+        mav.addObject("allowDelete", allowDelete);
         
         encryptObject encrypt = new encryptObject();
         Map<String, String> map;
         
         List <reportRequestDisplay> reportRequestList =  reportmanager.getReportRequestDisplays(programId, userDetails);
         for (reportRequestDisplay rrd : reportRequestList) {
+        	rrd.setReportRequest(reportmanager.getReportRequestById(rrd.getReportRequestId()));
             //Encrypt the use id to pass in the url
             map = new HashMap<String, String>();
             map.put("id", Integer.toString(rrd.getReportRequestId()));
@@ -143,17 +162,18 @@ public class reportController {
         //these are the surveys, but should be populated with /availableReports.do
         List<reportDetails> reportList = reportmanager.getReportsForType(programId, false, reportTypeList.get(0).getId(), reportLevels);
         mav.addObject("reportList", reportList);
-        
+        reportType rt = reportmanager.getReportTypeById(reportTypeList.get(0).getId());
+        mav.addObject("reportType", rt);
         
         List<programOrgHierarchy> orgHierarchyList = hierarchymanager.getProgramOrgHierarchy(programId);
         
         //entity 1 items
         for(programOrgHierarchy hierarchy : orgHierarchyList) {
             if (userDetails.getRoleId() != 3) {
-            		List<programHierarchyDetails> hierarchyItems = hierarchymanager.getProgramHierarchyItems(hierarchy.getId());
+            		List<programHierarchyDetails> hierarchyItems = hierarchymanager.getProgramHierarchyItemsForStatus(hierarchy.getId(), 0, true);
                     hierarchy.setProgramHierarchyDetails(hierarchyItems);	
                 } else {
-            		List<programHierarchyDetails> hierarchyItems = hierarchymanager.getProgramHierarchyItems(hierarchy.getId(), userDetails.getId());
+            		List<programHierarchyDetails> hierarchyItems = hierarchymanager.getProgramHierarchyItemsForStatus(hierarchy.getId(), userDetails.getId(), true);
                     hierarchy.setProgramHierarchyDetails(hierarchyItems);
                 }
         }
@@ -167,6 +187,7 @@ public class reportController {
         }
         //codeId list depends on selection criteria
         mav.addObject("orgHierarchyList", orgHierarchyList);
+        mav.addObject("entity1ListSize", orgHierarchyList.get(0).getProgramHierarchyDetails().size());
         List<activityCodes> codeList = new ArrayList<activityCodes>();
         		//activitycodemanager.getActivityCodesByProgram(programId);
         mav.addObject("codeList", codeList);
@@ -179,7 +200,8 @@ public class reportController {
     @RequestMapping(value = "/availableReports.do", method = RequestMethod.POST)
     public @ResponseBody
     ModelAndView getReportList(HttpSession session,
-            @RequestParam(value = "reportTypeId", required = false) Integer reportTypeId         
+            @RequestParam(value = "reportTypeId", required = false) Integer reportTypeId,
+            @RequestParam(value = "entity1ListSize", required = false) Integer entity1ListSize 
     )
             throws Exception {
     	
@@ -191,13 +213,19 @@ public class reportController {
     	}
         
     	List <reportDetails> availableReports = reportmanager.getReportsForType(programId, false, reportTypeId, reportLevels);
-    	//this ideally will just overwrite the current select box
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("/reports/optionReports");
+    	reportType rt = reportmanager.getReportTypeById(reportTypeId);
+    	List<programOrgHierarchy> orgHierarchyList = hierarchymanager.getProgramOrgHierarchy(programId);
+    	
+    	ModelAndView mav = new ModelAndView();
+        mav.setViewName("/reports/reportDiv");
+        mav.addObject("orgHierarchyList", orgHierarchyList);
         mav.addObject("reportList", availableReports);
+        mav.addObject("entity1ListSize", entity1ListSize);
+        mav.addObject("reportType", rt);
+        
+        
         return mav;
      }
-    
     
     
     //this returns entities 2 & 3
@@ -205,9 +233,12 @@ public class reportController {
     public @ResponseBody
     ModelAndView getEntities (HttpSession session, HttpServletRequest request,
             @RequestParam(value = "entityIds", required = false)List <Integer> entityIds,
-            @RequestParam(value = "tier", required = true) Integer tier
+            @RequestParam(value = "tier", required = true) Integer tier,
+            @RequestParam(value = "reportIds", required = false) List <Integer> reportIds
     )
             throws Exception {
+    	
+    	ModelAndView mav = new ModelAndView();
     	
     	User userDetails = (User) session.getAttribute("userDetails");
         
@@ -221,18 +252,32 @@ public class reportController {
         }
     	
     	Integer newTier = 2;
+    	String repView = "/reports/entity2Div";
     	if (tier == 2) {
     		newTier = 3;
+    		repView = "/reports/entity3Div";
+    		if(reportIds.get(0) == 36) {
+            	reportCriteriaField rcf = reportmanager.getreportCriteriaFieldByOrder(programId, reportIds.get(0), 1);
+            	mav.addObject("reportCriteriaField", rcf);
+            }
     	}
     	
-    	ModelAndView mav = new ModelAndView();
-        mav.setViewName("/reports/optionEntities");
+    	
+        mav.setViewName(repView);
+        
+    	//we will modify here if there are report logic
+
+    	mav.addObject("orgHierarchyList", orgHierarchyList);
         mav.addObject("entityList", hierarchyItems);
         mav.addObject("tier", newTier);
+        
+        
+        
         return mav;
      }
     
-    //narrows down code list by report
+    
+  //narrows down code list by report
     @RequestMapping(value = "/getCodeList.do", method = RequestMethod.POST)
     public @ResponseBody
     ModelAndView getCodeList(HttpSession session,
@@ -252,12 +297,6 @@ public class reportController {
     	Date sd = dateformat.parse(startDate);
  	    Date ed = dateformat.parse(endDate);
         
-        /**
-    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-	    Date sd = sdf.parse(sdori);
-	    Date ed = sdf.parse(edori);
-	    **/
-	    
     	//set up report request
     	reportRequest rr = new reportRequest();
     	rr.setProgramId(programId);
@@ -269,9 +308,59 @@ public class reportController {
     	    	
     	List<activityCodes> codeList = reportmanager.getAvailableReportRequestCodeList(rr, userDetails);
         
+    	 ModelAndView mav = new ModelAndView();
+         mav.setViewName("/reports/criteriaDiv");
+         mav.addObject("codeList", codeList);
+         
+        return mav;
+     }
+    
+    
+    //narrows down criteria list by report
+    @RequestMapping(value = "/getCriteriaList.do", method = RequestMethod.POST)
+    public @ResponseBody
+    ModelAndView getCriteriaList(HttpSession session,
+            @RequestParam(value = "startDate", required = true) String startDate,
+            @RequestParam(value = "endDate", required = true) String endDate,
+            @RequestParam(value = "entity3Ids", required = true) List <Integer> entity3Ids,
+            @RequestParam(value = "reportIds", required = true) List <Integer> reportIds    
+    )
+            throws Exception {
+    	List<programOrgHierarchy> orgHierarchyList = hierarchymanager.getProgramOrgHierarchy(programId);
+    	
+    	//need to rearrange date 
+    	
+    	SimpleDateFormat dateformat = new SimpleDateFormat("MM/dd/yyyy");
+    	Date sd = dateformat.parse(startDate);
+ 	    Date ed = dateformat.parse(endDate);
+        
+        //set up report request
+    	reportRequest rr = new reportRequest();
+    	rr.setProgramId(programId);
+    	rr.setProgramHeirarchyId(orgHierarchyList.get(orgHierarchyList.size()-1).getId());
+    	rr.setStartDateTime(sd);
+	    rr.setEndDateTime(ed);
+	    rr.setEntity3Ids(entity3Ids);
+	    rr.setReportIds(reportIds);
+    	
+    	reportCriteriaField rcf = reportmanager.getreportCriteriaFieldByOrder(programId, reportIds.get(0), 1);
+    	
+    	//if it contains null, we switch out to not provided
+    	List <reportChoices> criteriaList = reportmanager.getCriteriaListWithCW(rcf, rr);
+    	if (criteriaList.size() > 0) {
+    		//we check for null and replace
+    		if (criteriaList.get(0).getDisplayVal() == null) {
+    			reportChoices rc = new reportChoices();
+    			rc.setDisplayVal("Not Provided");
+    			rc.setInsertVal("^^^^^");
+    			criteriaList.set( 0, rc);
+    		}
+    	}
+	    
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("/reports/optionCodes");
-        mav.addObject("codeList", codeList);
+        mav.setViewName("/reports/criteriaDiv");
+        mav.addObject("criteriaList", criteriaList);
+        mav.addObject("reportCriteriaField", rcf);
         
         return mav;
      }
@@ -282,8 +371,10 @@ public class reportController {
              @RequestParam(value = "endDate", required = true) String endDate,
              @RequestParam(value = "reportTypeId", required = true) Integer reportTypeId,
              @RequestParam(value = "entity3Ids", required = true) String entity3Ids,
-             @RequestParam(value = "codeIds", required = true) String codeIds,
-             @RequestParam(value = "reportIds", required = true) String reportIds
+             @RequestParam(value = "codeIds", required = false) String codeIds,
+             @RequestParam(value = "criteriaValues", required = false) String criteriaValues,            
+             @RequestParam(value = "reportIds", required = true) String reportIds,
+             @RequestParam(value = "reportCriteriaId", required = false) Integer reportCriteriaId
             ) throws Exception {
        
     	User userDetails = (User) session.getAttribute("userDetails");
@@ -303,13 +394,19 @@ public class reportController {
     	Integer reportRequestId = reportmanager.saveReportRequest(rr);
     	
     	//we set up and insert entities
-    	reportmanager.saveReportRequestEntities(entity3Ids, reportRequestId);
-    	
+    	if(!reportIds.equalsIgnoreCase("15")) {
+    		reportmanager.saveReportRequestEntities(entity3Ids, reportRequestId);
+    	}
     	//we set up and insert reportId
     	reportmanager.saveReportRequestReportIds(reportIds, reportRequestId);
     	
-    	//we set up and insert 
-    	reportmanager.saveReportRequestContentCriteria(codeIds, reportRequestId);
+    	if (codeIds.length() > 0) {
+    		reportmanager.saveReportRequestContentCriteria(codeIds, reportRequestId);
+    	}
+    	
+    	if (criteriaValues.length() > 0) {
+    		reportmanager.saveReportRequestCriteria(criteriaValues, reportRequestId, reportCriteriaId);
+    	}
     	
     	//run sp to update display table
     	reportmanager.updateReportDisplayTable(reportRequestId);
@@ -319,8 +416,8 @@ public class reportController {
     }
     
     
-    @RequestMapping(value = "/viewReport", method = {RequestMethod.GET})
-    public void viewReport(@RequestParam String i, @RequestParam String v, 
+    @RequestMapping(value = "/DLReport", method = {RequestMethod.GET})
+    public void DLReport(@RequestParam String i, @RequestParam String v, 
     		HttpSession session, HttpServletResponse response) throws Exception {
     	
     	Integer reportRequestId = 0;
@@ -464,6 +561,6 @@ public class reportController {
     	
     	return 1;
      }
-    
-    
+
 }
+
