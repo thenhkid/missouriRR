@@ -9,7 +9,6 @@ jQuery(function ($) {
 
     $(document).ready(function () {
 
-    	//var startDate = new Date('2013-09-02');
     	var startDate = new Date('09/02/2013');
     	var toEndDate = new Date();
     	
@@ -31,327 +30,57 @@ jQuery(function ($) {
          });
          });
          
-
+        //changing a report type
         $('#reportTypeId').change(function (event) {
-        	clearErrors ();
+        	clearErrors (0);
             event.preventDefault();
             var reportTypeId = $('#reportTypeId').val();
+            var entity1ListSize = $('#entity1ListSize').val();
+            
+            
             $.ajax({
                 type: 'POST',
                 url: "/reports/availableReports.do",
-                data: {'reportTypeId': reportTypeId},
+                data: {'reportTypeId': reportTypeId,
+                	'entity1ListSize': entity1ListSize
+                },
+                
                 success: function (data) {
-                    $("#selectReportDiv").html(data);
+                    $("#reportDiv").html(data);
+            		$("#entity1Div").hide();
+                    $("#entity2Div").hide();
+                    $("#entity3Div").hide();
+                    $("#criteriaDiv").hide(); 
+                    if (reportTypeId == 3) {
+                    	$('#submitRepButton').show();
+                    	$('#showEntity1RepButton').hide();
+                    } else {
+                    	 $('#showEntity1RepButton').show();
+                    	 $('#submitRepButton').hide();
+                    }
                 },
                 error: function (error) {
                     console.log(error);
                 }
             });
         });
-
-        /** need to rewrite eventually to streamline fns, don't need so many and can use variables **/
-
-        /** ajax to change entitiy2List **/
-        $('#showEntity2').click(function (event) {
-            event.preventDefault();
-            /**a - we disable entity1
-             * b - we get data and show entity2
-             * c - we change button to say Change
-             **/
-            
-            clearErrors ();
-            
-            var errors = checkDatesAndReport();
-            
-            if ($('#entity1Ids').val() == null) {
-                var message = errorMsg + $(this).attr("rel");
-                $('#entity1Div').addClass('has-error');
-                $('#errorMsg_entity1').html(message);
-                errors++;
-            }
-            
-            
-            if (errors > 0) {  
-            	return false;
-            }
-
-            
-            $('#entity1Ids').prop('disabled', 'disabled');
-            $('#entity2Div').show();
-            $('#changeEntity1').show();
-            $('#showEntity3').show();
-            $('#showEntity2').hide();
-
-
-
-            var selectednumbers = [];
-            $('#entity1Ids :selected').each(function (i, selected) {
-                selectednumbers[i] = $(selected).val();
-            });
-
-            selectednumbers = selectednumbers.join(", ");
-            $.ajax({
-                type: 'POST',
-                url: "/reports/returnEntityList.do",
-                data: {'entityIds': selectednumbers,
-                    'tier': 1},
-                success: function (data) {
-                    $("#entity2SelectDiv").html(data);
-                },
-                error: function (error) {
-                    console.log(error);
-                }
-            });
-        });
-
-
-
-        $('#changeEntity1').click(function (event) {
-            event.preventDefault();
-            clearErrors ();
-            
-            var errors = checkDatesAndReport();
-            
-            /**a - we disable entity1
-             * b - we get data and show entity2
-             * c - we change button to say Change
-             **/
-
-            $("#entity1Ids").removeAttr("disabled");
-            $('#showEntity2').show();
-            $('#entity2Div').hide();
-            $('#changeEntity1').hide();
-            $('#entity3Div').hide();
-            $('#contentDiv').hide();
-            $('#requestButton').hide();
-            $('#changeEntity2').hide();
-            $('#showEntity3').hide();
-        });
-
-
-        /** show schools / change districts **/
-        /** ajax to change entitiy3List **/
-        $('#showEntity3').click(function (event) {
-            event.preventDefault();
-            /**a - we disable entity1
-             * b - we get data and show entity2
-             * c - we change button to say Change
-             **/
-            clearErrors ();
-            
-            var errors = checkDatesAndReport();
-            
-            
-            if ($('#entity2Ids').val() == null) {
-                var message = errorMsg + $(this).attr("rel");
-                $('#entity2Div').addClass('has-error');
-                $('#errorMsg_entity2').html(message);
-                errors++;
-            }
-           
-            if (errors > 0) {
-            	return false;
-            }
-
-            $('#entity2Ids').prop('disabled', 'disabled');
-            $('#entity3Div').show();
-            $('#changeEntity2').show();
-            $('#showEntity3').hide();
-
-            var selectednumbers = [];
-            $('#entity2Ids :selected').each(function (i, selected) {
-                selectednumbers[i] = $(selected).val();
-            });
-
-            selectednumbers = selectednumbers.join(", ");
-
-            $.ajax({
-                type: 'POST',
-                url: "/reports/returnEntityList.do",
-                data: {'entityIds': selectednumbers,
-                    'tier': 2},
-                success: function (data) {
-                    $("#entity3SelectDiv").html(data);
-                },
-                error: function (error) {
-                    console.log(error);
-                }
-            });
-        });
-
-
-
-        $('#changeEntity2').click(function (event) {
-            event.preventDefault();
-            clearErrors ();
-            var errors = checkDatesAndReport();
-            
-            $("#entity2Ids").removeAttr("disabled");
-            $('#showEntity3').show();
-            $('#entity3Div').hide();
-            $('#changeEntity2').hide();
-            $('#entity3Div').hide();
-            $('#contentDiv').hide();
-            $('#requestButton').hide();
-        });
-
-
-        /** showCodes / changeEntity3  **/
-        $('#showCodes').click(function (event) {
-            event.preventDefault();
-            /**a - we disable entity1
-             * b - we get data and show entity2
-             * c - we change button to say Change
-             **/
-            clearErrors ();
-            
-            var errors = checkDatesAndReport();
-            
-            if ($('#entity3Ids').val() == null) {
-                var message = errorMsg + $(this).attr("rel");
-                $('#entity3Div').addClass('has-error');
-                $('#errorMsg_entity3').html(message);
-                errors++;
-            }
-            
-            if (errors > 0) {
-            	return false;
-            }
-
-            $('#contentDiv').show();
-
-            
-            var selectednumbers = [];
-            $('#entity3Ids :selected').each(function (i, selected) {
-                selectednumbers[i] = $(selected).val();
-            });
-
-            selectednumbers = selectednumbers.join(", ");
-
-            var selectedreports = [];
-            $('#reportIds :selected').each(function (i, selected) {
-                selectedreports[i] = $(selected).val();
-            });
-
-            selectedreports = selectedreports.join(", ");
-            
-            var startDate = $('#startDate').val();
-            var endDate = $('#endDate').val();
-            
-            $.ajax({
-                type: 'POST',
-                url: "/reports/getCodeList.do",
-                data: {'entity3Ids': selectednumbers,
-                	   'reportIds': selectedreports,
-                	   'startDate': startDate,
-                	   'endDate': endDate,
-                        
-                },
-                success: function (data) {
-                	$("#codesSelectDiv").html("");
-                	/** need to check to see if there are any code ids returned **/
-                	if (data.indexOf('option') < 1) {
-                		
-                	} else {
-                		$('#entity3Ids').prop('disabled', 'disabled');
-                        
-                        $('#requestButton').show();
-                        $('#changeEntity3').show();
-                        $('#showCodes').hide();
-                	}
-                	$("#codesSelectDiv").html(data);
-                	
-                },
-                error: function (error) {
-                    console.log(error);
-                }
-            });
-        });
-
-
-
-        $('#changeEntity3').click(function (event) {
-            event.preventDefault();
-            clearErrors ();
-            var errors = checkDatesAndReport();
-            
-            $("#entity3Ids").removeAttr("disabled");
-            $('#showCodes').show();
-            $('#contentDiv').hide();
-            $('#requestButton').hide();
-            $('#changeEntity3').hide();
-        });
-
-
-        /** here we submit the form **.
-         */
-        $('#submitButton').click(function (event) {
-        	
-        	clearErrors ();
-            
-            var errors = checkDatesAndReport();
-            
-            if ($('#codeIds').val() == null) {
-                $('#contentDiv').addClass('has-error');
-                $('#errorMsg_codes').html("Please select at least one Content Area & Criteria");
-                errors++;
-            }
-            
-            if (errors > 0) {            	
-            	return false;
-            }
-
-            var selectednumbers = [];
-            $('#entity3Ids :selected').each(function (i, selected) {
-                selectednumbers[i] = $(selected).val();
-            });
-
-            selectednumbers = selectednumbers.join(", ");
-
-            var selectedreports = [];
-            $('#reportIds :selected').each(function (i, selected) {
-                selectedreports[i] = $(selected).val();
-            });
-
-            selectedreports = selectedreports.join(", ");
-
-            var selectedcodes = [];
-            $('#codeIds :selected').each(function (i, selected) {
-                selectedcodes[i] = $(selected).val();
-            });
-
-            selectedcodes = selectedcodes.join(", ");
-
-
-            $("#startDateForm").val($('#startDate').val());
-            $("#endDateForm").val($('#endDate').val());
-            $("#entity3IdsForm").val(selectednumbers);
-            $("#codeIdsForm").val(selectedcodes);
-            $("#reportIdsForm").val(selectedreports);
-            $("#reportTypeIdForm").val($('#reportTypeId').val());
-            
-
-            $("#requestForm").submit();
-
-
-        });  
         
-        
-        
-        
-        
+        //end of ajax calls
     });
 });
 
-function clearErrors () {
-	$('#selectReportDiv').removeClass('has-error');
-	$('#errorMsg_reports').html("");
+/** this function needs to clear by reportId as some reports have different criteria **/
+
+function clearErrors (reportId) {
 	
 	$('#startDateDiv').removeClass('has-error');
 	$('#errorMsg_startDate').html("");
-	   
+	
 	$('#endDateDiv').removeClass('has-error');
 	$('#errorMsg_endDate').html("");
+	
+	$('#reportIdDiv').removeClass('has-error');
+	$('#errorMsg_reports').html("");
 	
 	$('#entity1Div').removeClass('has-error');
     $('#errorMsg_entity1').html("");
@@ -362,13 +91,66 @@ function clearErrors () {
 	$('#entity3Div').removeClass('has-error');
 	$('#errorMsg_entity3').html("");
 	
+	$('#criteriaDiv').removeClass('has-error');
+	$('#errorMsg_criteria').html("");
 	
-	$('#contentDiv').removeClass('has-error');
-    $('#errorMsg_codes').html("");
+	//depending on report selected we clear errors too
+	
+}
+
+function checkReports() {
+	if ($('#reportIds').val() == null) {
+	        $('#reportIdDiv').addClass('has-error');
+	        $('#errorMsg_reports').html("Please select at least one report");
+	        return 1;
+	} else  {
+		return 0;
+	}
+}
+
+function checkEntity1 () {
+	if ($('#entity1Ids').val() == null) {
+        $('#entity1Div').addClass('has-error');
+        $('#errorMsg_entity1').html("Please select at least one value.");
+        return 1;
+	} else  {
+		return 0;
+	}	
+}
+
+function checkEntity2 () {
+	if ($('#entity2Ids').val() == null) {
+        $('#entity2Div').addClass('has-error');
+        $('#errorMsg_entity2').html("Please select at least one value.");
+        return 1;
+	} else  {
+		return 0;
+	}
+}
+
+function checkEntity3 () {
+	if ($('#entity3Ids').val() == null) {
+        $('#entity3Div').addClass('has-error');
+        $('#errorMsg_entity3').html("Please select at least one value.");
+        return 1;
+	} else  {
+		return 0;
+	}
+}
+
+function checkCriteria () {
+	if ($('#criteriaValues').val() == null) {
+        $('#criteriaDiv').addClass('has-error');
+        $('#errorMsg_criteria').html("Please select at least one value.");
+        return 1;
+	} else  {
+		return 0;
+	}
 }
 
 
-function checkDatesAndReport() {
+
+function checkDates() {
 	var errors = 0;
 	
 	var DateValidated = validateDate($('#startDate').val());
@@ -390,12 +172,6 @@ function checkDatesAndReport() {
         errors++;
     }
     
-    if ($('#reportIds').val() == null) {
-        $('#reportIdDiv').addClass('has-error');
-        $('#errorMsg_reports').html("Please select at least one report");
-        errors++;
-    }
-	
     return errors;
 	
 	
@@ -440,18 +216,6 @@ function validateDateOld($date) {
             return false;
     }
     return true;
-
-
-    /*
-     
-     var DateReg = /\b\d{1,2}[\/-]\d{1,2}[\/-]\d{4}\b/; // mm/dd/yyyy
-     var DateReg2 = /\b\d{4}[\-]\d{1,2}[\-]\d{1,2}\b/; // yyyy-mm-dd
-     if (!DateReg.test($date) && !DateReg2.test($date)) {
-     return false;
-     }
-     else {
-     return true;
-     } */
 }
 
 
