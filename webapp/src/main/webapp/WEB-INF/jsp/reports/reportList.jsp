@@ -80,18 +80,19 @@
                                     <td class="center">
                                         <div class="hidden-sm hidden-xs action-buttons">
                                             <c:if test="${rrd.statusId == 3 || rrd.statusId == 4}">
-	                                           	<a href="/reports/viewReport?i=${rrd.encryptedId}&v=${rrd.encryptedSecret}"  title="View this report" role="button">
+	                                           	<a href="/reports/DLReport?i=${rrd.encryptedId}&v=${rrd.encryptedSecret}"  title="View this report" role="button">
 	                                                <button class="btn btn-xs btn-success">
 	                                                    <i class="ace-icon fa fa-download bigger-120"></i>
 	                                                </button>
 	                                            </a>
                                             </c:if>
-                                            <a href="javascript:void(0);" class="deleteReport" rel="${rrd.reportRequestId}"  reli="${rrd.encryptedId}" relv="${rrd.encryptedSecret}" title="Delete This Report" role="button">
-                                                <button class="btn btn-xs btn-danger">
-                                                    <i class="ace-icon fa fa-close bigger-120"></i>
-                                                </button>
-                                            </a>
-                                                
+                                            <c:if test="${allowDelete}">
+	                                            <a href="javascript:void(0);" class="deleteReport" rel="${rrd.reportRequestId}"  reli="${rrd.encryptedId}" relv="${rrd.encryptedSecret}" title="Delete This Report" role="button">
+	                                                <button class="btn btn-xs btn-danger">
+	                                                    <i class="ace-icon fa fa-close bigger-120"></i>
+	                                                </button>
+	                                            </a>
+	                                        </c:if>   
                                         </div>
                                     </td>
                                 </tr>
