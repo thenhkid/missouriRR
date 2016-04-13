@@ -7,6 +7,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <div class="page-content" style="padding:0;max-height: 500px; overflow: auto">
    <form:form id="documentForm" modelAttribute="documentDetails" action="/documents/saveDocuemntForm.do" role="form" class="form" method="post" enctype="multipart/form-data">
@@ -14,6 +15,8 @@
         <form:hidden path="dateCreated" />
         <form:hidden path="systemUserId" />
         <form:hidden path="uploadedFile" id="uploadedFile" />
+        <form:hidden path="dateCreated" />
+        <input type="hidden" value="0" id="fromSearch" name="fromSearch" />
         <c:choose>
             <c:when test="${sessionScope.userDetails.roleId == 2}">
                 <c:if test="${not empty documentfolder}">
@@ -78,30 +81,48 @@
             <form:input path="externalWebLink" class="form-control" id="webLink" maxlength="255" />
             <span id="webLinkMsg" class="control-label"></span>  
         </div>
-        <c:if test="${not empty documentDetails.uploadedFile}">
-            <div>
-                <hr/>
-                <div class="form-group">
-                    <label for="document1">Uploaded Document</label>
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <c:choose>
-                                <c:when test="${documentDetails.fileExt == 'pdf'}"><i class="fa fa-file-pdf-o bigger-110 orange"></i></c:when>
-                                <c:when test="${documentDetails.fileExt == 'doc' || documentDetails.fileExt == 'docx'}"><i class="fa fa-file-word-o bigger-110 orange"></i></c:when>
-                                <c:when test="${documentDetails.fileExt == 'xls' || documentDetails.fileExt == 'xlsx'}"><i class="fa fa-file-excel-o bigger-110 orange"></i></c:when>
-                                <c:when test="${documentDetails.fileExt == 'txt'}"><i class="fa fa-file-text-o bigger-110 orange"></i></c:when>
-                                <c:when test="${documentDetails.fileExt == 'jpg' || documentDetails.fileExt == 'gif' || documentDetails.fileExt == 'jpeg'}"><i class="fa fa-file-image-o bigger-110 orange"></i></c:when>
-                            </c:choose>
-                        </span>
-                        <input id="" readonly="" class="form-control active" type="text" name="date-range-picker" title="${documentDetails.title}" placeholder="${documentDetails.title}"></input>
+        <c:if test="${not empty documentFiles}">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="document1">Uploaded Documents</label>
+                        <c:forEach var="document" items="${documentFiles}">
+                            <div class="input-group uploadedDocuments" id="docDiv_${document.id}">
+                                <span class="input-group-addon">
+                                    <c:choose>
+                                        <c:when test="${document.fileExt == 'pdf'}"><i class="fa fa-file-pdf-o bigger-110 orange"></i></c:when>
+                                        <c:when test="${document.fileExt == 'doc' || document.fileExt == 'docx'}"><i class="fa fa-file-word-o bigger-110 orange"></i></c:when>
+                                        <c:when test="${document.fileExt == 'xls' || document.fileExt == 'xlsx'}"><i class="fa fa-file-excel-o bigger-110 orange"></i></c:when>
+                                        <c:when test="${document.fileExt == 'txt'}"><i class="fa fa-file-text-o bigger-110 orange"></i></c:when>
+                                        <c:when test="${document.fileExt == 'jpg' || document.fileExt == 'gif' || document.fileExt == 'jpeg'}"><i class="fa fa-file-image-o bigger-110 orange"></i></c:when>
+                                    </c:choose>
+                                </span>
+                                <c:choose>
+                                    <c:when test="${fn:length(document.uploadedFile) > 20}">
+                                        <c:set var="index" value="${document.uploadedFile.lastIndexOf('.')}" />
+                                        <c:set var="trimmedDocumentExtension" value="${fn:substring(document.uploadedFile,index+1,fn:length(document.uploadedFile))}" />
+                                        <c:set var="trimmedDocumentTitle" value="${fn:substring(document.uploadedFile, 0, 20)}...${trimmedDocumentExtension}" />
+
+                                        <input id="" readonly="" class="form-control active" type="text" name="date-range-picker" placeholder="${trimmedDocumentTitle}"></input>
+                                    </c:when>
+                                    <c:otherwise>
+                                         <c:set var="trimmedDocumentTitle" value="${document.uploadedFile}" />
+                                        <input id="" readonly="" class="form-control active" type="text" name="date-range-picker"  placeholder="${trimmedDocumentTitle}"></input>
+                                    </c:otherwise>
+                                </c:choose>
+                                <span class="input-group-addon">
+                                    <a href="javascript:void(0)" class="removeFile" rel="${document.id}"><i class="fa fa-times bigger-110 red"></i></a>
+                                </span>
+                            </div>
+                        </c:forEach>
                     </div>
-                </div>
+                </div>     
             </div>
         </c:if>
         <div class="form-group" id="docDiv">
             <hr/>
             <label class="control-label" for="question">Associated Document</label>
-            <input name="postDocuments" type="file" id="id-input-file-2" />
+            <input multiple="" name="postDocuments" type="file" id="id-input-file-2" />
             <span id="docMsg" class="control-label"></span>
         </div>     
         <c:if test="${documentDetails.id == 0}">

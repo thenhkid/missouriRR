@@ -21,7 +21,7 @@
                 You have completed the ${surveyDetails.title} activity log.
                 <div class="space-12"></div>
                 <div class="hr hr-dotted hr-16"></div>
-                <c:if test="${not empty surveyDocuments}">
+                <c:if test="${not empty surveyDocuments && hasDocumentModule == false}">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
@@ -58,18 +58,29 @@
                     </div>
                 </c:if>
                 <div class="col-sm-12">
-                    <form:form id="surveyDocForm" role="form" class="form" method="post" enctype="multipart/form-data">
-                        <input type="hidden" name="surveyId" value="${submittedSurveyId}" />
-                        <input type="hidden" name="completed" value="1" />
-                        <input type="hidden" name="selectedEntities" value="${selectedEntities}" />
-                        <div class="form-group" id="docDiv">         
-                            <label for="document1" class="control-label">Survey Files</label>
-                            <div class="form-group">
-                                <input  multiple="" name="surveyDocuments" type="file" id="id-input-file-2" />
-                                <span id="docMsg" class="control-label"></span>
-                            </div>
-                        </div>
-                    </form:form>
+                    <c:choose>
+                        <c:when test="${hasDocumentModule}">
+                            <a href="viewSurveyDocuments?i=${i2}&v=${v2}"  title="Associated Documents" role="button">   
+                                <button class="btn btn-xs btn-info">
+                                    <i class="ace-icon fa fa-upload bigger-120"></i> Associated Survey Documents
+                                </button>
+                            </a> 
+                        </c:when>
+                        <c:otherwise>
+                            <form:form id="surveyDocForm" role="form" class="form" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="surveyId" value="${submittedSurveyId}" />
+                                <input type="hidden" name="completed" value="1" />
+                                <input type="hidden" name="selectedEntities" value="${selectedEntities}" />
+                                <div class="form-group" id="docDiv">         
+                                    <label for="document1" class="control-label">Survey Files</label>
+                                    <div class="form-group">
+                                        <input  multiple="" name="surveyDocuments" type="file" id="id-input-file-2" />
+                                        <span id="docMsg" class="control-label"></span>
+                                    </div>
+                                </div>
+                            </form:form>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
         </div>

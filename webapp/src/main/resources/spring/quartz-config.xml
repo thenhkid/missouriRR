@@ -109,5 +109,26 @@
         </trigger>
     </schedule>
     
+    <!-- announcement emails -->
+    <schedule>
+        <job>
+            <name>checkAnnouncementEmailNotifications</name>
+            <group>processGroup</group>
+            <description>This process will run every 45 seconds to check for announcement notifications to be sent out.</description>
+            <job-class>com.rr.generic.ui.jobs.sendAnnouncementEmailNotifications</job-class>
+        </job>
+ 
+        <trigger>
+            <cron>
+                <name>newAnnouncementEmails</name>
+                <job-name>checkAnnouncementEmailNotifications</job-name>
+                <job-group>processGroup</job-group>
+                <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
+                <!-- Runs every 45 seconds, starting at 32 seconds on the clock-->
+                <cron-expression>45/32 * * * * ?</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+    
     
 </job-scheduling-data>

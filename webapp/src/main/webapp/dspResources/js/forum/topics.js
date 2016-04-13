@@ -20,13 +20,15 @@ jQuery(function ($) {
     $(document).ready(function () {
         
         $('.dynamic-table')
-            .dataTable({
+           .dataTable({
                 bAutoWidth: false,
-                bFilter: false,
+                bFilter: true,
                 "aoColumns": [
-                    null, null, null, null
+                    { "bSearchable": false }, { "bSearchable": false }, { "bSearchable": false }, null
                 ],
-                "aaSorting": []
+                "oLanguage": {
+                "sSearch": "Filter on Posted Date: "
+                }
             });
 
         $(document).on("keyup", "#nav-search-input", function () {

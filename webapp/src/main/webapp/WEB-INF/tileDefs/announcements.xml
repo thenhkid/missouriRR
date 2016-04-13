@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    
+    <!-- Main Definitions -->
+    <definition name="base.definition.announcements-ui" template="/WEB-INF/tiles/layout.jsp">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="" />
+        <put-attribute name="body" value="" />
+        <put-attribute name="submenu" value="" />
+    </definition>
+    
+    <definition name="/announcements" extends="base.definition.announcements-ui">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/announcements/breadcrumbs.jsp?page=list" />
+        <put-attribute name="body" value="/WEB-INF/jsp/announcements/announcementsList.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/announcements/announcementsList.js" />
+        <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/bootbox.min.js" />
+            <add-attribute value="/dspResources/js/ace-elements.min.js" />
+        </put-list-attribute>
+    </definition>
+    
+    <definition name="/manage" extends="base.definition.announcements-ui">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/announcements/breadcrumbs.jsp?page=manage" />
+        <put-attribute name="body" value="/WEB-INF/jsp/announcements/manageAnnouncements.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/announcements/manageAnnouncements.js" />
+        <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/dataTables/jquery.dataTables.min.js" />
+            <add-attribute value="/dspResources/js/dataTables/jquery.dataTables.bootstrap.min.js" />
+            <add-attribute value="/dspResources/js/bootbox.min.js" />
+            <add-attribute value="/dspResources/js/ace-elements.min.js" />
+        </put-list-attribute>
+    </definition>
+    
+    <definition name="/details" extends="base.definition.announcements-ui">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/announcements/breadcrumbs.jsp?page=edit" />
+        <put-attribute name="body" value="/WEB-INF/jsp/announcements/details.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/announcements/details.js" />
+        <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/date-time/bootstrap-datepicker.min.js" />
+            <add-attribute value="/dspResources/js/chosen.jquery.min.js" />
+            <add-attribute value="/dspResources/js/ace-elements.min.js" />
+             <add-attribute value="/dspResources/js/bootstrap-multiselect.min.js" />
+        </put-list-attribute>
+        <put-list-attribute name="customCSS">
+            <add-attribute value="/dspResources/css/bootstrap-multiselect.min.css" />
+            <add-attribute value="/dspResources/css/chosen.min.css" />
+        </put-list-attribute>
+    </definition>
+    
+</tiles-definitions>

@@ -42,6 +42,7 @@
                 <value>/WEB-INF/tileDefs/importExport.xml</value>
                 <value>/WEB-INF/tileDefs/document.xml</value>
                 <value>/WEB-INF/tileDefs/users.xml</value>
+                <value>/WEB-INF/tileDefs/announcements.xml</value>
             </list>
         </property>
     </bean>

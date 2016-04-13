@@ -9,6 +9,9 @@ import com.registryKit.activityCode.activityCodeManager;
 import com.registryKit.activityCode.activityCodes;
 import com.registryKit.client.clientManager;
 import com.registryKit.client.engagementManager;
+import com.registryKit.document.document;
+import com.registryKit.document.documentFolder;
+import com.registryKit.document.documentManager;
 import com.registryKit.hierarchy.hierarchyManager;
 import com.registryKit.hierarchy.programHierarchyDetails;
 import com.registryKit.survey.SurveyPages;
@@ -78,6 +81,9 @@ public class surveyController {
 
     @Autowired
     private activityCodeManager activitycodemanager;
+    
+    @Autowired
+    private documentManager documentmanager;
 
     @Autowired
     private userManager usermanager;
@@ -191,6 +197,18 @@ public class surveyController {
             allowEdit = modulePermissions.isAllowEdit();
             allowDelete = modulePermissions.isAllowDelete();
         }
+        
+        /** Check to see if this program has access to the document module **/
+        boolean hasDocumentModule = false;
+        String[][] availablePrograms = (String[][]) session.getAttribute("availModules");
+        
+        for(int p = 0; p < availablePrograms.length; p++) {
+           if(Integer.parseInt(availablePrograms[p][3]) == 10) {
+               hasDocumentModule = true;
+           }
+        }
+        
+        mav.addObject("hasDocumentModule", hasDocumentModule);
 
         mav.addObject("allowCreate", allowCreate);
         mav.addObject("allowEdit", allowEdit);
@@ -1002,14 +1020,33 @@ public class surveyController {
                 }
 
                 encryptObject encrypt = new encryptObject();
-                Map<String, String> map;
+                Map<String, String> map1;
+                Map<String, String> map2;
 
                 //Encrypt the use id to pass in the url
-                map = new HashMap<String, String>();
-                map.put("id", Integer.toString(survey.getSurveyId()));
-                map.put("topSecret", topSecret);
+                map1 = new HashMap<String, String>();
+                map1.put("id", Integer.toString(survey.getSurveyId()));
+                map1.put("topSecret", topSecret);
+                
+                //Encrypt the use id to pass in the url
+                map2 = new HashMap<String, String>();
+                map2.put("id", Integer.toString(submittedSurveyId));
+                map2.put("topSecret", topSecret);
 
-                String[] encrypted = encrypt.encryptObject(map);
+                String[] encrypted = encrypt.encryptObject(map1);
+                String[] encrypted2 = encrypt.encryptObject(map2);
+                
+                /** Check to see if this program has access to the document module **/
+                boolean hasDocumentModule = false;
+                String[][] availablePrograms = (String[][]) session.getAttribute("availModules");
+
+                for(int p = 0; p < availablePrograms.length; p++) {
+                   if(Integer.parseInt(availablePrograms[p][3]) == 10) {
+                       hasDocumentModule = true;
+                   }
+                }
+
+                mav.addObject("hasDocumentModule", hasDocumentModule);
 
                 mav.setViewName("/completedSurvey");
                 surveys surveyDetails = surveyManager.getSurveyDetails(survey.getSurveyId());
@@ -1021,6 +1058,8 @@ public class surveyController {
                 mav.addObject("selectedEntities", selectedEntities.toString().replace("[", "").replace("]", ""));
                 mav.addObject("i", encrypted[0]);
                 mav.addObject("v", encrypted[1]);
+                mav.addObject("i2", encrypted2[0]);
+                mav.addObject("v2", encrypted2[1]);
                 mav.addObject("submittedSurveyId", submittedSurveyId);
                 
                 /* Get a list of survey documents */
@@ -1042,7 +1081,6 @@ public class surveyController {
                     }
                 }
                 
-
                 mav.addObject("surveyDocuments", surveyDocuments);
 
                 
@@ -1369,13 +1407,14 @@ public class surveyController {
         User userDetails = (User) session.getAttribute("userDetails");
 
         if (surveyDocuments != null) {
+            
             for(MultipartFile uploadedFile : surveyDocuments) {
                 
                 submittedSurveyDocuments surveyDocument = new submittedSurveyDocuments();
                 surveyDocument.setSystemUserId(userDetails.getId());
                 surveyDocument.setSubmittedSurveyId(surveyId);
                 
-                surveyManager.saveSurveyDocument(surveyDocument, uploadedFile, programId);
+                surveyManager.saveSurveyDocument(surveyDocument, uploadedFile, programId, 0);
             }
         }
         
@@ -1449,7 +1488,7 @@ public class surveyController {
         
         submittedSurveyDocuments documentDetails = surveyManager.getDocumentById(documentId);
         documentDetails.setStatus(false);
-        surveyManager.saveSurveyDocument(documentDetails, null, programId);
+        surveyManager.saveSurveyDocument(documentDetails, null, programId, 0);
         return 1;
     }
     
@@ -1465,4 +1504,181 @@ public class surveyController {
         
         return mav;
     }
+    
+    /**
+     * The '/viewSurveyDocuments' GET request will display the detail survey document page.
+     *
+     * @param i The encrypted survey id
+     * @param v The encrypted decryption key
+     *
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/viewSurveyDocuments", method = RequestMethod.GET)
+    public ModelAndView surveyDocuments(@RequestParam String i, @RequestParam String v, HttpSession session, HttpServletRequest request) throws Exception {
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/surveyDocuments");
+        mav.addObject("surveys", surveys);
+
+        /* Decrypt the url */
+        decryptObject decrypt = new decryptObject();
+
+        Object obj = decrypt.decryptObject(i, v);
+
+        String[] result = obj.toString().split((","));
+
+        int surveyId = Integer.parseInt(result[0].substring(4));
+        
+        submittedSurveys submittedSurveyDetails = surveyManager.getSubmittedSurvey(surveyId);
+        
+        surveys surveyDetails = surveyManager.getSurveyDetails(submittedSurveyDetails.getSurveyId());
+        mav.addObject("surveyDetails", surveyDetails);
+        mav.addObject("selSurvey", submittedSurveyDetails.getSurveyId());
+        
+        /* Get a list of survey documents */
+        List<submittedSurveyDocuments> surveyDocuments = surveyManager.getSubmittedSurveyDocuments(surveyId);
+        
+        if(surveyDocuments != null && surveyDocuments.size() > 0) {
+            for(submittedSurveyDocuments document : surveyDocuments) {
+                if(document.getUploadedFile() != null && !"".equals(document.getUploadedFile())) {
+                    int index = document.getUploadedFile().lastIndexOf('.');
+                    document.setFileExt(document.getUploadedFile().substring(index+1));
+                    
+                    if(document.getUploadedFile().length() > 60) {
+                        String shortenedTitle = document.getUploadedFile().substring(0,30) + "..." + document.getUploadedFile().substring(document.getUploadedFile().length()-10, document.getUploadedFile().length());
+                        document.setShortenedTitle(shortenedTitle);
+                    }
+                    document.setEncodedTitle(URLEncoder.encode(document.getUploadedFile(),"UTF-8"));
+                }
+            }
+        }
+        
+        List<document> documents = documentmanager.getDocumentBySurveyId(surveyId);
+        String[][] uploadedPaths = null;
+        if(documents != null) {
+            uploadedPaths = new String[documents.size()][2];
+            int index = 0;
+            for(document documentDetails : documents) {
+                String uploadedPath = "";
+                documentFolder folderDetails = documentmanager.getFolderById(documentDetails.getFolderId());
+        
+                Integer folderCount = 1;
+
+                /* Get a list of folders  */
+                Integer parentFolderId = 0;
+                if (folderDetails.getParentFolderId() > 0) {
+
+                    parentFolderId = folderDetails.getParentFolderId();
+
+                    documentFolder parentFolderDetails = documentmanager.getFolderById(parentFolderId);
+
+                    if(parentFolderDetails.getParentFolderId() > 0) {
+                        folderCount+=1;
+
+                        documentFolder superParentFolderDetails = documentmanager.getFolderById(parentFolderDetails.getParentFolderId());
+
+                        uploadedPath = superParentFolderDetails.getFolderName()+"/";
+                    }
+
+                    uploadedPath += parentFolderDetails.getFolderName()+"/"+folderDetails.getFolderName();
+
+
+                } else {
+                    uploadedPath = folderDetails.getFolderName();
+                }
+                
+                uploadedPaths[index][0] = Integer.toString(documentDetails.getId());
+                uploadedPaths[index][1] = uploadedPath;
+                index++;
+            }
+             mav.addObject("uploadedPaths", uploadedPaths);
+        }
+        mav.addObject("surveyDocuments", surveyDocuments);
+        
+        //Encrypt the use id to pass in the url
+        encryptObject encrypt = new encryptObject();
+        Map<String, String> map;
+        map = new HashMap<String, String>();
+        map.put("id", Integer.toString(surveyDetails.getId()));
+        map.put("topSecret", topSecret);
+
+        String[] encrypted = encrypt.encryptObject(map);
+        
+        mav.addObject("i", encrypted[0]);
+        mav.addObject("v", encrypted[1]);
+
+        return mav;
+    }
+    
+    /**
+     * The '/surveyDocuments' POST request will submit the document form for surveys.
+     *
+     * @param i The encrypted survey id
+     * @param v The encrypted decryption key
+     *
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/viewSurveyDocuments", method = RequestMethod.POST)
+    public ModelAndView submitSurveyDocuments(
+            @RequestParam String i, @RequestParam String v, HttpSession session, HttpServletRequest request,
+            @RequestParam(value = "surveyDocuments", required = false) List<MultipartFile> surveyDocuments,
+            @RequestParam(value = "otherFolder", required = true) Integer otherFolder,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "docDesc", required = false) String docDesc,
+            RedirectAttributes redirectAttr) throws Exception {
+
+       
+        /* Decrypt the url */
+        decryptObject decrypt = new decryptObject();
+
+        Object obj = decrypt.decryptObject(i, v);
+
+        String[] result = obj.toString().split((","));
+
+        int surveyId = Integer.parseInt(result[0].substring(4));
+
+        /* Get a list of completed surveys the logged in user has access to */
+        User userDetails = (User) session.getAttribute("userDetails");
+
+        if (surveyDocuments != null) {
+            
+            Integer documentId = 0;
+            
+            if(otherFolder > 0) {
+                document documentDetails = new document();
+                documentDetails.setAdminOnly(false);
+                documentDetails.setCountyFolder(false);
+                documentDetails.setProgramId(programId);
+                documentDetails.setFolderId(otherFolder);
+                documentDetails.setTitle(title);
+                documentDetails.setDocDesc(docDesc);
+                documentDetails.setSystemUserId(userDetails.getId());
+                documentDetails.setStatus(true);
+                documentDetails.setPrivateDoc(false);
+                documentDetails.setSubmittedSurveyId(surveyId);
+                documentId = documentmanager.saveDocument(documentDetails);
+                documentmanager.saveUploadedDocument(documentDetails, surveyDocuments);
+            }
+            
+            for(MultipartFile uploadedFile : surveyDocuments) {
+                
+                submittedSurveyDocuments surveyDocument = new submittedSurveyDocuments();
+                surveyDocument.setSystemUserId(userDetails.getId());
+                surveyDocument.setSubmittedSurveyId(surveyId);
+                
+                surveyManager.saveSurveyDocument(surveyDocument, uploadedFile, programId, documentId);
+            }
+        }
+        
+        redirectAttr.addFlashAttribute("message", "fileUploaded");
+        ModelAndView mav = new ModelAndView(new RedirectView("/surveys/viewSurveyDocuments?i="+URLEncoder.encode(i,"UTF-8")+"&v="+URLEncoder.encode(v,"UTF-8")));
+        return mav;
+        
+    }
+           
+    
 }

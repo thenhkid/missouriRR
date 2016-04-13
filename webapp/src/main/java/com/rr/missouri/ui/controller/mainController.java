@@ -5,6 +5,9 @@
  */
 package com.rr.missouri.ui.controller;
 
+import com.registryKit.announcements.announcement;
+import com.registryKit.announcements.announcementDocuments;
+import com.registryKit.announcements.announcementManager;
 import com.registryKit.faq.faqManager;
 import com.registryKit.faq.faqQuestions;
 import com.registryKit.program.program;
@@ -14,6 +17,8 @@ import com.registryKit.messenger.emailManager;
 import com.registryKit.messenger.emailMessage;
 import com.registryKit.user.userManager;
 import java.math.BigInteger;
+import java.net.URLEncoder;
+import java.util.List;
 import java.util.List;
 import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,7 +55,10 @@ public class mainController {
     
     @Autowired
     private programManager programmanager;
-   
+    
+    @Autowired
+    private announcementManager announcementmanager;
+    
     @Autowired
     faqManager faqManager;
     
@@ -140,15 +149,38 @@ public class mainController {
      * @throws Exception
      */
     @RequestMapping(value = "/home", method = RequestMethod.GET)
-    public ModelAndView home() throws Exception {
+    public ModelAndView home(HttpSession session) throws Exception {
         
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/home");
         
-        List<faqQuestions> announcements = faqManager.getLatestQuestions(programId,3);
+        User userDetails = (User) session.getAttribute("userDetails");
         
-        for (faqQuestions question : announcements) {
-            question.setFaqQuestionDocuments(faqManager.getFAQQuestionDocuments(question.getId(), 1));
+        /* Check for any home page announcements */
+        List<announcement> announcements = announcementmanager.getHomePageAnnouncements(programId, userDetails);
+        
+        if(announcements != null && announcements.size() > 0) {
+            for(announcement anncment:announcements) {
+                if(anncment.getTotalDocuments() > 0) {
+                    List<announcementDocuments> documents = announcementmanager.getAnnouncementDocuments(anncment.getId());
+                    
+                    if(documents != null && documents.size() > 0) {
+                        for(announcementDocuments doc : documents) {
+                            if(doc.getUploadedFile() != null && !"".equals(doc.getUploadedFile())) {
+                                int index = doc.getUploadedFile().lastIndexOf('.');
+                                doc.setFileExt(doc.getUploadedFile().substring(index+1));
+
+                                if(doc.getUploadedFile().length() > 60) {
+                                    String shortenedTitle = doc.getUploadedFile().substring(0,30) + "..." + doc.getUploadedFile().substring(doc.getUploadedFile().length()-10, doc.getUploadedFile().length());
+                                    doc.setShortenedTitle(shortenedTitle);
+                                }
+                                doc.setEncodedTitle(URLEncoder.encode(doc.getUploadedFile(),"UTF-8"));
+                            }
+                        }
+                        anncment.setDocuments(documents);
+                    }
+                }
+            }
         }
         
         mav.addObject("announcements", announcements);
@@ -288,4 +320,69 @@ public class mainController {
 
     }
     
+    /**
+     * The '/search/documents/{pathVariable}' request will handle viewing a file clicked from the email.
+     *
+     * @param request
+     * @param response
+     * @return	the login page view
+     * @throws Exception
+     */
+    @RequestMapping(value = "/search/documents/{pathVariable}", method = RequestMethod.GET)
+    public ModelAndView viewDocumentFromEmail(HttpSession session, HttpServletRequest request, @PathVariable String pathVariable) throws Exception {
+        
+        String url = request.getRequestURL().toString();
+        int slashIndex = url.lastIndexOf('/');
+        int dotIndex = url.lastIndexOf('.');
+        
+        if(dotIndex > 0) {
+            String filename = url.substring(slashIndex + 1);
+            session.setAttribute("searchmoduleName","documents");
+            session.setAttribute("searchString", filename);
+        }
+        
+        //Redirect to the log in page.
+        ModelAndView mav = new ModelAndView(new RedirectView("/login"));
+        return mav;
+    }
+    
+    /**
+     * The '/search/forums/{pathVariable}' request will handle viewing a forum topic clicked from the email.
+     *
+     * @param request
+     * @param response
+     * @return	the login page view
+     * @throws Exception
+     */
+    @RequestMapping(value = "/search/forums/{pathVariable}", method = RequestMethod.GET)
+    public ModelAndView viewForumTopicFromEmail(HttpSession session, HttpServletRequest request, @PathVariable String pathVariable) throws Exception {
+        
+        if(!"".equals(pathVariable)) {
+            session.setAttribute("searchmoduleName","forum/"+pathVariable);
+        }
+        
+        //Redirect to the log in page.
+        ModelAndView mav = new ModelAndView(new RedirectView("/login"));
+        return mav;
+        
+    }
+    
+    /**
+     * The '/search/announcements' request will handle viewing a announcements clicked from the email.
+     *
+     * @param request
+     * @param response
+     * @return	the login page view
+     * @throws Exception
+     */
+    @RequestMapping(value = "/search/announcements", method = RequestMethod.GET)
+    public ModelAndView viewAnnouncementFromEmail(HttpSession session, HttpServletRequest request) throws Exception {
+        
+        session.setAttribute("searchmoduleName","announcements");
+        
+        //Redirect to the log in page.
+        ModelAndView mav = new ModelAndView(new RedirectView("/login"));
+        return mav;
+        
+    }
 }

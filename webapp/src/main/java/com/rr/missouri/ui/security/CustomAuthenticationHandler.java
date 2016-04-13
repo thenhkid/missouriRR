@@ -124,7 +124,12 @@ public class CustomAuthenticationHandler extends SimpleUrlAuthenticationSuccessH
             
             session.setAttribute("availModules", programModules);
             
-            getRedirectStrategy().sendRedirect(request, response, "/home");
+            if(session.getAttribute("searchmoduleName") != null) {
+               getRedirectStrategy().sendRedirect(request, response, "/"+session.getAttribute("searchmoduleName")); 
+            }
+            else {
+               getRedirectStrategy().sendRedirect(request, response, "/home");
+            }
         }
         else {
             super.onAuthenticationSuccess(request, response, authentication);

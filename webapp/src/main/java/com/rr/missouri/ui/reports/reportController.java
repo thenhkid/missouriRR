@@ -150,13 +150,17 @@ public class reportController {
         
         User userDetails = (User) session.getAttribute("userDetails");
         List <Integer> reportLevels = Arrays.asList(1,2,3);
+        boolean adminUser = false;
         if (userDetails.getRoleId() == 3) {
-        	userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
-        	reportLevels = reportmanager.getReportLevels(modulePermissions);  
+            userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
+            reportLevels = reportmanager.getReportLevels(modulePermissions); 
+        }
+        else {
+            adminUser = true;
         }
         
         //this returns the report type list for this program
-        List<reportType> reportTypeList = reportmanager. getReportTypes(programId, false,  reportLevels);
+        List<reportType> reportTypeList = reportmanager.getReportTypes(programId, false,  reportLevels);
         mav.addObject("reportTypes", reportTypeList);
         
         //these are the surveys, but should be populated with /availableReports.do

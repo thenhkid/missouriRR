@@ -91,41 +91,51 @@
                             <c:forEach var="document" items="${documents}">
                                 <tr>
                                     <td class="center" style="vertical-align: middle; ">
-                                        <c:if test="${not empty document.uploadedFile}">
-                                            <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.uploadedFile}&foldername=documents/${document.downloadLink}"/>" title="${document.title}">
-                                                <c:choose>
-                                                     <c:when test="${document.fileExt == 'jpg' || document.fileExt == 'gif' || document.fileExt == 'jpeg' || document.fileExt == 'png'}">
-                                                        <div class="infobox infobox-orange" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
-                                                            <div class="infobox-icon">
-                                                                <i class="ace-icon fa fa-file-image-o"></i>
+                                        <c:choose>
+                                            <c:when test="${document.totalFiles > 1}">
+                                                <div class="infobox infobox-orange multipleFileDownload" docid="${document.id}" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none; cursor: pointer">
+                                                    <div class="infobox-icon">
+                                                        <i class="ace-icon fa fa-download"></i>
+                                                    </div>
+                                                </div>
+                                            </c:when> 
+                                            <c:otherwise>
+                                                <c:if test="${not empty document.downloadLink}">
+                                                    <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.uploadedFile}&foldername=documents/${document.downloadLink}"/>" title="${document.title}">
+                                                    <c:choose>
+                                                        <c:when test="${document.fileExt == 'jpg' || document.fileExt == 'gif' || document.fileExt == 'jpeg' || document.fileExt == 'png'}">
+                                                            <div class="infobox infobox-orange" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
+                                                                <div class="infobox-icon">
+                                                                    <i class="ace-icon fa fa-file-image-o"></i>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    </c:when>
-                                                    <c:when test="${document.fileExt == 'wmv'}">
-                                                        <div class="infobox infobox-red" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
-                                                            <div class="infobox-icon">
-                                                                <i class="ace-icon fa fa-file-video-o"></i>
+                                                        </c:when>
+                                                        <c:when test="${document.fileExt == 'wmv'}">
+                                                            <div class="infobox infobox-red" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
+                                                                <div class="infobox-icon">
+                                                                    <i class="ace-icon fa fa-file-video-o"></i>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    </c:when> 
-                                                    <c:otherwise>
-                                                        <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
-                                                            <div class="infobox-icon">
-                                                                <c:choose>
-                                                                    <c:when test="${document.fileExt == 'pdf'}"><i class="ace-icon fa fa-file-pdf-o"></i></c:when>
-                                                                    <c:when test="${document.fileExt == 'doc' || document.fileExt == 'docx'}"><i class="ace-icon fa fa-file-word-o"></i></c:when>
-                                                                    <c:when test="${document.fileExt == 'xls' || document.fileExt == 'xlsx'}"> <i class="ace-icon fa fa-file-excel-o"></i></c:when>
-                                                                    <c:when test="${document.fileExt == 'txt' || document.fileExt == 'csv'}"><i class="ace-icon fa fa-file-text-o"></i></c:when>
-                                                                    <c:when test="${document.fileExt == 'zip'}"><i class="ace-icon fa fa-file-zip-o"></i></c:when>
-                                                                    <c:when test="${document.fileExt == 'ppt' || document.fileExt == 'pptx'}"><i class="ace-icon fa fa-file-powerpoint-o"></i></c:when>
-                                                                </c:choose>
+                                                        </c:when> 
+                                                        <c:otherwise>
+                                                            <div class="infobox infobox-blue" style="width:50px; height:45px; text-align: center; padding:0px; background-color: transparent; border: none;">
+                                                                <div class="infobox-icon">
+                                                                    <c:choose>
+                                                                        <c:when test="${document.fileExt == 'pdf'}"><i class="ace-icon fa fa-file-pdf-o"></i></c:when>
+                                                                        <c:when test="${document.fileExt == 'doc' || document.fileExt == 'docx'}"><i class="ace-icon fa fa-file-word-o"></i></c:when>
+                                                                        <c:when test="${document.fileExt == 'xls' || document.fileExt == 'xlsx'}"> <i class="ace-icon fa fa-file-excel-o"></i></c:when>
+                                                                        <c:when test="${document.fileExt == 'txt' || document.fileExt == 'csv'}"><i class="ace-icon fa fa-file-text-o"></i></c:when>
+                                                                        <c:when test="${document.fileExt == 'zip'}"><i class="ace-icon fa fa-file-zip-o"></i></c:when>
+                                                                        <c:when test="${document.fileExt == 'ppt' || document.fileExt == 'pptx'}"><i class="ace-icon fa fa-file-powerpoint-o"></i></c:when>
+                                                                    </c:choose>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    </c:otherwise>
-                                                   
-                                                </c:choose>
-                                            </a> 
-                                        </c:if>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                    </a> 
+                                                    </c:if>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </td>
                                     <td>
                                         <c:if test="${document.privateDoc == true}">
@@ -152,17 +162,24 @@
                                     <td>
                                         ${document.createdBy}
                                     </td>
-                                    <td  class="center">
+                                    <td class="center">
                                         <div class="hidden-sm hidden-xs btn-group">
-                                            <c:if test="${not empty document.uploadedFile}">
-                                                <a class="btn btn-xs btn-success" href="<c:url value="/FileDownload/downloadFile.do?filename=${document.uploadedFile}&foldername=documents/${document.downloadLink}"/>" title="${document.title}">
-                                                    <i class="ace-icon fa fa-download bigger-120"></i>
-                                                </a>
-                                            </c:if>
-                                            <c:if test="${sessionScope.userDetails.roleId != 3 || (allowEdit == true && sessionScope.userDetails.id == document.systemUserId)}">
+                                            <c:choose>
+                                                <c:when test="${document.totalFiles > 1}">
+                                                    <a class="btn btn-xs btn-success multipleFileDownload" docid="${document.id}" title="${document.title}">
+                                                        <i class="ace-icon fa fa-download bigger-120"></i>
+                                                    </a>
+                                                </c:when>
+                                                <c:when test="${not empty document.downloadLink and not empty document.foundFile}">
+                                                    <a class="btn btn-xs btn-success" href="<c:url value="/FileDownload/downloadFile.do?filename=${document.uploadedFile}&foldername=documents/${document.downloadLink}"/>" title="${document.title}">
+                                                        <i class="ace-icon fa fa-download bigger-120"></i>
+                                                    </a>
+                                                </c:when>
+                                            </c:choose>
+                                            <c:if test="${sessionScope.userDetails.roleId != 3 || (allowEdit == true && sessionScope.userDetails.id == document.createdById)}">
                                                 <button class="btn btn-xs btn-info editDocument" rel="${document.id}"><i class="ace-icon fa fa-pencil bigger-120"></i></button>
                                             </c:if>
-                                            <c:if test="${sessionScope.userDetails.roleId != 3 || (allowDelete == true && sessionScope.userDetails.id == document.systemUserId)}">
+                                            <c:if test="${sessionScope.userDetails.roleId != 3 || (allowDelete == true && sessionScope.userDetails.id == document.createdById)}">
                                                 <button class="btn btn-xs btn-danger deleteDocument" rel="${document.id}"><i class="ace-icon fa fa-trash-o bigger-120"></i></button>
                                             </c:if>
                                         </div>
