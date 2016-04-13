@@ -160,7 +160,7 @@ public class reportController {
         }
         
         //this returns the report type list for this program
-        List<reportType> reportTypeList = reportmanager.getReportTypes(programId, false,  reportLevels, adminUser);
+        List<reportType> reportTypeList = reportmanager.getReportTypes(programId, false,  reportLevels);
         mav.addObject("reportTypes", reportTypeList);
         
         //these are the surveys, but should be populated with /availableReports.do
