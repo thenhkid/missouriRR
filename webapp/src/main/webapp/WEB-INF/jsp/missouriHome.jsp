@@ -8,51 +8,37 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
-<c:if test="${not empty error}" >
-    <div class="alert alert-danger" role="alert">
-        The selected file was not found.
-    </div>
-</c:if>
-
 <c:if test="${not empty announcements}">
-    <div class="row">
-        <div class="col-xs-12">	
-            <div class="widget-box transparent" >
-                <div class="widget-header widget-header-small">
-                    <h4 class="widget-title blue smaller">
-                        <i class="ace-icon fa fa-bullhorn orange"></i>
-                        Recent Announcements
-                    </h4>
-                </div>
-                <div class="widget-body">
-                    <div class="widget-main padding-8">
-                        <div>
-                            <c:forEach items="${announcements}" var="announcement">
-                                <div class="profile-activity clearfix">
-                                    <c:choose>
-                                        <c:when test="${empty announcement.answer}">
-                                            ${announcement.question}
-                                        </c:when>
-                                        <c:otherwise>
-                                            ${announcement.answer}
-                                        </c:otherwise>
-                                    </c:choose>
-                                    <c:if test="${not empty announcement.faqQuestionDocuments}">
-                                        <div>
-                                            <h6><strong>Documents</strong></h6>
-                                            <c:forEach var="document" items="${announcement.faqQuestionDocuments}">
-                                                <div class="clearfix">
-                                                    <i class="fa fa-file bigger-110 orange"></i> <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.documentTitle}&foldername=faqUploadedFiles"/>" title="${document.documentTitle}">${document.documentTitle}</a>
-                                                </div>
-                                            </c:forEach>
-                                        </div>
-                                    </c:if>
+    <h2>Announcements</h2>
+    <div class="col-sm-12">
+        <c:if test="${not empty error}" >
+            <div class="alert alert-danger" role="alert">
+                The selected file was not found.
+            </div>
+        </c:if>
+        <div class="row">
+            <c:forEach var="announcement" items="${announcements}">
+            <div class="well">
+                <c:if test="${not empty announcement.announcementTitle}"><h4 class="green smaller lighter bolder">${announcement.announcementTitle}</h4></c:if>
+                <h4 class="grey smaller-90 bolder"><fmt:formatDate pattern="MMM d, yyyy" value="${announcement.dateCreated}" /></h4>
+                ${announcement.announcement}
+                <c:if test="${not empty announcement.documents}">
+                    <div class="space-10"></div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h6>Uploaded Documents</h6>
+                             <c:forEach var="document" items="${announcement.documents}">
+                                <div class="clearfix">
+                                    <i class="fa fa-file bigger-110 orange"></i> <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.encodedTitle}&foldername=announcementUploadedFiles"/>" title="${document.documentTitle}">
+                                        <c:choose><c:when test="${not empty document.documentTitle}">${document.documentTitle}</c:when><c:otherwise>${document.uploadedFile}</c:otherwise></c:choose>
+                                    </a>
                                 </div>
-                            </c:forEach>
+                             </c:forEach>
                         </div>
                     </div>
-                </div>
+                </c:if>
             </div>
+            </c:forEach>
         </div>
     </div>
 </c:if>

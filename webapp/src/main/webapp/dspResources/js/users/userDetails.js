@@ -21,7 +21,10 @@ jQuery(function ($) {
        
        if (checkForm()) {
             $("#userDetais").submit();
-        }    
+       }  
+       else {
+             event.preventDefault();
+       }   
     });
 
     //Modal to view associated program modules

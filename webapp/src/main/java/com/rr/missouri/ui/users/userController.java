@@ -5,7 +5,8 @@
  */
 package com.rr.missouri.ui.users;
 
-
+import com.registryKit.announcements.announcementManager;
+import com.registryKit.announcements.announcementNotificationPreferences;
 import com.registryKit.calendar.calendarManager;
 import com.registryKit.calendar.calendarNotificationPreferences;
 import com.registryKit.document.documentManager;
@@ -77,6 +78,9 @@ public class userController {
     
     @Autowired
     private documentManager documentmanager;
+    
+    @Autowired
+    private announcementManager announcementmanager;
     
     @Value("${programId}")
     private Integer programId;
@@ -264,6 +268,16 @@ public class userController {
         documentPreferences.setMyHierarchiesOnly(true);
         
         documentmanager.saveNotificationPreferences(documentPreferences);
+        
+        /* Opt in announcement notification preferences */
+        announcementNotificationPreferences announcementPreferences = new announcementNotificationPreferences();
+        announcementPreferences.setAllAnnouncements(true);
+        announcementPreferences.setProgramId(programId);
+        announcementPreferences.setNotificationEmail(newuserDetails.getEmail());
+        announcementPreferences.setSystemUserId(userId);
+        announcementPreferences.setMyHierarchiesOnly(true);
+        
+        announcementmanager.saveNotificationPreferences(announcementPreferences);
         
         Map<String,String> map = new HashMap<String,String>();
         map.put("id",Integer.toString(userId));

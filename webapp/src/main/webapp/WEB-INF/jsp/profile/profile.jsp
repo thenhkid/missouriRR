@@ -358,12 +358,48 @@
                                         </div>
 
                                         <div class="space-4"></div>
-                                    </c:if>   
-                                    
+                                    </c:if>  
+                                        
+                                    <c:if test="${showAnnouncementNotifications == true}">
+                                        <input type="hidden" name="announcementNotificationId" value="${announcementNotificationPreferences.id}" />
+                                        <h4 class="header blue bolder smaller">Announcement Notifications</h4>
 
+                                        <div class="row page-content">
+                                            <div class="col-xs-12">
+                                                <div class="row">
+                                                    <div class="form-group">
+                                                        <div class="checkbox">
+                                                            <label>
+                                                                <input type="checkbox" name="announcementmyHierarchiesOnly" <c:if test="${announcementNotificationPreferences.myHierarchiesOnly == true}">checked</c:if> />  Receive email notifications for new and updated announcements for my counties only.
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="space-4"></div>
+                                                <div class="row">
+                                                    <div class="form-group">
+                                                        <div class="checkbox">
+                                                            <label>
+                                                                <input type="checkbox" name="allAnnouncements" <c:if test="${announcementNotificationPreferences.allAnnouncements == true}">checked</c:if> />  Receive email notifications for all new and updated announcements.
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>              
+                                                <div class="space-4"></div>
+                                                <div class="hr hr-dotted"></div>
+                                                <div class="row">
+                                                    <div class="form-group" id="notificationEmailGroup">
+                                                        <label for="notificationEmail">Notification & Alert Email Address</label>
+                                                        <input type="text" name="announcementnotificationEmail" value="${announcementNotificationPreferences.notificationEmail}" class="form-control" placeholder="Notification & Alert Email Address" />
+                                                        <span id="notificationEmailMessage" class="control-label"></span>  
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="space-4"></div>
+                                    </c:if> 
                                 </div>
-                                
-                                
                                 
                                 <c:if test="${showSkillSets == true}">
                                 <div id="edit-resources" class="tab-pane">

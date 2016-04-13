@@ -5,6 +5,8 @@
  */
 package com.rr.missouri.ui.profile;
 
+import com.registryKit.announcements.announcementManager;
+import com.registryKit.announcements.announcementNotificationPreferences;
 import com.registryKit.calendar.calendarManager;
 import com.registryKit.calendar.calendarNotificationPreferences;
 import com.registryKit.document.documentManager;
@@ -52,6 +54,9 @@ public class profileController {
     private documentManager documentmanager;
     
     @Autowired
+    private announcementManager announcementmanager;
+    
+    @Autowired
     forumManager forumManager;
 
     @Value("${programId}")
@@ -85,6 +90,7 @@ public class profileController {
         boolean showCalendarNotifications = false;
         boolean showForumNotifications = false;
         boolean showDocumentNotifications = false;
+        boolean showAnnouncementNotifications = false;
         
         if(session.getAttribute("availModules") != null) {
             
@@ -122,6 +128,11 @@ public class profileController {
                         mav.addObject("documentNotificationPreferences", documentNotificationPreferences);
                         showDocumentNotifications = true;
                         break;
+                   case 14:
+                        announcementNotificationPreferences announcementNotificationPreferences = announcementmanager.getNotificationPreferences(userDetails.getId());
+                        mav.addObject("announcementNotificationPreferences", announcementNotificationPreferences);
+                        showAnnouncementNotifications = true;
+                        break;
                     default:
                         break;
                 }
@@ -132,6 +143,7 @@ public class profileController {
         mav.addObject("showCalendarNotifications",showCalendarNotifications);
         mav.addObject("showForumNotifications",showForumNotifications);
         mav.addObject("showDocumentNotifications",showDocumentNotifications);
+        mav.addObject("showAnnouncementNotifications",showAnnouncementNotifications);
         
         return mav;
     }
@@ -172,7 +184,11 @@ public class profileController {
             @RequestParam(value = "documentNotificationId", required = false) String documentNotificationId,
             @RequestParam(value = "documentnotificationEmail", required = false) String documentnotificationEmail,
             @RequestParam(value = "myHierarchiesOnly", required = false) Boolean myHierarchiesOnly,
-            @RequestParam(value = "allDocs", required = false) Boolean allDocs) throws Exception {
+            @RequestParam(value = "allDocs", required = false) Boolean allDocs,
+            @RequestParam(value = "announcementNotificationId", required = false) String announcementNotificationId,
+            @RequestParam(value = "announcementnotificationEmail", required = false) String announcementnotificationEmail,
+            @RequestParam(value = "announcementmyHierarchiesOnly", required = false) Boolean announcementmyHierarchiesOnly,
+            @RequestParam(value = "allAnnouncements", required = false) Boolean allAnnouncements) throws Exception {
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("/profile");
@@ -355,6 +371,50 @@ public class profileController {
             documentmanager.saveNotificationPreferences(documentNotificationPreferences);
         }
         
+        /* Check if Announcement Notifications need to be updated */
+        if(announcementNotificationId != null && !"".equals(announcementNotificationId) && Integer.parseInt(announcementNotificationId) > 0) {
+            announcementNotificationPreferences announcementNotificationPreferences = announcementmanager.getNotificationPreferences(userDetails.getId());
+            
+            if(announcementnotificationEmail == null || "".equals(announcementnotificationEmail) || "1".equals(updateAllEmails)) {
+                announcementnotificationEmail = email;
+            }
+            announcementNotificationPreferences.setNotificationEmail(announcementnotificationEmail);
+            
+            if(announcementmyHierarchiesOnly == null) {
+                announcementmyHierarchiesOnly = false;
+            }
+            announcementNotificationPreferences.setMyHierarchiesOnly(announcementmyHierarchiesOnly);
+            
+            if(allAnnouncements == null) {
+                allAnnouncements = false;
+            }
+            announcementNotificationPreferences.setAllAnnouncements(allAnnouncements);
+            
+            announcementmanager.saveNotificationPreferences(announcementNotificationPreferences);
+        }        
+         else if(announcementNotificationId != null && "".equals(announcementNotificationId)) {
+            announcementNotificationPreferences announcementNotificationPreferences = new announcementNotificationPreferences();
+            announcementNotificationPreferences.setProgramId(programId);
+            announcementNotificationPreferences.setSystemUserId(userDetails.getId());
+            
+            if(announcementnotificationEmail == null || "".equals(announcementnotificationEmail) || "1".equals(updateAllEmails)) {
+                announcementnotificationEmail = email;
+            }
+            announcementNotificationPreferences.setNotificationEmail(announcementnotificationEmail);
+            
+            if(announcementmyHierarchiesOnly == null) {
+                announcementmyHierarchiesOnly = false;
+            }
+            announcementNotificationPreferences.setMyHierarchiesOnly(announcementmyHierarchiesOnly);
+            
+            if(allAnnouncements == null) {
+                allAnnouncements = false;
+            }
+            announcementNotificationPreferences.setAllAnnouncements(allAnnouncements);
+            
+            announcementmanager.saveNotificationPreferences(announcementNotificationPreferences);
+        }
+        
         mav.addObject("savedStatus", "updated");
         
         /* Get a list of user resources */
@@ -364,6 +424,7 @@ public class profileController {
         boolean showCalendarNotifications = false;
         boolean showForumNotifications = false;
         boolean showDocumentNotifications = false;
+        boolean showAnnouncementNotifications = false;
         
         if(session.getAttribute("availModules") != null) {
             
@@ -401,6 +462,11 @@ public class profileController {
                         mav.addObject("documentNotificationPreferences", documentNotificationPreferences);
                         showDocumentNotifications = true;
                         break;
+                    case 14:
+                        announcementNotificationPreferences announcementNotificationPreferences = announcementmanager.getNotificationPreferences(userDetails.getId());
+                        mav.addObject("announcementNotificationPreferences", announcementNotificationPreferences);
+                        showAnnouncementNotifications = true;
+                        break;    
                     default:
                         break;
                 }
@@ -411,8 +477,7 @@ public class profileController {
         mav.addObject("showCalendarNotifications",showCalendarNotifications);
         mav.addObject("showForumNotifications",showForumNotifications);
         mav.addObject("showDocumentNotifications",showDocumentNotifications);
-        
-        
+        mav.addObject("showAnnouncementNotifications",showAnnouncementNotifications);
         
         return mav;
     }
