@@ -13,6 +13,24 @@ jQuery(function ($) {
     }
     
     $(document).ready(function () {
+        
+         var oTable1 =
+            $('#dynamic-table')
+            .dataTable({
+                bAutoWidth: false,
+                "aoColumns": [
+                    {"bSortable": false},
+                    {"bSortable": false},
+                    {"bSortable": false}, null, 
+                    {"bSortable": false}
+                ],
+                "aaSorting": [[3, 'desc']],
+                "oLanguage": {
+                "sSearch": "Filter:"
+                }
+            });
+        
+        
         if((document.referrer.indexOf("documents") > 0 || document.referrer.indexOf("login")) && ($('#savedSearchString').val() !== "" || $('#savedstartSearchDate').val() !== "")) {
           
           $('#documentSearchValue').val($('#savedSearchString').val());
