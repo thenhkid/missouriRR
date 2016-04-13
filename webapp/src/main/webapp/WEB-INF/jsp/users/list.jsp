@@ -71,6 +71,6 @@
             </tbody>
         </table>
     </div>
-</div><!-- /.col 
+</div><!-- /.col -->
 
 

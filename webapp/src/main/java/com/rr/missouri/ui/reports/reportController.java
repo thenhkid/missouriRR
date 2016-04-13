@@ -150,52 +150,51 @@ public class reportController {
         
         User userDetails = (User) session.getAttribute("userDetails");
         List <Integer> reportLevels = Arrays.asList(1,2,3);
-        boolean adminUser = false;
+        
         if (userDetails.getRoleId() == 3) {
             userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
             reportLevels = reportmanager.getReportLevels(modulePermissions); 
         }
-        else {
-            adminUser = true;
-        }
-        
+       
         //this returns the report type list for this program
         List<reportType> reportTypeList = reportmanager.getReportTypes(programId, false,  reportLevels);
-        mav.addObject("reportTypes", reportTypeList);
-        
-        //these are the surveys, but should be populated with /availableReports.do
-        List<reportDetails> reportList = reportmanager.getReportsForType(programId, false, reportTypeList.get(0).getId(), reportLevels);
-        mav.addObject("reportList", reportList);
-        reportType rt = reportmanager.getReportTypeById(reportTypeList.get(0).getId());
-        mav.addObject("reportType", rt);
-        
-        List<programOrgHierarchy> orgHierarchyList = hierarchymanager.getProgramOrgHierarchy(programId);
-        
-        //entity 1 items
-        for(programOrgHierarchy hierarchy : orgHierarchyList) {
-            if (userDetails.getRoleId() != 3) {
-            		List<programHierarchyDetails> hierarchyItems = hierarchymanager.getProgramHierarchyItemsForStatus(hierarchy.getId(), 0, true);
-                    hierarchy.setProgramHierarchyDetails(hierarchyItems);	
-                } else {
-            		List<programHierarchyDetails> hierarchyItems = hierarchymanager.getProgramHierarchyItemsForStatus(hierarchy.getId(), userDetails.getId(), true);
-                    hierarchy.setProgramHierarchyDetails(hierarchyItems);
-                }
-        }
-        
-        mav.addObject("entity1List", orgHierarchyList.get(0).getProgramHierarchyDetails());
-        mav.addObject("entity2List", orgHierarchyList.get(1).getProgramHierarchyDetails());
-        mav.addObject("entity3List", orgHierarchyList.get(2).getProgramHierarchyDetails());
-        if( orgHierarchyList.get(0).getProgramHierarchyDetails().size() == 1) {
-        	mav.addObject("entityList", orgHierarchyList.get(1).getProgramHierarchyDetails());
-            mav.addObject("tier", 2);
-        }
-        //codeId list depends on selection criteria
-        mav.addObject("orgHierarchyList", orgHierarchyList);
-        mav.addObject("entity1ListSize", orgHierarchyList.get(0).getProgramHierarchyDetails().size());
-        List<activityCodes> codeList = new ArrayList<activityCodes>();
-        		//activitycodemanager.getActivityCodesByProgram(programId);
-        mav.addObject("codeList", codeList);
-        
+        if (reportTypeList.size() > 0) {
+	        mav.addObject("reportTypes", reportTypeList);
+	        
+	        //these are the surveys, but should be populated with /availableReports.do
+	        List<reportDetails> reportList = reportmanager.getReportsForType(programId, false, reportTypeList.get(0).getId(), reportLevels);
+	        
+	        mav.addObject("reportList", reportList);
+	        reportType rt = reportmanager.getReportTypeById(reportTypeList.get(0).getId());
+	        mav.addObject("reportType", rt);
+	        
+	        List<programOrgHierarchy> orgHierarchyList = hierarchymanager.getProgramOrgHierarchy(programId);
+	        
+	        //entity 1 items
+	        for(programOrgHierarchy hierarchy : orgHierarchyList) {
+	            if (userDetails.getRoleId() != 3) {
+	            		List<programHierarchyDetails> hierarchyItems = hierarchymanager.getProgramHierarchyItemsForStatus(hierarchy.getId(), 0, true);
+	                    hierarchy.setProgramHierarchyDetails(hierarchyItems);	
+	                } else {
+	            		List<programHierarchyDetails> hierarchyItems = hierarchymanager.getProgramHierarchyItemsForStatus(hierarchy.getId(), userDetails.getId(), true);
+	                    hierarchy.setProgramHierarchyDetails(hierarchyItems);
+	                }
+	        }
+	        
+	        mav.addObject("entity1List", orgHierarchyList.get(0).getProgramHierarchyDetails());
+	        mav.addObject("entity2List", orgHierarchyList.get(1).getProgramHierarchyDetails());
+	        mav.addObject("entity3List", orgHierarchyList.get(2).getProgramHierarchyDetails());
+	        if( orgHierarchyList.get(0).getProgramHierarchyDetails().size() == 1) {
+	        	mav.addObject("entityList", orgHierarchyList.get(1).getProgramHierarchyDetails());
+	            mav.addObject("tier", 2);
+	        }
+	        //codeId list depends on selection criteria
+	        mav.addObject("orgHierarchyList", orgHierarchyList);
+	        mav.addObject("entity1ListSize", orgHierarchyList.get(0).getProgramHierarchyDetails().size());
+	        List<activityCodes> codeList = new ArrayList<activityCodes>();
+	        		//activitycodemanager.getActivityCodesByProgram(programId);
+	        mav.addObject("codeList", codeList);
+	        }
         return mav;
     }
 
