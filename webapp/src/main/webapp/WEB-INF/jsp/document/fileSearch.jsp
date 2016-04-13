@@ -48,7 +48,7 @@
                                                 </div>
                                             </div>
                                        </c:when>
-                                       <c:otherwise><input type="hidden" name="adminOnly" id="adminOnly" value="0" /></c:otherwise>
+                                       <c:otherwise><input type="radio" name="adminOnly" value="0" checked style="display:none"/></c:otherwise>
                                     </c:choose>
                                     <div class="col-sm-6">
                                         <div class="row">
