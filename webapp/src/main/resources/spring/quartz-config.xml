@@ -115,7 +115,7 @@
             <name>checkAnnouncementEmailNotifications</name>
             <group>processGroup</group>
             <description>This process will run every 45 seconds to check for announcement notifications to be sent out.</description>
-            <job-class>com.rr.generic.ui.jobs.sendAnnouncementEmailNotifications</job-class>
+            <job-class>com.rr.missouri.ui.jobs.sendAnnouncementEmailNotifications</job-class>
         </job>
  
         <trigger>
