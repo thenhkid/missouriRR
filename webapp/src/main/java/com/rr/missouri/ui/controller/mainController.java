@@ -17,6 +17,7 @@ import com.registryKit.messenger.emailManager;
 import com.registryKit.messenger.emailMessage;
 import com.registryKit.user.userManager;
 import java.math.BigInteger;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.List;
@@ -338,7 +339,7 @@ public class mainController {
         if(dotIndex > 0) {
             String filename = url.substring(slashIndex + 1);
             session.setAttribute("searchmoduleName","documents");
-            session.setAttribute("searchString", filename);
+            session.setAttribute("searchString", URLDecoder.decode(filename,"UTF-8"));
         }
         
         //Redirect to the log in page.
