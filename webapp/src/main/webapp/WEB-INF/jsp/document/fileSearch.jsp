@@ -35,7 +35,7 @@
                                                     <h6>Admin Only Documents:</h6>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="input-daterange input-group">
+                                                    <div class="input-group">
                                                         <div>
                                                             <label class="radio-inline">
                                                                 <input type="radio" name="adminOnly"  value="1"/> Yes
