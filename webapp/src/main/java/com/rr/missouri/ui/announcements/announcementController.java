@@ -125,6 +125,22 @@ public class announcementController {
         }
         
         mav.addObject("announcements", announcements);
+        
+        /* Get user permissions */
+        userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
+        if (userDetails.getRoleId() == 2) {
+           allowCreate = true;
+           allowEdit = true;
+           allowDelete = true;
+        } else {
+           allowCreate = modulePermissions.isAllowCreate();
+           allowEdit = modulePermissions.isAllowEdit();
+           allowDelete = modulePermissions.isAllowDelete();
+        }
+
+        mav.addObject("allowCreate", allowCreate);
+        mav.addObject("allowEdit", allowEdit);
+        mav.addObject("allowDelete", allowDelete);
        
         return mav;
     }

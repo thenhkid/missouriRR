@@ -21,7 +21,7 @@
                     <li role="presentation"><a role="menuitem" tabindex="-1" href="#" id="announcementNotificationManagerModel">Announcement Notification Preferences</a></li>
                 </ul>
             </div>
-            <c:if test="${sessionScope.userDetails.roleId == 2}">
+            <c:if test="${allowCreate == true || allowEdit == true || allowDelete == true}">
                 <div class="pull-right no-margin">
                     <a href="announcements/manage">
                     <button class="btn btn-success btn-xs" type="button" id="newTopic">
