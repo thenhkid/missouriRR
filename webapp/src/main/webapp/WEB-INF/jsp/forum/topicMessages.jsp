@@ -24,6 +24,11 @@
         </div>
     </div>
     <div class="hr dotted"></div>
+    <c:if test="${not empty error}" >
+        <div class="alert alert-danger" role="alert">
+            The selected file was not found.
+        </div>
+    </c:if>
 </div>
 
 <div class="row">
