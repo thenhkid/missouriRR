@@ -309,6 +309,7 @@ public class importExportController {
             
             /* Set the header row */
             if(exportDetails.getQuestionOnly() == false) {
+                exportRow.append("Entry Id").append(delimiter);
                 exportRow.append("Date Submitted").append(delimiter);
                 exportRow.append("Tier 1").append(delimiter);
                 exportRow.append("Tier 2").append(delimiter);
@@ -359,7 +360,7 @@ public class importExportController {
 
                     exportRow = new StringBuilder();
 
-                    exportRow.append(submission.getDateCreated()).append(delimiter);
+                    exportRow.append(submission.getId()).append(delimiter).append(submission.getDateCreated()).append(delimiter);
                     
                     List selectedTierOneandTwo = surveyManager.getSubmittedSurveyTiersOneandTwo(submission.getId());
                     
@@ -531,18 +532,20 @@ public class importExportController {
      */
     @RequestMapping(value = "/updateProgressBar.do", method = RequestMethod.GET)
     @ResponseBody 
-    public Integer updateProgressBar(HttpSession session, @RequestParam Integer uniqueId) throws Exception {
+    public Integer updateProgressBar(HttpSession session, @RequestParam(value = "uniqueId", required = false) Integer uniqueId) throws Exception {
         
-        progressBar exportProgressBar = exportManager.getProgressBar(uniqueId);
-        
-        if(exportProgressBar != null) {
-            return exportProgressBar.getPercentComplete();
+        if (uniqueId != null && !"".equals(uniqueId) && uniqueId > 0) {
+            progressBar exportProgressBar = exportManager.getProgressBar(uniqueId);
+
+            if (exportProgressBar != null) {
+                return exportProgressBar.getPercentComplete();
+            } else {
+                return 0;
+            }
         }
         else {
-            return 0;
+           return 0;
         }
         
     }   
-    
-    
 }
