@@ -114,10 +114,23 @@ public class userController {
         /* Get the entity level 3 available for the logged in user */
         if (userDetails.getRoleId() != 2) {
             programOrgHierarchy level3 = hierarchymanager.getProgramOrgHierarchyBydspPos(3, programId);
-            List<programHierarchyDetails> level3Items = hierarchymanager.getProgramHierarchyItems(level3.getId(), userDetails.getId());
+            
+            if(level3 != null && level3.getId() > 0) {
+                List<programHierarchyDetails> level3Items = hierarchymanager.getProgramHierarchyItems(level3.getId(), userDetails.getId());
         
-            /* Get the program users */
-            programUsers = usermanager.getUsersByProgramId(programId, level3.getId(), level3Items, userDetails.getId());
+                /* Get the program users */
+                programUsers = usermanager.getUsersByProgramId(programId, level3.getId(), level3Items, userDetails.getId());
+            }
+            else {
+                programOrgHierarchy level2 = hierarchymanager.getProgramOrgHierarchyBydspPos(2, programId);
+            
+                if(level2 != null && level2.getId() > 0) {
+                    List<programHierarchyDetails> level2Items = hierarchymanager.getProgramHierarchyItems(level2.getId(), userDetails.getId());
+
+                    /* Get the program users */
+                    programUsers = usermanager.getUsersByProgramId(programId, level2.getId(), level2Items, userDetails.getId());
+                }
+            }
         }
         else {
             programUsers = usermanager.getUsersByProgramId(programId, 0, null, userDetails.getId());
