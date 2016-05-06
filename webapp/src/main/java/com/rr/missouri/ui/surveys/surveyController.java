@@ -1597,6 +1597,10 @@ public class surveyController {
         }
         mav.addObject("surveyDocuments", surveyDocuments);
         
+        List<Integer> selectedEntities = surveyManager.getSurveyEntities(surveyId);
+        mav.addObject("selectedEntities", selectedEntities.toString().replace("[", "").replace("]", ""));
+
+        
         //Encrypt the use id to pass in the url
         encryptObject encrypt = new encryptObject();
         Map<String, String> map;

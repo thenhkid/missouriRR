@@ -25,7 +25,7 @@
             <div class="widget-box">
                 <div class="widget-header widget-header-blue widget-header-flat">
                     <h4 class="smaller">
-                       Existing Documents
+                       Relevant Documents
                     </h4>
                 </div>
                 <div class="widget-body">
@@ -154,4 +154,16 @@
             </div>
         </div>
     </form:form>
+        <div class="col-md-12">
+            <div class="space-10"></div>
+            <div class="pull-right">
+                <a href="<c:url value="/surveys?i=${i}&v=${v}" />">
+                <button class="btn">Return to Activity Log</button>
+                </a><div class="pull-right" style="padding-left:10px">
+                <form method="POST" action="/surveys/startSurvey?i=${i}&v=${v}">
+                    <input type="hidden" name="selectedEntities" value="${selectedEntities}" />
+                    <button class="btn btn-success">Add another Entry</button>
+                </form></div>
+            </div>
+        </div>
 </div>

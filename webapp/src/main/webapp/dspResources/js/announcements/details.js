@@ -120,6 +120,8 @@ jQuery(function ($) {
     });
     
     $('#saveAnnouncement').click(function(event) {
+        
+        $('#action').val("Save");
        
        if (checkForm()) {
             //$("#userDetails").submit();
@@ -129,6 +131,20 @@ jQuery(function ($) {
             event.preventDefault();
         }
     });
+    
+    $('#saveReturnAnnouncement').click(function(event) {
+        
+       $('#action').val("SaveReturn");
+       
+       if (checkForm()) {
+            //$("#userDetails").submit();
+            $('form').preventDoubleSubmission();
+        }  
+        else {
+            event.preventDefault();
+        }
+    });
+    
     
     // jQuery plugin to prevent double submission of forms
     jQuery.fn.preventDoubleSubmission = function() {

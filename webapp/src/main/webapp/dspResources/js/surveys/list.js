@@ -126,6 +126,7 @@ jQuery(function ($) {
                 "aoColumns": [
                     null, null, null, null, null,
                     {"bSortable": false},
+                    {"bSortable": false},
                     {"bSortable": false}
                 ],
                 "aaSorting": [],

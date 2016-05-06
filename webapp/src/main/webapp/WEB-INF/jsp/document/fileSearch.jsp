@@ -26,6 +26,16 @@
                 <div class="widget-body">
                     <div class="widget-main">
                         <form class="form-search">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <span class="input-group-btn">
+                                         <button type="button" id="clearSearchFields" class="btn btn-danger btn-minier pull-right">
+                                             <span class="ace-icon fa fa-search icon-on-right bigger-110"></span>
+                                             Clear Fields
+                                         </button>
+                                     </span>
+                                </div>
+                            </div>
                              <div class="row">
                                 <div class="col-xs-12">
                                     <c:choose>
@@ -87,7 +97,7 @@
                                                 <span class="input-group-btn" style="padding-left:10px; display:none" id="searchingDocuments">
                                                     <span class="label label-lg label-purple  middle">
                                                        <i class="ace-icon fa fa-spinner fa-spin white bigger-120"></i>
-                                                        Searching
+                                                        <span id="searchingText">Searching</span>
                                                     </span>
                                                 </span>
                                                 <span class="input-group-btn" style="padding-left:10px; display:none;" id="reqSearchTerm">

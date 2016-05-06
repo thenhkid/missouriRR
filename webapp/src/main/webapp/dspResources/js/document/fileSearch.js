@@ -199,6 +199,17 @@ jQuery(function ($) {
         
     });
     
+    $(document).on('click', '#clearSearchFields', function() {
+       $('#savedSearchString').val("");
+       $('#savedadminOnly').val("0");
+       $('#savedstartSearchDate').val("");
+       $('#savedendSearchDate').val("");
+       
+       $('#startSearchDate').val("");
+       $('#endSearchDate').val("");
+       $('#documentSearchValue').val("");
+   });
+    
     
 });
 
@@ -212,10 +223,14 @@ function searchDocuments() {
     $('#searchingDocuments').show();
 
     if (searchValue === "" && startSearchDate === "" && endSearchDate === "") {
-        $('#searchingDocuments').hide();
-        $('#reqSearchTerm').show();
+        //$('#searchingDocuments').hide();
+        //$('#reqSearchTerm').show();
+        $('#searchingText').html("Returning all Documents");
     }
     else {
+        $('#searchingText').html("Searching");
+    }
+    //else {
         $.ajax({
             url: 'documents/searchDocuments',
             data: {'searchString': searchValue, 'adminOnly': adminOnly, 'startSearchDate': startSearchDate, 'endSearchDate': endSearchDate},
@@ -243,7 +258,7 @@ function searchDocuments() {
                  });
             }
         });
-    }
+    //}
 }
 
 function documentFn(event) {

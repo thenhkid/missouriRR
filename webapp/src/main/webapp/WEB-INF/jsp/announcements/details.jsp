@@ -30,6 +30,8 @@
         <form:hidden path="systemUserId" />
         <form:hidden path="dateCreated" />
         <form:hidden path="dspOrder" />
+        <form:hidden path="hpdspOrder" />
+        <input type="hidden" name="action" id="action" value="Save" />
         <div class="col-md-6">
             <div class="widget-box">
                 <div class="widget-header widget-header-blue widget-header-flat">
@@ -145,7 +147,11 @@
                     <i class="ace-icon fa fa-save bigger-120 white"></i>
                     Save
                 </button>
-                <button type="button" class="btn btn-prev exitAnnouncementForm">
+                <button type="submit" class="btn btn-success" id="saveReturnAnnouncement">
+                    <i class="ace-icon fa fa-save bigger-120 white"></i>
+                    Save & Return
+                </button>
+                <button type="button" class="btn btn-danger exitAnnouncementForm">
                     <i class="ace-icon fa fa-close"></i>
                     Exit without Saving
                 </button>

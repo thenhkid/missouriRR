@@ -58,8 +58,8 @@
                             <th scope="col" >Submitted By</th>
                             <th scope="col" class="center  hidden-480">Submitted</th>
                             <th scope="col">School(s) / ECC</th>
-                            <%--<th scope="col">Content Area - Criteria</th>--%>
-                        <th scope="col" class="center"></th>
+                            <th scope="col" class="center"></th>
+                            <th scope="col" class="center"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -95,7 +95,28 @@
                                             </ul>
                                         </c:if>
                                     </td>
-                                    <%--<td></td>--%>
+                                    <td class="center">
+                                        <div class="hidden-sm hidden-xs action-buttons">
+                                            <c:choose>
+                                                <c:when test="${hasDocumentModule == true}">
+                                                    <a href="surveys/viewSurveyDocuments?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}"  title="Upload Relevant Documents" role="button">   
+                                                        <button class="btn btn-xs btn-info">
+                                                            <i class="ace-icon fa fa-upload bigger-120"></i>
+                                                            Relevant Documents
+                                                        </button>
+                                                    </a> 
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <a href="javascript:void(0);" class="surveyDocuments" rel="${submittedSurvey.id}"  title="Upload Relevant Documents" role="button">   
+                                                        <button class="btn btn-xs btn-info">
+                                                            <i class="ace-icon fa fa-upload bigger-120"></i>
+                                                            Relevant Documents
+                                                        </button>
+                                                    </a> 
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                    </td>
                                     <td class="center">
                                         <div class="hidden-sm hidden-xs action-buttons">
                                             <c:choose>
@@ -112,22 +133,6 @@
                                                             </button>
                                                         </a>
                                                     </c:if> 
-                                                    <c:choose>
-                                                        <c:when test="${hasDocumentModule == true}">
-                                                            <a href="surveys/viewSurveyDocuments?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}"  title="Associated Documents" role="button">   
-                                                                <button class="btn btn-xs btn-info">
-                                                                    <i class="ace-icon fa fa-upload bigger-120"></i>
-                                                                </button>
-                                                            </a> 
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                            <a href="javascript:void(0);" class="surveyDocuments" rel="${submittedSurvey.id}"  title="Associated Documents" role="button">   
-                                                                <button class="btn btn-xs btn-info">
-                                                                    <i class="ace-icon fa fa-upload bigger-120"></i>
-                                                                </button>
-                                                            </a> 
-                                                        </c:otherwise>
-                                                    </c:choose>  
                                             </c:when>
                                             <c:otherwise>
                                                 <a href="surveys/viewSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Survey" role="button">

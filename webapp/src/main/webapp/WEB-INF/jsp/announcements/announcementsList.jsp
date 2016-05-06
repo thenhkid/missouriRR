@@ -50,7 +50,7 @@
                             <div class="space-10"></div>
                             <div class="row">
                                 <div class="col-sm-6">
-                                    <h6>Uploaded Documents</h6>
+                                    <h6>Relevant Documents</h6>
                                      <c:forEach var="document" items="${announcement.documents}">
                                         <div class="clearfix">
                                             <i class="fa fa-file bigger-110 orange"></i> <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.encodedTitle}&foldername=announcementUploadedFiles"/>" title="${document.documentTitle}">

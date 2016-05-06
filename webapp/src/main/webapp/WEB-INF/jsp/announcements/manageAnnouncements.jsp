@@ -36,17 +36,17 @@
         <div class="hr dotted"></div>
     </c:if>
    <c:if test="${not empty savedStatus}" >
-        <div class="row">
-           <div class="col-md-12">
-               <div class="alert alert-update alert-success" role="alert">
-                   <strong>Success!</strong> 
-                   <c:choose>
-                       <c:when test="${savedStatus == 'deleted'}">The announcement has been successfully removed!</c:when>
-                   </c:choose>
-               </div>
-           </div>
-       </div>
-   </c:if>        
+        <div class="col-md-12">
+            <div class="alert alert-update alert-success" role="alert">
+                <strong>Success!</strong> 
+                 <c:choose>
+                    <c:when test="${savedStatus == 'created'}">The announcement has been successfully created!</c:when>
+                    <c:when test="${savedStatus == 'updated'}">The announcement has been successfully updated!</c:when>
+                    <c:when test="${savedStatus == 'deleted'}">The announcement has been successfully removed!</c:when>
+                </c:choose>
+            </div>
+        </div>
+    </c:if>    
     <div class="row">
         <table <c:if test="${not empty announcements}">id="dynamic-table"</c:if> class="table table-striped table-bordered table-hover">
             <thead>
@@ -66,7 +66,12 @@
                             <td>
                                 <c:if test="${not empty announcement.announcementTitle}"><h4 class="green smaller lighter bolder">${announcement.announcementTitle}</h4></c:if>
                                 <span class="ellipsis">${announcement.announcement}</span>
-                                <c:if test="${announcement.isOnHomePage}"><h4 class="grey smaller-90 bolder"><i class="fa fa-icon fa-home smaller-90"></i>&nbsp;On Home Page</h4></c:if>
+                                <c:if test="${announcement.isOnHomePage}">
+                                    <h4 class="grey smaller-90 bolder">
+                                        <i class="fa fa-icon fa-home smaller-90"></i>&nbsp;On Home Page
+                                    </h4>
+                                        <span class="smaller-90 ">Home Page Display Position:</span> <input maxlength="3" size="4" class="hpdspOrder" rel="${announcement.id}" type="text" name="hpdspOrder" value="${announcement.hpdspOrder}" />
+                                </c:if>
                                 <h4 class="${announcement.isAdminOnly ? 'red' : 'green'} smaller-90 bolder"><i class="fa fa-icon ${announcement.isAdminOnly ? 'fa-lock' : 'fa-unlock'} smaller-90"></i>&nbsp;<c:choose><c:when test="${announcement.isAdminOnly}">Admin Only</c:when><c:otherwise>Public</c:otherwise></c:choose></h4>
                             </td>
                             <td class="center">

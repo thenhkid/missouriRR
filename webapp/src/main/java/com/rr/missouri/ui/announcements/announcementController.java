@@ -266,6 +266,7 @@ public class announcementController {
         }
         else {
             announcementDetails = new announcement();
+            announcementDetails.setDspOrder(announcementmanager.getLastDisplayPos(programId));
         }
            
         mav.addObject("announcementDetails", announcementDetails);
@@ -303,6 +304,7 @@ public class announcementController {
             RedirectAttributes redirectAttr,
             @RequestParam(value = "alertUsers", required = false, defaultValue = "0") Integer alertUsers,
             @RequestParam(value = "selectedEntities", required = false) List<Integer> selectedEntities,
+             @RequestParam(value = "action", required = false) String action,
             HttpSession session
     ) throws Exception {
 
@@ -332,6 +334,11 @@ public class announcementController {
         
         announcementDetails.setProgramId(programId);
         announcementDetails.setSystemUserId(userDetails.getId());
+        
+        if(initialannouncementId == 0 && announcementDetails.getIsOnHomePage()) {
+            announcementDetails.setHpdspOrder(announcementmanager.getLastHPDisplayPos(programId));
+        }
+        
         
         Integer announcementId = announcementmanager.saveAnnouncement(announcementDetails);
         
@@ -411,8 +418,13 @@ public class announcementController {
        else {
            redirectAttr.addFlashAttribute("savedStatus", "updated");
        }
-       mav = new ModelAndView(new RedirectView("/announcements/details?i=" + encrypted[0] + "&v=" + encrypted[1]));
        
+       if("".equals(action) || "Save".equals(action)) {
+           mav = new ModelAndView(new RedirectView("/announcements/details?i=" + encrypted[0] + "&v=" + encrypted[1]));
+       }
+       else {
+           mav = new ModelAndView(new RedirectView("/announcements/manage"));
+       }
        return mav;
 
     }
@@ -454,6 +466,31 @@ public class announcementController {
         
         if(dspVal > 0) {
             announcementDetails.setDspOrder(dspVal);
+            announcementmanager.saveAnnouncement(announcementDetails);
+        }
+        
+        return 1;
+    }
+    
+    /* The 'saveDspOrder.do' POST request will remove the clicked uploaded
+     * document.
+     *
+     * @param documentId The id of the clicked document.
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/saveHPDspOrder.do", method = RequestMethod.POST)
+    public @ResponseBody
+    Integer saveHPDspOrder(
+            @RequestParam(value = "announcementId", required = true) Integer announcementId,
+            @RequestParam(value = "dspVal", required = true) Integer dspVal
+            ) throws Exception {
+        
+        
+        announcement announcementDetails = announcementmanager.getAnnouncementById(announcementId);
+        
+        if(dspVal > 0) {
+            announcementDetails.setHpdspOrder(dspVal);
             announcementmanager.saveAnnouncement(announcementDetails);
         }
         

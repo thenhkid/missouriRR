@@ -64,6 +64,32 @@ jQuery(function ($) {
          }
      });
 
+     $(document).on('change', '.hpdspOrder', function(event) {
+         var id = $(this).attr('rel');
+         var dspVal = $(this).val();
+         
+         if($.isNumeric(dspVal) && (dspVal*1) > 0) {
+            $.ajax({
+                url: '/announcements/saveHPDspOrder.do',
+                type: 'POST',
+                data: {
+                    'announcementId': id,
+                    'dspVal': dspVal
+                },
+                success: function (data) {
+                    $('#currDspOrder_' + id).html(dspVal);
+                },
+                error: function (error) {
+
+                }
+            }); 
+         }
+         else {
+             $(this).val(function() {
+                return this.defaultValue;
+            });
+         }
+     });
     
 });
 

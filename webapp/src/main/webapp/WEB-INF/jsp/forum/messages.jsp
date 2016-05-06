@@ -88,7 +88,7 @@
                                 <c:if test="${not empty messageData.forumDocuments}">
                                     <div class="space-8"></div>
                                     <div style="padding-left:30px;">
-                                        <h6>Uploaded Documents</h6>
+                                        <h6>Relevant Documents</h6>
                                         <c:forEach var="document" items="${messageData.forumDocuments}">
                                             <div class="clearfix">
                                                 <i class="fa fa-file bigger-110 orange"></i> <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.encodedTitle}&foldername=forumUploadedFiles"/>" title="${document.documentTitle}">${document.documentTitle}</a>
@@ -127,7 +127,7 @@
                                             <c:if test="${not empty reply.forumDocuments}">
                                                 <div class="space-8"></div>
                                                 <div style="padding-left:30px;">
-                                                    <h6>Uploaded Documents</h6>
+                                                    <h6>Relevant Documents</h6>
                                                     <c:forEach var="document" items="${reply.forumDocuments}">
                                                         <div class="clearfix">
                                                             <i class="fa fa-file bigger-110 orange"></i> <a href="<c:url value="/FileDownload/downloadFile.do?filename=${document.encodedTitle}&foldername=forumUploadedFiles"/>" title="${document.documentTitle}">${document.documentTitle}</a>
