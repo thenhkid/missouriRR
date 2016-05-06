@@ -494,8 +494,58 @@ public class surveyController {
                 if(question.getAnswerTypeId() == 6) {
                     if (question.getQuestionValue().length() > 0 && !question.getQuestionValue().contains("^^^^^")) {
                        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                       Date formattedDate = df.parse(question.getQuestionValue());
-
+                       SimpleDateFormat df2 = new SimpleDateFormat("M/dd/yy");
+                       SimpleDateFormat df3 = new SimpleDateFormat("M/dd/yyyy");
+                       SimpleDateFormat df4 = new SimpleDateFormat("M/d/yy");
+                       SimpleDateFormat df5 = new SimpleDateFormat("M/d/yyyy");
+                       SimpleDateFormat df6 = new SimpleDateFormat("MM/d/yyyy");
+                       SimpleDateFormat df7 = new SimpleDateFormat("MM/d/yy");
+                       SimpleDateFormat df8 = new SimpleDateFormat("MM/dd/yyyy");
+                       SimpleDateFormat df9 = new SimpleDateFormat("MM/dd/yy");
+                       
+                       Date formattedDate;
+                       try{
+                           formattedDate = df.parse(question.getQuestionValue());
+                       }
+                       catch (Exception ex) {
+                           try{
+                               formattedDate = df2.parse(question.getQuestionValue());
+                           }
+                           catch (Exception ex2) {
+                               try{
+                                    formattedDate = df3.parse(question.getQuestionValue());
+                                }
+                                catch (Exception ex3) {
+                                    try{
+                                        formattedDate = df4.parse(question.getQuestionValue());
+                                    }
+                                    catch (Exception ex4) {
+                                        try{
+                                            formattedDate = df5.parse(question.getQuestionValue());
+                                        }
+                                        catch (Exception ex5) {
+                                            try{
+                                                formattedDate = df6.parse(question.getQuestionValue());
+                                            }
+                                            catch (Exception ex6) {
+                                                try{
+                                                    formattedDate = df7.parse(question.getQuestionValue());
+                                                }
+                                                catch (Exception ex7) {
+                                                    try{
+                                                        formattedDate = df8.parse(question.getQuestionValue());
+                                                    }
+                                                    catch (Exception ex8) {
+                                                        formattedDate = df9.parse(question.getQuestionValue());
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                           }
+                       }
+                       
                        if(question.getDateFormatType() == 2) { //dd/mm/yyyy
                            df.applyPattern("dd/MM/yyyy");
                        }
