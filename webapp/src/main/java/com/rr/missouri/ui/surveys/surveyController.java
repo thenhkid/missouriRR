@@ -682,7 +682,7 @@ public class surveyController {
             List<SurveyQuestions> questions = survey.getSurveyPageQuestions();
             
             List<surveyQuestionAnswers> questionAnswers = (List<surveyQuestionAnswers>)session.getAttribute("questionAnswers");
-            
+           
             for (SurveyQuestions question : questions) {
 
                 boolean questionFound = false;
@@ -694,7 +694,12 @@ public class surveyController {
                     Iterator<surveyQuestionAnswers> it = questionAnswers.iterator();
                     
                     while (it.hasNext()) {
+                        
                         surveyQuestionAnswers questionAnswer = it.next();
+                        
+                        if(questionAnswer.getSurveyPageId() > question.getSurveyPageId()) {
+                            questionAnswer.setSaveToDB(false);
+                        }
 
                         if (questionAnswer.getQuestionId() == question.getId()) {
 
@@ -741,6 +746,7 @@ public class surveyController {
                                 questionAnswer.setSurveyPageId(question.getSurveyPageId());
                                 questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
                                 questionAnswer.setRelatedQuestionId(question.getRelatedQuestionId());
+                                questionAnswer.setSaveToDB(true);
                             }
                         }
                     }
@@ -790,6 +796,7 @@ public class surveyController {
                                 questionAnswer.setSurveyPageId(question.getSurveyPageId());
                                 questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
                                 questionAnswer.setRelatedQuestionId(question.getRelatedQuestionId());
+                                questionAnswer.setSaveToDB(true);
 
                                 questionAnswers.add(questionAnswer);
 
@@ -798,6 +805,8 @@ public class surveyController {
                                 }
 
                             }
+                            
+                            
 
                         } else {
                             
@@ -849,6 +858,7 @@ public class surveyController {
                             questionAnswer.setSurveyPageId(question.getSurveyPageId());
                             questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
                             questionAnswer.setRelatedQuestionId(question.getRelatedQuestionId());
+                            questionAnswer.setSaveToDB(true);
 
                             questionAnswers.add(questionAnswer);
                         }
@@ -865,6 +875,7 @@ public class surveyController {
                         questionAnswer.setSurveyPageId(question.getSurveyPageId());
                         questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
                         questionAnswer.setRelatedQuestionId(question.getRelatedQuestionId());
+                        questionAnswer.setSaveToDB(true);
 
                         questionAnswers.add(questionAnswer);
                     }
