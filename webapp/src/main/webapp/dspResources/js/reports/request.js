@@ -30,6 +30,12 @@ jQuery(function ($) {
          });
          });
          
+         
+       //we need to keep checking date picker
+         $('.date-picker').change(function (event) {
+        	 clearErrors (0);
+         }); 
+         
         //changing a report type
         $('#reportTypeId').change(function (event) {
         	clearErrors (0);
