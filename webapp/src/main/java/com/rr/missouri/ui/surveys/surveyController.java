@@ -675,6 +675,7 @@ public class surveyController {
         }
         
         Integer lastQuestionSavedId = 0;
+        Integer lastPageSaved = 0;
 
         if ("next".equals(action) || "done".equals(action) || "save".equals(action)) {
             goToPage = 0;
@@ -722,6 +723,7 @@ public class surveyController {
                                     if (choiceDetails.isSkipToEnd() == true) {
                                         skipToEnd = true;
                                         submitted = true;
+                                        lastPageSaved = question.getSurveyPageId();
                                     } else {
                                         if (choiceDetails.getSkipToPageId() > 0) {
                                             SurveyPages pageDetails = surveyManager.getSurveyPageDetails(choiceDetails.getSkipToPageId());
@@ -752,7 +754,7 @@ public class surveyController {
                     }
                 }
                 if(!toRemove.isEmpty()) {
-                    questionAnswers.removeAll(toRemove);
+                   questionAnswers.removeAll(toRemove);
                 }
 
                 if (questionFound == false) {
@@ -778,6 +780,7 @@ public class surveyController {
                                 if (choiceDetails.isSkipToEnd() == true) {
                                     skipToEnd = true;
                                     submitted = true;
+                                    lastPageSaved = question.getSurveyPageId();
                                 } else {
                                     if (choiceDetails.getSkipToPageId() > 0) {
                                         SurveyPages pageDetails = surveyManager.getSurveyPageDetails(choiceDetails.getSkipToPageId());
@@ -806,8 +809,6 @@ public class surveyController {
 
                             }
                             
-                            
-
                         } else {
                             
                             surveyQuestionAnswers questionAnswer = new surveyQuestionAnswers();
@@ -835,6 +836,7 @@ public class surveyController {
                                 if (choiceDetails.isSkipToEnd() == true) {
                                     skipToEnd = true;
                                     submitted = true;
+                                    lastPageSaved = question.getSurveyPageId();
                                 } else {
                                     if (choiceDetails.getSkipToPageId() > 0) {
                                         SurveyPages pageDetails = surveyManager.getSurveyPageDetails(choiceDetails.getSkipToPageId());
@@ -898,8 +900,6 @@ public class surveyController {
             }
 
         }
-
-        
 
         survey NextPage = new survey();
         NextPage.setClientId(survey.getClientId());
@@ -987,6 +987,37 @@ public class surveyController {
 
             currentPage = surveyManager.getSurveyPage(survey.getSurveyId(), true, nextPage, survey.getClientId(), 0, goToQuestion, survey.getSubmittedSurveyId(), lastQuestionSavedId);
 
+            List<surveyQuestionAnswers> questionAnswers = (List<surveyQuestionAnswers>)session.getAttribute("questionAnswers");
+
+            for (SurveyQuestions question : currentPage.getSurveyQuestions()) {
+                 String currDBValue = question.getQuestionValue();
+                 question.setQuestionValue("");
+                 if(questionAnswers != null && questionAnswers.size() > 0) {
+
+                    Iterator<surveyQuestionAnswers> it = questionAnswers.iterator();
+
+                    while (it.hasNext()) {
+                        surveyQuestionAnswers questionAnswer = it.next();
+                        
+                        if (questionAnswer.getQuestionId() == question.getId()) {
+                             if("".equals(question.getQuestionValue())) {
+                                 question.setQuestionValue(questionAnswer.getAnswerText());
+                             }
+                             else {
+                                 String currValue = question.getQuestionValue();
+                                 currValue+=",";
+                                 currValue += questionAnswer.getAnswerText();
+                                 question.setQuestionValue(currValue);
+                             }
+                        }
+                    }
+                }
+                 
+                if("".equals(question.getQuestionValue())) {
+                    question.setQuestionValue(currDBValue);
+                }
+            }
+            
             qNum = survey.getLastQNumAnswered();
 
         } else if ("save".equals(action)) {
@@ -1050,6 +1081,13 @@ public class surveyController {
 
             if (disabled == false) {
                 User userDetails = (User) session.getAttribute("userDetails");
+                
+                /* If skipToEnd == true && submitted == true we need to remove any questions that 
+                appear after the last saved page
+                */
+                if(skipToEnd == true && submitted == true && lastPageSaved > 0 && survey.getSubmittedSurveyId() > 0) {
+                    surveyManager.removeOldAnswers(survey.getSubmittedSurveyId(), lastPageSaved);
+                }
 
                 /**
                  * Submit answers to DB *
