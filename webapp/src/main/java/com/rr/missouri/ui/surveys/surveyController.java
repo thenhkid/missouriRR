@@ -945,6 +945,9 @@ public class surveyController {
                          if (questionAnswer.getQuestionId() == question.getId()) {
                              if("".equals(question.getQuestionValue())) {
                                  question.setQuestionValue(questionAnswer.getAnswerText());
+                                 if(!"".equals(questionAnswer.getAnswerOther())) {
+                                     question.setQuestionOtherValue(questionAnswer.getAnswerOther());
+                                 }
                              }
                              else {
                                  String currValue = question.getQuestionValue();
@@ -991,7 +994,9 @@ public class surveyController {
 
             for (SurveyQuestions question : currentPage.getSurveyQuestions()) {
                  String currDBValue = question.getQuestionValue();
+                 String currDBOtherValue = question.getQuestionOtherValue();
                  question.setQuestionValue("");
+                 question.setQuestionOtherValue("");
                  if(questionAnswers != null && questionAnswers.size() > 0) {
 
                     Iterator<surveyQuestionAnswers> it = questionAnswers.iterator();
@@ -1002,6 +1007,9 @@ public class surveyController {
                         if (questionAnswer.getQuestionId() == question.getId()) {
                              if("".equals(question.getQuestionValue())) {
                                  question.setQuestionValue(questionAnswer.getAnswerText());
+                                 if(!"".equals(questionAnswer.getAnswerOther())) {
+                                     question.setQuestionOtherValue(questionAnswer.getAnswerOther());
+                                 }
                              }
                              else {
                                  String currValue = question.getQuestionValue();
@@ -1015,6 +1023,9 @@ public class surveyController {
                  
                 if("".equals(question.getQuestionValue())) {
                     question.setQuestionValue(currDBValue);
+                    if(!"".equals(question.getQuestionOtherValue())) {
+                        question.setQuestionOtherValue(currDBOtherValue);
+                    }
                 }
             }
             
