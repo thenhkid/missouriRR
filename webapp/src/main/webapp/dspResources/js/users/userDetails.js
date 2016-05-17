@@ -20,8 +20,12 @@ jQuery(function ($) {
     $('#saveUser').click(function(event) {
        
        if (checkForm()) {
-            $("#userDetais").submit();
-        }    
+           //$("#userDetails").submit();
+           $('form').preventDoubleSubmission();
+       }  
+       else {
+           event.preventDefault();
+       }   
     });
 
     //Modal to view associated program modules
@@ -172,6 +176,39 @@ jQuery(function ($) {
         return false;
 
     });
+    
+    $(document).on('click','.programModules',function() {
+       var moduleid = $(this).val();
+       if($(this).is(':checked')) {
+           $.each($('.permissions_'+moduleid+ '.use'), function() {
+               $(this).prop('disabled', false);
+           });
+       }
+       else {
+           $.each($('.permissions_'+moduleid), function() {
+               $(this).prop('checked', false);
+               $(this).prop('disabled', true);
+           });
+       }
+    });
+    
+    // jQuery plugin to prevent double submission of forms
+    jQuery.fn.preventDoubleSubmission = function() {
+      $(this).on('submit',function(e){
+        var $form = $(this);
+
+        if ($form.data('submitted') === true) {
+          // Previously submitted - don't submit again
+          e.preventDefault();
+        } else {
+          // Mark it so that the next submit can be ignored
+          $form.data('submitted', true);
+        }
+      });
+
+      // Keep chainability
+      return this;
+    };
 
 });
 

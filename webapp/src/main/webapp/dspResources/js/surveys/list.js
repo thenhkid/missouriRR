@@ -84,9 +84,7 @@ jQuery(function ($) {
                             cancel: {
                                 label: "Cancel",
                                 className: "btn-default",
-                                callback: function () {
-
-                                }
+                                callback: function () {}
                             },
                             success: {
                                 label: "Upload",
@@ -126,11 +124,15 @@ jQuery(function ($) {
             .dataTable({
                 bAutoWidth: false,
                 "aoColumns": [
-                    null, null, null, null, null,
+                    null, null, null, null,
+                    {"bSortable": false},
                     {"bSortable": false},
                     {"bSortable": false}
                 ],
-                "aaSorting": []
+                "aaSorting": [],
+                "oLanguage": {
+                "sSearch": "Filter:"
+                }
             });
 
 
@@ -173,13 +175,36 @@ jQuery(function ($) {
 
         var errorFound = false;
         
+        if($('#otherFolder').val() === "") {
+            $('#otherFolder').val(0);
+        }
+        if($('#documentId').val() === "") {
+            $('#documentId').val(0);
+        }
+        
         /** Make sure either a document is uploaded or an external link is provided **/
-        if($('#id-input-file-2').val().trim() == "") {
+        if(!$('.deleteDocument').is(':visible') && $('#id-input-file-2').val().trim() === "") {
             $('#docDiv').addClass("has-error");
             $('#webLinkDiv').addClass("has-error");
             $('#docMsg').addClass("has-error");
             $('#docMsg').html('At least one file must be uploaded.');
             errorFound = true;
+        }
+        
+         /* Check to see if the document details are displayed */
+        if($('#folderList').is(':visible') && $('#otherFolder').val() > 0) {
+            if($('#title').val() === "") {
+                $('#titleDiv').addClass("has-error");
+                $('#titleMsg').addClass("has-error");
+                $('#titleMsg').html('The document title is required.');
+                errorFound = true;
+            }
+            if($('#docDesc').val() === "") {
+                $('#docDescDiv').addClass("has-error");
+                $('#docDescMsg').addClass("has-error");
+                $('#docDescMsg').html('The document description is required.');
+                errorFound = true;
+            }
         }
         
         if(errorFound == true) {
@@ -217,3 +242,28 @@ jQuery(function ($) {
 
     });
 });
+
+function availableFolders(openedParentData, callback) {
+    
+  var selFolderId = openedParentData.id;
+  
+  if(!selFolderId) {
+      selFolderId = "0";
+  }
+  
+  //Call API to get available folders
+  $.ajax({
+       url: '/documents/getAvailableFoldersForTree.do',
+       type: 'post',
+       data: {'folderId': selFolderId},
+       dataType: 'json'
+  }).done(function(data) {
+     if(data.data.length == 0) {
+         $('#folderList').hide();
+     }
+     else {
+        callback(data);
+     }
+  });
+  
+}	

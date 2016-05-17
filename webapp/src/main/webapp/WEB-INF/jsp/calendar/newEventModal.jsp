@@ -137,7 +137,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
-                        <label for="document1">Uploaded Documents</label>
+                        <label for="document1">Relevant Documents</label>
                         <c:forEach var="document" items="${calendarEvent.existingDocuments}">
                             <div class="input-group" id="docDiv_${document.id}">
                                 <span class="input-group-addon">

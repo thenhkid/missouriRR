@@ -630,6 +630,7 @@ public class forumController {
                     message.setTopicURL(topicDetails.getTopicURL());
 
                     message.setMessage(message.getMessage().toLowerCase().replaceAll(word, "<span class='" + color + "'>" + word + "</span>"));
+                    message.setPostedBy(message.getPostedBy().toLowerCase().replaceAll(word, "<span class='" + color + "'>" + word + "</span>"));
                 }
                 counter++;
                 

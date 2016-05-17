@@ -7,6 +7,7 @@ package com.rr.missouri.ui.document;
 
 import com.registryKit.document.document;
 import com.registryKit.document.documentEmailNotifications;
+import com.registryKit.document.documentFile;
 import com.registryKit.document.documentFolder;
 import com.registryKit.document.documentManager;
 import com.registryKit.document.documentNotificationPreferences;
@@ -30,7 +31,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import com.registryKit.user.userProgramModules;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -60,6 +65,9 @@ public class documentController {
 
     @Value("${programId}")
     private Integer programId;
+    
+    @Value("${programName}")
+    private String programName;
 
     @Value("${topSecret}")
     private String topSecret;
@@ -82,7 +90,7 @@ public class documentController {
     public ModelAndView listDocuments(HttpSession session) throws Exception {
 
         ModelAndView mav = new ModelAndView();
-        mav.setViewName("/documents");
+        mav.setViewName("/documentSearch");
 
         /* Get a list of completed surveys the logged in user has access to */
         User userDetails = (User) session.getAttribute("userDetails");
@@ -109,55 +117,6 @@ public class documentController {
         folders = folderList;
         mav.addObject("folders", folders);
 
-        List<documentFolder> subfolderList = documentmanager.getSubFolders(programId, userDetails, folderList.get(0).getId());
-
-        if (subfolderList != null && subfolderList.size() > 0) {
-
-            for (documentFolder subfolder : subfolderList) {
-                //Encrypt the use id to pass in the url
-                map = new HashMap<String, String>();
-                map.put("id", Integer.toString(subfolder.getId()));
-                map.put("topSecret", topSecret);
-
-                String[] encrypted = encrypt.encryptObject(map);
-
-                subfolder.setEncryptedId(encrypted[0]);
-                subfolder.setEncryptedSecret(encrypted[1]);
-
-            }
-
-            mav.addObject("subfolders", subfolderList);
-        }
-        
-        selFolder = folderList.get(0).getId();
-        mav.addObject("selFolder", selFolder);
-        mav.addObject("selParentFolder", folderList.get(0).getParentFolderId());
-        mav.addObject("selFolderName", folderList.get(0).getFolderName());
-        mav.addObject("selFolderNameEncoded", URLEncoder.encode(folderList.get(0).getFolderName(),"UTF-8"));
-        mav.addObject("readOnly", folderList.get(0).getReadOnly());
-        
-        /* Get Documents for the folder */
-        List<document> documents = documentmanager.getFolderDocuments(programId, userDetails, folderList.get(0).getId());
-        
-        if(documents != null && documents.size() > 0) {
-            for(document doc : documents) {
-                if(doc.getUploadedFile() != null && !"".equals(doc.getUploadedFile())) {
-                    int index = doc.getUploadedFile().lastIndexOf('.');
-                    doc.setFileExt(doc.getUploadedFile().substring(index+1));
-                }
-                User createdBy = usermanager.getUserById(doc.getSystemUserId());
-                doc.setCreatedBy(createdBy.getFirstName() + " " + createdBy.getLastName());
-                
-                String encodedFileName = URLEncoder.encode(doc.getUploadedFile(),"UTF-8");
-                doc.setUploadedFile(encodedFileName);
-                
-                doc.setDownloadLink(URLEncoder.encode(folderList.get(0).getFolderName(),"UTF-8"));
-            } 
-        }
-        
-        mav.addObject("documents", documents);
-        mav.addObject("folderCount", 1);
-
         /* Get user permissions */
          userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
          if (userDetails.getRoleId() == 2) {
@@ -170,9 +129,14 @@ public class documentController {
             allowDelete = modulePermissions.isAllowDelete();
          }
 
-         mav.addObject("allowCreate", allowCreate);
-         mav.addObject("allowEdit", allowEdit);
-         mav.addObject("allowDelete", allowDelete);
+        mav.addObject("allowCreate", allowCreate);
+        mav.addObject("allowEdit", allowEdit);
+        mav.addObject("allowDelete", allowDelete);
+         
+        mav.addObject("savedSearchString", session.getAttribute("searchString"));
+        mav.addObject("savedadminOnly", session.getAttribute("adminOnly"));
+        mav.addObject("savedstartSearchDate", session.getAttribute("startSearchDate"));
+        mav.addObject("savedendSearchDate", session.getAttribute("endSearchDate"));
         return mav;
     }
 
@@ -325,17 +289,18 @@ public class documentController {
         
         if(documents != null && documents.size() > 0) {
             for(document doc : documents) {
-                if(doc.getUploadedFile() != null && !"".equals(doc.getUploadedFile())) {
-                    int index = doc.getUploadedFile().lastIndexOf('.');
-                    doc.setFileExt(doc.getUploadedFile().substring(index+1));
+                if(doc.getTotalFiles() == 1 && (doc.getFoundFile() != null && !"".equals(doc.getFoundFile()))) {
+                    int index = doc.getFoundFile().lastIndexOf('.');
+                    doc.setFileExt(doc.getFoundFile().substring(index+1));
+                    
+                    String encodedFileName = URLEncoder.encode(doc.getFoundFile(),"UTF-8");
+                    doc.setUploadedFile(encodedFileName);
+
+                    doc.setDownloadLink(URLEncoder.encode(downloadLink,"UTF-8"));
                 }
                 User createdBy = usermanager.getUserById(doc.getSystemUserId());
                 doc.setCreatedBy(createdBy.getFirstName() + " " + createdBy.getLastName());
                 
-                String encodedFileName = URLEncoder.encode(doc.getUploadedFile(),"UTF-8");
-                doc.setUploadedFile(encodedFileName);
-                
-                doc.setDownloadLink(URLEncoder.encode(downloadLink,"UTF-8"));
             } 
         }
         
@@ -495,11 +460,16 @@ public class documentController {
         } else {
             documentDetails = documentmanager.getDocumentById(documentId);
             
-            if(documentDetails.getUploadedFile() != null && !"".equals(documentDetails.getUploadedFile())) {
-                int index = documentDetails.getUploadedFile().lastIndexOf('.');
-                documentDetails.setFileExt(documentDetails.getUploadedFile().substring(index+1));
-            }
+             List<documentFile> documentFiles = documentmanager.getDocumentFiles(documentId);
             
+            if(documentFiles != null) {
+                for(documentFile document : documentFiles) {
+                    int index = document.getUploadedFile().lastIndexOf('.');
+                    document.setFileExt(document.getUploadedFile().substring(index+1));
+                }
+                
+                mav.addObject("documentFiles", documentFiles);
+            }
         }
         
         if(userDetails.getRoleId() != 3) {
@@ -563,9 +533,13 @@ public class documentController {
     @RequestMapping(value = "/saveDocuemntForm.do", method = RequestMethod.POST)
     public @ResponseBody
     ModelAndView savePostForm(@ModelAttribute(value = "documentDetails") document documentDetails,
-            @RequestParam(value = "postDocuments", required = false) List<MultipartFile> postDocuments, RedirectAttributes redirectAttr,
-            HttpSession session, @RequestParam(value = "alertUsers", required = false, defaultValue = "0") Integer alertUsers) throws Exception {
-
+            @RequestParam(value = "postDocuments", required = false) List<MultipartFile> postDocuments, 
+            RedirectAttributes redirectAttr,
+            HttpSession session, 
+            @RequestParam(value = "alertUsers", required = false, defaultValue = "0") Integer alertUsers,
+            @RequestParam(value = "fromSearch", required = false, defaultValue = "0") Integer fromSearch
+    ) throws Exception {
+        
         /* Get a list of completed surveys the logged in user has access to */
         User userDetails = (User) session.getAttribute("userDetails");
 
@@ -578,9 +552,9 @@ public class documentController {
         document currDocDetails = documentmanager.getDocumentById(documentDetails.getId());
         
         String newFileNameFromMove = "";
-        if(currDocDetails != null && currDocDetails.getFolderId() != documentDetails.getFolderId() && !"".equals(currDocDetails.getUploadedFile())) {
+        if(currDocDetails != null && currDocDetails.getFolderId() != documentDetails.getFolderId()) {
             /* Need to find the document and move it to the new folder */
-            newFileNameFromMove = documentmanager.moveDocumentFile(programId, currDocDetails.getFolderId(), documentDetails.getFolderId(), currDocDetails.getUploadedFile());
+            documentmanager.moveDocumentFile(programId, currDocDetails.getFolderId(), documentDetails.getFolderId(), documentId);
         }
         
         if(!"".equals(newFileNameFromMove)) {
@@ -628,8 +602,16 @@ public class documentController {
             }  
         }
 
-        ModelAndView mav = new ModelAndView(new RedirectView("/documents/folder?i=" + encrypted[0] + "&v=" + encrypted[1]));
-        return mav;
+        ModelAndView mav;
+        if(fromSearch == 1) {
+            mav = new ModelAndView(new RedirectView("/documents"));
+       
+        }
+        else {
+           mav = new ModelAndView(new RedirectView("/documents/folder?i=" + encrypted[0] + "&v=" + encrypted[1]));
+       }
+        
+       return mav;
 
     }
     
@@ -749,4 +731,321 @@ public class documentController {
         return loadURL;
         
     }
+    
+    /**
+     * The '/document/getDocumentFiles.do' GET request will return the uploaded files for the selected document. 
+     * form.
+     *
+     * @param session
+     * @param subfolder
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getDocumentFiles.do", method = RequestMethod.GET)
+    public @ResponseBody
+    ModelAndView getDocumentFiles(HttpSession session, @RequestParam(value = "documentId", required = true) Integer documentId) throws Exception {
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/document/multiDocumentFiles");
+        
+        /* Get uploaded files */
+        if(documentId != null && documentId > 0) {
+            List<documentFile> documentFiles = documentmanager.getDocumentFiles(documentId);
+            
+            document documentDetails = documentmanager.getDocumentById(documentId);
+            
+            documentFolder folderDetails = documentmanager.getFolderById(documentDetails.getFolderId());
+        
+            String downloadLink = "";
+            Integer folderCount = 1;
+
+            /* Get a list of folders  */
+            Integer parentFolderId = 0;
+            Integer getSubFoldersFor = 0;
+            Integer getSubSubFoldersFor = 0;
+            if (folderDetails.getParentFolderId() > 0) {
+                folderCount+=1;
+
+                parentFolderId = folderDetails.getParentFolderId();
+
+                documentFolder parentFolderDetails = documentmanager.getFolderById(parentFolderId);
+
+                if(parentFolderDetails.getParentFolderId() > 0) {
+                    folderCount+=1;
+
+                    documentFolder superParentFolderDetails = documentmanager.getFolderById(parentFolderDetails.getParentFolderId());
+
+                    downloadLink = superParentFolderDetails.getFolderName()+"/";
+                }
+                else {
+                    getSubFoldersFor = folderDetails.getParentFolderId();
+                    getSubSubFoldersFor = documentDetails.getFolderId();
+                }
+
+                downloadLink += parentFolderDetails.getFolderName()+"/"+folderDetails.getFolderName();
+
+
+            } else {
+                getSubFoldersFor = folderDetails.getId();
+                parentFolderId = folderDetails.getId();
+                downloadLink = folderDetails.getFolderName();
+            }
+            
+            if(documentFiles != null && documentFiles.size() > 0) {
+                for(documentFile doc : documentFiles) {
+                    if(doc.getUploadedFile() != null && !"".equals(doc.getUploadedFile())) {
+                        
+                        doc.setDocumentTitle(documentDetails.getTitle());
+                        
+                        String encodedFileName = URLEncoder.encode(doc.getUploadedFile(),"UTF-8");
+                        doc.setUploadedFile(encodedFileName);
+
+                        doc.setDownloadLink(URLEncoder.encode(downloadLink,"UTF-8"));
+                    }
+                } 
+                
+                mav.addObject("documentFiles", documentFiles);
+            }
+        }
+        
+        return mav;
+    }
+    
+    /**
+     * The 'deleteDocumentFile' POST request will remove the clicked uploaded
+     * file for the selected document.
+     *
+     * @param fileId The id of the clicked document.
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/deleteDocumentFile.do", method = RequestMethod.POST)
+    public @ResponseBody
+    Integer deleteDocumentFile(@RequestParam(value = "fileId", required = true) Integer fileId) throws Exception {
+
+        documentmanager.deleteDocumentFile(fileId, programName);
+
+        return 1;
+    }
+    
+    /**
+     * The 'getAvailableFoldersForTree.di' POST request will return a list of available folders for the selected
+     * program and logged in user.
+     *
+     * @param fileId The id of the clicked document.
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getAvailableFoldersForTree.do", method = RequestMethod.POST)
+    public @ResponseBody
+    JSONObject getAvailableFoldersForTree(HttpSession session, @RequestParam(value = "folderId", required = true) String folderId) throws Exception {
+        
+        User userDetails = (User) session.getAttribute("userDetails");
+        
+        JSONObject json = new JSONObject();
+        JSONArray folders = new JSONArray();
+        JSONObject folder;
+
+        if(Integer.parseInt(folderId) > 0) {
+           
+            List<documentFolder> subfolderList = documentmanager.getSubFolders(programId, userDetails, Integer.parseInt(folderId));
+            
+            if (subfolderList != null && subfolderList.size() > 0) {
+                
+                for(documentFolder fldr : subfolderList) {
+                    
+                    folder = new JSONObject();
+                    
+                    List<documentFolder> subsubfolderList = documentmanager.getSubFolders(programId, userDetails, fldr.getId());
+
+                    if (subsubfolderList != null && subsubfolderList.size() > 0) {
+                        folder.put("type", "folder");
+                        folder.put("name", fldr.getFolderName());
+                    }
+                    else {
+                        folder.put("type", "item");
+                        folder.put("name", "<i class=\"ace-icon fa fa-folder\"></i> " + fldr.getFolderName());
+                    }
+                    folder.put("id", fldr.getId());
+
+                    folders.add(folder);
+                    
+                }
+            }
+            
+        }
+        else {
+            List<documentFolder> folderList = documentmanager.getFolders(programId, userDetails);
+
+            if(folderList != null && folderList.size() > 0) {
+
+                for(documentFolder fldr : folderList) {
+
+                    folder = new JSONObject();
+
+                    List<documentFolder> subfolderList = documentmanager.getSubFolders(programId, userDetails, fldr.getId());
+
+                    if (subfolderList != null && subfolderList.size() > 0) {
+                        folder.put("type", "folder");
+                        folder.put("name", fldr.getFolderName());
+                    
+                    }
+                    else {
+                        folder.put("type", "item");
+                        folder.put("name", "<i class=\"ace-icon fa fa-folder green\"></i> " + fldr.getFolderName());
+                    
+                    }
+                    folder.put("id", fldr.getId());
+
+                    folders.add(folder);
+
+                }
+            }
+
+        }
+        
+         json.put("data", folders);
+        
+        return json;
+        
+    }
+    
+    /**
+     * The 'searchDocuments' GET request will return the view containing the table for the list of 
+     * documents based on the search parameters.
+     * 
+     * @param request
+     * @param response
+     * @param session
+     * @param searchString  The string containing the list of search parameters.
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "searchDocuments", method = RequestMethod.GET)
+    @ResponseBody 
+    public ModelAndView searchDocuments(HttpSession session, 
+            @RequestParam(value = "searchString", required = false) String searchString,
+            @RequestParam(value = "adminOnly", required = true) boolean adminOnly,
+            @RequestParam(value = "startSearchDate", required = true) String startSearchDate,
+            @RequestParam(value = "endSearchDate", required = true) String endSearchDate) throws Exception {
+        
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("/document/documentSearchResults");
+        
+        session.setAttribute("searchString", searchString);
+        
+        if(adminOnly == false) {
+            session.setAttribute("adminOnly", 0);
+        }
+        else {
+            session.setAttribute("adminOnly", 1);
+        }
+        session.setAttribute("startSearchDate", startSearchDate);
+        session.setAttribute("endSearchDate", endSearchDate);
+        
+        /* Get a list of completed surveys the logged in user has access to */
+        User userDetails = (User) session.getAttribute("userDetails");
+        
+        String dateFrom = "";
+        String dateTo = "";
+        
+        SimpleDateFormat df1 = new SimpleDateFormat("MM/dd/yyyy");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        
+        if(!"".equals(startSearchDate)) {
+            Date fromDate = df1.parse(startSearchDate);
+            dateFrom = df.format(fromDate);
+        }
+        if(!"".equals(endSearchDate)) {
+            Date toDate = df1.parse(endSearchDate);
+            dateTo = df.format(toDate);
+        }
+        
+        
+        /* Get the documents */
+        List<document> documents = documentmanager.searchDocuments(programId, userDetails, searchString, adminOnly, dateFrom, dateTo);
+        
+        if(documents != null && documents.size() > 0) {
+            for(document doc : documents) {
+            
+                documentFolder folderDetails = documentmanager.getFolderById(doc.getFolderId());
+
+                String downloadLink = "";
+                Integer folderCount = 1;
+
+                /* Get a list of folders  */
+                Integer parentFolderId = 0;
+                Integer getSubFoldersFor = 0;
+                Integer getSubSubFoldersFor = 0;
+                
+                if (folderDetails.getParentFolderId() > 0) {
+                    folderCount+=1;
+
+                    parentFolderId = folderDetails.getParentFolderId();
+
+                    documentFolder parentFolderDetails = documentmanager.getFolderById(parentFolderId);
+
+                    if(parentFolderDetails.getParentFolderId() > 0) {
+                        folderCount+=1;
+
+                        documentFolder superParentFolderDetails = documentmanager.getFolderById(parentFolderDetails.getParentFolderId());
+
+                        downloadLink = superParentFolderDetails.getFolderName()+"/";
+                    }
+                    else {
+                        getSubFoldersFor = folderDetails.getParentFolderId();
+                        getSubSubFoldersFor = doc.getFolderId();
+                    }
+
+                    downloadLink += parentFolderDetails.getFolderName()+"/"+folderDetails.getFolderName();
+
+
+                } else {
+                    getSubFoldersFor = folderDetails.getId();
+                    parentFolderId = folderDetails.getId();
+                    downloadLink = folderDetails.getFolderName();
+                }
+                
+                doc.setFolderLocation(downloadLink);
+                
+                if(doc.getTotalFiles() == 1 && (doc.getFoundFile() != null && !"".equals(doc.getFoundFile()))) {
+                    int index = doc.getFoundFile().lastIndexOf('.');
+                    doc.setFileExt(doc.getFoundFile().substring(index+1));
+                    
+                    String encodedFileName = URLEncoder.encode(doc.getFoundFile(),"UTF-8");
+                    doc.setUploadedFile(encodedFileName);
+                    
+                    doc.setDownloadLink(URLEncoder.encode(downloadLink,"UTF-8"));
+                }
+                User createdBy = usermanager.getUserById(doc.getCreatedById());
+                doc.setCreatedBy(createdBy.getFirstName() + " " + createdBy.getLastName());
+                
+            } 
+        }
+        
+        mav.addObject("documents", documents);
+        
+        
+        /* Get user permissions */
+         userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
+         if (userDetails.getRoleId() == 2) {
+            allowCreate = true;
+            allowEdit = true;
+            allowDelete = true;
+         } else {
+            allowCreate = modulePermissions.isAllowCreate();
+            allowEdit = modulePermissions.isAllowEdit();
+            allowDelete = modulePermissions.isAllowDelete();
+         }
+
+         mav.addObject("allowCreate", allowCreate);
+         mav.addObject("allowEdit", allowEdit);
+         mav.addObject("allowDelete", allowDelete);
+         mav.addObject("folders", folders);
+         mav.addObject("searchString", searchString);
+        
+        return mav;
+    }        
+
+
 }

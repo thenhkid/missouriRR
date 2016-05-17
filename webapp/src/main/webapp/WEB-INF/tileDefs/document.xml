@@ -26,4 +26,23 @@
         </put-list-attribute>
     </definition>
     
+    <definition name="/documentSearch" extends="base.definition.document-ui">
+        <put-attribute name="title" value="" />
+        <put-attribute name="breadcrumbs" value="/WEB-INF/jsp/document/breadcrumbs.jsp?page=search" />
+        <put-attribute name="body" value="/WEB-INF/jsp/document/fileSearch.jsp" />
+        <put-attribute name="submenu" value="/WEB-INF/jsp/document/submenu.jsp" />
+        <put-attribute name="jscript" value="/dspResources/js/document/fileSearch.js" />
+        <put-list-attribute name="headScripts">
+            <add-attribute value="/dspResources/js/dataTables/jquery.dataTables.min.js" />
+            <add-attribute value="/dspResources/js/dataTables/jquery.dataTables.bootstrap.min.js" />
+            <add-attribute value="/dspResources/js/date-time/bootstrap-datepicker.min.js" />
+            <add-attribute value="/dspResources/js/date-time/daterangepicker.min.js" />
+            <add-attribute value="/dspResources/js/bootbox.min.js" />
+            <add-attribute value="/dspResources/js/ace-elements.min.js" />
+        </put-list-attribute>
+        <put-list-attribute name="customCSS">
+            <add-attribute value="/dspResources/css/daterangepicker.min.css" />
+        </put-list-attribute>
+    </definition>
+    
 </tiles-definitions>

@@ -18,14 +18,15 @@
                 <h4>Completed Activity Log</h4>
             </div>
             <div class="panel-body pageQuestionsPanel">
-                You have completed the ${surveyDetails.title} activity log.
+                You have completed the ${surveyDetails.title} activity log. If you have any materials you would like to associate with this
+                entry, please do so using the "Upload Relevant Documents" button below. 
                 <div class="space-12"></div>
                 <div class="hr hr-dotted hr-16"></div>
-                <c:if test="${not empty surveyDocuments}">
+                <c:if test="${not empty surveyDocuments && hasDocumentModule == false}">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="document1">Uploaded Files</label>
+                                <label for="document1">Relevant Documents</label>
                                 <c:forEach var="documentDetails" items="${surveyDocuments}">
                                      <div class="input-group" id="docDiv_${documentDetails.id}">
                                         <span class="input-group-addon">
@@ -58,18 +59,29 @@
                     </div>
                 </c:if>
                 <div class="col-sm-12">
-                    <form:form id="surveyDocForm" role="form" class="form" method="post" enctype="multipart/form-data">
-                        <input type="hidden" name="surveyId" value="${submittedSurveyId}" />
-                        <input type="hidden" name="completed" value="1" />
-                        <input type="hidden" name="selectedEntities" value="${selectedEntities}" />
-                        <div class="form-group" id="docDiv">         
-                            <label for="document1" class="control-label">Survey Files</label>
-                            <div class="form-group">
-                                <input  multiple="" name="surveyDocuments" type="file" id="id-input-file-2" />
-                                <span id="docMsg" class="control-label"></span>
-                            </div>
-                        </div>
-                    </form:form>
+                    <c:choose>
+                        <c:when test="${hasDocumentModule}">
+                            <a href="viewSurveyDocuments?i=${i2}&v=${v2}"  title="Upload Relevant Documents" role="button">   
+                                <button class="btn btn-xs btn-info">
+                                    <i class="ace-icon fa fa-upload bigger-120"></i> Upload Relevant Documents
+                                </button>
+                            </a> 
+                        </c:when>
+                        <c:otherwise>
+                            <form:form id="surveyDocForm" role="form" class="form" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="surveyId" value="${submittedSurveyId}" />
+                                <input type="hidden" name="completed" value="1" />
+                                <input type="hidden" name="selectedEntities" value="${selectedEntities}" />
+                                <div class="form-group" id="docDiv">         
+                                    <label for="document1" class="control-label">>Relevant Documents</label>
+                                    <div class="form-group">
+                                        <input  multiple="" name="surveyDocuments" type="file" id="id-input-file-2" />
+                                        <span id="docMsg" class="control-label"></span>
+                                    </div>
+                                </div>
+                            </form:form>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
         </div>

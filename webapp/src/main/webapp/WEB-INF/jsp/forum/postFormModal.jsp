@@ -22,7 +22,7 @@
             <div>
                 <hr/>
                 <div class="form-group">
-                    <label for="document1">Uploaded Documents</label>
+                    <label for="document1">Relevant Documents</label>
                     <c:forEach var="document" items="${documentList}">
                         <div class="input-group" id="docDiv_${document.id}">
                             <span class="input-group-addon">

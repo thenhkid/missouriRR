@@ -8,6 +8,11 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
+<c:if test="${empty(reportTypes)}">
+	No reports are available.
+</c:if>
+
+<c:if test="${!empty(reportTypes)}">
 
 <div class="row">
     <div class="col-xs-12">
@@ -154,4 +159,4 @@
 </div>
     </div>
 </div>
-
+</c:if>

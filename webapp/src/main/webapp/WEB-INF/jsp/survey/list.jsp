@@ -56,10 +56,9 @@
                             <th scope="col" class="center"><i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i> Date Submitted</th>
                             <th scope="col" class="center"><i class="ace-icon fa fa-clock-o bigger-110 hidden-480"></i> Date Modified</th>
                             <th scope="col" >Submitted By</th>
-                            <th scope="col" class="center  hidden-480">Submitted</th>
                             <th scope="col">School(s) / ECC</th>
-                            <%--<th scope="col">Content Area - Criteria</th>--%>
-                        <th scope="col" class="center"></th>
+                            <th scope="col" class="center  hidden-480">Submitted</th>
+                            <th scope="col" class="center"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -73,16 +72,6 @@
                                     <td>
                                         ${submittedSurvey.staffMember}
                                     </td>
-                                    <td class="center hidden-400">
-                                        <c:choose>
-                                            <c:when test="${submittedSurvey.submitted == true}">
-                                                <i class="ace-icon fa fa-check bigger-110 green icon-only"></i>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <i class="ace-icon fa fa-close bigger-110 red icon-only"></i>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
                                     <td>
                                         <c:if test="${not empty submittedSurvey.selectedEntities}">
                                             <ul class="list-unstyled spaced">
@@ -95,44 +84,73 @@
                                             </ul>
                                         </c:if>
                                     </td>
-                                    <%--<td></td>--%>
+                                    <td class="center hidden-400">
+                                        <c:choose>
+                                            <c:when test="${submittedSurvey.submitted == true}">
+                                                <i class="ace-icon fa fa-check bigger-110 green icon-only"></i>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <i class="ace-icon fa fa-close bigger-110 red icon-only"></i>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
                                     <td class="center">
-                                        <div class="hidden-sm hidden-xs action-buttons">
+                                        <div class="hidden-sm hidden-xs">
+                                            <div class="center">
+                                                <c:choose>
+                                                    <c:when test="${hasDocumentModule == true}">
+                                                        <a href="surveys/viewSurveyDocuments?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}"  title="Upload Relevant Documents" role="button">   
+                                                            <button class="btn btn-xs btn-info">
+                                                                <i class="ace-icon fa fa-upload bigger-120"></i>
+                                                                Relevant Documents
+                                                            </button>
+                                                        </a> 
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <a href="javascript:void(0);" class="surveyDocuments" rel="${submittedSurvey.id}"  title="Upload Relevant Documents" role="button">   
+                                                            <button class="btn btn-xs btn-info">
+                                                                <i class="ace-icon fa fa-upload bigger-120"></i>
+                                                                Relevant Documents
+                                                            </button>
+                                                        </a> 
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </div>
+                                            <div class="center" style="padding-top:10px">
                                             <c:choose>
                                                 <c:when test="${allowEdit == true || sessionScope.userDetails.roleId == 2}">
-                                                    <a href="surveys/editSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Activity Log" role="button">
+                                                    <a href="surveys/editSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Survey" role="button">
                                                         <button class="btn btn-xs btn-success">
                                                             <i class="ace-icon fa fa-pencil bigger-120"></i>
+                                                            Edit
                                                         </button>
                                                     </a>
                                                     <c:if test="${allowDelete == true}">
-                                                        <a href="javascript:void(0);" class="deleteSurvey" rel="${submittedSurvey.id}"  title="Delete This Activity Log" role="button">
+                                                        <a href="javascript:void(0);" class="deleteSurvey" rel="${submittedSurvey.id}"  title="Delete This Survey" role="button">
                                                             <button class="btn btn-xs btn-danger">
                                                                 <i class="ace-icon fa fa-close bigger-120"></i>
+                                                                Delete
                                                             </button>
                                                         </a>
-                                                    </c:if> 
-                                                    <a href="javascript:void(0);" class="surveyDocuments" rel="${submittedSurvey.id}"  title="Upload File" role="button">   
+                                                    </c:if>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <a href="surveys/viewSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Survey" role="button">
                                                         <button class="btn btn-xs btn-info">
-                                                            <i class="ace-icon fa fa-upload bigger-120"></i>
+                                                            <i class="ace-icon fa fa-search-plus bigger-120"></i>
+                                                            View
                                                         </button>
-                                                    </a>     
-                                            </c:when>
-                                            <c:otherwise>
-                                                <a href="surveys/viewSurvey?i=${submittedSurvey.encryptedId}&v=${submittedSurvey.encryptedSecret}" title="Edit This Survey" role="button">
-                                                    <button class="btn btn-xs btn-info">
-                                                        <i class="ace-icon fa fa-search-plus bigger-120"></i>
-                                                    </button>
-                                                </a>
-                                            </c:otherwise>
-                                        </c:choose>
+                                                    </a>
+                                                </c:otherwise>
+                                            </c:choose>
+                                             </div>   
                                         </div>
                                     </td>
                                 </tr>
                             </c:forEach>
                         </c:when>
                         <c:otherwise>
-                            <tr><td colspan="8" class="center-text">There have been no entries for the selected survey.</td></tr>
+                            <tr><td colspan="7" class="center-text">There have been no entries for the selected survey.</td></tr>
                         </c:otherwise>
                     </c:choose>
                 </tbody>

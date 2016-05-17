@@ -397,7 +397,7 @@ jQuery(function ($) {
                             $(tempThis).popover({
                                 trigger: 'focus',
                                 content: data,
-                                placement: 'auto left',
+                                placement: 'auto',
                                 html: true,
                                 title: 'Create Event  <button type="button" id="closePopover" class="close pull-right">&times;</button>',
                                 container: 'body',
@@ -642,7 +642,7 @@ jQuery(function ($) {
                         $(tempThis).popover({
                             trigger: 'focus',
                             content: data,
-                            placement: 'auto right',
+                            placement: 'auto',
                             html: true,
                             title: 'Event Details <button type="button" id="closePopover" class="close pull-right">&times;</button>',
                             container: 'body'

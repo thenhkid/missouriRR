@@ -19,7 +19,10 @@ jQuery(function ($) {
                     null, null, 
                     {"bSortable": false}
                 ],
-                "aaSorting": [[2, 'desc']]
+                "aaSorting": [[2, 'desc']],
+                "oLanguage": {
+                "sSearch": "Filter:"
+                }
             });
             
     //New main folder button
@@ -387,7 +390,7 @@ jQuery(function ($) {
         }
         
         /** Make sure either a document is uploaded or an external link is provided **/
-        if($('#webLink').val().trim() === "" && $('#id-input-file-2').val().trim() === "" && $('#uploadedFile').val() === "") {
+        if($('.uploadedDocuments').length == 0 && $('#webLink').val().trim() === "" && $('#id-input-file-2').val().trim() === "" && $('#uploadedFile').val() === "") {
             $('#docDiv').addClass("has-error");
             $('#webLinkDiv').addClass("has-error");
             $('#docMsg').addClass("has-error");
@@ -525,7 +528,69 @@ jQuery(function ($) {
         return false;
     }); 
 
+    $(document).on('click', '.multipleFileDownload', function() {
+        var docId = $(this).attr('docid');
+        
+        $.ajax({
+            type: 'GET',
+            url: '/documents/getDocumentFiles.do',
+            data: {'documentId': docId},
+            success: function (data) {
+                
+                data = $(data);
+                
+                //Check if the session has expired.
+                if(data.find('.username').length > 0) {
+                   top.location.href = '/login?expired';
+                }
+                else {
+                   
+                    bootbox.dialog({
+                        message: data,
+                        title: "Uploaded Files",
+                        buttons: {
+                            cancel: {
+                                label: "Close",
+                                className: "btn-default",
+                                callback: function () {
+
+                                }
+                            }
+                        }
+                    }); 
+                }
+            }
+        });
+        
+    });
+    
+    /* Remove existing document */
+    $(document).on('click', '.removeFile', function () {
+
+        var confirmed = confirm("Are you sure you want to remove this document file?");
+
+        if (confirmed) {
+            var docId = $(this).attr('rel');
+            $.ajax({
+                url: '/documents/deleteDocumentFile.do',
+                type: 'POST',
+                data: {
+                    'fileId': docId
+                },
+                success: function (data) {
+                    $('#docDiv_' + docId).remove();
+                },
+                error: function (error) {
+
+                }
+            });
+        }
+
+    });
+
+
 });
+
 
 function checkFolderName(folderName, folderId, parentFolderId) {
     

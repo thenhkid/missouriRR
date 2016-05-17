@@ -20,7 +20,7 @@
     }
 </style>
 
-<div class="page-content">
+<div class="page-content" style="width:540px;max-height: 500px; overflow: auto">
     <div class="row">
         <div class="col-md-12">
             <div class="pull-right">

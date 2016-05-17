@@ -10,6 +10,20 @@ jQuery(function ($) {
     $(document).ready(function () {
         
         $("input:text,form").attr("autocomplete", "off");
+
+
+        var oTable1 = $('#dynamic-table').dataTable({
+             bAutoWidth: false,
+              "pageLength": 25,
+             "aoColumns": [
+                null, null, null, null,null, null, null, {"bSortable": false}
+             ],
+             "aaSorting": [],
+                    "oLanguage": {
+                    "sSearch": "Filter:"
+                    }
+         });
+
         
         
         $('.deleteReport').click(function() { 
@@ -31,7 +45,6 @@ jQuery(function ($) {
 	                            'relv': relv},
 	                            success: function (data) {
 	                                $('#reportRow_'+reportRequestId).remove();
-	                                //$("#documentListDiv").html(data);
 	                            },
 	                            error: function (error) {
 	                                console.log(error);

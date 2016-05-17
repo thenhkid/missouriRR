@@ -5,7 +5,8 @@
  */
 package com.rr.missouri.ui.users;
 
-
+import com.registryKit.announcements.announcementManager;
+import com.registryKit.announcements.announcementNotificationPreferences;
 import com.registryKit.calendar.calendarManager;
 import com.registryKit.calendar.calendarNotificationPreferences;
 import com.registryKit.document.documentManager;
@@ -78,6 +79,9 @@ public class userController {
     @Autowired
     private documentManager documentmanager;
     
+    @Autowired
+    private announcementManager announcementmanager;
+    
     @Value("${programId}")
     private Integer programId;
     
@@ -110,10 +114,23 @@ public class userController {
         /* Get the entity level 3 available for the logged in user */
         if (userDetails.getRoleId() != 2) {
             programOrgHierarchy level3 = hierarchymanager.getProgramOrgHierarchyBydspPos(3, programId);
-            List<programHierarchyDetails> level3Items = hierarchymanager.getProgramHierarchyItems(level3.getId(), userDetails.getId());
+            
+            if(level3 != null && level3.getId() > 0) {
+                List<programHierarchyDetails> level3Items = hierarchymanager.getProgramHierarchyItems(level3.getId(), userDetails.getId());
         
-            /* Get the program users */
-            programUsers = usermanager.getUsersByProgramId(programId, level3.getId(), level3Items, userDetails.getId());
+                /* Get the program users */
+                programUsers = usermanager.getUsersByProgramId(programId, level3.getId(), level3Items, userDetails.getId());
+            }
+            else {
+                programOrgHierarchy level2 = hierarchymanager.getProgramOrgHierarchyBydspPos(2, programId);
+            
+                if(level2 != null && level2.getId() > 0) {
+                    List<programHierarchyDetails> level2Items = hierarchymanager.getProgramHierarchyItems(level2.getId(), userDetails.getId());
+
+                    /* Get the program users */
+                    programUsers = usermanager.getUsersByProgramId(programId, level2.getId(), level2Items, userDetails.getId());
+                }
+            }
         }
         else {
             programUsers = usermanager.getUsersByProgramId(programId, 0, null, userDetails.getId());
@@ -264,6 +281,16 @@ public class userController {
         documentPreferences.setMyHierarchiesOnly(true);
         
         documentmanager.saveNotificationPreferences(documentPreferences);
+        
+        /* Opt in announcement notification preferences */
+        announcementNotificationPreferences announcementPreferences = new announcementNotificationPreferences();
+        announcementPreferences.setAllAnnouncements(true);
+        announcementPreferences.setProgramId(programId);
+        announcementPreferences.setNotificationEmail(newuserDetails.getEmail());
+        announcementPreferences.setSystemUserId(userId);
+        announcementPreferences.setMyHierarchiesOnly(true);
+        
+        announcementmanager.saveNotificationPreferences(announcementPreferences);
         
         Map<String,String> map = new HashMap<String,String>();
         map.put("id",Integer.toString(userId));
@@ -597,8 +624,16 @@ public class userController {
         
         mav.addObject("userEntityItems", userEntityItems);
         
+        /* Get a list of completed surveys the logged in user has access to */
+        User userDetails = (User) session.getAttribute("userDetails");
+        
+        Integer loggeduserId = 0;
+        if (userDetails.getRoleId() != 2) {
+            loggeduserId = userDetails.getId();
+        }
+        
         /* Get a list of entity items for the selected entity */
-        List<programHierarchyDetails> entityItems = hierarchymanager.getProgramHierarchyItems(entityId);
+        List<programHierarchyDetails> entityItems = hierarchymanager.getProgramHierarchyItemsActiveOnly(entityId,loggeduserId);
         mav.addObject("entityItems", entityItems);
         
         return mav;
@@ -688,7 +723,9 @@ public class userController {
                     
                      if(selEntityItems != null && selEntityItems.size() > 0) {
                          for(programHierarchyDetails entity : selEntityItems) {
-                             entityItems.add(entity);
+                             if(entity.isStatus()) {
+                                entityItems.add(entity);
+                             }
                          }
                      }
                 }

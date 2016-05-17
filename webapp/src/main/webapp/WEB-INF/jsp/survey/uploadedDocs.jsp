@@ -9,7 +9,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<div class="page-content" id="createEventForm" style="width:500px;padding:0;">
+<div class="page-content" id="createEventForm" style="width:540px;padding:0;max-height: 500px; overflow: auto">
 
     <c:if test="${not empty surveyDocuments}">
         <div class="row">

@@ -18,7 +18,7 @@
          <dependency>
             <groupId>registryKit</groupId>
             <artifactId>registryKit</artifactId>
-            <version>1.1</version>
+            <version>1.2</version>
         </dependency>
         
         <!--  Spring  -->
