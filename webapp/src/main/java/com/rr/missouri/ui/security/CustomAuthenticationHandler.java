@@ -44,15 +44,17 @@ public class CustomAuthenticationHandler extends SimpleUrlAuthenticationSuccessH
         
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
 
-      //we only set last login if not loginAs
-        if (request.getParameter("j_username").equalsIgnoreCase(authentication.getName())) {
-        	usermanager.setLastLogin(authentication.getName());
-        }
-        
         HttpSession session = request.getSession();
         // Need to get the userId 
         User userDetails = usermanager.getUserByUsername(authentication.getName(), programId);
        
+        
+      //we only set last login if not loginAs
+        if (request.getParameter("j_username").equalsIgnoreCase(authentication.getName())) {
+        	usermanager.setLastLogin(userDetails);
+        }
+        
+        
         if (!request.getParameter("j_username").equalsIgnoreCase(authentication.getName())) {
 	        try {
 	            //log user activity
