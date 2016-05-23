@@ -336,6 +336,20 @@ public class userController {
         mav.addObject("v", v);
         mav.addObject("userId", i);
         
+        /* Get a list of completed surveys the logged in user has access to */
+        User userDetails = (User) session.getAttribute("userDetails");
+        
+        /* Get user permissions */
+        userProgramModules modulePermissions = usermanager.getUserModulePermissions(programId, userDetails.getId(), moduleId);
+        if (userDetails.getRoleId() == 2) {
+            allowCreate = true;
+            allowDelete = true;
+        } else {
+            allowDelete = modulePermissions.isAllowDelete();
+        }
+
+        mav.addObject("allowDelete", allowDelete);
+        
         return mav;
     }
     
