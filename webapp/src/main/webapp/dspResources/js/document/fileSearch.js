@@ -195,8 +195,36 @@ jQuery(function ($) {
             }
 
         });
+    });
+    
+    /* Remove existing document */
+    $(document).on('click', '.deleteDocument', function () {
 
-        
+        var confirmed = confirm("Are you sure you want to remove this document?");
+
+        if (confirmed) {
+            var docId = $(this).attr('rel');
+            
+            var table = $('#dynamic-table').DataTable();
+            
+            table.row($(this).parents('tr')).remove().draw();
+            
+            
+            $.ajax({
+                url: '/documents/deleteDocument.do',
+                type: 'POST',
+                data: {
+                    'documentId': docId
+                },
+                success: function (data) {
+                    //location.reload();
+                },
+                error: function (error) {
+
+                }
+            });
+        }
+
     });
     
     $(document).on('click', '#clearSearchFields', function() {
