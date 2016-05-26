@@ -45,15 +45,20 @@
 </c:if>
 
 <div class="row">
+    <div class="col-xs-7 center">
+        <img src="../../dspResources/images/PedNet Conference.JPG" style="max-width: 100%; max-height: 100%;" alt=""/>
+    </div>
     <div class="col-xs-5 center">
         <img src="../../dspResources/images/summer_summit.jpg" style="max-width: 100%; max-height: 100%;" alt=""/>
     </div>
+</div>
+<div class="row">
     <div class="col-xs-7 center">
         <img src="../../dspResources/images/HSHC_Map_2015-16.jpg" style="max-width: 100%; max-height: 100%;"  alt=""/>
     </div>
     <div class="col-xs-5 center">
         <img src="../../dspResources/images/HSHC_Circles.png" style="max-width: 100%; max-height: 100%;" alt=""/>
-    </div>
+    </div>   
 </div>
 
 <div class="row">
