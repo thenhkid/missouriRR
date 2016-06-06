@@ -81,6 +81,7 @@
         <put-list-attribute name="headScripts">
             <add-attribute value="/dspResources/js/ace-elements.min.js" />
             <add-attribute value="/dspResources/js/fuelux/fuelux.tree.min.js" />
+            <add-attribute value="/dspResources/js/bootbox.min.js" />
         </put-list-attribute>
     </definition>
     

@@ -350,10 +350,20 @@ function documentFn(event) {
     else {
         $('#uploading').show();
     }
+    
+     var box = bootbox.dialog({
+        message: "<i class='fa fa-upload bigger-210 white'></i><span class='bigger-210 white' style='padding-left:10px;'>Uploading...</span>",
+        closeButton: false,
+        size: "small"
+     });
 
-    var submitURL = "/documents/saveDocuemntForm.do";
-    $("#documentForm").attr("action", submitURL);
-    $("#documentForm").submit();
+    box.find('.modal-content').css({'background-color': '#CBCBCB'}); 
+
+    setTimeout( function () { 
+      var submitURL = "/documents/saveDocuemntForm.do";
+        $("#documentForm").attr("action", submitURL);
+        $("#documentForm").submit();
+     }, 300);
 
 }
 
