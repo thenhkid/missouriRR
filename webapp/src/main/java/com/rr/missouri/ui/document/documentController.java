@@ -873,7 +873,12 @@ public class documentController {
                         folder.put("name", "<i class=\"ace-icon fa fa-folder\"></i> " + folderName);
                     }
                     folder.put("id", fldr.getId());
-                    folder.put("readOnly", fldr.getReadOnly());
+                    if(userDetails.getRoleId() == 2) {
+                        folder.put("readOnly", false);
+                    }
+                    else {
+                       folder.put("readOnly", fldr.getReadOnly()); 
+                    }
 
                     folders.add(folder);
                     
@@ -908,13 +913,16 @@ public class documentController {
                     
                     }
                     folder.put("id", fldr.getId());
-                    folder.put("readOnly", fldr.getReadOnly());
-
+                    
+                    if(userDetails.getRoleId() == 2) {
+                        folder.put("readOnly", false);
+                    }
+                    else {
+                       folder.put("readOnly", fldr.getReadOnly()); 
+                    }
                     folders.add(folder);
-
                 }
             }
-
         }
         
          json.put("data", folders);
