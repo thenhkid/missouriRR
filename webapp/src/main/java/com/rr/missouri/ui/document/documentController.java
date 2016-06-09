@@ -856,17 +856,24 @@ public class documentController {
                     
                     folder = new JSONObject();
                     
+                    String folderName = fldr.getFolderName();
+                    
+                    if(fldr.getReadOnly() == true) {
+                        folderName = folderName + " (Read Only)";
+                    }
+                    
                     List<documentFolder> subsubfolderList = documentmanager.getSubFolders(programId, userDetails, fldr.getId());
 
                     if (subsubfolderList != null && subsubfolderList.size() > 0) {
                         folder.put("type", "folder");
-                        folder.put("name", fldr.getFolderName());
+                        folder.put("name", folderName);
                     }
                     else {
                         folder.put("type", "item");
-                        folder.put("name", "<i class=\"ace-icon fa fa-folder\"></i> " + fldr.getFolderName());
+                        folder.put("name", "<i class=\"ace-icon fa fa-folder\"></i> " + folderName);
                     }
                     folder.put("id", fldr.getId());
+                    folder.put("readOnly", fldr.getReadOnly());
 
                     folders.add(folder);
                     
@@ -885,17 +892,23 @@ public class documentController {
 
                     List<documentFolder> subfolderList = documentmanager.getSubFolders(programId, userDetails, fldr.getId());
 
+                    String folderName = fldr.getFolderName();
+                    
+                    if(fldr.getReadOnly() == true) {
+                        folderName = folderName + " (Read Only)";
+                    }
+                    
                     if (subfolderList != null && subfolderList.size() > 0) {
                         folder.put("type", "folder");
-                        folder.put("name", fldr.getFolderName());
-                    
+                        folder.put("name", folderName);
                     }
                     else {
                         folder.put("type", "item");
-                        folder.put("name", "<i class=\"ace-icon fa fa-folder green\"></i> " + fldr.getFolderName());
+                        folder.put("name", "<i class=\"ace-icon fa fa-folder green\"></i> " + folderName);
                     
                     }
                     folder.put("id", fldr.getId());
+                    folder.put("readOnly", fldr.getReadOnly());
 
                     folders.add(folder);
 
