@@ -392,6 +392,7 @@ public class surveyController {
 
         mav.addObject("selectedEntities", selectedEntities.toString().replace("[", "").replace("]", ""));
         mav.addObject("currentPage", 1);
+        mav.addObject("currPageNum", 1);
 
         mav.addObject("qNum", 0);
         mav.addObject("disabled", false);
@@ -626,6 +627,7 @@ public class surveyController {
         mav.addObject("selectedEntities", selectedEntities.toString().replace("[", "").replace("]", ""));
 
         mav.addObject("qNum", 0);
+        mav.addObject("currPageNum", 1);
 
         boolean disabled = false;
         if ("/surveys/viewSurvey".equals(request.getServletPath())) {
@@ -655,7 +657,8 @@ public class surveyController {
     public ModelAndView saveSurveyPage(@ModelAttribute(value = "survey") survey survey, HttpSession session,
             RedirectAttributes redirectAttr, @RequestParam String action, @RequestParam Integer goToPage, @RequestParam(value = "entityIds", required = false) List<String> entityIds,
             @RequestParam(value = "selectedEntities", required = false) List<String> selectedEntities,
-            @RequestParam(value = "disabled", required = true, defaultValue = "false") boolean disabled) throws Exception {
+             @RequestParam(value = "disabled", required = true, defaultValue = "false") boolean disabled,
+            @RequestParam(value = "currPageNum", required = true) int currPageNum) throws Exception {
 
         Integer goToQuestion = 0;
         boolean skipToEnd = false;
@@ -698,7 +701,7 @@ public class surveyController {
                         
                         surveyQuestionAnswers questionAnswer = it.next();
                         
-                        if(questionAnswer.getSurveyPageId() > question.getSurveyPageId()) {
+                        if((questionAnswer.getPageNum() > currPageNum)) {
                             questionAnswer.setSaveToDB(false);
                         }
 
@@ -749,6 +752,7 @@ public class surveyController {
                                 questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
                                 questionAnswer.setRelatedQuestionId(question.getRelatedQuestionId());
                                 questionAnswer.setSaveToDB(true);
+                                questionAnswer.setPageNum(currPageNum);
                             }
                         }
                     }
@@ -800,6 +804,7 @@ public class surveyController {
                                 questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
                                 questionAnswer.setRelatedQuestionId(question.getRelatedQuestionId());
                                 questionAnswer.setSaveToDB(true);
+                                questionAnswer.setPageNum(currPageNum);
 
                                 questionAnswers.add(questionAnswer);
 
@@ -861,6 +866,7 @@ public class surveyController {
                             questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
                             questionAnswer.setRelatedQuestionId(question.getRelatedQuestionId());
                             questionAnswer.setSaveToDB(true);
+                            questionAnswer.setPageNum(currPageNum);
 
                             questionAnswers.add(questionAnswer);
                         }
@@ -878,6 +884,7 @@ public class surveyController {
                         questionAnswer.setSaveToFieldId(question.getSaveToFieldId());
                         questionAnswer.setRelatedQuestionId(question.getRelatedQuestionId());
                         questionAnswer.setSaveToDB(true);
+                        questionAnswer.setPageNum(currPageNum);
 
                         questionAnswers.add(questionAnswer);
                     }
@@ -920,6 +927,9 @@ public class surveyController {
 
         if ("prev".equals(action)) {
             mav.setViewName("/takeSurvey");
+            
+            currPageNum--;
+            mav.addObject("currPageNum", currPageNum);
             
             List<Integer> seenPages = (List<Integer>)session.getAttribute("seenPages");
             
@@ -967,6 +977,9 @@ public class surveyController {
             qNum = (survey.getLastQNumAnswered() - totalPageQuestions) - 1;
         } else if ("next".equals(action)) {
             mav.setViewName("/takeSurvey");
+            
+            currPageNum++;
+            mav.addObject("currPageNum", currPageNum);
 
             if (goToPage > 0) {
                 nextPage = goToPage;

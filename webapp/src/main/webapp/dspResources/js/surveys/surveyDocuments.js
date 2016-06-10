@@ -55,10 +55,17 @@ jQuery(function ($) {
         });
 
         $('#tree1').on('selected.fu.tree', function (event, data) {
-            $('#otherFolder').val(data.selected[0].id);
+            if(data.selected[0].readOnly === false) {
+                $('#otherFolder').val(data.selected[0].id);
+            }
+            else {
+                $('#tree1').trigger('deselected.fu.tree');
+            }
         });
 
         $('#tree1').on('deselected.fu.tree', function (event, data) {
+            $('.tree-item').removeClass("tree-selected");
+            $('.tree-branch').removeClass("tree-selected");
             $('#otherFolder').val(0);
         });
         
