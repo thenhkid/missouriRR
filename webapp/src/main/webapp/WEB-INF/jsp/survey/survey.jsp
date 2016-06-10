@@ -30,6 +30,7 @@
             <input type="hidden" name="selectedEntities" value="${selectedEntities}" />
             <input type="hidden" id="disabled" name="disabled" value="${disabled}" />
             <input type="hidden" name="pageId" value="${survey.pageId}" />
+            <input type="hidden" name="currPageNum" value="${currPageNum}" />
 
             <div class="row">
                 <div class="col-sm-5">
