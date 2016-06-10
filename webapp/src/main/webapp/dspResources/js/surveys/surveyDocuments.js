@@ -65,6 +65,7 @@ jQuery(function ($) {
 
         $('#tree1').on('deselected.fu.tree', function (event, data) {
             $('.tree-item').removeClass("tree-selected");
+            $('.tree-branch').removeClass("tree-selected");
             $('#otherFolder').val(0);
         });
         
