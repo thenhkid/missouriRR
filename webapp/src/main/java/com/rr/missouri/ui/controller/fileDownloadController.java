@@ -28,6 +28,7 @@ import java.util.Properties;
 import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -36,25 +37,25 @@ import org.springframework.web.servlet.view.RedirectView;
 @Controller
 @RequestMapping("/FileDownload")
 public class fileDownloadController {
-    
+
     @Resource(name = "myProps")
     private Properties myProps;
 
     @Value("${programId}")
     private Integer programId;
-    
+
     @Value("${programName}")
     private String programName;
-    
+
     @Value("${topSecret}")
     private String topSecret;
 
     @Autowired
     programManager programmanager;
-    
+
     @Autowired
     documentManager documentmanager;
-    
+
     @Autowired
     emailManager emailManager;
 
@@ -88,8 +89,8 @@ public class fileDownloadController {
             String mimeType = context.getMimeType(dir.getDir() + filename);
 
             File f = new File(dir.getDir() + filename);
-            
-            if(f.exists()) {
+
+            if (f.exists()) {
 
                 if (mimeType == null) {
                     // set to binary type if MIME mapping not found
@@ -113,31 +114,62 @@ public class fileDownloadController {
                 in.close();
                 outputStream.close();
                 return null;
-            }
-            else {
-                Integer lastSlash = foldername.lastIndexOf("/");
-                String folderName = foldername.substring(lastSlash+1, foldername.length());
-                
-                /* Get the folder details */
-                documentFolder folderDetails = documentmanager.getFolderByName(programId, folderName);
-                
-                /* Sent Missing Document Email */
+            } else {
+
+                int slashCount = StringUtils.countMatches(foldername, "/");
+
+                documentFolder folderDetails = null;
+
+                if (slashCount > 0) {
+                    String[] folders = foldername.split("/");
+                    String parentFolder = "";
+                    String subFolder = "";
+                    String lastFolder = "";
+
+                    switch (slashCount) {
+                        case 3:
+                            parentFolder = folders[1];
+                            subFolder = folders[2];
+                            lastFolder = folders[3];
+                            break;
+                        case 2:
+                            parentFolder = folders[1];
+                            subFolder = folders[2];
+                            break;
+                        default:
+                            parentFolder = folders[1];
+                            break;
+                    }
+
+                    documentFolder parentFolderDetails = documentmanager.getFolderByName(programId, parentFolder);
+                    folderDetails = parentFolderDetails;
+                    if (!"".equals(subFolder)) {
+                        documentFolder subFolderDetails = documentmanager.getFolderByNameIncParent(programId, subFolder, parentFolderDetails.getId());
+                        folderDetails = subFolderDetails;
+
+                        if (!"".equals(lastFolder)) {
+                            documentFolder lastFolderDetails = documentmanager.getFolderByNameIncParent(programId, lastFolder, subFolderDetails.getId());
+                            folderDetails = lastFolderDetails;
+                        }
+                    }
+
+                }
+
                 emailMessage messageDetails = new emailMessage();
                 messageDetails.settoEmailAddress("rrnotifications@gmail.com");
                 messageDetails.setmessageSubject(programName + " (" + myProps.getProperty("server.identity") + ")" + " - Missing Document");
-                
+
                 StringBuilder sb = new StringBuilder();
 
                 sb.append("The following file was clicked but can't be found.<br /><br />");
-                sb.append("file Name: " +filename+"<br /><br />");
-                sb.append("Location: " + dir.getDir() + filename);
-                
+                sb.append("file Name: ").append(filename).append("<br /><br />");
+                sb.append("Location: ").append(dir.getDir()).append(filename);
+
                 messageDetails.setmessageBody(sb.toString());
                 messageDetails.setfromEmailAddress("gchan@health-e-link.net");
-                
+
                 emailManager.sendEmail(messageDetails);
-                
-                if(folderDetails != null && request.getHeader("referer").contains("folder")) {
+                if (folderDetails != null && request.getHeader("referer").contains("folder")) {
                     encryptObject encrypt = new encryptObject();
                     Map<String, String> map;
                     map = new HashMap<String, String>();
@@ -145,12 +177,11 @@ public class fileDownloadController {
                     map.put("topSecret", topSecret);
 
                     String[] encrypted = encrypt.encryptObject(map);
-                    
+
                     redirectAttr.addFlashAttribute("error", "missing");
-                    ModelAndView mav = new ModelAndView(new RedirectView("/documents/folder?i="+encrypted[0]+"&v="+encrypted[1]));
+                    ModelAndView mav = new ModelAndView(new RedirectView("/documents/folder?i=" + encrypted[0] + "&v=" + encrypted[1]));
                     return mav;
-                }
-                else {
+                } else {
                     redirectAttr.addFlashAttribute("error", "missing");
                     ModelAndView mav = new ModelAndView(new RedirectView(request.getHeader("referer")));
                     return mav;
@@ -181,7 +212,7 @@ public class fileDownloadController {
         if (!errorMessage.equalsIgnoreCase("")) {
             throw new Exception(errorMessage);
         }
-        
+
         return null;
     }
 
