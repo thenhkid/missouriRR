@@ -46,21 +46,12 @@
 
 <div class="row">
     <div class="col-xs-7 center">
-        <img src="../../dspResources/images/PedNet Conference.JPG" style="max-width: 100%; max-height: 100%;" alt=""/>
+        <img src="../../dspResources/images/HSHC_Map_2015-16.jpg" style="max-width: 100%; max-height: 100%;" alt=""/>
     </div>
     <div class="col-xs-5 center">
         <img src="../../dspResources/images/HSHC_Circles.png" style="max-width: 100%; max-height: 100%;" alt=""/>
     </div>
 </div>
-<div class="row">
-    <div class="col-xs-7 center">
-        <img src="../../dspResources/images/HSHC_Map_2015-16.jpg" style="max-width: 100%; max-height: 100%;"  alt=""/>
-    </div>
-    <div class="col-xs-5 center">
-        &nbsp;
-    </div>   
-</div>
-
 <div class="row">
     <div class="col-xs-12">
         <p>Grantees: To share an event, program, or meeting, please add the activity to the Calendar page. To share materials, please add them to one of the public folders available to you under the Documents tab. To share thoughts, questions, or comments with other grantees, please use the Forum page.</p>
