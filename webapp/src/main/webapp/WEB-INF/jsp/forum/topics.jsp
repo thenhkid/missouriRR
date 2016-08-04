@@ -65,6 +65,7 @@
                                 <th scope="col" class="center">Views</th>
                                 <th scope="col" class="center">Replies</th>
                                 <th scope="col">Last Post</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -91,6 +92,7 @@
                                 <th scope="col" class="center">Views</th>
                                 <th scope="col" class="center">Replies</th>
                                 <th scope="col">Last Post</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -124,6 +126,7 @@
                                         <br />
                                         <fmt:formatDate value="${topic.lastPostOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
                                     </td>
+                                    <td><fmt:formatDate value="${topic.lastPostOn}" type="both" pattern="E MMM dd, yyyy h:mm a" /></td>
                                 </tr>
                             </c:forEach>
                         </tbody>
@@ -145,6 +148,7 @@
                                 <th scope="col" class="center">Views</th>
                                 <th scope="col" class="center">Replies</th>
                                 <th scope="col">Last Post</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -179,6 +183,7 @@
                                         <br />
                                         <fmt:formatDate value="${topic.lastPostOn}" type="both" pattern="E MMM dd, yyyy h:mm a" />
                                     </td>
+                                    <td><fmt:formatDate value="${topic.lastPostOn}" type="both" pattern="E MMM dd, yyyy h:mm a" /></td>
                                 </tr>
                             </c:forEach>
                         </tbody>
