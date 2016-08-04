@@ -24,8 +24,13 @@ jQuery(function ($) {
                 bAutoWidth: false,
                 bFilter: true,
                 "aoColumns": [
-                    { "bSearchable": false }, { "bSearchable": false }, { "bSearchable": false }, null
+                    { "bSearchable": false }, 
+                    { "bSearchable": false }, 
+                    { "bSearchable": false }, 
+                    null,
+                    { "visible": false, "bSearchable": false}
                 ],
+                 "aaSorting": [[ 4, "desc" ]],
                 "oLanguage": {
                 "sSearch": "Filter on Posted Date: "
                 }
