@@ -642,7 +642,7 @@ public class documentController {
 
         User userDetails = (User) session.getAttribute("userDetails");
 
-        documentNotificationPreferences notificationPreferences = documentmanager.getNotificationPreferences(userDetails.getId());
+        documentNotificationPreferences notificationPreferences = documentmanager.getNotificationPreferences(userDetails.getId(),programId);
 
         if (notificationPreferences != null) {
             mav.addObject("notificationPreferences", notificationPreferences);

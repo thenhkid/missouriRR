@@ -114,22 +114,22 @@ public class profileController {
                         showSkillSets = true;
                         break;
                     case 7:
-                        calendarNotificationPreferences calendarNotificationPreferences = calendarManager.getNotificationPreferences(userDetails.getId());
+                        calendarNotificationPreferences calendarNotificationPreferences = calendarManager.getNotificationPreferences(userDetails.getId(), programId);
                         mav.addObject("calendarNotificationPreferences", calendarNotificationPreferences);
                         showCalendarNotifications = true;
                         break;
                     case 9:
-                        forumNotificationPreferences forumNotificationPreferences = forumManager.getNotificationPreferences(userDetails.getId());
+                        forumNotificationPreferences forumNotificationPreferences = forumManager.getNotificationPreferences(userDetails.getId(), programId);
                         mav.addObject("forumNotificationPreferences", forumNotificationPreferences);
                         showForumNotifications = true;
                         break;
                     case 10:
-                        documentNotificationPreferences documentNotificationPreferences = documentmanager.getNotificationPreferences(userDetails.getId());
+                        documentNotificationPreferences documentNotificationPreferences = documentmanager.getNotificationPreferences(userDetails.getId(), programId);
                         mav.addObject("documentNotificationPreferences", documentNotificationPreferences);
                         showDocumentNotifications = true;
                         break;
                    case 14:
-                        announcementNotificationPreferences announcementNotificationPreferences = announcementmanager.getNotificationPreferences(userDetails.getId());
+                        announcementNotificationPreferences announcementNotificationPreferences = announcementmanager.getNotificationPreferences(userDetails.getId(), programId);
                         mav.addObject("announcementNotificationPreferences", announcementNotificationPreferences);
                         showAnnouncementNotifications = true;
                         break;
@@ -233,7 +233,7 @@ public class profileController {
         
         /* Check if Calendar Event Notifications need to be updated */
         if(calendarNotificationId != null && !"".equals(calendarNotificationId) && Integer.parseInt(calendarNotificationId) > 0) {
-            calendarNotificationPreferences calendarNotificationPreferences = calendarManager.getNotificationPreferences(userDetails.getId());
+            calendarNotificationPreferences calendarNotificationPreferences = calendarManager.getNotificationPreferences(userDetails.getId(), programId);
             
             if(calendarnotificationEmail == null || "".equals(calendarnotificationEmail) || "1".equals(updateAllEmails)) {
                 calendarnotificationEmail = email;
@@ -275,7 +275,7 @@ public class profileController {
         
         /* Check if Forum Notifications need to be updated */
         if(forumNotificationId != null && !"".equals(forumNotificationId) && Integer.parseInt(forumNotificationId) > 0) {
-            forumNotificationPreferences forumNotificationPreferences = forumManager.getNotificationPreferences(userDetails.getId());
+            forumNotificationPreferences forumNotificationPreferences = forumManager.getNotificationPreferences(userDetails.getId(), programId);
             
             if(forumnotificationEmail == null || "".equals(forumnotificationEmail) || "1".equals(updateAllEmails)) {
                 forumnotificationEmail = email;
@@ -329,7 +329,7 @@ public class profileController {
                 
         /* Check if Document Notifications need to be updated */
         if(documentNotificationId != null && !"".equals(documentNotificationId) && Integer.parseInt(documentNotificationId) > 0) {
-            documentNotificationPreferences documentNotificationPreferences = documentmanager.getNotificationPreferences(userDetails.getId());
+            documentNotificationPreferences documentNotificationPreferences = documentmanager.getNotificationPreferences(userDetails.getId(), programId);
             
             if(documentnotificationEmail == null || "".equals(documentnotificationEmail) || "1".equals(updateAllEmails)) {
                 documentnotificationEmail = email;
@@ -373,7 +373,7 @@ public class profileController {
         
         /* Check if Announcement Notifications need to be updated */
         if(announcementNotificationId != null && !"".equals(announcementNotificationId) && Integer.parseInt(announcementNotificationId) > 0) {
-            announcementNotificationPreferences announcementNotificationPreferences = announcementmanager.getNotificationPreferences(userDetails.getId());
+            announcementNotificationPreferences announcementNotificationPreferences = announcementmanager.getNotificationPreferences(userDetails.getId(), programId);
             
             if(announcementnotificationEmail == null || "".equals(announcementnotificationEmail) || "1".equals(updateAllEmails)) {
                 announcementnotificationEmail = email;
@@ -448,22 +448,22 @@ public class profileController {
                         showSkillSets = true;
                         break;
                     case 7:
-                        calendarNotificationPreferences calendarNotificationPreferences = calendarManager.getNotificationPreferences(userDetails.getId());
+                        calendarNotificationPreferences calendarNotificationPreferences = calendarManager.getNotificationPreferences(userDetails.getId(), programId);
                         mav.addObject("calendarNotificationPreferences", calendarNotificationPreferences);
                         showCalendarNotifications = true;
                         break;
                     case 9:
-                        forumNotificationPreferences forumNotificationPreferences = forumManager.getNotificationPreferences(userDetails.getId());
+                        forumNotificationPreferences forumNotificationPreferences = forumManager.getNotificationPreferences(userDetails.getId(), programId);
                         mav.addObject("forumNotificationPreferences", forumNotificationPreferences);
                         showForumNotifications = true;
                         break;
                     case 10:
-                        documentNotificationPreferences documentNotificationPreferences = documentmanager.getNotificationPreferences(userDetails.getId());
+                        documentNotificationPreferences documentNotificationPreferences = documentmanager.getNotificationPreferences(userDetails.getId(), programId);
                         mav.addObject("documentNotificationPreferences", documentNotificationPreferences);
                         showDocumentNotifications = true;
                         break;
                     case 14:
-                        announcementNotificationPreferences announcementNotificationPreferences = announcementmanager.getNotificationPreferences(userDetails.getId());
+                        announcementNotificationPreferences announcementNotificationPreferences = announcementmanager.getNotificationPreferences(userDetails.getId(), programId);
                         mav.addObject("announcementNotificationPreferences", announcementNotificationPreferences);
                         showAnnouncementNotifications = true;
                         break;    
