@@ -656,7 +656,7 @@ public class calendarController {
 
         User userDetails = (User) session.getAttribute("userDetails");
 
-        calendarNotificationPreferences notificationPreferences = calendarManager.getNotificationPreferences(userDetails.getId());
+        calendarNotificationPreferences notificationPreferences = calendarManager.getNotificationPreferences(userDetails.getId(), programId);
 
         if (notificationPreferences != null) {
             mav.addObject("notificationPreferences", notificationPreferences);
