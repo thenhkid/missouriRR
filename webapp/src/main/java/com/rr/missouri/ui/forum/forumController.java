@@ -651,7 +651,7 @@ public class forumController {
 
         User userDetails = (User) session.getAttribute("userDetails");
 
-        forumNotificationPreferences notificationPreferences = forumManager.getNotificationPreferences(userDetails.getId());
+        forumNotificationPreferences notificationPreferences = forumManager.getNotificationPreferences(userDetails.getId(), programId);
 
         if (notificationPreferences != null) {
             mav.addObject("notificationPreferences", notificationPreferences);

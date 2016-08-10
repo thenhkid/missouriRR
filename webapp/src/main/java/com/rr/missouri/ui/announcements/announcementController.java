@@ -567,7 +567,7 @@ public class announcementController {
 
         User userDetails = (User) session.getAttribute("userDetails");
 
-        announcementNotificationPreferences notificationPreferences = announcementmanager.getNotificationPreferences(userDetails.getId());
+        announcementNotificationPreferences notificationPreferences = announcementmanager.getNotificationPreferences(userDetails.getId(), programId);
 
         if (notificationPreferences != null) {
             mav.addObject("notificationPreferences", notificationPreferences);
