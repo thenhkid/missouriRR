@@ -18,6 +18,7 @@ import com.registryKit.user.User;
 import com.registryKit.user.userManager;
 import com.registryKit.user.userProgramModules;
 import com.rr.missouri.ui.security.encryptObject;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -35,8 +36,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -232,8 +235,10 @@ public class importExportController {
 
         /* Get a list of submitted surveys */
         if (exportDetails.getQuestionOnly() == false) {
-            submittedSurveys = surveyManager.getSubmittedSurveys(exportDetails.getSurveyId(), exportDetails.getExportStartDate(), exportDetails.getExportEndDate());
-
+            //submittedSurveys = surveyManager.getSubmittedSurveys(exportDetails.getSurveyId(), exportDetails.getExportStartDate(), exportDetails.getExportEndDate());
+            
+        	submittedSurveys = surveyManager.getSubmittedSurveysByQuestionDate(exportDetails.getSurveyId(), surveyManager.getSurveyDateQuestionId(exportDetails.getSurveyId()), exportDetails.getExportStartDate(), exportDetails.getExportEndDate());
+            
             if (submittedSurveys == null || submittedSurveys.isEmpty()) {
                 createExport = false;
             }
