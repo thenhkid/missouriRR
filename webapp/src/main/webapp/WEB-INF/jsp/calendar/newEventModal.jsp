@@ -84,17 +84,19 @@
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="form-group">
+                <div class="form-group" id="eventDateDiv">
                     <div class="row clearfix">
                         <div class="col-md-6">
                             <label for="eventDate">Start Date</label>
                             <fmt:formatDate value="${calendarEvent.eventStartDate}" var="dateStartString" pattern="MM/dd/yyyy" />
                             <form:input path="startDate" class="form-control eventStartDate" placeholder="Start Date" value="${dateStartString}" />
+                            <span id="eventStartDateMessage" class="control-label"></span>
                         </div>
                         <div class="col-md-6">
                             <label for="eventDate">End Date</label>
                             <fmt:formatDate value="${calendarEvent.eventEndDate}" var="dateEndString" pattern="MM/dd/yyyy" />
                             <form:input path="endDate" class="form-control eventEndDate" placeholder="End Date" value="${dateEndString}" />
+                            <span id="eventEndDateMessage" class="control-label"></span>
                         </div>
                     </div>
                 </div>

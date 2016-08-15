@@ -114,7 +114,23 @@ jQuery(function ($) {
         var formData = $("#eventForm").serializefiles();
 
         var errorFound = false;
-
+        
+        if ($('.eventStartDate').val() === "") {
+            $('#eventDateDiv').addClass('has-error');
+            $('#eventStartDateMessage').addClass('has-error');
+            $('#eventStartDateMessage').html('The event start date is required.');
+            $('#eventStartDateMessage').show();
+            errorFound = true;
+        }
+        
+        if ($('.eventEndDate').val() === "") {
+            $('#eventDateDiv').addClass('has-error');
+            $('#eventEndDateMessage').addClass('has-error');
+            $('#eventEndDateMessage').html('The event end date is required.');
+            $('#eventEndDateMessage').show();
+            errorFound = true;
+        }
+        
         if ($('#eventStartTime').val() === "") {
             $('#eventTimeDiv').addClass('has-error');
             $('#eventStartTimeMessage').addClass('has-error');
