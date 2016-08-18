@@ -6,6 +6,29 @@
         http://www.quartz-scheduler.org/xml/job_scheduling_data_1_8.xsd"
     version="1.8">
  
+ 
+ <schedule>
+        <job>
+            <name>checkSurveyDates</name>
+            <group>processGroup</group>
+            <description>This process will run every 15 minutes to check for new calendar notifications to be sent out.</description>
+            <job-class>com.rr.missouri.ui.jobs.surveyDateCheckJob</job-class>
+        </job>
+ 
+        <trigger>
+            <cron>
+                <name>surveyDateTrigger</name>
+                <job-name>checkSurveyDates</job-name>
+                <job-group>processGroup</job-group>
+                <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
+                <!-- Runs every minute-->
+                <cron-expression>0 0/15 * * * ?</cron-expression>
+            </cron>
+        </trigger>
+    </schedule>
+   
+
+ 
     <schedule>
         <job>
             <name>checkCalendarNotifications</name>
@@ -129,6 +152,5 @@
             </cron>
         </trigger>
     </schedule>
-    
     
 </job-scheduling-data>
