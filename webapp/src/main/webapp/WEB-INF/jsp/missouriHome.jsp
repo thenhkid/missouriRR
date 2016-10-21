@@ -43,6 +43,7 @@
         </div>
     </div>
 </c:if>
+<%--
 <div class="row">
 	<div class="col-xs-1 center">
         &nbsp;
@@ -51,16 +52,16 @@
         <img src="../../dspResources/images/HSHC-Convening_Heath-E-link.jpg" style="max-width: 100%; max-height: 100%;" alt=""/>
     </div>
     <div class="col-xs-6 center">
-        <img src="../../dspResources/images/HSHC_Circles.png" style="max-width: 100%; max-height: 100%;" alt=""/>
+        &nbsp;
     </div>
-    
 </div>
+--%>
 <div class="row">
-    <div class="col-xs-7 center"><br/>
+    <div class="col-xs-8 center"><br/>
         <img src="../../dspResources/images/HSHCMap.png" style="max-width: 100%; max-height: 100%;" alt=""/>
     </div>
-    <div class="col-xs-5 center">
-    &nbsp;
+    <div class="col-xs-4 center">
+    <img src="../../dspResources/images/HSHC_Circles.png" style="max-width: 100%; max-height: 100%;" alt=""/>
     </div>
 </div>
 <div class="row">
