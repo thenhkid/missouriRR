@@ -26,3 +26,4 @@ registryKit/target
 webapp/target/classes/spring/springSecurity.xml
 webapp/src/main/resources/rebel.xml
 /webapp/target/classes/quartz.properties
+/webapp/nb-configuration.xml
