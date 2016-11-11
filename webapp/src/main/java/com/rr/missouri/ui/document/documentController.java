@@ -1068,5 +1068,18 @@ public class documentController {
         return mav;
     }        
 
-
+    @RequestMapping(value = "/checkAdminFolder.do", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    Integer checkAdminFolder (@RequestParam(value = "folderId", required = true) Integer folderId,
+            HttpSession session, HttpServletRequest request) throws Exception {
+        
+        documentFolder folder = documentmanager.getFolderById(folderId);
+        
+        if(folder.getAdminOnly()) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
 }

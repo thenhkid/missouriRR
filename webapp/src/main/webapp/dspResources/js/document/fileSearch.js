@@ -300,7 +300,7 @@ function documentFn(event) {
         
     $('span').removeClass("has-error");
     $('div').removeClass("has-error");
-    $('#titleMsg').html("");
+    $('#titleMsg').html("");f
     $('#docMsg').html("");
     $('#webLinkMsg').html("");
     $('#fromSearch').val(1);
