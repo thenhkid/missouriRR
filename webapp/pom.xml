@@ -223,7 +223,7 @@
         <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
             <artifactId>owasp-java-html-sanitizer</artifactId>
-            <version>[r136,)</version>
+            <version>r156</version>
         </dependency>
         
         <dependency>
