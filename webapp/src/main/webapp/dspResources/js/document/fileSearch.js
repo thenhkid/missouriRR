@@ -290,6 +290,68 @@ jQuery(function ($) {
     
 });
 
+function folderFn() {
+        
+    var noErrors = true;
+
+    /** make sure there is a category **/
+    if ($('#folderName').val().trim() == "") {
+        $('#folderNameDiv').addClass("has-error");
+        $('#folderNameMsg').addClass("has-error");
+        $('#folderNameMsg').html('The folder name is required.');
+        noErrors = false;
+    }
+
+    if ($("#isNotCountyFolder").is(':checked')) {
+          $('#entityId').val(0);
+    }
+
+    var folderName = $('#folderName').val();
+    var folderId = $('#folderId').val();
+    var parentFolderId = $('#parentFolderId').val();
+
+    var nameFound = checkFolderName(folderName, folderId, parentFolderId);
+
+    if(nameFound == 1) {
+        $('#folderNameDiv').addClass("has-error");
+        $('#folderNameMsg').addClass("has-error");
+        $('#folderNameMsg').html('This folder exists already.');
+        noErrors = false;
+    }
+
+    if(noErrors == false) {
+        return false;
+    }
+    else {
+        $("#folderForm").submit();
+    }
+
+}
+
+function checkFolderName(folderName, folderId, parentFolderId) {
+    
+    var result = "";
+     
+    $.ajax({
+        url: '/documents/checkFolderName.do',
+        type: 'POST',
+        async: false,
+        data: {
+            'folderName': folderName,
+            'folderId': folderId,
+            'parentFolderId': parentFolderId
+        },
+        success: function (data) {
+            result = data;
+        },
+        error: function () {
+            console.log(error);
+        }
+    });
+    
+    return result;
+}
+
 function searchDocuments() {
     var searchValue = $('#documentSearchValue').val();
     var startSearchDate = $('#startSearchDate').val();
