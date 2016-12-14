@@ -179,6 +179,48 @@ jQuery(function ($) {
             });
         });
         
+        //New main folder button
+    $(document).on('click', '#newFolder', function(event) {
+       $.ajax({
+            type: 'GET',
+            url: '/documents/getFolderForm.do',
+            data: {'editFolder': false, 'subfolder': false},
+            success: function (data, event) {
+                
+                data = $(data);
+                
+                //Check if the session has expired.
+                if(data.find('.username').length > 0) {
+                   top.location.href = '/login?expired';
+                }
+                else {
+                   bootbox.dialog({
+                        message: data,
+                        title: "New Folder Form",
+                        buttons: {
+                            cancel: {
+                                label: "Cancel",
+                                className: "btn-default",
+                                callback: function () {
+
+                                }
+                            },
+                            success: {
+                                label: "Create",
+                                className: "btn-primary",
+                                callback: function () {
+                                    return folderFn();
+                                }
+                            },
+                        }
+                    }); 
+                }
+            }
+        });
+        
+    });
+       
+        
         /* Remove existing document */
         $(document).on('click', '.removeFile', function () {
 
