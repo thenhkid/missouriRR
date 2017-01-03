@@ -1036,7 +1036,7 @@ public class surveyController {
                  
                 if("".equals(question.getQuestionValue())) {
                     question.setQuestionValue(currDBValue);
-                    if(!"".equals(question.getQuestionOtherValue())) {
+                    if("".equals(question.getQuestionOtherValue())) {
                         question.setQuestionOtherValue(currDBOtherValue);
                     }
                 }
