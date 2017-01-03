@@ -348,7 +348,7 @@ jQuery(function ($) {
                                 droppable: false,
                                 thumbnail: 'small',
                                 maxSize: 4000000,
-                                allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx', 'ppt', 'csv', 'pptx', 'wma', 'zip', 'mp3', 'mp4'],
+                                allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx', 'ppt', 'csv', 'pptx', 'wma', 'zip', 'mp3', 'mp4', 'm4a'],
                                 before_remove: function () {
                                     return true;
                                 },
@@ -362,7 +362,7 @@ jQuery(function ($) {
                                 if(info.error_count['ext'] > 0) {
                                     $('#docDiv').addClass("has-error");
                                     $('#docMsg').addClass("has-error");
-                                    $('#docMsg').html("There were files attached that have an invalid file extension.<br />Valid File Extension:<br /> pdf, txt, doc, docx, gif, png, jpg, jpeg, xls, xlsx, csv, ppt, pptx, wma, zip, mp3, mp4");
+                                    $('#docMsg').html("There were files attached that have an invalid file extension.<br />Valid File Extension:<br /> pdf, txt, doc, docx, gif, png, jpg, jpeg, xls, xlsx, csv, ppt, pptx, wma, zip, mp3, mp4, m4a");
                                     event.preventDefault();
                                 }
                                 else if(info.error_count['size'] > 0) {
@@ -549,7 +549,7 @@ jQuery(function ($) {
                             droppable: false,
                             thumbnail: 'small',
                             maxSize: 4000000,
-                            allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx', 'ppt', 'csv', 'pptx', 'wma', 'zip', 'mp3', 'mp4'],
+                            allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx', 'ppt', 'csv', 'pptx', 'wma', 'zip', 'mp3', 'mp4', 'm4a'],
                             before_remove: function () {
                                 return true;
                             },
@@ -563,7 +563,7 @@ jQuery(function ($) {
                             if(info.error_count['ext'] > 0) {
                                 $('#docDiv').addClass("has-error");
                                 $('#docMsg').addClass("has-error");
-                                $('#docMsg').html("There were files attached that have an invalid file extension.<br />Valid File Extension:<br /> pdf, txt, doc, docx, gif, png, jpg, jpeg, xls, xlsx, csv, ppt, pptx, wma, zip, mp3, mp4");
+                                $('#docMsg').html("There were files attached that have an invalid file extension.<br />Valid File Extension:<br /> pdf, txt, doc, docx, gif, png, jpg, jpeg, xls, xlsx, csv, ppt, pptx, wma, zip, mp3, mp4, m4a");
                                 event.preventDefault();
                             }
                             else if(info.error_count['size'] > 0) {

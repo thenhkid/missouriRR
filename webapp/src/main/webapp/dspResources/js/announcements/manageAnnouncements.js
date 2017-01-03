@@ -18,6 +18,8 @@ jQuery(function ($) {
             $('#dynamic-table')
             .dataTable({
                 bAutoWidth: false,
+                stateSave: true,
+                "stateDuration": 60,
                 "aoColumns": [
                     {"bSortable": false},
                     null,null,null, 
