@@ -18,7 +18,7 @@ jQuery(function ($) {
             .dataTable({
                 bAutoWidth: true,
                 stateSave: true,
-                "stateDuration": 60,
+                "stateDuration": 600,
                 "aoColumns": [
                     null, null, null, null,
                     {"bSortable": false}
