@@ -24,7 +24,7 @@ jQuery(function ($) {
                 bAutoWidth: false,
                 bFilter: true,
                 stateSave: true,
-                "stateDuration": 60,
+                "stateDuration": 600,
                 "aoColumns": [
                     { "bSearchable": false }, 
                     { "bSearchable": false }, 
