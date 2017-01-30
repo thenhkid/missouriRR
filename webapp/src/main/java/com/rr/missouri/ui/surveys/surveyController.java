@@ -163,8 +163,21 @@ public class surveyController {
 
         /* Get a list of completed surveys the logged in user has access to */
         User userDetails = (User) session.getAttribute("userDetails");
+        
+        List<String> summaryColumns = new ArrayList<String>();
+        
+        if(surveyDetails != null) {
+            List<String> surveySummaryColumns = surveyManager.getSurveySummaryColumns(programId, surveyId);
+            if(surveySummaryColumns != null && surveySummaryColumns.size() > 0) {
+                for(String col : surveySummaryColumns) {
+                    summaryColumns.add(col);
+                }
+            }
+        }
+        mav.addObject("summaryColumns", summaryColumns);
+        mav.addObject("surveyTag", surveyDetails.getSurveyTag());
 
-        List<submittedSurveys> submittedSurveys = surveyManager.getEntitySurveys(userDetails, surveyId);
+        List<submittedSurveys> submittedSurveys = surveyManager.getEntitySurveys(userDetails, surveyId, programId);
 
         /* Need to get the selected entities */
         if (submittedSurveys != null && !submittedSurveys.isEmpty()) {
