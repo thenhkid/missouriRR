@@ -60,6 +60,10 @@
                                         <c:if test="${i.index == 0 || i.index == 1}"><th scope="col" >${col}</th></c:if>
                                     </c:forEach>
                                 </c:when>
+                                <c:when test="${surveyTag == 'resourcesLeveraged'}">
+                                   <th scope="col" >Entry Description</th>
+                                   <th scope="col" >Estimated $ Value</th>
+                                </c:when>
                                 <c:otherwise>
                                     <c:forEach varStatus="i" items="${summaryColumns}" var="col">
                                         <th scope="col" >${col}</th>
@@ -83,6 +87,30 @@
                                     <td class="center">${submittedSurvey.id}</td>
                                     <c:if test="${not empty summaryColumns}">
                                         <c:choose>
+                                            <c:when test="${surveyTag == 'resourcesLeveraged'}">
+                                                <c:if test="${not empty submittedSurvey.summaryCols}">
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test="${fn:length(fn:split(submittedSurvey.summaryCols,'|')[1]) > 100}">
+                                                                ${fn:substring(fn:split(submittedSurvey.summaryCols,'|')[1], 0, 100)}...
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                ${fn:split(submittedSurvey.summaryCols,'|')[1]}
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td>
+                                                       <c:choose>
+                                                            <c:when test="${fn:length(fn:split(submittedSurvey.summaryCols,'|')[0]) > 100}">
+                                                                ${fn:substring(fn:split(submittedSurvey.summaryCols,'|')[0], 0, 100)}...
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                ${fn:split(submittedSurvey.summaryCols,'|')[0]}
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                </c:if>
+                                            </c:when>
                                             <c:when test="${surveyTag == 'eventsprograms' || surveyTag == 'practice'}">
                                                 <c:choose>
                                                     <c:when test="${not empty submittedSurvey.summaryCols}">
@@ -93,7 +121,7 @@
                                                                     <td>
                                                                         <c:choose>
                                                                             <c:when test="${fn:length(colData.replace('^^^^^','-')) > 100}">
-                                                                                ${fn:substring(colData.replace("^^^^^","-"), 1, 100)}...
+                                                                                ${fn:substring(colData.replace("^^^^^","-"), 0, 100)}...
                                                                             </c:when>
                                                                             <c:otherwise>
                                                                                 ${colData.replace("^^^^^","-")}
@@ -111,7 +139,7 @@
                                                             <td>
                                                                 <c:choose>
                                                                     <c:when test="${fn:length(tdVal.replace('^^^^^','-')) > 100}">
-                                                                        ${fn:substring(tdVal.replace("^^^^^","-"), 1, 100)}...
+                                                                        ${fn:substring(tdVal.replace("^^^^^","-"), 0, 100)}...
                                                                     </c:when>
                                                                     <c:otherwise>
                                                                         ${tdVal.replace("^^^^^","-")}
@@ -133,7 +161,7 @@
                                                             <td>
                                                                 <c:choose>
                                                                     <c:when test="${fn:length(colData.replace('^^^^^','-')) > 100}">
-                                                                        ${fn:substring(colData.replace("^^^^^","-"), 1, 100)}...
+                                                                        ${fn:substring(colData.replace("^^^^^","-"), 0, 100)}...
                                                                     </c:when>
                                                                     <c:otherwise>
                                                                         ${colData.replace("^^^^^","-")}
