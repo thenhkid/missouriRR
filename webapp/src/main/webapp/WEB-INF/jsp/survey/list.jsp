@@ -108,7 +108,7 @@
                                                                 ${fn:split(submittedSurvey.summaryCols,'|')[2]}
                                                             </c:when>
                                                             <c:otherwise>
-                                                                N/A
+                                                              N/A
                                                             </c:otherwise>
                                                         </c:choose>
                                                     </td>
