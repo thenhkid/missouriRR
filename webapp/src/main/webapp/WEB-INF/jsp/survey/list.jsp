@@ -91,21 +91,24 @@
                                                 <c:if test="${not empty submittedSurvey.summaryCols}">
                                                     <td>
                                                         <c:choose>
-                                                            <c:when test="${fn:length(fn:split(submittedSurvey.summaryCols,'|')[1]) > 100}">
-                                                                ${fn:substring(fn:split(submittedSurvey.summaryCols,'|')[1], 0, 100)}...
+                                                            <c:when test="${fn:length(fn:split(submittedSurvey.summaryCols,'|')[3]) > 100}">
+                                                                ${fn:substring(fn:split(submittedSurvey.summaryCols,'|')[3], 0, 100)}...
                                                             </c:when>
                                                             <c:otherwise>
-                                                                ${fn:split(submittedSurvey.summaryCols,'|')[1]}
+                                                                ${fn:split(submittedSurvey.summaryCols,'|')[3]}
                                                             </c:otherwise>
                                                         </c:choose>
                                                     </td>
                                                     <td>
-                                                       <c:choose>
-                                                            <c:when test="${fn:length(fn:split(submittedSurvey.summaryCols,'|')[0]) > 100}">
-                                                                ${fn:substring(fn:split(submittedSurvey.summaryCols,'|')[0], 0, 100)}...
+                                                        <c:choose>
+                                                            <c:when test="${fn:contains(fn:split(submittedSurvey.summaryCols,'|')[0],'grant')}">
+                                                               ${fn:split(submittedSurvey.summaryCols,'|')[1]}
+                                                            </c:when>
+                                                            <c:when test="${fn:contains(fn:split(submittedSurvey.summaryCols,'|')[0],'Funds')}">
+                                                                ${fn:split(submittedSurvey.summaryCols,'|')[2]}
                                                             </c:when>
                                                             <c:otherwise>
-                                                                ${fn:split(submittedSurvey.summaryCols,'|')[0]}
+                                                              N/A
                                                             </c:otherwise>
                                                         </c:choose>
                                                     </td>
