@@ -132,11 +132,10 @@ jQuery(function ($) {
                 bAutoWidth: false,
                 stateSave: true,
                 "stateDuration": 600,
-                "aoColumns": [
-                    null, null, null, null,
-                    {"bSortable": false},
-                    {"bSortable": false},
-                    {"bSortable": false}
+                "aoColumnDefs":[
+                   {"aTargets": [ -1 ], "bSortable": false },
+                   {"aTargets": [ -2 ], "bSortable": false },
+                   { "aTargets": [ '_all' ], "bSortable": true } 
                 ],
                 "aaSorting": [],
                 "oLanguage": {
