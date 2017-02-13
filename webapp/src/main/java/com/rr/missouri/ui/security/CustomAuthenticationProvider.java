@@ -1,6 +1,7 @@
 package com.rr.missouri.ui.security;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.security.core.userdetails.User;
@@ -123,7 +124,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 throw new BadCredentialsException(strErrorMessage);
             }
         } catch (Exception ex) {
-        	ex.printStackTrace();
+        	System.out.println(new Date() + " " + strErrorMessage + " for user name " + name + " program " + programId);
             throw new BadCredentialsException(strErrorMessage);       
         }
     }

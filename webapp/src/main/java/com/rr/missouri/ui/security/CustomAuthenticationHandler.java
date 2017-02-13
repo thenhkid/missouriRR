@@ -62,7 +62,7 @@ public class CustomAuthenticationHandler extends SimpleUrlAuthenticationSuccessH
 	        	userActivity ua = new userActivity();
 	        	 ua.setUserId(adminDetails.getId());
 	             ua.setControllerName("loginAs");
-	        	 ua.setItemDesc("Logged in as user " + userDetails.getUsername() + " for program " + programId);
+	        	 ua.setItemDesc("Admin name of " + adminDetails.getUsername() + " logged in as user " + userDetails.getUsername() + " for program " + programId);
 	             ua.setMethodName("/sysAdmin/adminFns/loginas");
 	             ua.setItemId(userDetails.getId());
 	             usermanager.saveUserActivity(ua);
