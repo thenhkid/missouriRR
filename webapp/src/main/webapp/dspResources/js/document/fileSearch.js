@@ -122,7 +122,7 @@ jQuery(function ($) {
                            no_icon: 'ace-icon fa fa-cloud-upload',
                            droppable: false,
                            thumbnail: 'small',
-                           maxSize: 4000000,
+                           maxSize: 8000000,
                            allowExt: ['pdf', 'txt', 'doc', 'docx', 'gif', 'png', 'jpg', 'jpeg', 'xls', 'xlsx', 'ppt', 'csv', 'pptx', 'wma', 'zip', 'mp3', 'mp4', 'm4a'],
                            before_remove: function () {
                                return true;
@@ -143,7 +143,7 @@ jQuery(function ($) {
                             else if(info.error_count['size'] > 0) {
                                 $('#docDiv').addClass("has-error");
                                 $('#docMsg').addClass("has-error");
-                                $('#docMsg').html("There were files attached that exceed the maximum file size.<br />Files must be less than 4MB.");
+                                $('#docMsg').html("There were files attached that exceed the maximum file size.<br />Files must be less than 8MB.");
                                 event.preventDefault();
                             }
                         });
