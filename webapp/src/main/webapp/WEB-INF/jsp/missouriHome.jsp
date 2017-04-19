@@ -58,7 +58,7 @@
 --%>
 <div class="row">
     <div class="col-xs-8 center"><br/>
-        <img src="../../dspResources/images/HSHCMap.png" style="max-width: 100%; max-height: 100%;" alt=""/>
+        <a href="../../dspResources/files/CSI_HSHC_Flyer_June_2017_Training.pdf" target="_blank"><img src="../../dspResources/images/CSI_HSHC_Flyer_June_2017_Training.png" style="max-width: 100%; max-height: 100%;" alt=""/></a>
     </div>
     <div class="col-xs-4 center">
     <img src="../../dspResources/images/HSHC_Circles.png" style="max-width: 100%; max-height: 100%;" alt=""/>
