@@ -8,6 +8,7 @@ package com.rr.missouri.ui.importexport;
 import com.registryKit.exportTool.export;
 import com.registryKit.exportTool.exportManager;
 import com.registryKit.exportTool.progressBar;
+import com.registryKit.messenger.emailManager;
 import com.registryKit.program.programManager;
 import com.registryKit.reference.fileSystem;
 import com.registryKit.survey.SurveyQuestions;
@@ -75,6 +76,9 @@ public class importExportController {
 
     @Autowired
     private programManager programManager;
+    
+    @Autowired
+    emailManager emailManager;
 
     @Value("${programId}")
     private Integer programId;
@@ -333,7 +337,7 @@ public class importExportController {
             String answerVal;
 
             Integer totalDone = 0;
-            float percentComplete;
+            float percentComplete = 0;
 
             progressBar exportProgressBar = exportManager.getProgressBar(exportDetails.getUniqueId());
 
@@ -356,93 +360,98 @@ public class importExportController {
             } else {
 
                 for (submittedSurveys submission : submittedSurveys) {
+		    
+		    try{
+			exportRow = new StringBuilder();
 
-                    exportRow = new StringBuilder();
+			exportRow.append(submission.getId()).append(delimiter).append(submission.getDateCreated()).append(delimiter);
 
-                    exportRow.append(submission.getId()).append(delimiter).append(submission.getDateCreated()).append(delimiter);
+			List selectedTierOneandTwo = surveyManager.getSubmittedSurveyTiersOneandTwo(submission.getId());
 
-                    List selectedTierOneandTwo = surveyManager.getSubmittedSurveyTiersOneandTwo(submission.getId());
+			if (selectedTierOneandTwo != null) {
+			    for (ListIterator iter = selectedTierOneandTwo.listIterator(); iter.hasNext();) {
 
-                    if (selectedTierOneandTwo != null) {
-                        for (ListIterator iter = selectedTierOneandTwo.listIterator(); iter.hasNext();) {
+				Object[] row = (Object[]) iter.next();
 
-                            Object[] row = (Object[]) iter.next();
+				String selectedTierOnes = String.valueOf(row[0]);
+				String selectedTierTwos = String.valueOf(row[1]);
 
-                            String selectedTierOnes = String.valueOf(row[0]);
-                            String selectedTierTwos = String.valueOf(row[1]);
+				/* Selected Tier 1 */
+				if (!"".equals(selectedTierOnes)) {
+				    exportRow.append('"').append(selectedTierOnes.replace("\"", "\"\"")).append('"').append(delimiter);
+				} else {
+				    exportRow.append("").append(delimiter);
+				}
 
-                            /* Selected Tier 1 */
-                            if (!"".equals(selectedTierOnes)) {
-                                exportRow.append('"').append(selectedTierOnes.replace("\"", "\"\"")).append('"').append(delimiter);
-                            } else {
-                                exportRow.append("").append(delimiter);
-                            }
+				/* Selected Tier 2 */
+				if (!"".equals(selectedTierTwos)) {
+				    exportRow.append('"').append(selectedTierTwos.replace("\"", "\"\"")).append('"').append(delimiter);
+				} else {
+				    exportRow.append("").append(delimiter);
+				}
+			    }
+			} else {
+			    exportRow.append("").append(delimiter).append("").append(delimiter);
+			}
 
-                            /* Selected Tier 2 */
-                            if (!"".equals(selectedTierTwos)) {
-                                exportRow.append('"').append(selectedTierTwos.replace("\"", "\"\"")).append('"').append(delimiter);
-                            } else {
-                                exportRow.append("").append(delimiter);
-                            }
-                        }
-                    } else {
-                        exportRow.append("").append(delimiter).append("").append(delimiter);
-                    }
+			List selectedContentandEntities = surveyManager.getSubmittedSurveyContentCriteriaForReport(submission.getId());
 
-                    List selectedContentandEntities = surveyManager.getSubmittedSurveyContentCriteriaForReport(submission.getId());
+			if (selectedContentandEntities != null) {
+			    for (ListIterator iter = selectedContentandEntities.listIterator(); iter.hasNext();) {
 
-                    if (selectedContentandEntities != null) {
-                        for (ListIterator iter = selectedContentandEntities.listIterator(); iter.hasNext();) {
+				Object[] row = (Object[]) iter.next();
 
-                            Object[] row = (Object[]) iter.next();
+				String selectedContent = String.valueOf(row[0]);
+				String selectedEntities = String.valueOf(row[1]);
 
-                            String selectedContent = String.valueOf(row[0]);
-                            String selectedEntities = String.valueOf(row[1]);
+				if (!"".equals(selectedEntities)) {
+				    exportRow.append('"').append(selectedEntities.replace("\"", "\"\"")).append('"').append(delimiter);
+				} else {
+				    exportRow.append("").append(delimiter);
+				}
 
-                            if (!"".equals(selectedEntities)) {
-                                exportRow.append('"').append(selectedEntities.replace("\"", "\"\"")).append('"').append(delimiter);
-                            } else {
-                                exportRow.append("").append(delimiter);
-                            }
+				if (!"".equals(selectedContent)) {
+				    exportRow.append('"').append(selectedContent.replace("\"", "\"\"")).append('"').append(delimiter);
+				} else {
+				    exportRow.append("").append(delimiter);
+				}
+			    }
+			} else {
+			    exportRow.append("").append(delimiter).append("").append(delimiter);
+			}
 
-                            if (!"".equals(selectedContent)) {
-                                exportRow.append('"').append(selectedContent.replace("\"", "\"\"")).append('"').append(delimiter);
-                            } else {
-                                exportRow.append("").append(delimiter);
-                            }
-                        }
-                    } else {
-                        exportRow.append("").append(delimiter).append("").append(delimiter);
-                    }
+			List answerValues = surveyManager.getSubmittedSurveyQuestionAnswerForReport(submission.getId(), surveyQuestions);
 
-                    List answerValues = surveyManager.getSubmittedSurveyQuestionAnswerForReport(submission.getId(), surveyQuestions);
+			Iterator<String> answers = answerValues.iterator();
 
-                    Iterator<String> answers = answerValues.iterator();
+			while (answers.hasNext()) {
+			    String answer = answers.next();
 
-                    while (answers.hasNext()) {
-                        String answer = answers.next();
+			    if (answer == null) {
+				answer = "";
+			    }
+			    exportRow.append('"').append(answer.replace("\"", "\"\"")).append('"').append(delimiter);
 
-                        if (answer == null) {
-                            answer = "";
-                        }
-                        exportRow.append('"').append(answer.replace("\"", "\"\"")).append('"').append(delimiter);
+			}
 
-                    }
+			/*for(SurveyQuestions question : surveyQuestions) {
 
-                    /*for(SurveyQuestions question : surveyQuestions) {
+			    answerVal = surveyManager.getSubmittedSurveyQuestionAnswer(submission.getId(), question.getId());
 
-                        answerVal = surveyManager.getSubmittedSurveyQuestionAnswer(submission.getId(), question.getId());
+			    exportRow.append('"').append(answerVal.replace("\"", "\"\"")).append('"').append(delimiter);
 
-                        exportRow.append('"').append(answerVal.replace("\"", "\"\"")).append('"').append(delimiter);
+			}*/
+			exportRow.append(System.getProperty("line.separator"));
 
-                    }*/
-                    exportRow.append(System.getProperty("line.separator"));
+			fw.write(exportRow.toString());
 
-                    fw.write(exportRow.toString());
-
-                    //Update progress bar
-                    totalDone = totalDone + 1;
-                    percentComplete = ((float) totalDone) / submittedSurveys.size();
+			//Update progress bar
+			totalDone = totalDone + 1;
+			percentComplete = ((float) totalDone) / submittedSurveys.size();
+		    }
+		    catch(Exception ex) {
+			
+		    }
 
                     exportProgressBar.setPercentComplete(Math.round(percentComplete * 100));
 
@@ -458,6 +467,7 @@ public class importExportController {
 
         /* If no results are found */
         if (exportFileName.isEmpty()) {
+	    exportManager.deleteProgressBar(exportDetails.getUniqueId());
             mav.setViewName("/importExport/exportModal");
 
             String surveyName = surveyManager.getSurveyDetails(exportDetails.getSurveyId()).getTitle().replaceAll("[^A-Za-z0-9 ]", "").replace(" ", "");
@@ -474,6 +484,8 @@ public class importExportController {
             mav.addObject("noresults", true);
             mav.addObject("showDateRange", true);
         } else {
+	    
+	    exportManager.deleteProgressBar(exportDetails.getUniqueId());
             mav.setViewName("/importExport/exportDownloadModal");
             mav.addObject("exportFileName", exportFileName);
         }

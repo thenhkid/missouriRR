@@ -139,8 +139,11 @@ jQuery(function ($) {
                         });
                     }
                 },
-                error: function (error) {
-                    console.log(error);
+                error: function (jqXHR, textStatus, errorThrown) {
+		    clearInterval(intervalID);
+		    console.log(jqXHR);
+		    console.log(textStatus);
+                    console.log(errorThrown);
                 }
             });
         }
