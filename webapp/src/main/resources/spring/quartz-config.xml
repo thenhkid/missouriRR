@@ -6,8 +6,9 @@
         http://www.quartz-scheduler.org/xml/job_scheduling_data_1_8.xsd"
     version="1.8">
  
- 
+ <!--
  <schedule>
+         
         <job>
             <name>checkSurveyDates</name>
             <group>processGroup</group>
@@ -20,8 +21,6 @@
                 <name>surveyDateTrigger</name>
                 <job-name>checkSurveyDates</job-name>
                 <job-group>processGroup</job-group>
-                <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
-                <!-- Runs every minute-->
                 <cron-expression>0 0/15 * * * ?</cron-expression>
             </cron>
         </trigger>
@@ -42,8 +41,6 @@
                 <name>60SecTrigger</name>
                 <job-name>checkCalendarNotifications</job-name>
                 <job-group>processGroup</job-group>
-                <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
-                <!-- Runs every minute-->
                 <cron-expression>0 0/1 * * * ?</cron-expression>
             </cron>
         </trigger>
@@ -62,8 +59,6 @@
                 <name>newForumEmails</name>
                 <job-name>checkForumNotifications</job-name>
                 <job-group>processGroup</job-group>
-                <!-- seconds, (at) minute/ minutes to start, hours, day of month, month, day of week, year (optional) -->
-                <!-- Runs every 45 seconds, starting at 3 seconds on the clock-->
                 <cron-expression>3/45 * * * * ?</cron-expression>
             </cron>
         </trigger>
@@ -83,14 +78,12 @@
                 <name>newCalendarEmails</name>
                 <job-name>checkEmailNotifications</job-name>
                 <job-group>processGroup</job-group>
-                <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
-                <!-- Runs every 45 seconds, starting at 17 seconds on the clock-->
                 <cron-expression>10/30 * * * * ?</cron-expression>
             </cron>
         </trigger>
     </schedule>
     
-    <!-- document emails -->
+    
     <schedule>
         <job>
             <name>checkDocumentEmailNotifications</name>
@@ -104,14 +97,11 @@
                 <name>newDocumentEmails</name>
                 <job-name>checkDocumentEmailNotifications</job-name>
                 <job-group>processGroup</job-group>
-                <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
-                <!-- Runs every 45 seconds, starting at 32 seconds on the clock-->
                 <cron-expression>32/45 * * * * ?</cron-expression>
             </cron>
         </trigger>
     </schedule>
-    
-    <!-- reports -->
+
         <schedule>
         <job>
             <name>runReportsJob</name>
@@ -125,14 +115,11 @@
                 <name>runReports</name>
                 <job-name>runReportsJob</job-name>
                 <job-group>processGroup</job-group>
-                <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
-                <!-- Runs every 2 minute on the clock-->
                 <cron-expression>0 0/2 * * * ?</cron-expression>
             </cron>
         </trigger>
     </schedule>
     
-    <!-- announcement emails -->
     <schedule>
         <job>
             <name>checkAnnouncementEmailNotifications</name>
@@ -146,11 +133,9 @@
                 <name>newAnnouncementEmails</name>
                 <job-name>checkAnnouncementEmailNotifications</job-name>
                 <job-group>processGroup</job-group>
-                <!-- seconds, minutes /(at) minute to start, hours, day of month, month, day of week, year (optional) -->
-                <!-- Runs every 45 seconds, starting at 15 seconds on the clock-->
                 <cron-expression>15/45 * * * * ?</cron-expression>
             </cron>
         </trigger>
     </schedule>
-    
+    -->
 </job-scheduling-data>
