@@ -6,7 +6,11 @@
         http://www.quartz-scheduler.org/xml/job_scheduling_data_1_8.xsd"
     version="1.8">
  
+<<<<<<< HEAD
  <!--
+=======
+ <!-- 
+>>>>>>> master
  <schedule>
          
         <job>
@@ -83,7 +87,10 @@
         </trigger>
     </schedule>
     
+<<<<<<< HEAD
     
+=======
+>>>>>>> master
     <schedule>
         <job>
             <name>checkDocumentEmailNotifications</name>
@@ -101,8 +108,13 @@
             </cron>
         </trigger>
     </schedule>
+<<<<<<< HEAD
 
         <schedule>
+=======
+    
+    <schedule>
+>>>>>>> master
         <job>
             <name>runReportsJob</name>
             <group>processGroup</group>
@@ -137,5 +149,9 @@
             </cron>
         </trigger>
     </schedule>
+<<<<<<< HEAD
     -->
+=======
+     -->
+>>>>>>> master
 </job-scheduling-data>
